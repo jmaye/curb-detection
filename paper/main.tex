@@ -1,0 +1,61 @@
+\documentclass[letterpaper, 10 pt, conference]{sty/ieeeconf}
+
+\IEEEoverridecommandlockouts
+
+\overrideIEEEmargins
+
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{txfonts}
+\usepackage{tikz}
+\usepackage[T1]{fontenc}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\begin{document}
+
+\title{\LARGE \bf
+Curb Detection
+}
+
+\author{
+\authorblockN{
+J\'{e}r\^{o}me Maye,
+Ralf Kaestner,
+and Roland Siegwart}
+\authorblockA{
+Autonomous Systems Lab, ETH Zurich, Switzerland\\
+email: \{jerome.maye, ralf.kaestner, roland.siegwart\}@mavt.ethz.ch}
+}
+
+\maketitle
+
+\begin{abstract}
+\input{src/abstract.tex}
+\end{abstract}
+
+\section{Introduction}
+\input{src/introduction.tex}
+
+\section{Related Work\label{sec:related}}
+\input{src/related.tex}
+
+\section{Problem Formulation\label{sec:formulation}}
+\input{src/formulation.tex}
+
+\section{Experiments\label{sec:exp}}
+\input{src/experiments.tex}
+
+\section{Conclusion\label{sec:conc}}
+\input{src/conclusion.tex}
+
+\section*{Acknowledgment}
+This work has partly been supported by the EC under FP7-231888-EUROPA.
+
+\bibliographystyle{sty/IEEEtran}
+\bibliography{bib/bibliography}
+
+\end{document}
