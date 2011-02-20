@@ -1,0 +1,29 @@
+\subsection{Measurements Representation}
+Scan measurements $\mathbf{s}_i=[r_i,\theta_i,\psi_i]^\text{T}$ are transformed
+into their corresponding Cartesian 3D coordinates $\mathbf{p}_i=[x_i,y_i,z_i]
+^\text{T}$, where $r_i$ is a range measurement, $\theta_i$ a pitch angle, and
+$\psi_i$ a bearing angle. From a complete laser sweep, we obtain a point cloud
+representation $\mathcal{P}=\{\mathbf{p}_1,\mathbf{p}_2,\dots,\mathbf{p}_N\}$.
+$\mathcal{P}$ is finally projected onto a 2D grid $\mathcal{G}=\{\mathcal{C}_1,
+\mathcal{C}_2,\dots,\mathcal{C}_M\}$, with cells $\mathcal{C}_i=
+\{\mathbf{ul}_i,\mathbf{lr}_i,h_i,l_i,\mathcal{I}_i\}$, where $\mathbf{ul}_i$
+and $\mathbf{lr}_i$ are the upper left and lower right 2D coordinates of the
+cell, $h_i$ the height of the cell such that $h_i\propto\mathcal{N}(\mu_i,
+\sigma_i)=p(h_i\mid\mu_i,\sigma_i,\mathcal{I}_i)$, $l_i\in\{1,\dots,M\}$ a
+discrete label for the cell, and $\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j
+\in\mathcal{P}\wedge\mathbf{p}_{j_x}>\mathbf{ul}_{i_x}\wedge\mathbf{p}_{j_y}>
+\mathbf{ul}_{i_y}\wedge\mathbf{p}_{j_x}<\mathbf{lr}_{i_x}\wedge\mathbf{p}_{j_y}
+<\mathbf{lr}_{i_y}\}$.
+
+REMARKS:
+\begin{itemize}
+\item MENTION THE TERM DIGITAL ELEVATION MAP (DEM)
+\item MENTION THE POSSIBILITY TO HAVE A POLAR GRID INSTEAD OF A CARTESIAN
+\item EXPLAIN WHAT HEIGHT $h_i$ IS FINALLY TAKEN
+\item INVALID CELLS/NO MEASUREMENTS
+\item REDUCE HEIGHT VALUES TO A GIVEN RANGE ([-0.5,1.5m])
+\end{itemize}
+
+\subsection{Environment Model and Inference Task}
+We assume a planar environment, i.e., the observed scene is composed of a set of
+planes.
