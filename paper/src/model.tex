@@ -13,15 +13,24 @@ cell, $h_i$ the height of the cell such that $h_i\propto\mathcal{N}(\mu_i,
 discrete label for the cell, and $\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j
 \in\mathcal{P}\wedge\mathbf{p}_{j_x}>\mathbf{ul}_{i_x}\wedge\mathbf{p}_{j_y}>
 \mathbf{ul}_{i_y}\wedge\mathbf{p}_{j_x}<\mathbf{lr}_{i_x}\wedge\mathbf{p}_{j_y}
-<\mathbf{lr}_{i_y}\}$.
+<\mathbf{lr}_{i_y}\wedge\mathbf{p}_{j_z}<\theta_U\wedge\mathbf{p}_{j_z}>
+\theta_L\}$. $\theta_U$ and $\theta_L$ define upper and lower bounds for the
+height values.
+
+The grid $\mathcal{G}$ will also be referred to as a Digital Elevation Map (DEM)
+in the rest of the paper. The choice of a DEM representation is mainly guided by
+the final outcome of the algorithm, i.e. a traversability map for the planning
+process. It is also convenient for defining Regions of Interest (ROI) in
+$\mathcal{P}$ and for simplifying the subsequent computations. We could also
+have resorted to a polar grid representation, so as to have a finer resolution
+close to the sensor (THIS IS STILL OPEN AND NEED FURTHER EXPLANATIONS). Whenever
+the number of points in a cell $\mathcal{C}_i$ is below a threshold, i.e.
+$|\mathcal{I}_i|<\theta_P$, it is flagged as invalid.
 
 REMARKS:
 \begin{itemize}
-\item MENTION THE TERM DIGITAL ELEVATION MAP (DEM)
-\item MENTION THE POSSIBILITY TO HAVE A POLAR GRID INSTEAD OF A CARTESIAN
+\item EXPLAIN HOW WE CAN GO FROM THE PUSH-BROOM LASER DATA TO THE DEM
 \item EXPLAIN WHAT HEIGHT $h_i$ IS FINALLY TAKEN
-\item INVALID CELLS/NO MEASUREMENTS
-\item REDUCE HEIGHT VALUES TO A GIVEN RANGE ([-0.5,1.5m])
 \end{itemize}
 
 \subsection{Environment Model and Inference Task}
