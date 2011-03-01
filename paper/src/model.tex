@@ -6,16 +6,16 @@ $\psi_i$ a bearing angle. From a complete laser sweep, we obtain a point cloud
 representation $\mathcal{P}=\{\mathbf{p}_1,\mathbf{p}_2,\dots,\mathbf{p}_N\}$.
 $\mathcal{P}$ is finally projected onto a 2D grid $\mathcal{G}=\{\mathcal{C}_1,
 \mathcal{C}_2,\dots,\mathcal{C}_M\}$, with cells $\mathcal{C}_i=
-\{\mathbf{ul}_i,\mathbf{lr}_i,h_i,l_i,\mathcal{I}_i\}$, where $\mathbf{ul}_i$
-and $\mathbf{lr}_i$ are the upper left and lower right 2D coordinates of the
-cell, $h_i$ the height of the cell such that $h_i\propto\mathcal{N}(\mu_i,
-\sigma_i)=p(h_i\mid\mu_i,\sigma_i,\mathcal{I}_i)$, $l_i\in\{1,\dots,M\}$ a
-discrete label for the cell, and $\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j
-\in\mathcal{P}\wedge\mathbf{p}_{j_x}>\mathbf{ul}_{i_x}\wedge\mathbf{p}_{j_y}>
-\mathbf{ul}_{i_y}\wedge\mathbf{p}_{j_x}<\mathbf{lr}_{i_x}\wedge\mathbf{p}_{j_y}
-<\mathbf{lr}_{i_y}\wedge\mathbf{p}_{j_z}<\theta_U\wedge\mathbf{p}_{j_z}>
-\theta_L\}$. $\theta_U$ and $\theta_L$ define upper and lower bounds for the
-height values.
+\{\mathbf{ul}_i,\mathbf{lr}_i,\mathbf{c}_i,h_i,l_i,\mathcal{I}_i\}$, where
+$\mathbf{ul}_i$ and $\mathbf{lr}_i$ are the upper left and lower right 2D
+coordinates of the cell, $\mathbf{c}_i$ the center of the cell, $h_i$ the height
+of the cell such that $h_i\propto\mathcal{N}(\mu_i,\sigma_i)=p(h_i\mid\mu_i,
+\sigma_i,\mathcal{I}_i)$, $l_i\in\{1,\dots,M\}$ a discrete label for the cell,
+and $\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j\in\mathcal{P},
+\mathbf{p}_{j_x}>\mathbf{ul}_{i_x},\mathbf{p}_{j_y}>\mathbf{ul}_{i_y}
+,\mathbf{p}_{j_x}<\mathbf{lr}_{i_x},\mathbf{p}_{j_y}<\mathbf{lr}_{i_y}
+,\mathbf{p}_{j_z}<\theta_U,\mathbf{p}_{j_z}>\theta_L\}$. $\theta_U$
+and $\theta_L$ define upper and lower bounds for the height values.
 
 The grid $\mathcal{G}$ will also be referred to as a Digital Elevation Map (DEM)
 in the rest of the paper. The choice of a DEM representation is mainly guided by
@@ -35,4 +35,13 @@ REMARKS:
 
 \subsection{Environment Model and Inference Task}
 We assume a piecewise planar environment, i.e., the observed scene is composed
-of a set of planes.
+of a set of plane segments $\mathcal{S}_1,\mathcal{S}_2,\dots,\mathcal{S}_M$, with
+$\mathcal{S}_i=\{\mathcal{C}_j\mid h_j=\mathbf{w}_i^\text{T}\boldsymbol{\phi}
+(\mathbf{c}_{j})\}$, $\mathbf{w}_i=[w_0^{(i)}, w_1^{(i)}, w_2^{(i)}]^\text{T}$,
+and $\boldsymbol{\phi}(\mathbf{c}_{j})=[\phi_0(\mathbf{c}_{j})=1,
+\phi_1(\mathbf{c}_{j})=\mathbf{c}_{j_x},\phi_2(\mathbf{c}_{j})=
+\mathbf{c}_{j_y}]^\text{T}$.
+
+Boundaries between plane segments define local heights discontinuities that we
+shall term \emph{curbs} from now on. The major inference task therefore boils
+down to discovering those plane segments.
