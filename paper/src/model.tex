@@ -38,10 +38,9 @@ We assume a piecewise planar environment, i.e., the observed scene is composed
 of a set of plane segments $\mathcal{S}_1,\mathcal{S}_2,\dots,\mathcal{S}_M$, with
 $\mathcal{S}_i=\{\mathcal{C}_j\mid h_j=\mathbf{w}_i^\text{T}\boldsymbol{\phi}
 (\mathbf{c}_{j})\}$, $\mathbf{w}_i=[w_0^{(i)}, w_1^{(i)}, w_2^{(i)}]^\text{T}$,
-and $\boldsymbol{\phi}(\mathbf{c}_{j})=[\phi_0(\mathbf{c}_{j})=1,
-\phi_1(\mathbf{c}_{j})=\mathbf{c}_{j_x},\phi_2(\mathbf{c}_{j})=
-\mathbf{c}_{j_y}]^\text{T}$.
+and $\boldsymbol{\phi}(\mathbf{c}_{j})=[1,\mathbf{c}_j]^\text{T}$.
 
 Boundaries between plane segments define local heights discontinuities that we
 shall term \emph{curbs} from now on. The major inference task therefore boils
-down to discovering those plane segments.
+down to discovering those plane segments. To this end, we follow a probabilistic
+and iterative approach.

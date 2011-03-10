@@ -1,0 +1,60 @@
+Our algorithm needs an initial rough estimate of the plane segments. This
+initial estimate consists in labeling the DEM cells that belong to the same
+plane segments. More formally, we refine our definition of plane segments to
+$\mathcal{S}_i=\{\mathcal{C}_j\mid l_j=i\}$.
+
+We use the graph-based algorithm from Felzenzswalb and
+Huttenlocher~\cite{felzenszwalb04efficient}. Although this method was originally
+designed for image segmentation, we can tune it for our purposes, image regions
+corresponding to plane segments. We define an undirected graph
+$\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$, with vertices $v_i\in\mathcal{V}$ to
+be segmented and edges $(v_i,v_j)\in\mathcal{E}$ for neighboring vertices. Each
+edge has a weight $w((v_i,v_j))$ proportional to the dissimilarity between $v_i$
+and $v_j$. In our particular setting, each grid cell $\mathcal{C}_i$ is aligned
+with a vertex $v_i$ and each vertex has a 4-connected neighborhood. The goal of
+the algorithm is to find a partition of $\mathcal{V}$ into components
+$\mathcal{C}$ that correspond to the connected components of a graph
+$\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$, with
+$\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the partition such that
+vertices in a component have a high similarity and vertices in different
+components a low similarity. Therefore, edges between vertices in the same
+component should have a low weight and edges between vertices in different
+components a high weight. We define the weight function as the symmetric
+Kullback-Leibler divergence between two cells, i.e.,
+$w((v_i,v_j))=D_{KL}(h_i\mid\mid h_j)+D_{KL}(h_j\mid\mid h_i)$. For normal
+distributions, the Kullback-Leibler divergence integrates analytically to
+$D_{KL}(h_i\mid\mid h_j)=\frac{(\mu_i-\mu_j)^2}{2\sigma_j^2}+\frac{1}{2}
+(\frac{\sigma_i^2}{\sigma_j^2}-1-\ln\frac{\sigma_i^2}{\sigma_j^2})$. The
+algorithm starts with all vertices belonging to a different component. It then
+iterates by merging components based on the comparison predicate
+
+\begin{equation}
+\label{eqn:comp_pred}
+D(C_1,C_2) = \left\{
+\begin{array}{l l}
+\text{true} & \quad \text{if $Dif(C_1,C_2)>MInt(C_1,C_2)$ }\\
+\text{false} & \quad \text{otherwise},
+\end{array} \right.
+\end{equation}
+
+where $Dif(C_1,C_2)=\min w((v_i,v_j))$, $Int(C)=\max w(e)$,
+$MInt(C_1,C_2)=\min(Int(C_1)+\tau(C_1),Int(C_2)+\tau(C_2))$ the minimum internal
+difference, and $\tau(C)=k/|C|$. Two components should be disconnected if the
+difference between them is large compared to the internal difference within at
+least one of the components. $k$ is a scale parameter that controls the
+preference for larger components. The algorithm runs in $O(m\log(m))$, where
+$m$ is the number of edges in the graph and it is guaranteed to produce a
+segmentation which is neither too fine nor too coarse.
+
+The resulting segmentation defines a probability distribution $p(l_i^{(0)})$ for
+each cell, with the domain of $l_i$ being the number of components. This initial
+distribution is expressed as
+
+\begin{equation}
+\label{eqn:comp_pred}
+p(l_i^{(0)}=j) = \left\{
+\begin{array}{l l}
+1 & \quad \text{if $C_i$ belongs to component $j$}\\
+0 & \quad \text{otherwise}.
+\end{array} \right.
+\end{equation}
