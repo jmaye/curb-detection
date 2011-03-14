@@ -1,5 +1,1 @@
-remake_find_package(opencv CONFIG)
-remake_find_library(cvaux opencv/cvaux.h PACKAGE cvaux)
-remake_include(${OPENCV_INCLUDE_DIRS})
-remake_include(../lib/*)
-remake_add_executables(LINK moos-stingray visualizer)
+remake_add_executables(LINK)
