@@ -42,9 +42,16 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   ANNidxArray nnIdxArray = new ANNidx[1];
   ANNdistArray distArray = new ANNdist[1];
   vector<PointCloud::Point3D> pointVector = pointCloud.getPointVector();
+  double f64MaxX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
+  double f64MaxY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
+  double f64MinY = - f64MaxY;
   for (uint32_t i = 0; i < pointVector.size(); i++) {
     if (pointVector[i].mf64Z <= mf64HeightMax &&
-      pointVector[i].mf64Z >= mf64HeightMin) {
+      pointVector[i].mf64Z >= mf64HeightMin &&
+      pointVector[i].mf64X <= f64MaxX &&
+      pointVector[i].mf64X >= mf64MinX &&
+      pointVector[i].mf64Y <= f64MaxY &&
+      pointVector[i].mf64Y >= f64MinY) {
       ANNpoint queryPoint = annAllocPt(2);
       queryPoint[0] = pointVector[i].mf64X;
       queryPoint[1] = pointVector[i].mf64Y;

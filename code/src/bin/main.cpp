@@ -15,7 +15,7 @@ int main(int argc ,char** argv) {
   ifstream pointCloudFile(argv[1]);
   PointCloud pointCloud;
   pointCloudFile >> pointCloud;
-  DEM dem(pointCloud, 0.4, 0.4, 20, 20, 1, -2, 10);
+  DEM dem(pointCloud, 0.4, 0.4, 20, 20, 1, 10, -10);
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);

@@ -214,7 +214,7 @@ void Window::createGlLists() {
   glBegin(GL_POINTS);
   for (uint32_t i = 0; i < mCellVector.size(); i++) {
     glColor3f(255, 0, 0);
-    glVertex3f(mCellVector[i].mf64CenterX, mCellVector[i].mf64CenterY, 0);
+    glVertex3f(mCellVector[i].mf64CenterX, mCellVector[i].mf64CenterY, mCellVector[i].mf64HeightMean);
   }
   glEnd();
   glEndList();
