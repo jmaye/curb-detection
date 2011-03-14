@@ -1,5 +1,64 @@
 Given a labeling of the DEM cells belonging to the same plane segments, we show
-here how we can get an estimate of the plane parameters using a regression
-framework.
+here how we can get an estimate of the plane parameters using a Bayesian linear
+regression framework.
 
+At time step $t$ of the algorithm, we assume the following model for the plane
+segment $j$
 
+\begin{equation}
+\label{eqn:regression1}
+p(h_i\mid\mathbf{c}_i,\sigma^2_i,l_i,\mathbf{w}_j,\sigma^2_j)=\mathcal{N}(h_i|\mathbf{w}_j^\text{T}
+\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_j).
+\end{equation}
+
+Since the $h_i$ are drawn independently, we can write the conditional likelihood
+
+\begin{equation}
+\label{eqn:regression2}
+p(\mathbf{h}\mid\mathbf{C},\mathbf{w}_j,\sigma^2_j)=\prod_{i=1}^N\mathcal{N}(h_i|
+\mathbf{w}_j^\text{T}\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_j),
+\end{equation}
+
+where $\mathbf{h}=[h_1,h_2,\dots,h_N]$ and $\mathbf{C}=[\mathbf{c_1},
+\mathbf{c_2},\dots,\mathbf{c_N}]$.
+
+We introduce a prior for the parameters to be estimated
+
+\begin{equation}
+\label{eqn:regression3}
+p(\mathbf{w},\beta)=p(\beta)p(\mathbf{w}\mid\beta)
+\end{equation}
+
+where $p(\beta)$ is an inverse-gamma distribution and
+$p(\mathbf{w}\mid\beta)$ a normal distribution.
+
+The posterior distribution becomes
+
+\begin{equation}
+\label{eqn:regression4}
+p(\mathbf{w}\mid\mathbf{h})=\mathcal{N}(\mathbf{w}\mid \mathbf{m}_N,
+\mathbf{S}_N),
+\end{equation}
+
+where
+
+\begin{eqnarray}
+\label{eqn:regression5}
+\mathbf{m}_N&=&\mathbf{S}_N(\mathbf{S}_0^{-1}\mathbf{m}_0+\beta
+\boldsymbol{\Phi}^\text{T}\mathbf{h})\\\nonumber
+\mathbf{S}_N^{-1}&=&\mathbf{S}_0^{-1}+\beta\boldsymbol{\Phi}^\text{T}\boldsymbol{\Phi}
+\end{eqnarray}
+
+and
+
+\begin{equation}
+\label{eqn:regression6}
+\boldsymbol{\Phi}=
+\left(
+\begin{array}{cccc}
+\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
+\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
+\cdots             & \cdots             & \ddots & \cdots\\
+\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
+\end{array} \right)
+\end{equation}
