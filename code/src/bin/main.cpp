@@ -21,7 +21,7 @@ int main(int argc ,char** argv) {
   window.addDEM(dem);
   window.createGlLists();
   window.setTranslation(0, -10, -60);
-  window.setRotation(0, 30, 0);
+  window.setRotation(0, -90, 90);
   window.setVisibility(true);
   window.show();
 
