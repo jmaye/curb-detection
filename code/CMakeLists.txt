@@ -14,4 +14,4 @@ remake_project(
   INSTALL /usr
 )
 
-remake_pack_deb()
+remake_pack_deb(libann0)

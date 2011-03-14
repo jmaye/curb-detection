@@ -1,12 +1,29 @@
+#include "PointCloud.h"
+#include "DEM.h"
+#include "Window.h"
+
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
 int main(int argc ,char** argv) {
-  if (argc != 3) {
-    cerr << "Usage: " << argv[0] << " -l|r <mission.moos>" << endl;
+  if (argc != 2) {
+    cerr << "Usage: " << argv[0] << "<pointCloudFile>" << endl;
     return -1;
   }
+  ifstream pointCloudFile(argv[1]);
+  PointCloud pointCloud;
+  pointCloudFile >> pointCloud;
+  DEM dem(pointCloud, 0.4, 0.4, 20, 20, 1, -2, 10);
+  Window window(argc, argv);
+  window.addPointCloud(pointCloud);
+  window.addDEM(dem);
+  window.createGlLists();
+  window.setTranslation(0, -10, -60);
+  window.setRotation(0, 30, 0);
+  window.setVisibility(true);
+  window.show();
 
   return 0;
 }

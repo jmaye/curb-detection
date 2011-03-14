@@ -27,7 +27,7 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       cell.mu32PointsNbr = 0;
       cell.mf64CenterX = f64CurX - mf64CellSizeX / 2.0;
       cell.mf64CenterY = f64CurY - mf64CellSizeY / 2.0;
-      cellVector.push_back(cell);
+      mCellVector.push_back(cell);
       f64CurY -= mf64CellSizeY;
       ANNpoint cellCenter = annAllocPt(2);
       cellCenter[0] = cell.mf64CenterX;
@@ -35,6 +35,7 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       cellCenters[i * mu32CellsNbrY + j] = cellCenter;
     }
     f64CurX -= mf64CellSizeX;
+    f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   }
   ANNkd_tree* kdTree = new ANNkd_tree(cellCenters,
     mu32CellsNbrX * mu32CellsNbrY, 2);
@@ -48,7 +49,7 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       queryPoint[0] = pointVector[i].mf64X;
       queryPoint[1] = pointVector[i].mf64Y;
       kdTree->annkSearch(queryPoint, 1, nnIdxArray, distArray, 0);
-      cellVector[nnIdxArray[0]].addPoint(pointVector[i].mf64Z);
+      mCellVector[nnIdxArray[0]].addPoint(pointVector[i].mf64Z);
     }
   }
   delete [] nnIdxArray;
@@ -94,4 +95,8 @@ ifstream& operator >> (ifstream& stream,
   DEM& obj) {
   obj.read(stream);
   return stream;
+}
+
+const std::vector<DEM::Cell>& DEM::getCellVector() const {
+  return mCellVector;
 }

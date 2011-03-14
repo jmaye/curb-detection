@@ -10,6 +10,7 @@
 #include <math.h>
 
 class DEM {
+public:
   class Cell {
   public:
     double mf64HeightMean;
@@ -26,7 +27,7 @@ class DEM {
         (pow(f64Height  - mf64HeightMean, 2)- mf64HeightVariance);
     }
   };
-
+private:
   friend std::ostream& operator << (std::ostream& stream,
     const DEM& obj);
   friend std::istream& operator >> (std::istream& stream,
@@ -51,13 +52,15 @@ class DEM {
   double mf64MinX;
   double mf64HeightMax;
   double mf64HeightMin;
-  std::vector<Cell> cellVector;
+  std::vector<Cell> mCellVector;
 
 public:
   DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64MinX,
     double f64HeightMax, double f64HeightMin);
   ~DEM();
+
+  const std::vector<Cell>& getCellVector() const;
 
 protected:
 
