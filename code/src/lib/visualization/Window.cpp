@@ -6,9 +6,6 @@
 
 using namespace std;
 
-Window::Window() {
-}
-
 Window::Window(int argc, char **argv, int i32Width, int i32Height) :
   mi32Width(i32Width),
   mi32Height(i32Height),
@@ -39,8 +36,6 @@ Window& Window::operator = (const Window& other) {
 }
 
 Window::~Window() {
-  glDeleteLists(mPointCloudListIndex, 1);
-  glDeleteLists(mDEMListIndex, 1);
 }
 
 void Window::show() const {
@@ -92,8 +87,8 @@ void Window::drawScene() const {
   drawBackground(1.0f, 1.0f, 1.0f);
   if (mbShowAxes)
     drawAxes(3.0);
-  glCallList(mPointCloudListIndex);
-  glCallList(mDEMListIndex);
+  mPointCloudVisitor.draw();
+  mDEMVisitor.draw();
   glutSwapBuffers();
   glFlush();
 }
@@ -181,11 +176,11 @@ void Window::mouseCallback(int i32Button, int i32State, int i32X,
 }
 
 void Window::addPointCloud(const PointCloud& pointCloud) {
-  mPointVector = pointCloud.getPointVector();
+  pointCloud.accept(mPointCloudVisitor);
 }
 
 void Window::addDEM(const DEM& dem) {
-  mCellVector = dem.getCellVector();
+  dem.accept(mDEMVisitor);
 }
 
 void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {
@@ -194,28 +189,4 @@ void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {
     glutDestroyWindow(window->mi32ID);
     exit(0);
   }
-}
-
-void Window::createGlLists() {
-  mPointCloudListIndex = glGenLists(1);
-  glNewList(mPointCloudListIndex, GL_COMPILE);
-  glPointSize(2.0);
-  glBegin(GL_POINTS);
-  for (uint32_t i = 0; i < mPointVector.size(); i++) {
-    //glColor3f(0, 0, mPointCloudVector[i].mu8Intensity);
-    glVertex3f(mPointVector[i].mf64X, mPointVector[i].mf64Y,
-      mPointVector[i].mf64Z);
-  }
-  glEnd();
-  glEndList();
-  mDEMListIndex = glGenLists(1);
-  glNewList(mDEMListIndex, GL_COMPILE);
-  glPointSize(4.0);
-  glBegin(GL_POINTS);
-  for (uint32_t i = 0; i < mCellVector.size(); i++) {
-    glColor3f(255, 0, 0);
-    glVertex3f(mCellVector[i].mf64CenterX, mCellVector[i].mf64CenterY, mCellVector[i].mf64HeightMean);
-  }
-  glEnd();
-  glEndList();
 }

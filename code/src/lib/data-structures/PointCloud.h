@@ -1,21 +1,13 @@
 #ifndef POINTCLOUD_H
 #define POINTCLOUD_H
 
-#include <iosfwd>
+#include "Point3D.h"
+#include "PointCloudVisitor.h"
 
+#include <iosfwd>
 #include <vector>
 
 class PointCloud {
-public:
-  class Point3D {
-  public:
-    double mf64X;
-    double mf64Y;
-    double mf64Z;
-    double mf64Timestamp;
-  };
-
-private:
   friend std::ostream& operator << (std::ostream& stream,
     const PointCloud& obj);
   friend std::istream& operator >> (std::istream& stream,
@@ -33,13 +25,14 @@ private:
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
-  std::vector<Point3D> mPointVector;
+  std::vector<Point3D> mPointsVector;
 
 public:
   PointCloud();
   ~PointCloud();
 
-  const std::vector<Point3D>& getPointVector() const;
+  const std::vector<Point3D>& getPointsVector() const;
+  void accept(PointCloudVisitor& v) const;
 
 protected:
 

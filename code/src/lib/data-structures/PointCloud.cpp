@@ -2,9 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
-
-#include <stdint.h>
 
 using namespace std;
 
@@ -18,10 +15,6 @@ void PointCloud::read(istream& stream) {
 }
 
 void PointCloud::write(ostream& stream) const {
-  for (uint32_t i = 0; i < mPointVector.size(); i++) {
-    stream << mPointVector[i].mf64X << " " << mPointVector[i].mf64Y << " "
-           << mPointVector[i].mf64Z << endl;
-  }
 }
 
 void PointCloud::read(ifstream& stream) {
@@ -32,7 +25,7 @@ void PointCloud::read(ifstream& stream) {
     stream >> point.mf64Y;
     stream.seekg(1, ios_base::cur);
     stream >> point.mf64Z;
-    mPointVector.push_back(point);
+    mPointsVector.push_back(point);
   }
 }
 
@@ -63,6 +56,10 @@ ifstream& operator >> (ifstream& stream,
   return stream;
 }
 
-const vector<PointCloud::Point3D>& PointCloud::getPointVector() const {
-  return mPointVector;
+const vector<Point3D>& PointCloud::getPointsVector() const {
+  return mPointsVector;
+}
+
+void PointCloud::accept(PointCloudVisitor& v) const {
+  v.visit(this);
 }

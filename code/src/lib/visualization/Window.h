@@ -2,11 +2,12 @@
 #define WINDOW_H
 
 #include "PointCloud.h"
+#include "Point3D.h"
 #include "DEM.h"
+#include "PointCloudVisitor.h"
+#include "DEMVisitor.h"
 
 #include <GL/gl.h>
-
-#include <vector>
 
 #include <stdint.h>
 
@@ -32,8 +33,8 @@ class Window {
   int mi32Width;
   int mi32Height;
 
-  PointCloud::Point3D mTranslation;
-  PointCloud::Point3D mRotation;
+  Point3D mTranslation;
+  Point3D mRotation;
 
   double mf64Scale;
 
@@ -44,14 +45,10 @@ class Window {
   int mi32StartX;
   int mi32StartY;
 
-  std::vector<PointCloud::Point3D> mPointVector;
-  std::vector<DEM::Cell> mCellVector;
-
-  GLuint mPointCloudListIndex;
-  GLuint mDEMListIndex;
+  PointCloudVisitor mPointCloudVisitor;
+  DEMVisitor mDEMVisitor;
 
 public:
-  Window();
   Window(int argc, char** argv, int i32Width = 640, int i32Height = 480);
   ~Window();
 
@@ -64,7 +61,6 @@ public:
   void drawScene() const;
   void addPointCloud(const PointCloud& pointCloud);
   void addDEM(const DEM& dem);
-  void createGlLists();
 
 protected:
 

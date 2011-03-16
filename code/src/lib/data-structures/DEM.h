@@ -2,32 +2,15 @@
 #define DEM_H
 
 #include "PointCloud.h"
+#include "Cell.h"
+#include "DEMVisitor.h"
 
 #include <iosfwd>
 #include <vector>
 
 #include <stdint.h>
-#include <math.h>
 
 class DEM {
-public:
-  class Cell {
-  public:
-    double mf64HeightMean;
-    double mf64HeightVariance;
-    std::vector<double> mLabelVector;
-    double mf64CenterX;
-    double mf64CenterY;
-    uint32_t mu32PointsNbr;
-    void addPoint(double f64Height) {
-      mu32PointsNbr++;
-      mf64HeightMean += 1.0 / (double)mu32PointsNbr *
-        (f64Height  - mf64HeightMean);
-      mf64HeightVariance += 1.0 / (double)mu32PointsNbr *
-        (pow(f64Height  - mf64HeightMean, 2)- mf64HeightVariance);
-    }
-  };
-private:
   friend std::ostream& operator << (std::ostream& stream,
     const DEM& obj);
   friend std::istream& operator >> (std::istream& stream,
@@ -50,17 +33,24 @@ private:
   uint32_t mu32CellsNbrX;
   uint32_t mu32CellsNbrY;
   double mf64MinX;
-  double mf64HeightMax;
   double mf64HeightMin;
-  std::vector<Cell> mCellVector;
+  double mf64HeightMax;
+  std::vector<Cell> mCellsVector;
+  std::vector<uint32_t> mLabelsVector;
 
 public:
-  DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
-    uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64MinX,
-    double f64HeightMax, double f64HeightMin);
+  DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
+    double f64CellSizeY = 0.4, uint32_t u32CellsNbrX = 20,
+    uint32_t u32CellsNbrY = 20, double f64MinX = 1, double f64HeightMin = -10,
+    double f64HeightMax = 10);
   ~DEM();
 
-  const std::vector<Cell>& getCellVector() const;
+  const std::vector<Cell>& getCellsVector() const;
+  uint32_t getCellsNbrX() const;
+  uint32_t getCellsNbrY() const;
+  void accept(DEMVisitor& v) const;
+  void setLabelsVector(const std::vector<uint32_t> labelsVector);
+  const std::vector<uint32_t> getLabelsVector() const;
 
 protected:
 
