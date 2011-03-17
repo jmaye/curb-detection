@@ -3,32 +3,29 @@
 #include <iostream>
 #include <fstream>
 
-#include <math.h>
-
 using namespace std;
 
-Cell::Cell() {
+Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
+  const Point2D& cellCenter, const Point2D& cellSize)
+  : mHeightDist(heightDist),
+    mEstimator(estimator),
+    mCellCenter(cellCenter),
+    mCellSize(cellSize) {
 }
 
-Cell::Cell(const Cell& other) : mf64HeightMean(other.mf64HeightMean),
-                                mf64HeightVariance(other.mf64HeightVariance),
-                                mLabelVector(other.mLabelVector),
-                                mf64CenterX(other.mf64CenterX),
-                                mf64CenterY(other.mf64CenterY),
-                                mf64CellSizeX(other.mf64CellSizeX),
-                                mf64CellSizeY(other.mf64CellSizeY),
-                                mu32PointsNbr(other.mu32PointsNbr) {
+Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
+                                mEstimator(other.mEstimator),
+                                mCellCenter(other.mCellCenter),
+                                mCellSize(other.mCellSize),
+                                mLabelVector(other.mLabelVector) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
-  mf64HeightMean = other.mf64HeightMean;
-  mf64HeightVariance = other.mf64HeightVariance;
+  mHeightDist = other.mHeightDist;
+  mEstimator = other.mEstimator;
+  mCellCenter = other.mCellCenter;
+  mCellSize = other.mCellSize;
   mLabelVector = other.mLabelVector;
-  mf64CenterX = other.mf64CenterX;
-  mf64CenterY = other.mf64CenterY;
-  mf64CellSizeX = other.mf64CellSizeX;
-  mf64CellSizeY = other.mf64CellSizeY;
-  mu32PointsNbr = other.mu32PointsNbr;
   return *this;
 }
 
@@ -72,13 +69,46 @@ ifstream& operator >> (ifstream& stream,
 }
 
 void Cell::addPoint(double f64Height) {
-  mu32PointsNbr++;
-  mf64HeightMean += 1.0 / (double)mu32PointsNbr *
-    (f64Height - mf64HeightMean);
-  mf64HeightVariance += 1.0 / (double)mu32PointsNbr *
-    (pow(f64Height - mf64HeightMean, 2) - mf64HeightVariance);
+  mEstimator.addDataPoint(mHeightDist, f64Height);
 }
 
 void Cell::accept(const DEMVisitor& v) const {
   v.visit(this);
+}
+
+double Cell::compare(const Cell& other) const {
+  return mHeightDist.KLDivergence(other.getHeightDist()) +
+    other.getHeightDist().KLDivergence(mHeightDist);
+}
+
+const UniGaussian& Cell::getHeightDist() const {
+  return mHeightDist;
+}
+
+void Cell::setHeightDist(const UniGaussian& heightDist) {
+  mHeightDist = heightDist;
+}
+
+const MLEstimator& Cell::getEstimator() const {
+  return mEstimator;
+}
+
+void Cell::setEstimator(const MLEstimator& estimator) {
+  mEstimator = estimator;
+}
+
+const Point2D& Cell::getCellCenter() const {
+  return mCellCenter;
+}
+
+void Cell::setCellCenter(const Point2D& cellCenter) {
+  mCellCenter = cellCenter;
+}
+
+const Point2D& Cell::getCellSize() const {
+  return mCellSize;
+}
+
+void Cell::setCellSize(const Point2D& cellSize) {
+  mCellSize = cellSize;
 }

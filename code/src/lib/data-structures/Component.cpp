@@ -5,7 +5,11 @@
 
 using namespace std;
 
-Component::Component() {
+Component::Component() : mf64Int(0) {
+}
+
+Component::Component(uint32_t u32Idx) : mf64Int(0) {
+  mNodesIndexList.push_back(u32Idx);
 }
 
 Component::Component(const Component& other)

@@ -19,7 +19,7 @@ int main(int argc ,char** argv) {
   ifstream pointCloudFile(argv[1]);
   PointCloud pointCloud;
   pointCloudFile >> pointCloud;
-  DEM dem(pointCloud);
+  DEM dem(pointCloud, 0.4, 0.4, 20, 30);
   multiset<Edge, EdgeCompare> edgeSet;
   ConnectivityBuilder::build(dem, edgeSet);
   vector<uint32_t> labelsVector;

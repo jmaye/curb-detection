@@ -1,6 +1,8 @@
 #include "DEM.h"
 
 #include "Point3D.h"
+#include "UniGaussian.h"
+#include "MLEstimator.h"
 
 #include <ANN/ANN.h>
 
@@ -23,20 +25,14 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
-      Cell cell;
-      cell.mf64HeightMean = 0;
-      cell.mf64HeightVariance = 0;
-      cell.mu32PointsNbr = 0;
-      cell.mf64CenterX = f64CurX - mf64CellSizeX / 2.0;
-      cell.mf64CenterY = f64CurY - mf64CellSizeY / 2.0;
-      cell.mf64CellSizeX = mf64CellSizeX;
-      cell.mf64CellSizeY = mf64CellSizeY;
-      mCellsVector.push_back(cell);
-      f64CurY -= mf64CellSizeY;
+      mCellsVector.push_back(Cell(UniGaussian(0.0, 0.1), MLEstimator(),
+        Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
+        Point2D(mf64CellSizeX, mf64CellSizeY)));
       ANNpoint cellCenter = annAllocPt(2);
-      cellCenter[0] = cell.mf64CenterX;
-      cellCenter[1] = cell.mf64CenterY;
+      cellCenter[0] = f64CurX - mf64CellSizeX / 2.0;
+      cellCenter[1] = f64CurY - mf64CellSizeY / 2.0;
       cellCenters[i * mu32CellsNbrY + j] = cellCenter;
+      f64CurY -= mf64CellSizeY;
     }
     f64CurX -= mf64CellSizeX;
     f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;

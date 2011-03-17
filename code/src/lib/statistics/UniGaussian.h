@@ -1,9 +1,13 @@
 #ifndef UNIGAUSSIAN_H
 #define UNIGAUSSIAN_H
 
-#include <iosfwd>
+#include "UniDistribution.h"
+#include "OutOfBoundException.h"
 
-class UniGaussian {
+#include <iosfwd>
+#include <stdint.h>
+
+class UniGaussian : public UniDistribution {
   friend std::ostream& operator << (std::ostream& stream,
     const UniGaussian& obj);
   friend std::istream& operator >> (std::istream& stream,
@@ -12,9 +16,6 @@ class UniGaussian {
     const UniGaussian& obj);
   friend std::ifstream& operator >> (std::ifstream& stream,
     UniGaussian& obj);
-
-  UniGaussian(const UniGaussian& other);
-  UniGaussian& operator = (const UniGaussian& other);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
@@ -25,15 +26,19 @@ class UniGaussian {
   double mf64Variance;
 
 public:
-  UniGaussian(double f64Mean, double f64Variance);
+  UniGaussian(double f64Mean, double f64Variance) throw (OutOfBoundException);
+  UniGaussian(const UniGaussian& other);
+  UniGaussian& operator = (const UniGaussian& other);
   ~UniGaussian();
 
   double pdf(double f64X) const;
-  void addDataPoint(double f64Z);
+  double logpdf(double f64X) const;
+  double KLDivergence(const UniGaussian& other) const;
+
   double getMean() const;
   double getVariance() const;
   void setMean(double f64Mean);
-  void setVariance(double f64Variance);
+  void setVariance(double f64Variance) throw (OutOfBoundException);
 
 protected:
 

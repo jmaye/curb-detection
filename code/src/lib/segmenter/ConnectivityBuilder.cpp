@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include <math.h>
 #include <stdint.h>
 
 using namespace std;
@@ -15,38 +14,18 @@ void ConnectivityBuilder::build(const DEM& dem,
   uint32_t u32CellsNbrY = dem.getCellsNbrY();
   const std::vector<Cell>& cellsVector = dem.getCellsVector();
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    if (cellsVector[i].mu32PointsNbr != 0) {
+    if (cellsVector[i].getEstimator().getPointsNbr() != 0) {
       uint32_t u32IdxDown = (u32CurRow + 1) * u32CellsNbrY + u32CurColumn;
       if (u32CurRow < u32CellsNbrX &&
-        cellsVector[u32IdxDown].mu32PointsNbr != 0) {
-        Edge edge;
-        double f64Mu1 = cellsVector[i].mf64HeightMean;
-        double f64Mu2 = cellsVector[u32IdxDown].mf64HeightMean;
-        double f64Var1 = cellsVector[i].mf64HeightVariance;
-        double f64Var2 = cellsVector[u32IdxDown].mf64HeightVariance;
-        edge.mf64Weight = pow(f64Mu1 - f64Mu2, 2) / (2 * f64Var2) +
-          1 / 2 * (f64Var1 / f64Var2 - 1 - log(f64Var1 / f64Var2)) +
-          pow(f64Mu2 - f64Mu1, 2) / (2 * f64Var1) +
-          1 / 2 * (f64Var2 / f64Var1 - 1 - log(f64Var2 / f64Var1));
-        edge.mu32Node1Idx = i;
-        edge.mu32Node2Idx = u32IdxDown;
-        edgeSet.insert(edge);
+        cellsVector[u32IdxDown].getEstimator().getPointsNbr() != 0) {
+        edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxDown]),
+          i, u32IdxDown));
       }
       uint32_t u32IdxRight = u32CurRow * u32CellsNbrY + u32CurColumn + 1;
       if (u32CurColumn < u32CellsNbrY &&
-        cellsVector[u32IdxRight].mu32PointsNbr != 0) {
-        Edge edge;
-        double f64Mu1 = cellsVector[i].mf64HeightMean;
-        double f64Mu2 = cellsVector[u32IdxRight].mf64HeightMean;
-        double f64Var1 = cellsVector[i].mf64HeightVariance;
-        double f64Var2 = cellsVector[u32IdxRight].mf64HeightVariance;
-        edge.mf64Weight = pow(f64Mu1 - f64Mu2, 2) / (2 * f64Var2) +
-          1 / 2 * (f64Var1 / f64Var2 - 1 - log(f64Var1 / f64Var2)) +
-          pow(f64Mu2 - f64Mu1, 2) / (2 * f64Var1) +
-          1 / 2 * (f64Var2 / f64Var1 - 1 - log(f64Var2 / f64Var1));
-        edge.mu32Node1Idx = i;
-        edge.mu32Node2Idx = u32IdxRight;
-        edgeSet.insert(edge);
+        cellsVector[u32IdxRight].getEstimator().getPointsNbr() != 0) {
+        edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxRight]),
+          i, u32IdxRight));
       }
     }
     u32CurColumn++;

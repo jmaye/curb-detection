@@ -87,16 +87,19 @@ void DEMVisitor::visit(const DEM* dem) {
 }
 
 void DEMVisitor::visit(const Cell* cell) const {
-  if (cell->mu32PointsNbr != 0) {
+  if (cell->getEstimator().getPointsNbr() != 0) {
+    Point2D cellCenter = cell->getCellCenter();
+    Point2D cellSize = cell->getCellSize();
+    double f64CellHeightMean = cell->getHeightDist().getMean();
     glBegin(GL_POLYGON);
-    glVertex3f(cell->mf64CenterX + cell->mf64CellSizeX / 2.0,
-      cell->mf64CenterY + cell->mf64CellSizeY / 2.0, cell->mf64HeightMean);
-    glVertex3f(cell->mf64CenterX + cell->mf64CellSizeX / 2.0,
-      cell->mf64CenterY - cell->mf64CellSizeY / 2.0, cell->mf64HeightMean);
-    glVertex3f(cell->mf64CenterX - cell->mf64CellSizeX / 2.0,
-      cell->mf64CenterY - cell->mf64CellSizeY / 2.0, cell->mf64HeightMean);
-    glVertex3f(cell->mf64CenterX - cell->mf64CellSizeX / 2.0,
-      cell->mf64CenterY + cell->mf64CellSizeY / 2.0, cell->mf64HeightMean);
+    glVertex3f(cellCenter.mf64X + cellSize.mf64X / 2.0,
+      cellCenter.mf64Y + cellSize.mf64Y / 2.0, f64CellHeightMean);
+    glVertex3f(cellCenter.mf64X + cellSize.mf64X / 2.0,
+      cellCenter.mf64Y - cellSize.mf64Y / 2.0, f64CellHeightMean);
+    glVertex3f(cellCenter.mf64X - cellSize.mf64X / 2.0,
+      cellCenter.mf64Y - cellSize.mf64Y / 2.0, f64CellHeightMean);
+    glVertex3f(cellCenter.mf64X - cellSize.mf64X / 2.0,
+      cellCenter.mf64Y + cellSize.mf64Y / 2.0, f64CellHeightMean);
     glEnd();
   }
 }

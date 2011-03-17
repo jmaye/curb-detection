@@ -5,7 +5,10 @@
 
 using namespace std;
 
-Edge::Edge() {
+Edge::Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx)
+  : mf64Weight(f64Weight),
+    mu32Node1Idx(u32Node1Idx),
+    mu32Node2Idx(u32Node2Idx) {
 }
 
 Edge::Edge(const Edge& other) : mf64Weight(other.mf64Weight),

@@ -1,20 +1,20 @@
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef ESTIMATOR_H
+#define ESTIMATOR_H
 
 #include <iosfwd>
-#include <list>
 
-#include <stdint.h>
-
-class Component {
+class Estimator {
   friend std::ostream& operator << (std::ostream& stream,
-    const Component& obj);
+    const Estimator& obj);
   friend std::istream& operator >> (std::istream& stream,
-    Component& obj);
+    Estimator& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
-    const Component& obj);
+    const Estimator& obj);
   friend std::ifstream& operator >> (std::ifstream& stream,
-    Component& obj);
+    Estimator& obj);
+
+  Estimator(const Estimator& other);
+  Estimator& operator = (const Estimator& other);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
@@ -22,17 +22,11 @@ class Component {
   virtual void write(std::ofstream& stream) const;
 
 public:
-  Component();
-  Component(uint32_t u32Idx);
-  ~Component();
-  Component(const Component& other);
-  Component& operator = (const Component& other);
-
-  double mf64Int;
-  std::list<uint32_t> mNodesIndexList;
+  Estimator();
+  ~Estimator();
 
 protected:
 
 };
 
-#endif // COMPONENT_H
+#endif // ESTIMATOR_H

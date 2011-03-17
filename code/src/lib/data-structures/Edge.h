@@ -21,7 +21,7 @@ class Edge {
   virtual void write(std::ofstream& stream) const;
 
 public:
-  Edge();
+  Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx);
   Edge(const Edge& other);
   Edge& operator = (const Edge& other);
   ~Edge();

@@ -23,10 +23,7 @@ public:
       labelsVector.clear();
       std::map<uint32_t, Component> componentsMap;
       for (uint32_t i = 0; i < nodesVector.size(); i++) {
-        Component comp;
-        comp.mf64Int = 0;
-        comp.mNodesIndexList.push_back(i);
-        componentsMap[i] = comp;
+        componentsMap[i] = i;
         labelsVector.push_back(i);
       }
       std::multiset<Edge>::iterator it;

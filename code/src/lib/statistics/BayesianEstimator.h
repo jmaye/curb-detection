@@ -1,19 +1,22 @@
-#ifndef POINT3D_H
-#define POINT3D_H
+#ifndef BAYESIANESTIMATOR_H
+#define BAYESIANESTIMATOR_H
 
-#include "PointCloudVisitor.h"
+#include "Estimator.h"
 
 #include <iosfwd>
 
-class Point3D {
+class BayesianEstimator : public Estimator {
   friend std::ostream& operator << (std::ostream& stream,
-    const Point3D& obj);
+    const BayesianEstimator& obj);
   friend std::istream& operator >> (std::istream& stream,
-    Point3D& obj);
+    BayesianEstimator& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
-    const Point3D& obj);
+    const BayesianEstimator& obj);
   friend std::ifstream& operator >> (std::ifstream& stream,
-    Point3D& obj);
+    BayesianEstimator& obj);
+
+  BayesianEstimator(const BayesianEstimator& other);
+  BayesianEstimator& operator = (const BayesianEstimator& other);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
@@ -21,20 +24,11 @@ class Point3D {
   virtual void write(std::ofstream& stream) const;
 
 public:
-  Point3D();
-  Point3D(double f64X, double f64Y, double f64Z);
-  ~Point3D();
-  Point3D(const Point3D& other);
-  Point3D& operator = (const Point3D& other);
-
-  void accept(const PointCloudVisitor& v) const;
-
-  double mf64X;
-  double mf64Y;
-  double mf64Z;
+  BayesianEstimator();
+  ~BayesianEstimator();
 
 protected:
 
 };
 
-#endif // POINT3D_H
+#endif // BAYESIANESTIMATOR_H

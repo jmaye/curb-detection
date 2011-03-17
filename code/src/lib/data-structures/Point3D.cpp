@@ -5,7 +5,14 @@
 
 using namespace std;
 
-Point3D::Point3D() {
+Point3D::Point3D() : mf64X(0),
+                     mf64Y(0),
+                     mf64Z(0) {
+}
+
+Point3D::Point3D(double f64X, double f64Y, double f64Z) : mf64X(f64X),
+                                                          mf64Y(f64Y),
+                                                          mf64Z(f64Z) {
 }
 
 Point3D::Point3D(const Point3D& other) : mf64X(other.mf64X),
