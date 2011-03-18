@@ -62,10 +62,10 @@ void MLEstimator::addDataPoint(UniGaussian& dist, double f64DataPoint) {
   mu32PointsNbr++;
   double f64Mean = dist.getMean();
   double f64Variance = dist.getVariance();
-  f64Mean += 1.0 / (double)mu32PointsNbr *
-    (f64DataPoint - f64Mean);
-  f64Variance += 1.0 / (double)mu32PointsNbr *
-    (pow(f64DataPoint - f64Mean, 2) - f64Variance);
+  f64Mean += 1.0 / (double)mu32PointsNbr * (f64DataPoint - f64Mean);
+  if (mu32PointsNbr > 1)
+    f64Variance += 1.0 / (double)(mu32PointsNbr) *
+      (pow(f64DataPoint - f64Mean, 2) - f64Variance);
   dist.setMean(f64Mean);
   dist.setVariance(f64Variance);
 }

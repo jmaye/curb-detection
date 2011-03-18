@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <math.h>
+
 using namespace std;
 
 Component::Component() : mf64Int(0) {
@@ -60,4 +62,27 @@ ifstream& operator >> (ifstream& stream,
   Component& obj) {
   obj.read(stream);
   return stream;
+}
+
+double Component::compare(const Component& other, uint32_t u32K) const {
+  return fmin(mf64Int +
+    (double)u32K / (double)mNodesIndexList.size(),
+    other.mf64Int +
+    (double)u32K / (double)other.mNodesIndexList.size());
+}
+
+double Component::getInt() const {
+  return mf64Int;
+}
+
+const list<uint32_t>& Component::getNodesIndexList() const {
+  return mNodesIndexList;
+}
+
+void Component::setInt(double f64Int) {
+  mf64Int = f64Int;
+}
+
+void Component::setNodesIndexList(const list<uint32_t>& nodesIndexList) {
+  mNodesIndexList = nodesIndexList;
 }

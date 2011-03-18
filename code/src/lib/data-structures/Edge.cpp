@@ -61,3 +61,27 @@ ifstream& operator >> (ifstream& stream,
   obj.read(stream);
   return stream;
 }
+
+double Edge::getWeight() const {
+  return mf64Weight;
+}
+
+uint32_t Edge::getNode1Idx() const {
+  return mu32Node1Idx;
+}
+
+uint32_t Edge::getNode2Idx() const {
+  return mu32Node2Idx;
+}
+
+void Edge::setWeight(double f64Weight) {
+  mf64Weight = f64Weight;
+}
+
+void Edge::setNode1Idx(uint32_t u32Node1Idx) {
+  mu32Node1Idx = u32Node1Idx;
+}
+
+void Edge::setNode2Idx(uint32_t u32Node2Idx) {
+  mu32Node2Idx = u32Node2Idx;
+}

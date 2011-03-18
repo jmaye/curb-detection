@@ -2,8 +2,12 @@
 #define BAYESIANESTIMATOR_H
 
 #include "Estimator.h"
+#include "UniGaussian.h"
+#include "UniInverseGamma.h"
 
 #include <iosfwd>
+
+#include <stdint.h>
 
 class BayesianEstimator : public Estimator {
   friend std::ostream& operator << (std::ostream& stream,
@@ -15,17 +19,24 @@ class BayesianEstimator : public Estimator {
   friend std::ifstream& operator >> (std::ifstream& stream,
     BayesianEstimator& obj);
 
-  BayesianEstimator(const BayesianEstimator& other);
-  BayesianEstimator& operator = (const BayesianEstimator& other);
-
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
+  uint32_t mu32PointsNbr;
+
 public:
   BayesianEstimator();
+  BayesianEstimator(const BayesianEstimator& other);
+  BayesianEstimator& operator = (const BayesianEstimator& other);
   ~BayesianEstimator();
+
+  void addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
+    UniInverseGamma& variancePrior, double f64DataPoint);
+
+  uint32_t getPointsNbr() const;
+  void setPointsNbr(uint32_t u32PointsNbr);
 
 protected:
 

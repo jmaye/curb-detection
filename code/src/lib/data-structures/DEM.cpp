@@ -25,7 +25,7 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
-      mCellsVector.push_back(Cell(UniGaussian(0.0, 0.1), MLEstimator(),
+      mCellsVector.push_back(Cell(UniGaussian(0.0, 0.0001), MLEstimator(),
         Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
         Point2D(mf64CellSizeX, mf64CellSizeY)));
       ANNpoint cellCenter = annAllocPt(2);
@@ -120,10 +120,10 @@ void DEM::accept(DEMVisitor& v) const {
   v.visit(this);
 }
 
-void DEM::setLabelsVector(const vector<uint32_t> labelsVector) {
+void DEM::setLabelsVector(const vector<uint32_t>& labelsVector) {
   mLabelsVector = labelsVector;
 }
 
-const vector<uint32_t> DEM::getLabelsVector() const {
+const vector<uint32_t>& DEM::getLabelsVector() const {
   return mLabelsVector;
 }

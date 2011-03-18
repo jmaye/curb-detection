@@ -32,6 +32,7 @@ public:
   ~MLEstimator();
 
   void addDataPoint(UniGaussian& dist, double f64DataPoint);
+
   uint32_t getPointsNbr() const;
   void setPointsNbr(uint32_t u32PointsNbr);
 

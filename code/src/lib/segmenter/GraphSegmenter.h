@@ -28,15 +28,11 @@ public:
       }
       std::multiset<Edge>::iterator it;
       for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
-        uint32_t u32C1Idx = labelsVector[(*it).mu32Node1Idx];
-        uint32_t u32C2Idx = labelsVector[(*it).mu32Node2Idx];
+        uint32_t u32C1Idx = labelsVector[(*it).getNode1Idx()];
+        uint32_t u32C2Idx = labelsVector[(*it).getNode2Idx()];
         if (u32C1Idx != u32C2Idx) {
-          if ((*it).mf64Weight <= fmin(componentsMap[u32C1Idx].mf64Int +
-            (double)u32K /
-            (double)componentsMap[u32C1Idx].mNodesIndexList.size(),
-            componentsMap[u32C2Idx].mf64Int +
-            (double)u32K /
-            (double)componentsMap[u32C2Idx].mNodesIndexList.size())) {
+          if ((*it).getWeight() <=
+            componentsMap[u32C1Idx].compare(componentsMap[u32C2Idx], u32K)) {
               std::list<uint32_t>::iterator nodesIt;
               for (nodesIt = componentsMap[u32C2Idx].mNodesIndexList.begin();
                 nodesIt != componentsMap[u32C2Idx].mNodesIndexList.end();
@@ -45,9 +41,9 @@ public:
               }
               componentsMap[u32C1Idx].mNodesIndexList.
                 merge(componentsMap[u32C2Idx].mNodesIndexList);
-              double f64Int = fmax(componentsMap[u32C1Idx].mf64Int,
-                componentsMap[u32C2Idx].mf64Int);
-              componentsMap[u32C1Idx].mf64Int = fmax(f64Int, (*it).mf64Weight);
+              double f64Int = fmax(componentsMap[u32C1Idx].getInt(),
+                componentsMap[u32C2Idx].getInt());
+              componentsMap[u32C1Idx].setInt(fmax(f64Int, (*it).getWeight()));
               componentsMap.erase(u32C2Idx);
             }
           }

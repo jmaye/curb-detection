@@ -45,12 +45,13 @@ public:
     double f64HeightMax = 10);
   ~DEM();
 
+  void accept(DEMVisitor& v) const;
+
   const std::vector<Cell>& getCellsVector() const;
   uint32_t getCellsNbrX() const;
   uint32_t getCellsNbrY() const;
-  void accept(DEMVisitor& v) const;
-  void setLabelsVector(const std::vector<uint32_t> labelsVector);
-  const std::vector<uint32_t> getLabelsVector() const;
+  void setLabelsVector(const std::vector<uint32_t>& labelsVector);
+  const std::vector<uint32_t>& getLabelsVector() const;
 
 protected:
 

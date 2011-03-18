@@ -20,15 +20,22 @@ class Edge {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
+  double mf64Weight;
+  uint32_t mu32Node1Idx;
+  uint32_t mu32Node2Idx;
+
 public:
   Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx);
   Edge(const Edge& other);
   Edge& operator = (const Edge& other);
   ~Edge();
 
-  double mf64Weight;
-  uint32_t mu32Node1Idx;
-  uint32_t mu32Node2Idx;
+  double getWeight() const;
+  uint32_t getNode1Idx() const;
+  uint32_t getNode2Idx() const;
+  void setWeight(double f64Weight);
+  void setNode1Idx(uint32_t u32Node1Idx);
+  void setNode2Idx(uint32_t u32Node2Idx);
 
 protected:
 
@@ -37,7 +44,7 @@ protected:
 class EdgeCompare {
 public:
   bool operator() (const Edge& lhs, const Edge& rhs) const {
-    return lhs.mf64Weight < rhs.mf64Weight;
+    return lhs.getWeight() < rhs.getWeight();
   }
 };
 

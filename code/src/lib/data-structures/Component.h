@@ -21,6 +21,8 @@ class Component {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
+  double mf64Int;
+
 public:
   Component();
   Component(uint32_t u32Idx);
@@ -28,8 +30,14 @@ public:
   Component(const Component& other);
   Component& operator = (const Component& other);
 
-  double mf64Int;
   std::list<uint32_t> mNodesIndexList;
+
+  double compare(const Component& other, uint32_t u32K) const;
+
+  double getInt() const;
+  const std::list<uint32_t>& getNodesIndexList() const;
+  void setInt(double f64Int);
+  void setNodesIndexList(const std::list<uint32_t>& nodesIndexList);
 
 protected:
 

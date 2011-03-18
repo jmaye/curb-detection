@@ -44,12 +44,12 @@ public:
   double compare(const Cell& other) const;
 
   const UniGaussian& getHeightDist() const;
-  void setHeightDist(const UniGaussian& heightDist);
   const MLEstimator& getEstimator() const;
-  void setEstimator(const MLEstimator& estimator);
   const Point2D& getCellCenter() const;
-  void setCellCenter(const Point2D& cellCenter);
   const Point2D& getCellSize() const;
+  void setHeightDist(const UniGaussian& heightDist);
+  void setEstimator(const MLEstimator& estimator);
+  void setCellCenter(const Point2D& cellCenter);
   void setCellSize(const Point2D& cellSize);
 
 protected:
