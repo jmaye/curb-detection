@@ -24,11 +24,11 @@ int main(int argc ,char** argv) {
   ConnectivityBuilder::build(dem, edgeSet);
   vector<uint32_t> labelsVector;
   GraphSegmenter::segment(dem.getCellsVector(), edgeSet, labelsVector, 400);
-  for (uint32_t i = 0; i < labelsVector.size(); i++) {
-    if (i % 20 == 0)
-      cout << endl;
-    cout << labelsVector[i] << " ";
-  }
+//  for (uint32_t i = 0; i < labelsVector.size(); i++) {
+//    if (i % 20 == 0)
+//      cout << endl;
+//    cout << labelsVector[i] << " ";
+//  }
   dem.setLabelsVector(labelsVector);
 
   Window window(argc, argv);

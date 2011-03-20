@@ -87,7 +87,7 @@ void DEMVisitor::visit(const DEM* dem) {
 }
 
 void DEMVisitor::visit(const Cell* cell) const {
-  if (cell->getEstimator().getPointsNbr() != 0) {
+  if (cell->getMLEstimator().getPointsNbr() != 0) {
     Point2D cellCenter = cell->getCellCenter();
     Point2D cellSize = cell->getCellSize();
     double f64CellHeightMean = cell->getHeightDist().getMean();

@@ -4,6 +4,8 @@
 #include "DEMVisitor.h"
 #include "UniGaussian.h"
 #include "MLEstimator.h"
+#include "BayesianEstimator.h"
+#include "UniInverseGamma.h"
 #include "Point2D.h"
 
 #include <iosfwd>
@@ -25,7 +27,10 @@ class Cell {
   virtual void write(std::ofstream& stream) const;
 
   UniGaussian mHeightDist;
-  MLEstimator mEstimator;
+  MLEstimator mMLEstimator;
+  //UniGaussian mMeanPrior;
+  //UniInverseGamma mVariancePrior;
+  BayesianEstimator mBayesianEstimator;
   Point2D mCellCenter;
   Point2D mCellSize;
 
@@ -44,11 +49,11 @@ public:
   double compare(const Cell& other) const;
 
   const UniGaussian& getHeightDist() const;
-  const MLEstimator& getEstimator() const;
+  const MLEstimator& getMLEstimator() const;
   const Point2D& getCellCenter() const;
   const Point2D& getCellSize() const;
   void setHeightDist(const UniGaussian& heightDist);
-  void setEstimator(const MLEstimator& estimator);
+  void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);
   void setCellSize(const Point2D& cellSize);
 

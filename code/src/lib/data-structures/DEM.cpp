@@ -3,6 +3,7 @@
 #include "Point3D.h"
 #include "UniGaussian.h"
 #include "MLEstimator.h"
+#include "Sensor.h"
 
 #include <ANN/ANN.h>
 
@@ -25,7 +26,8 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
-      mCellsVector.push_back(Cell(UniGaussian(0.0, 0.0001), MLEstimator(),
+      mCellsVector.push_back(Cell(UniGaussian(0.0,
+        Sensor::getNoise(f64CurX, f64CurY, 0)), MLEstimator(),
         Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
         Point2D(mf64CellSizeX, mf64CellSizeY)));
       ANNpoint cellCenter = annAllocPt(2);

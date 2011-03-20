@@ -8,13 +8,13 @@ using namespace std;
 Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
   const Point2D& cellCenter, const Point2D& cellSize)
   : mHeightDist(heightDist),
-    mEstimator(estimator),
+    mMLEstimator(estimator),
     mCellCenter(cellCenter),
     mCellSize(cellSize) {
 }
 
 Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
-                                mEstimator(other.mEstimator),
+                                mMLEstimator(other.mMLEstimator),
                                 mCellCenter(other.mCellCenter),
                                 mCellSize(other.mCellSize),
                                 mLabelVector(other.mLabelVector) {
@@ -22,7 +22,7 @@ Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
 
 Cell& Cell::operator = (const Cell& other) {
   mHeightDist = other.mHeightDist;
-  mEstimator = other.mEstimator;
+  mMLEstimator = other.mMLEstimator;
   mCellCenter = other.mCellCenter;
   mCellSize = other.mCellSize;
   mLabelVector = other.mLabelVector;
@@ -69,7 +69,7 @@ ifstream& operator >> (ifstream& stream,
 }
 
 void Cell::addPoint(double f64Height) {
-  mEstimator.addDataPoint(mHeightDist, f64Height);
+  mMLEstimator.addDataPoint(mHeightDist, f64Height);
 }
 
 void Cell::accept(const DEMVisitor& v) const {
@@ -89,12 +89,12 @@ void Cell::setHeightDist(const UniGaussian& heightDist) {
   mHeightDist = heightDist;
 }
 
-const MLEstimator& Cell::getEstimator() const {
-  return mEstimator;
+const MLEstimator& Cell::getMLEstimator() const {
+  return mMLEstimator;
 }
 
-void Cell::setEstimator(const MLEstimator& estimator) {
-  mEstimator = estimator;
+void Cell::setMLEstimator(const MLEstimator& estimator) {
+  mMLEstimator = estimator;
 }
 
 const Point2D& Cell::getCellCenter() const {

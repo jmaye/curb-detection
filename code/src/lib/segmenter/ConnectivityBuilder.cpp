@@ -14,16 +14,16 @@ void ConnectivityBuilder::build(const DEM& dem,
   uint32_t u32CellsNbrY = dem.getCellsNbrY();
   const std::vector<Cell>& cellsVector = dem.getCellsVector();
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    if (cellsVector[i].getEstimator().getPointsNbr() != 0) {
+    if (cellsVector[i].getMLEstimator().getPointsNbr() != 0) {
       uint32_t u32IdxDown = (u32CurRow + 1) * u32CellsNbrY + u32CurColumn;
       if (u32CurRow < u32CellsNbrX &&
-        cellsVector[u32IdxDown].getEstimator().getPointsNbr() != 0) {
+        cellsVector[u32IdxDown].getMLEstimator().getPointsNbr() != 0) {
         edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxDown]),
           i, u32IdxDown));
       }
       uint32_t u32IdxRight = u32CurRow * u32CellsNbrY + u32CurColumn + 1;
       if (u32CurColumn < u32CellsNbrY &&
-        cellsVector[u32IdxRight].getEstimator().getPointsNbr() != 0) {
+        cellsVector[u32IdxRight].getMLEstimator().getPointsNbr() != 0) {
         edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxRight]),
           i, u32IdxRight));
       }

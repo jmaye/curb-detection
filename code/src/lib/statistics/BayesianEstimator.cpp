@@ -76,7 +76,7 @@ void BayesianEstimator::addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
   variancePrior.setAlpha(f64AlphaNew);
   variancePrior.setBeta(f64BetaNew);
   dist.setMean(f64LambdaNew);
-  dist.setVariance(f64BetaNew * (f64NuNew + 1) / (f64AlphaNew * f64NuNew));
+  dist.setVariance(f64BetaNew / (f64AlphaNew - 1));
 }
 
 uint32_t BayesianEstimator::getPointsNbr() const {
