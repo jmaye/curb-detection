@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <vector>
+#include <map>
 
 #include <stdint.h>
 
@@ -36,7 +37,9 @@ class DEM {
   double mf64HeightMin;
   double mf64HeightMax;
   std::vector<Cell> mCellsVector;
-  std::vector<uint32_t> mLabelsVector;
+  std::vector<uint32_t> mInitialLabelsVector;
+  uint32_t mu32ValidCellsNbr;
+  uint32_t mu32LabelsNbr;
 
 public:
   DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
@@ -50,8 +53,13 @@ public:
   const std::vector<Cell>& getCellsVector() const;
   uint32_t getCellsNbrX() const;
   uint32_t getCellsNbrY() const;
-  void setLabelsVector(const std::vector<uint32_t>& labelsVector);
-  const std::vector<uint32_t>& getLabelsVector() const;
+  uint32_t getValidCellsNbr() const;
+  uint32_t getLabelsNbr() const;
+  void setInitialLabelsVector(const std::vector<uint32_t>& labelsVector,
+    const std::map<uint32_t, uint32_t>& supportsMap);
+  const std::vector<uint32_t>& getInitialLabelsVector() const;
+  void setValidCellsNbr(uint32_t u32ValidCellsNbr);
+  void setLabelsNbr(uint32_t u32LabelsNbr);
 
 protected:
 

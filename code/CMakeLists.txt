@@ -14,4 +14,4 @@ remake_project(
   INSTALL /usr
 )
 
-remake_pack_deb(libann0)
+remake_pack_deb(libann0 libeigen2-dev libglut3-dev)

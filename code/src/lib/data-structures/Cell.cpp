@@ -10,14 +10,16 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
   : mHeightDist(heightDist),
     mMLEstimator(estimator),
     mCellCenter(cellCenter),
-    mCellSize(cellSize) {
+    mCellSize(cellSize),
+    mbInvalidFlag(false) {
 }
 
 Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
                                 mMLEstimator(other.mMLEstimator),
                                 mCellCenter(other.mCellCenter),
                                 mCellSize(other.mCellSize),
-                                mLabelVector(other.mLabelVector) {
+                                mLabelsDistVector(other.mLabelsDistVector),
+                                mbInvalidFlag(other.mbInvalidFlag) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
@@ -25,7 +27,8 @@ Cell& Cell::operator = (const Cell& other) {
   mMLEstimator = other.mMLEstimator;
   mCellCenter = other.mCellCenter;
   mCellSize = other.mCellSize;
-  mLabelVector = other.mLabelVector;
+  mLabelsDistVector = other.mLabelsDistVector;
+  mbInvalidFlag = other.mbInvalidFlag;
   return *this;
 }
 
@@ -111,4 +114,31 @@ const Point2D& Cell::getCellSize() const {
 
 void Cell::setCellSize(const Point2D& cellSize) {
   mCellSize = cellSize;
+}
+
+const vector<double>& Cell::getLabelsDistVector() const {
+  return mLabelsDistVector;
+}
+
+void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector) {
+  mLabelsDistVector = labelsDistVector;
+}
+
+uint32_t Cell::getMAPLabelsDist() const {
+  double f64LargestValue = -1.0;
+  uint32_t u32LargestIdx = 0;
+  for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)
+    if (mLabelsDistVector[i] > f64LargestValue) {
+      f64LargestValue = mLabelsDistVector[i];
+      u32LargestIdx = i;
+    }
+  return u32LargestIdx;
+}
+
+bool Cell::getInvalidFlag() const {
+  return mbInvalidFlag;
+}
+
+void Cell::setInvalidFlag(bool bInvalidFlag) {
+  mbInvalidFlag = bInvalidFlag;
 }

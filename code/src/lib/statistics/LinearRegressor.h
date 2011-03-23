@@ -1,6 +1,8 @@
 #ifndef LINEARREGRESSOR_H
 #define LINEARREGRESSOR_H
 
+#include "DEM.h"
+
 #include <iosfwd>
 #include <vector>
 
@@ -8,9 +10,9 @@ class LinearRegressor {
   LinearRegressor();
 
 public:
-  static void estimate(const std::vector<std::vector<double> >& inputsMatrix,
-    const std::vector<double>& targetsVector,
-    std::vector<double>& weightsVector, double& f64Variance);
+  static void estimate(const DEM& dem,
+    std::vector<std::vector<double> >& weightsMatrix,
+    std::vector<double>& varianceVector);
 
 protected:
 

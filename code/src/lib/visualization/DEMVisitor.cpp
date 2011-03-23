@@ -62,24 +62,21 @@ void DEMVisitor::visit(const DEM* dem) {
   glNewList(glListIdx, GL_COMPILE);
   glPointSize(2.0);
   const vector<Cell>& cellsVector = dem->getCellsVector();
-  const vector<uint32_t>& labelsVector = dem->getLabelsVector();
   map<uint32_t, Color>::iterator it;
   srand(time(NULL));
   map<uint32_t, Color> colorMap;
-  for (uint32_t i = 0; i < labelsVector.size(); i++) {
-    it = colorMap.find(labelsVector[i]);
-    if (it == colorMap.end()) {
-      Color color;
-      color.mRedColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
-      color.mGreenColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
-      color.mBlueColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
-      colorMap[labelsVector[i]] = color;
-    }
+  for (uint32_t i = 0; i < dem->getLabelsNbr(); i++) {
+    Color color;
+    color.mRedColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
+    color.mGreenColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
+    color.mBlueColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
+    colorMap[i] = color;
   }
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    glColor3f(colorMap[labelsVector[i]].mRedColorByte,
-      colorMap[labelsVector[i]].mGreenColorByte,
-      colorMap[labelsVector[i]].mBlueColorByte);
+    uint32_t u32LabelIdx = cellsVector[i].getMAPLabelsDist();
+    glColor3f(colorMap[u32LabelIdx].mRedColorByte,
+      colorMap[u32LabelIdx].mGreenColorByte,
+      colorMap[u32LabelIdx].mBlueColorByte);
     cellsVector[i].accept(*this);
   }
   glEndList();
@@ -87,7 +84,7 @@ void DEMVisitor::visit(const DEM* dem) {
 }
 
 void DEMVisitor::visit(const Cell* cell) const {
-  if (cell->getMLEstimator().getPointsNbr() != 0) {
+  if (cell->getInvalidFlag() == false) {
     Point2D cellCenter = cell->getCellCenter();
     Point2D cellSize = cell->getCellSize();
     double f64CellHeightMean = cell->getHeightDist().getMean();

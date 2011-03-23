@@ -15,6 +15,7 @@ BayesianEstimator::BayesianEstimator(const BayesianEstimator& other) {
 
 BayesianEstimator&
   BayesianEstimator::operator = (const BayesianEstimator& other) {
+  return *this;
 }
 
 BayesianEstimator::~BayesianEstimator() {

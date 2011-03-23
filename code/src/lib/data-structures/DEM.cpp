@@ -20,7 +20,10 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
                                               mu32CellsNbrY(u32CellsNbrY),
                                               mf64MinX(f64MinX),
                                               mf64HeightMin(f64HeightMin),
-                                              mf64HeightMax(f64HeightMax) {
+                                              mf64HeightMax(f64HeightMax),
+                                              mu32ValidCellsNbr(u32CellsNbrX *
+                                                u32CellsNbrY),
+                                              mu32LabelsNbr(0) {
   ANNpointArray cellCenters = annAllocPts(mu32CellsNbrX * mu32CellsNbrY, 2);
   double f64CurX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
@@ -122,10 +125,51 @@ void DEM::accept(DEMVisitor& v) const {
   v.visit(this);
 }
 
-void DEM::setLabelsVector(const vector<uint32_t>& labelsVector) {
-  mLabelsVector = labelsVector;
+void DEM::setInitialLabelsVector(const vector<uint32_t>& labelsVector,
+  const map<uint32_t, uint32_t>& supportsMap) {
+  mInitialLabelsVector = labelsVector;
+  map<uint32_t, uint32_t>::const_iterator it;
+  map<uint32_t, uint32_t> labelsMap;
+  uint32_t i = 0;
+  for (it = supportsMap.begin(); it != supportsMap.end(); it++) {
+    if ((*it).second >= 3) {
+      labelsMap[(*it).first] = i++;
+    }
+  }
+  mu32LabelsNbr = labelsMap.size();
+  mu32ValidCellsNbr = mu32CellsNbrX * mu32CellsNbrY;
+  for (uint32_t i = 0; i < mCellsVector.size(); i++) {
+    map<uint32_t, uint32_t>::const_iterator it =
+      labelsMap.find(labelsVector[i]);
+    if (mCellsVector[i].getMLEstimator().getPointsNbr() == 0 ||
+      it == labelsMap.end()) {
+      mCellsVector[i].setInvalidFlag(true);
+      mu32ValidCellsNbr--;
+    }
+    else {
+      vector<double> labelsDistVector(labelsMap.size(), 0);
+      labelsDistVector[labelsMap[labelsVector[i]]] = 1.0;
+      mCellsVector[i].setLabelsDistVector(labelsDistVector);
+    }
+  }
 }
 
-const vector<uint32_t>& DEM::getLabelsVector() const {
-  return mLabelsVector;
+const vector<uint32_t>& DEM::getInitialLabelsVector() const {
+  return mInitialLabelsVector;
+}
+
+uint32_t DEM::getValidCellsNbr() const {
+  return mu32ValidCellsNbr;
+}
+
+void DEM::setValidCellsNbr(uint32_t u32ValidCellsNbr) {
+  mu32ValidCellsNbr = u32ValidCellsNbr;
+}
+
+uint32_t DEM::getLabelsNbr() const {
+  return mu32LabelsNbr;
+}
+
+void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
+  mu32LabelsNbr = u32LabelsNbr;
 }

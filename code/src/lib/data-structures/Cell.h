@@ -4,12 +4,12 @@
 #include "DEMVisitor.h"
 #include "UniGaussian.h"
 #include "MLEstimator.h"
-#include "BayesianEstimator.h"
-#include "UniInverseGamma.h"
 #include "Point2D.h"
 
 #include <iosfwd>
 #include <vector>
+
+#include <stdint.h>
 
 class Cell {
   friend std::ostream& operator << (std::ostream& stream,
@@ -28,14 +28,10 @@ class Cell {
 
   UniGaussian mHeightDist;
   MLEstimator mMLEstimator;
-  //UniGaussian mMeanPrior;
-  //UniInverseGamma mVariancePrior;
-  BayesianEstimator mBayesianEstimator;
   Point2D mCellCenter;
   Point2D mCellSize;
-
-public:
-  std::vector<double> mLabelVector;
+  std::vector<double> mLabelsDistVector;
+  bool mbInvalidFlag;
 
 public:
   Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
@@ -52,10 +48,15 @@ public:
   const MLEstimator& getMLEstimator() const;
   const Point2D& getCellCenter() const;
   const Point2D& getCellSize() const;
+  const std::vector<double>& getLabelsDistVector() const;
+  uint32_t getMAPLabelsDist() const;
+  bool getInvalidFlag() const;
   void setHeightDist(const UniGaussian& heightDist);
   void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);
   void setCellSize(const Point2D& cellSize);
+  void setLabelsDistVector(const std::vector<double>& labelsDistVector);
+  void setInvalidFlag(bool bInvalidFlag);
 
 protected:
 
