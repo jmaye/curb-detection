@@ -1,7 +1,6 @@
 #ifndef BAYESIANESTIMATOR_H
 #define BAYESIANESTIMATOR_H
 
-#include "Estimator.h"
 #include "UniGaussian.h"
 #include "UniInverseGamma.h"
 
@@ -9,7 +8,7 @@
 
 #include <stdint.h>
 
-class BayesianEstimator : public Estimator {
+class BayesianEstimator {
   friend std::ostream& operator << (std::ostream& stream,
     const BayesianEstimator& obj);
   friend std::istream& operator >> (std::istream& stream,

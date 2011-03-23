@@ -1,14 +1,13 @@
 #ifndef MLESTIMATOR_H
 #define MLESTIMATOR_H
 
-#include "Estimator.h"
 #include "UniGaussian.h"
 
 #include <iosfwd>
 
 #include <stdint.h>
 
-class MLEstimator : public Estimator {
+class MLEstimator {
   friend std::ostream& operator << (std::ostream& stream,
     const MLEstimator& obj);
   friend std::istream& operator >> (std::istream& stream,
