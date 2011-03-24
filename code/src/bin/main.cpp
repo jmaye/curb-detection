@@ -4,6 +4,7 @@
 #include "ConnectivityBuilder.h"
 #include "GraphSegmenter.h"
 #include "LinearRegressor.h"
+#include "DEMCRF.h"
 
 #include <iostream>
 #include <fstream>
@@ -52,6 +53,15 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+  f64Time = getMsCount();
+  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector);
+  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
+  Vector nodesWeightsVector, edgesWeightsVector;
+  nodesWeightsVector.PushBack(1);
+  edgesWeightsVector.PushBack(1);
+  f64Time = getMsCount();
+  crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
+  cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
