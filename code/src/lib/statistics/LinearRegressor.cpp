@@ -33,11 +33,17 @@ void LinearRegressor::estimate(const DEM& dem,
       const vector<double>& labelsDistVector =
         cellsVector[j].getLabelsDistVector();
       for (uint32_t k = 0; k < labelsDistVector.size(); k++) {
-        weightsMatrix(k, i) = labelsDistVector[k];
+        weightsMatrix(k, i) = labelsDistVector[k] /
+          cellsVector[j].getHeightDist().getVariance();
       }
       i++;
     }
   }
+  double f64Normalizer = 0;
+  for (uint32_t i = 0; i < (uint32_t)weightsMatrix.rows(); i++)
+    f64Normalizer += weightsMatrix.row(i).sum() / dem.getValidCellsNbr();
+  for (uint32_t i = 0; i < (uint32_t)weightsMatrix.rows(); i++)
+    weightsMatrix.row(i) /= f64Normalizer;
   coeffsMatrix.clear();
   coeffsMatrix.resize(u32LabelsNbr);
   variancesVector.clear();

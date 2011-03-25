@@ -34,6 +34,9 @@ class DEMCRF : public CRF {
   Vector FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
     int32_t i32Label1, int32_t i32Label2) const;
 
+  std::vector<vector<double> > mCoeffsMatrix;
+  std::vector<double> mVariancesVector;
+
 public:
   DEMCRF(const DEM& dem, const std::multiset<Edge, EdgeCompare>& edgeSet,
     const vector<vector<double> >& coeffsMatrix,

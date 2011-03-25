@@ -1,37 +1,45 @@
 #include "DEMCRF.h"
 
 #include "Cell.h"
+#include "UniGaussian.h"
+
+#include <Eigen/Core>
 
 #include <iostream>
 #include <fstream>
 #include <map>
 
+using namespace Eigen;
 using namespace std;
 
 DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   const vector<vector<double> >& coeffsMatrix,
   const vector<double>& variancesVector) {
   vector<Cell> cellsVector = dem.getCellsVector();
-  SetNbFeatures(2);
-  SetNbParameters(2, 2);
+  SetNbFeatures(4);
+  SetNbParameters(4, 4);
   map<uint32_t,uint32_t> idMap;
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
     if (cellsVector[i].getInvalidFlag() == false) {
       Vector featureVector;
       featureVector.PushBack(cellsVector[i].getHeightDist().getMean());
       featureVector.PushBack(cellsVector[i].getHeightDist().getVariance());
-      uint32_t u32NodeID =
+      featureVector.PushBack(cellsVector[i].getCellCenter().mf64X);
+      featureVector.PushBack(cellsVector[i].getCellCenter().mf64Y);
+      uint32_t u32NodeId =
         AddNode(featureVector, cellsVector[i].getMAPLabelsDist());
-      SetLabelDistribution(u32NodeID, Vector(&(cellsVector[i].
+      SetLabelDistribution(u32NodeId, Vector(&(cellsVector[i].
         getLabelsDistVector()[0]), cellsVector[i].
         getLabelsDistVector().size()));
-      idMap[i] = u32NodeID;
+      idMap[i] = u32NodeId;
     }
   }
-  std::multiset<Edge>::iterator it;
+  multiset<Edge>::iterator it;
   for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
     AddEdge(idMap[(*it).getNode1Idx()], idMap[(*it).getNode2Idx()]);
   }
+  mVariancesVector = variancesVector;
+  mCoeffsMatrix = coeffsMatrix;
 }
 
 DEMCRF::~DEMCRF() {
@@ -74,10 +82,24 @@ ifstream& operator >> (ifstream& stream,
 }
 
 Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
-  return Vector(1);
+  Vector featureVector = GetNodeFeatures(u32NodeId);
+  UniGaussian pointGaussian(featureVector[0], featureVector[1]);
+  const vector<double>& coeffVector = mCoeffsMatrix[i32Label];
+  Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
+  VectorXd dataVector(coeffVector.size());
+  dataVector(0) = 1;
+  dataVector(1) = featureVector[2];
+  dataVector(2) = featureVector[3];
+  UniGaussian planeGaussian(coeffVectorMapped.dot(dataVector),
+    mVariancesVector[i32Label]);
+  Vector value;
+  value.PushBack(pointGaussian.KLDivergence(planeGaussian));
+  return value;
 }
 
 Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   int32_t i32Label1, int32_t i32Label2) const {
+  Vector featureVector1 = GetNodeFeatures(u32NodeId1);
+  Vector featureVector2 = GetNodeFeatures(u32NodeId2);
   return Vector(1);
 }

@@ -66,6 +66,7 @@ int main(int argc ,char** argv) {
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);
+  window.addConnectivity(edgeSet, dem);
   window.setTranslation(0, -10, -60);
   window.setRotation(0, -90, 90);
   window.setVisibility(true);

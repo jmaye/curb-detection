@@ -4,6 +4,8 @@
 #include <GL/glu.h>
 #include <GL/freeglut.h>
 
+#include <iostream>
+
 using namespace std;
 
 Window::Window(int argc, char **argv, int i32Width, int i32Height) :
@@ -87,8 +89,17 @@ void Window::drawScene() const {
   drawBackground(1.0f, 1.0f, 1.0f);
   if (mbShowAxes)
     drawAxes(3.0);
-  mPointCloudVisitor.draw();
+  //mPointCloudVisitor.draw();
   mDEMVisitor.draw();
+//  glBegin(GL_LINES);
+//  glPointSize(2.0);
+//  glColor3f(1, 0, 0);
+//  multiset<Edge, EdgeCompare>::const_iterator it;
+//  for (it = mEdgeSet.begin(); it != mEdgeSet.end(); it++) {
+//    glVertex3f(mCellsVector[(*it).getNode1Idx()].getCellCenter().mf64X, mCellsVector[(*it).getNode1Idx()].getCellCenter().mf64Y, 0);
+//    glVertex3f(mCellsVector[(*it).getNode2Idx()].getCellCenter().mf64X, mCellsVector[(*it).getNode2Idx()].getCellCenter().mf64Y, 0);
+//  }
+//  glEnd();
   glutSwapBuffers();
   glFlush();
 }
@@ -181,6 +192,12 @@ void Window::addPointCloud(const PointCloud& pointCloud) {
 
 void Window::addDEM(const DEM& dem) {
   dem.accept(mDEMVisitor);
+}
+
+void Window::addConnectivity(const multiset<Edge, EdgeCompare>& edgeSet,
+ const DEM& dem) {
+  mEdgeSet = edgeSet;
+  mCellsVector = dem.getCellsVector();
 }
 
 void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {
