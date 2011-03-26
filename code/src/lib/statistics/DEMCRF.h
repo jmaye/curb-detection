@@ -8,6 +8,7 @@
 
 #include <iosfwd>
 #include <set>
+#include <map>
 #include <vector>
 
 #include <stdint.h>
@@ -34,6 +35,7 @@ class DEMCRF : public CRF {
   Vector FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
     int32_t i32Label1, int32_t i32Label2) const;
 
+  std::map<uint32_t, uint32_t> mIdMap;
   std::vector<vector<double> > mCoeffsMatrix;
   std::vector<double> mVariancesVector;
 
@@ -42,6 +44,13 @@ public:
     const vector<vector<double> >& coeffsMatrix,
     const vector<double>& variancesVector);
   ~DEMCRF();
+
+  const std::map<uint32_t, uint32_t>& getIdMap() const;
+  const std::vector<vector<double> >& getCoeffsMatrix() const;
+  const std::vector<double>& getVariancesVector() const;
+  void setIdMap(const std::map<uint32_t, uint32_t>& idMap);
+  void setCoeffsMatrix(const std::vector<vector<double> >& coeffsMatrix);
+  void setVariancesVector(const std::vector<double>& variancesVector);
 
 protected:
 

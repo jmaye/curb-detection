@@ -4,6 +4,7 @@
 #include "UniGaussian.h"
 #include "MLEstimator.h"
 #include "Sensor.h"
+#include "DEMCRF.h"
 
 #include <ANN/ANN.h>
 
@@ -172,4 +173,19 @@ uint32_t DEM::getLabelsNbr() const {
 
 void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
   mu32LabelsNbr = u32LabelsNbr;
+}
+
+void DEM::setLabelsDist(const DEMCRF& crf) {
+  const map<uint32_t, uint32_t>& idMap = crf.getIdMap();
+  map<uint32_t, uint32_t>::const_iterator it;
+  for (uint32_t i = 0; i < mCellsVector.size(); i++) {
+    if (mCellsVector[i].getInvalidFlag() == false) {
+      it = idMap.find(i);
+      Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
+      vector<double> distVector(distVectorCRF.Size());
+      for (uint32_t j = 0; j < distVector.size(); j++)
+        distVector[j] = distVectorCRF[j];
+      mCellsVector[i].setLabelsDistVector(distVector);
+    }
+  }
 }

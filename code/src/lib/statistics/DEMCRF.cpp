@@ -7,7 +7,8 @@
 
 #include <iostream>
 #include <fstream>
-#include <map>
+
+#include <math.h>
 
 using namespace Eigen;
 using namespace std;
@@ -18,7 +19,6 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   vector<Cell> cellsVector = dem.getCellsVector();
   SetNbFeatures(4);
   SetNbParameters(4, 4);
-  map<uint32_t,uint32_t> idMap;
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
     if (cellsVector[i].getInvalidFlag() == false) {
       Vector featureVector;
@@ -31,12 +31,12 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
       SetLabelDistribution(u32NodeId, Vector(&(cellsVector[i].
         getLabelsDistVector()[0]), cellsVector[i].
         getLabelsDistVector().size()));
-      idMap[i] = u32NodeId;
+      mIdMap[i] = u32NodeId;
     }
   }
   multiset<Edge>::iterator it;
   for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
-    AddEdge(idMap[(*it).getNode1Idx()], idMap[(*it).getNode2Idx()]);
+    AddEdge(mIdMap[(*it).getNode1Idx()], mIdMap[(*it).getNode2Idx()]);
   }
   mVariancesVector = variancesVector;
   mCoeffsMatrix = coeffsMatrix;
@@ -101,5 +101,40 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   int32_t i32Label1, int32_t i32Label2) const {
   Vector featureVector1 = GetNodeFeatures(u32NodeId1);
   Vector featureVector2 = GetNodeFeatures(u32NodeId2);
-  return Vector(1);
+  Vector value;
+  UniGaussian point1Gaussian(featureVector1[0], featureVector1[1]);
+  UniGaussian point2Gaussian(featureVector2[0], featureVector2[1]);
+  if (i32Label1 == i32Label2) {
+    value.PushBack(1 / (point1Gaussian.KLDivergence(point2Gaussian) +
+      point2Gaussian.KLDivergence(point1Gaussian)));
+  }
+  else {
+    value.PushBack((point1Gaussian.KLDivergence(point2Gaussian) +
+      point2Gaussian.KLDivergence(point1Gaussian)));
+  }
+  return value;
+}
+
+const map<uint32_t, uint32_t>& DEMCRF::getIdMap() const {
+  return mIdMap;
+}
+
+void DEMCRF::setIdMap(const map<uint32_t, uint32_t>& idMap) {
+  mIdMap = idMap;
+}
+
+const vector<vector<double> >& DEMCRF::getCoeffsMatrix() const {
+  return mCoeffsMatrix;
+}
+
+const vector<double>& DEMCRF::getVariancesVector() const {
+  return mVariancesVector;
+}
+
+void DEMCRF::setCoeffsMatrix(const vector<vector<double> >& coeffsMatrix) {
+  mCoeffsMatrix = coeffsMatrix;
+}
+
+void DEMCRF::setVariancesVector(const vector<double>& variancesVector) {
+  mVariancesVector = variancesVector;
 }

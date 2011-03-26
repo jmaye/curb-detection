@@ -89,7 +89,7 @@ void Window::drawScene() const {
   drawBackground(1.0f, 1.0f, 1.0f);
   if (mbShowAxes)
     drawAxes(3.0);
-  //mPointCloudVisitor.draw();
+  mPointCloudVisitor.draw();
   mDEMVisitor.draw();
 //  glBegin(GL_LINES);
 //  glPointSize(2.0);

@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+class DEMCRF;
+
 class DEM {
   friend std::ostream& operator << (std::ostream& stream,
     const DEM& obj);
@@ -60,6 +62,7 @@ public:
   const std::vector<uint32_t>& getInitialLabelsVector() const;
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
+  void setLabelsDist(const DEMCRF& crf);
 
 protected:
 

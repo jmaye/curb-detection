@@ -62,6 +62,16 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
   cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
+  dem.setLabelsDist(crf);
+  f64Time = getMsCount();
+  LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
+  cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+  crf.setCoeffsMatrix(coeffsMatrix);
+  crf.setVariancesVector(variancesVector);
+  f64Time = getMsCount();
+  crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
+  cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
+  dem.setLabelsDist(crf);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
