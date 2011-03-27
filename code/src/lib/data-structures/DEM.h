@@ -4,6 +4,8 @@
 #include "PointCloud.h"
 #include "Cell.h"
 #include "DEMVisitor.h"
+#include "OutOfBoundException.h"
+#include "InvalidOperationException.h"
 
 #include <iosfwd>
 #include <vector>
@@ -47,7 +49,7 @@ public:
   DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
     double f64CellSizeY = 0.4, uint32_t u32CellsNbrX = 20,
     uint32_t u32CellsNbrY = 20, double f64MinX = 1, double f64HeightMin = -10,
-    double f64HeightMax = 10);
+    double f64HeightMax = 10) throw (OutOfBoundException);
   ~DEM();
 
   void accept(DEMVisitor& v) const;
@@ -58,11 +60,12 @@ public:
   uint32_t getValidCellsNbr() const;
   uint32_t getLabelsNbr() const;
   void setInitialLabelsVector(const std::vector<uint32_t>& labelsVector,
-    const std::map<uint32_t, uint32_t>& supportsMap);
+    const std::map<uint32_t, uint32_t>& supportsMap)
+    throw (InvalidOperationException);
   const std::vector<uint32_t>& getInitialLabelsVector() const;
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
-  void setLabelsDist(const DEMCRF& crf);
+  void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
 
 protected:
 

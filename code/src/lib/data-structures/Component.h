@@ -1,6 +1,9 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
+#include "InvalidOperationException.h"
+#include "OutOfBoundException.h"
+
 #include <iosfwd>
 #include <list>
 
@@ -32,11 +35,12 @@ public:
 
   std::list<uint32_t> mNodesIndexList;
 
-  double compare(const Component& other, uint32_t u32K) const;
+  double compare(const Component& other, uint32_t u32K) const
+    throw (InvalidOperationException);
 
   double getInt() const;
   const std::list<uint32_t>& getNodesIndexList() const;
-  void setInt(double f64Int);
+  void setInt(double f64Int) throw (OutOfBoundException);
   void setNodesIndexList(const std::list<uint32_t>& nodesIndexList);
 
 protected:

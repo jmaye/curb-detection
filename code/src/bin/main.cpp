@@ -43,7 +43,7 @@ int main(int argc ,char** argv) {
   map<uint32_t, uint32_t> supportsMap;
   f64Time = getMsCount();
   GraphSegmenter::segment(dem.getCellsVector(), edgeSet, labelsVector,
-    supportsMap, 400);
+    supportsMap, 100);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
   dem.setInitialLabelsVector(labelsVector, supportsMap);
@@ -57,8 +57,16 @@ int main(int argc ,char** argv) {
   DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector);
   cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
   Vector nodesWeightsVector, edgesWeightsVector;
-  nodesWeightsVector.PushBack(1);
+  nodesWeightsVector.PushBack(10);
   edgesWeightsVector.PushBack(1);
+  f64Time = getMsCount();
+  crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
+  cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
+  dem.setLabelsDist(crf);
+#if 1
+  f64Time = getMsCount();
+  LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
+  cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
   crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
   cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
@@ -66,13 +74,25 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
-  crf.setCoeffsMatrix(coeffsMatrix);
-  crf.setVariancesVector(variancesVector);
   f64Time = getMsCount();
   crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
   cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
   dem.setLabelsDist(crf);
-
+  f64Time = getMsCount();
+  LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
+  cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+  f64Time = getMsCount();
+  crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
+  cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
+  dem.setLabelsDist(crf);
+  f64Time = getMsCount();
+  LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
+  cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+  f64Time = getMsCount();
+  crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
+  cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
+  dem.setLabelsDist(crf);
+#endif
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);

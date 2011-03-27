@@ -15,16 +15,18 @@ using namespace std;
 
 DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64MinX,
-  double f64HeightMin, double f64HeightMax) : mf64CellSizeX(f64CellSizeX),
-                                              mf64CellSizeY(f64CellSizeY),
-                                              mu32CellsNbrX(u32CellsNbrX),
-                                              mu32CellsNbrY(u32CellsNbrY),
-                                              mf64MinX(f64MinX),
-                                              mf64HeightMin(f64HeightMin),
-                                              mf64HeightMax(f64HeightMax),
-                                              mu32ValidCellsNbr(u32CellsNbrX *
-                                                u32CellsNbrY),
-                                              mu32LabelsNbr(0) {
+  double f64HeightMin, double f64HeightMax) throw (OutOfBoundException)
+  : mf64CellSizeX(f64CellSizeX),
+    mf64CellSizeY(f64CellSizeY),
+    mu32CellsNbrX(u32CellsNbrX),
+    mu32CellsNbrY(u32CellsNbrY),
+    mf64MinX(f64MinX),
+    mf64HeightMin(f64HeightMin),
+    mf64HeightMax(f64HeightMax),
+    mu32ValidCellsNbr(u32CellsNbrX * u32CellsNbrY),
+    mu32LabelsNbr(0) {
+  if (f64CellSizeX <= 0 || f64CellSizeY <= 0)
+    throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
   ANNpointArray cellCenters = annAllocPts(mu32CellsNbrX * mu32CellsNbrY, 2);
   double f64CurX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
@@ -127,7 +129,10 @@ void DEM::accept(DEMVisitor& v) const {
 }
 
 void DEM::setInitialLabelsVector(const vector<uint32_t>& labelsVector,
-  const map<uint32_t, uint32_t>& supportsMap) {
+  const map<uint32_t, uint32_t>& supportsMap)
+  throw (InvalidOperationException) {
+  if (labelsVector.size() != mCellsVector.size())
+    throw InvalidOperationException("DEM::setInitialLabelsVector(): wrong input arguments");
   mInitialLabelsVector = labelsVector;
   map<uint32_t, uint32_t>::const_iterator it;
   map<uint32_t, uint32_t> labelsMap;
@@ -175,16 +180,18 @@ void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
   mu32LabelsNbr = u32LabelsNbr;
 }
 
-void DEM::setLabelsDist(const DEMCRF& crf) {
+void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
   const map<uint32_t, uint32_t>& idMap = crf.getIdMap();
   map<uint32_t, uint32_t>::const_iterator it;
   for (uint32_t i = 0; i < mCellsVector.size(); i++) {
     if (mCellsVector[i].getInvalidFlag() == false) {
       it = idMap.find(i);
+      if (it == idMap.end())
+        throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
       Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
-      vector<double> distVector(distVectorCRF.Size());
+      vector<double> distVector(distVectorCRF.Size(), 0);
       for (uint32_t j = 0; j < distVector.size(); j++)
-        distVector[j] = distVectorCRF[j];
+        distVector[crf.GetClassLabel(j)] = distVectorCRF[j];
       mCellsVector[i].setLabelsDistVector(distVector);
     }
   }

@@ -6,6 +6,7 @@
 #include <GL/gl.h>
 
 #include <iosfwd>
+#include <map>
 
 #include <stdint.h>
 
@@ -35,6 +36,8 @@ class DEMVisitor : public Visitor {
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+
+  std::map<uint32_t, Color> mColorMap;
 
 public:
   DEMVisitor();

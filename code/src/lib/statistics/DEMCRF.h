@@ -3,6 +3,7 @@
 
 #include "DEM.h"
 #include "Edge.h"
+#include "OutOfBoundException.h"
 
 #include <graphtool/CRF.hh>
 
@@ -42,15 +43,17 @@ class DEMCRF : public CRF {
 public:
   DEMCRF(const DEM& dem, const std::multiset<Edge, EdgeCompare>& edgeSet,
     const vector<vector<double> >& coeffsMatrix,
-    const vector<double>& variancesVector);
+    const vector<double>& variancesVector) throw (OutOfBoundException);
   ~DEMCRF();
 
   const std::map<uint32_t, uint32_t>& getIdMap() const;
   const std::vector<vector<double> >& getCoeffsMatrix() const;
   const std::vector<double>& getVariancesVector() const;
   void setIdMap(const std::map<uint32_t, uint32_t>& idMap);
-  void setCoeffsMatrix(const std::vector<vector<double> >& coeffsMatrix);
-  void setVariancesVector(const std::vector<double>& variancesVector);
+  void setCoeffsMatrix(const std::vector<vector<double> >& coeffsMatrix)
+    throw (OutOfBoundException);
+  void setVariancesVector(const std::vector<double>& variancesVector)
+    throw (OutOfBoundException);
 
 protected:
 

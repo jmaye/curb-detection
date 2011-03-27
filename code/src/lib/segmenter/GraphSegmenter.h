@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Edge.h"
+#include "OutOfBoundException.h"
 
 #include <vector>
 #include <set>
@@ -20,7 +21,8 @@ public:
     static void segment(const std::vector<NodeType>& nodesVector,
       const std::multiset<Edge, EdgeCompare>& edgeSet,
       std::vector<uint32_t>& labelsVector,
-      std::map<uint32_t, uint32_t>& supportsMap, uint32_t u32K = 400) {
+      std::map<uint32_t, uint32_t>& supportsMap, uint32_t u32K = 400)
+      throw (OutOfBoundException) {
       labelsVector.clear();
       supportsMap.clear();
       std::map<uint32_t, Component> componentsMap;
@@ -32,6 +34,8 @@ public:
       for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
         uint32_t u32C1Idx = labelsVector[(*it).getNode1Idx()];
         uint32_t u32C2Idx = labelsVector[(*it).getNode2Idx()];
+        if (u32C1Idx >= nodesVector.size() || u32C2Idx >= nodesVector.size())
+          throw OutOfBoundException("GraphSegmenter::segment(): wrong input arguments");
         if (u32C1Idx != u32C2Idx) {
           if ((*it).getWeight() <=
             componentsMap[u32C1Idx].compare(componentsMap[u32C2Idx], u32K)) {

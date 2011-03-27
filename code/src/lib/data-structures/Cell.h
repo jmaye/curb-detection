@@ -5,6 +5,8 @@
 #include "UniGaussian.h"
 #include "MLEstimator.h"
 #include "Point2D.h"
+#include "InvalidOperationException.h"
+#include "OutOfBoundException.h"
 
 #include <iosfwd>
 #include <vector>
@@ -30,12 +32,13 @@ class Cell {
   MLEstimator mMLEstimator;
   Point2D mCellCenter;
   Point2D mCellSize;
-  std::vector<double> mLabelsDistVector;
   bool mbInvalidFlag;
+  std::vector<double> mLabelsDistVector;
 
 public:
   Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
-    const Point2D& cellCenter, const Point2D& cellSize);
+    const Point2D& cellCenter, const Point2D& cellSize)
+    throw (OutOfBoundException);
   ~Cell();
   Cell(const Cell& other);
   Cell& operator = (const Cell& other);
@@ -49,12 +52,12 @@ public:
   const Point2D& getCellCenter() const;
   const Point2D& getCellSize() const;
   const std::vector<double>& getLabelsDistVector() const;
-  uint32_t getMAPLabelsDist() const;
+  uint32_t getMAPLabelsDist() const throw (InvalidOperationException);
   bool getInvalidFlag() const;
   void setHeightDist(const UniGaussian& heightDist);
   void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);
-  void setCellSize(const Point2D& cellSize);
+  void setCellSize(const Point2D& cellSize) throw (OutOfBoundException);
   void setLabelsDistVector(const std::vector<double>& labelsDistVector);
   void setInvalidFlag(bool bInvalidFlag);
 

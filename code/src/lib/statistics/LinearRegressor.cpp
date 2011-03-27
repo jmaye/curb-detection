@@ -66,5 +66,4 @@ void LinearRegressor::estimate(const DEM& dem,
     coeffsMatrix[i][1] = coeffsMatrixEigen(i, 1);
     coeffsMatrix[i][2] = coeffsMatrixEigen(i, 2);
   }
-  cout << variancesVectorMapped << endl << endl;
 }

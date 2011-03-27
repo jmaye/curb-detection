@@ -1,6 +1,8 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include "OutOfBoundException.h"
+
 #include <iosfwd>
 
 #include <stdint.h>
@@ -25,7 +27,8 @@ class Edge {
   uint32_t mu32Node2Idx;
 
 public:
-  Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx);
+  Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx)
+    throw (OutOfBoundException);
   Edge(const Edge& other);
   Edge& operator = (const Edge& other);
   ~Edge();
@@ -33,7 +36,7 @@ public:
   double getWeight() const;
   uint32_t getNode1Idx() const;
   uint32_t getNode2Idx() const;
-  void setWeight(double f64Weight);
+  void setWeight(double f64Weight) throw (OutOfBoundException);
   void setNode1Idx(uint32_t u32Node1Idx);
   void setNode2Idx(uint32_t u32Node2Idx);
 

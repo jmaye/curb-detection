@@ -7,19 +7,22 @@ using namespace std;
 
 Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
   const Point2D& cellCenter, const Point2D& cellSize)
+  throw (OutOfBoundException)
   : mHeightDist(heightDist),
     mMLEstimator(estimator),
     mCellCenter(cellCenter),
     mCellSize(cellSize),
     mbInvalidFlag(false) {
+  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0)
+    throw OutOfBoundException("Cell::Cell(): cell size must be positive");
 }
 
 Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
                                 mMLEstimator(other.mMLEstimator),
                                 mCellCenter(other.mCellCenter),
                                 mCellSize(other.mCellSize),
-                                mLabelsDistVector(other.mLabelsDistVector),
-                                mbInvalidFlag(other.mbInvalidFlag) {
+                                mbInvalidFlag(other.mbInvalidFlag),
+                                mLabelsDistVector(other.mLabelsDistVector) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
@@ -27,8 +30,8 @@ Cell& Cell::operator = (const Cell& other) {
   mMLEstimator = other.mMLEstimator;
   mCellCenter = other.mCellCenter;
   mCellSize = other.mCellSize;
-  mLabelsDistVector = other.mLabelsDistVector;
   mbInvalidFlag = other.mbInvalidFlag;
+  mLabelsDistVector = other.mLabelsDistVector;
   return *this;
 }
 
@@ -112,7 +115,9 @@ const Point2D& Cell::getCellSize() const {
   return mCellSize;
 }
 
-void Cell::setCellSize(const Point2D& cellSize) {
+void Cell::setCellSize(const Point2D& cellSize) throw (OutOfBoundException) {
+  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0)
+    throw OutOfBoundException("Cell::setCellSize(): cell size must be positive");
   mCellSize = cellSize;
 }
 
@@ -124,7 +129,9 @@ void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector) {
   mLabelsDistVector = labelsDistVector;
 }
 
-uint32_t Cell::getMAPLabelsDist() const {
+uint32_t Cell::getMAPLabelsDist() const throw (InvalidOperationException) {
+  if (mLabelsDistVector.size() == 0)
+    throw InvalidOperationException("Cell::getMAPLabelsDist(): labels distribution not set");
   double f64LargestValue = -1.0;
   uint32_t u32LargestIdx = 0;
   for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)

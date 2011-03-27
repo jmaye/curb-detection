@@ -64,7 +64,10 @@ ifstream& operator >> (ifstream& stream,
   return stream;
 }
 
-double Component::compare(const Component& other, uint32_t u32K) const {
+double Component::compare(const Component& other, uint32_t u32K) const
+  throw (InvalidOperationException){
+  if (mNodesIndexList.size() == 0)
+    throw InvalidOperationException("Component::compare(): component is empty");
   return fmin(mf64Int +
     (double)u32K / (double)mNodesIndexList.size(),
     other.mf64Int +
@@ -79,7 +82,9 @@ const list<uint32_t>& Component::getNodesIndexList() const {
   return mNodesIndexList;
 }
 
-void Component::setInt(double f64Int) {
+void Component::setInt(double f64Int) throw (OutOfBoundException) {
+  if (f64Int < 0)
+    throw OutOfBoundException("Component::setInt(): value must be greater than 0");
   mf64Int = f64Int;
 }
 

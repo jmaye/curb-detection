@@ -6,9 +6,12 @@
 using namespace std;
 
 Edge::Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx)
+  throw (OutOfBoundException)
   : mf64Weight(f64Weight),
     mu32Node1Idx(u32Node1Idx),
     mu32Node2Idx(u32Node2Idx) {
+  if (f64Weight <= 0)
+    throw OutOfBoundException("Edge::Edge(): weight must be greater than 0");
 }
 
 Edge::Edge(const Edge& other) : mf64Weight(other.mf64Weight),
@@ -74,7 +77,9 @@ uint32_t Edge::getNode2Idx() const {
   return mu32Node2Idx;
 }
 
-void Edge::setWeight(double f64Weight) {
+void Edge::setWeight(double f64Weight) throw (OutOfBoundException) {
+  if (f64Weight <= 0)
+    throw OutOfBoundException("Edge::setWeight(): weight must be greater than 0");
   mf64Weight = f64Weight;
 }
 

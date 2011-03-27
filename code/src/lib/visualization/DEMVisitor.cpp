@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <map>
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -64,19 +63,14 @@ void DEMVisitor::visit(const DEM* dem) {
   const vector<Cell>& cellsVector = dem->getCellsVector();
   map<uint32_t, Color>::iterator it;
   srand(time(NULL));
-  map<uint32_t, Color> colorMap;
   for (uint32_t i = 0; i < dem->getLabelsNbr(); i++) {
     Color color;
     color.mRedColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
     color.mGreenColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
     color.mBlueColorByte = round((double)rand() / (double)RAND_MAX * 255.0);
-    colorMap[i] = color;
+    mColorMap[i] = color;
   }
   for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    uint32_t u32LabelIdx = cellsVector[i].getMAPLabelsDist();
-    glColor3f(colorMap[u32LabelIdx].mRedColorByte,
-      colorMap[u32LabelIdx].mGreenColorByte,
-      colorMap[u32LabelIdx].mBlueColorByte);
     cellsVector[i].accept(*this);
   }
   glEndList();
@@ -84,7 +78,12 @@ void DEMVisitor::visit(const DEM* dem) {
 }
 
 void DEMVisitor::visit(const Cell* cell) const {
+  map<uint32_t, Color>::const_iterator it;
   if (cell->getInvalidFlag() == false) {
+    uint32_t u32LabelIdx = cell->getMAPLabelsDist();
+    it = mColorMap.find(u32LabelIdx);
+    Color color = (*it).second;
+    glColor3f(color.mRedColorByte, color.mGreenColorByte, color.mBlueColorByte);
     Point2D cellCenter = cell->getCellCenter();
     Point2D cellSize = cell->getCellSize();
     double f64CellHeightMean = cell->getHeightDist().getMean();
