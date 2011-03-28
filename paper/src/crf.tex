@@ -56,16 +56,20 @@ $\sigma^2_{k}$.
 
 The edge function is finally defined by means of sigmoid functions as
 
-\begin{equation}
+\begin{eqnarray}
 \label{eqn:edge_function}
-g(h_i,h_j,l_i=k,l_j=l,\Theta)= \left\{
+g(h_i,h_j,l_i=k,l_j=l,\Theta)=\phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
+\left\{
 \begin{array}{l l}
-1-\frac{1}{1+\exp((\sigma^2_i+\sigma^2_j)-|h_i-h_j|)} & \quad \hspace{-0.6cm}
+1-(1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
 \text{if $k=l$}\\
-\frac{1}{1+\exp((\sigma^2_i+\sigma^2_j)-|h_i-h_j|)} & \quad \hspace{-0.6cm}
-\text{otherwise}.
+(1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
+\text{otherwise},
 \end{array} \right.
-\end{equation}
+\end{eqnarray}
+
+where $d_{ij}=|h_i-h_j|$ is the heights difference and $\sigma^2_{ij}=\sigma^2_i
++\sigma^2_j$ the sum of the measurement variances.
 
 In Equ.~\eqref{eqn:edge_function}, we have also introduced the measurement
 variances and the two sigmoid functions intersect when $|h_i-h_j|=
