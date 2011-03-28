@@ -43,7 +43,7 @@ int main(int argc ,char** argv) {
   map<uint32_t, uint32_t> supportsMap;
   f64Time = getMsCount();
   GraphSegmenter::segment(dem.getCellsVector(), edgeSet, labelsVector,
-    supportsMap, 100);
+    supportsMap, 400);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
   dem.setInitialLabelsVector(labelsVector, supportsMap);
@@ -57,8 +57,8 @@ int main(int argc ,char** argv) {
   DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector);
   cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
   Vector nodesWeightsVector, edgesWeightsVector;
-  nodesWeightsVector.PushBack(10);
-  edgesWeightsVector.PushBack(1);
+  nodesWeightsVector.PushBack(1.0);
+  edgesWeightsVector.PushBack(0.0);
   f64Time = getMsCount();
   crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
   cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;

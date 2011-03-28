@@ -1,46 +1,73 @@
+In this Section, we establish the preliminary notations and introduce the
+mathematical models that will be used throughout the paper.
+
 \subsection{Measurements Representation}
-Scan measurements $\mathbf{s}_i=[r_i,\theta_i,\psi_i]^\text{T}$ are transformed
-into their corresponding Cartesian 3D coordinates $\mathbf{p}_i=[x_i,y_i,z_i]
-^\text{T}$, where $r_i$ is a range measurement, $\theta_i$ a pitch angle, and
-$\psi_i$ a bearing angle. From a complete laser sweep, we obtain a point cloud
-representation $\mathcal{P}=\{\mathbf{p}_1,\mathbf{p}_2,\dots,\mathbf{p}_N\}$.
-$\mathcal{P}$ is finally projected onto a 2D grid $\mathcal{G}=\{\mathcal{C}_1,
-\mathcal{C}_2,\dots,\mathcal{C}_M\}$, with cells $\mathcal{C}_i=
-\{\mathbf{ul}_i,\mathbf{lr}_i,\mathbf{c}_i,h_i,l_i,\mathcal{I}_i\}$, where
-$\mathbf{ul}_i$ and $\mathbf{lr}_i$ are the upper left and lower right 2D
-coordinates of the cell, $\mathbf{c}_i$ the center of the cell, $h_i$ the height
-of the cell such that $h_i\propto\mathcal{N}(\mu_i,\sigma_i)=p(h_i\mid\mu_i,
-\sigma_i,\mathcal{I}_i)$, $l_i\in\{1,\dots,M\}$ a discrete label for the cell,
-and $\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j\in\mathcal{P},
-\mathbf{p}_{j_x}>\mathbf{ul}_{i_x},\mathbf{p}_{j_y}>\mathbf{ul}_{i_y}
-,\mathbf{p}_{j_x}<\mathbf{lr}_{i_x},\mathbf{p}_{j_y}<\mathbf{lr}_{i_y}
-,\mathbf{p}_{j_z}<\theta_U,\mathbf{p}_{j_z}>\theta_L\}$. $\theta_U$
-and $\theta_L$ define upper and lower bounds for the height values.
+A nodding laser range-finder produces scan measurements $\mathbf{s}_i=[r_i,
+\theta_i,\psi_i]^\text{T}$ that are transformed into their corresponding
+Cartesian 3D coordinates $\mathbf{p}_i=[x_i,y_i,z_i]^\text{T}$, where $r_i$ is
+a range measurement, $\theta_i$ a pitch angle, and $\psi_i$ a bearing angle. The
+sensing device has an error model which is typically a function of
+$\mathbf{s}_i$, i.e. $e(\mathbf{s}_i)$. From a complete laser sweep, we obtain a
+point cloud representation $\mathcal{P}=\{\mathbf{p}_1,\mathbf{p}_2,\dots,
+\mathbf{p}_N\}$. $\mathcal{P}$ is finally projected onto a 2D grid $\mathcal{G}=
+\{\mathcal{C}_1,\mathcal{C}_2,\dots,\mathcal{C}_M\}$, with cells $\mathcal{C}_i=
+\{\mathbf{c}_i,h_i,l_i,\mathcal{I}_i\}$, where $\mathbf{c}_i$ is the center of
+the cell, $h_i$ its height distribution, $l_i$ its label distribution, and
+$\mathcal{I}_i=\{\mathbf{p}_j\mid\mathbf{p}_j\in\mathcal{P},j=\argmin_{j'}||
+\mathbf{p}_{j'}-\mathbf{c}_i||,\mathbf{p}_{j_x}<\tau_{x_{max}},\mathbf{p}_{j_x}>
+\tau_{x_{min}},\mathbf{p}_{j_y}<\tau_{y_{max}},\mathbf{p}_{j_y}>\tau_{y_{min}},
+\mathbf{p}_{j_z}<\tau_{z_{max}},\mathbf{p}_{j_z}>\tau_{z_{min}}\}$. The
+$\tau_{[x,y,z]_{[min,max]}}$ define boundaries for the 3D points.
+
+The posterior height distribution is a normal distribution, such that $p(h_i)=
+\mathcal{N}(h_i\mid\mu_{h_i},\sigma^2_{h_i},\mathcal{I}_i)$. $\mu_{h_i}$ is the
+Maximum-Likelihood Estimate (MLE) for the cell mean computed with the values
+$\mathbf{p}_{j_z}$, where $\mathbf{p}_j\in\mathcal{I}_i$. $\sigma^2_{h_i}$ is
+the Maximum A-Posteriori (MAP) estimate for the cell variance. The prior
+distribution for $\sigma^2_{h_i}$ is an inverse gamma distribution, where we
+have inserted a simplified cell error model in the hyperparameters. The label
+distribution is a discrete distribution over a set of labels
+$\mathcal{L}=\{1,2,\dots,M\}$.
 
 The grid $\mathcal{G}$ will also be referred to as a Digital Elevation Map (DEM)
 in the rest of the paper. The choice of a DEM representation is mainly guided by
 the final outcome of the algorithm, i.e. a traversability map for the planning
 process. It is also convenient for defining Regions of Interest (ROI) in
-$\mathcal{P}$ and for simplifying the subsequent computations. We could also
-have resorted to a polar grid representation, so as to have a finer resolution
-close to the sensor (THIS IS STILL OPEN AND NEED FURTHER EXPLANATIONS). Whenever
-the number of points in a cell $\mathcal{C}_i$ is below a threshold, i.e.
-$|\mathcal{I}_i|<\theta_P$, it is flagged as invalid.
-
-REMARKS:
-\begin{itemize}
-\item EXPLAIN HOW WE CAN GO FROM THE PUSH-BROOM LASER DATA TO THE DEM
-\item EXPLAIN WHAT HEIGHT $h_i$ IS FINALLY TAKEN
-\end{itemize}
+$\mathcal{P}$ and for simplifying the subsequent computations. Whenever the
+number of points that fall into a cell $\mathcal{C}_i$ is below a threshold,
+i.e. $|\mathcal{I}_i|<\tau_{\mathcal{I}}$, it is flagged as invalid.
 
 \subsection{Environment Model and Inference Task}
 We assume a piecewise planar environment, i.e., the observed scene is composed
-of a set of plane segments $\mathcal{S}_1,\mathcal{S}_2,\dots,\mathcal{S}_M$, with
-$\mathcal{S}_i=\{\mathcal{C}_j\mid h_j=\mathbf{w}_i^\text{T}\boldsymbol{\phi}
-(\mathbf{c}_{j})\}$, $\mathbf{w}_i=[w_0^{(i)}, w_1^{(i)}, w_2^{(i)}]^\text{T}$,
-and $\boldsymbol{\phi}(\mathbf{c}_{j})=[1,\mathbf{c}_j]^\text{T}$.
+of a set of plane segments. Boundaries between plane segments define local
+heights discontinuities that we shall term \emph{curbs} from now on. The major
+inference task therefore boils down to discovering those plane segments. To this
+end, we model the environment as a \emph{mixture of linear regressions}, which
+yields the following generative process for the height values:
 
-Boundaries between plane segments define local heights discontinuities that we
-shall term \emph{curbs} from now on. The major inference task therefore boils
-down to discovering those plane segments. To this end, we follow a probabilistic
-and iterative approach.
+\begin{equation}
+\label{eqn:mixture}
+h_i\sim p(h_i\mid\Theta)=\sum_{k=1}^K\pi_k\mathcal{N}(h_i\mid
+\mathbf{w}_k^\text{T}\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k),
+\end{equation}
+
+where $\Theta=\{\boldsymbol{\pi},\mathbf{W},\boldsymbol{\sigma}^2\}$ is the set
+of adaptive parameters, $\boldsymbol{\pi}=\{\pi_k\}$ are the mixture weights,
+$\mathbf{W}=\{\mathbf{w}_k\}$ the regression coefficients,
+$\boldsymbol{\sigma}^2=\{\sigma^2_k\}$ the regression variances, and
+$\boldsymbol{\phi}(\mathbf{c}_i)=[1,\mathbf{c}_i]^\text{T}$ is the basis
+function.
+
+Similarly to Gaussian Mixture Models (GMM), one can resort to the popular
+Expectation-Maximization (EM) algorithm~\cite{dempster77maximum} for estimating
+the parameter set $\Theta$ given a set of observations
+$\{\{h_i,\mathbf{c}_i\}\}_{i=1}^M$. The algorithm alternates between the
+computation of \emph{responsibilities} $\gamma_{ik}$ given an old estimate
+$\Theta^\text{old}$, and the computation of $\Theta^\text{new}$ given
+$\Theta^\text{old}$ and $\gamma_{ik}$.
+
+In order to determine the number of planes $k$ and the initial responsibilities,
+we apply the algorithm presented in Section~\ref{sec:initial}. The following
+responsibilities are then evaluated with the Conditional Random Field (CRF) of
+Section~\ref{sec:crf} and the parameter set $\Theta^\text{new}$ with the method
+of Section~\ref{sec:plane}.

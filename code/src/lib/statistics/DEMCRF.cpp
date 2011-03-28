@@ -46,7 +46,7 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
         it = labelMap.find(j);
         labelsDistVectorCRF[(*it).second] = labelsDistVector[j];
       }
-      //SetLabelDistribution(mIdMap[i], labelsDistVectorCRF);
+      SetLabelDistribution(mIdMap[i], labelsDistVectorCRF);
     }
   }
   multiset<Edge>::iterator setIt;
@@ -135,8 +135,8 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
       point2Gaussian.KLDivergence(point1Gaussian)));
   }
   else {
-    value.PushBack((point1Gaussian.KLDivergence(point2Gaussian) +
-      point2Gaussian.KLDivergence(point1Gaussian)));
+    value.PushBack(point1Gaussian.KLDivergence(point2Gaussian) +
+      point2Gaussian.KLDivergence(point1Gaussian));
   }
   return value;
 }
