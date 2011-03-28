@@ -24,12 +24,14 @@ $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$ as in Section~\ref{sec:initial} and
 the task of the CRF is to infer the label distributions $l_i$ for each node. The
 conditional joint distribution of the CRF is expressed as
 
-\begin{equation}
+\begin{eqnarray}
 \label{eqn:crf_joint}
-p(\mathbf{l}\mid\mathbf{h},\Theta)\propto\exp\bigg(\sum_{v_i\in\mathcal{V}}
+p(\mathbf{l}\mid\mathbf{h},\Theta)\propto
+\phantom{aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
+\exp\bigg(\sum_{v_i\in\mathcal{V}}
 \varphi(h_i,l_i,\Theta)+\sum_{(v_i,v_j)\in\mathcal{E}}
 \psi(h_i,h_j,l_i,l_j,\Theta)\bigg),
-\end{equation}
+\end{eqnarray}
 
 where $\mathbf{l}=[l_1,l_2,\dots,l_{M'}]^\text{T}$, $\varphi=
 \lambda\,f(h_i,l_i,\Theta)$ and $\psi=\mu\,g(h_i,h_j,l_i,l_j,\Theta)$ are the
@@ -69,8 +71,13 @@ g(h_i,h_j,l_i=k,l_j=l,\Theta)=\phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
 \end{eqnarray}
 
 where $d_{ij}=|h_i-h_j|$ is the heights difference and $\sigma^2_{ij}=\sigma^2_i
-+\sigma^2_j$ the sum of the measurement variances.
++\sigma^2_j$ the sum of the measurement variances. The two sigmoid functions
+intersect when $|h_i-h_j|=\sigma^2_i+\sigma^2_j$.
 
-In Equ.~\eqref{eqn:edge_function}, we have also introduced the measurement
-variances and the two sigmoid functions intersect when $|h_i-h_j|=
-\sigma^2_i+\sigma^2_j$.
+Once the node and edge potential functions are defined, we can perform inference
+on the CRF. In our configuration, \emph{Loopy} Belief
+Propagation (LBP)~\cite{weiss00correctness} is an appropriate approach. LBP is
+an approximate message-passing algorithm that computes the marginal distribution
+for each latent node $l_i$ conditioned on the observations $\mathbf{h}$. As
+stated above, this distribution might play the role of responsibilities for the
+mixture model.
