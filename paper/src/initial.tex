@@ -10,10 +10,10 @@ We define an undirected graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$, with
 vertices $v_i\in\mathcal{V}$ to be segmented and edges $(v_i,v_j)\in\mathcal{E}$
 connecting neighboring vertices. Each edge has a weight $w((v_i,v_j))$
 proportional to the dissimilarity between $v_i$ and $v_j$. In our particular
-setting, each grid cell $\mathcal{C}_i$ is aligned with a vertex $v_i$ and each
-vertex has a 4-connected neighborhood. The goal of the algorithm is to find a
-partition of $\mathcal{V}$ into segments $\mathcal{S}_i$ that correspond to the
-connected components of a graph $\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$,
+setting, each valid grid cell $\mathcal{C}_i$ is aligned with a vertex $v_i$ and
+each vertex has a 4-connected neighborhood. The goal of the algorithm is to find
+a partition of $\mathcal{V}$ into segments $\mathcal{S}_i$ that correspond to
+the connected components of a graph $\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$,
 with $\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the specific
 partition such that vertices in a component have a high similarity and vertices
 in different components a low similarity. Therefore, edges between vertices in

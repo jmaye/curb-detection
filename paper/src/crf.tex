@@ -1,2 +1,72 @@
-Starting from plane parameters and observations, we use a Conditional Random
-Field (CRF) framework for refining the labeling of the DEM cells.
+Starting from the regression parameter set $\Theta$, we aim at computing the new
+responsibilities $\gamma_{ik}$. In the classical mixture model framework, this
+step is achieved by estimating
+
+\begin{equation}
+\label{eqn:responsibilities}
+\gamma_{ik}\propto \pi_k\mathcal{N}(h_i\mid\mathbf{w}_k^\text{T}
+\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k).
+\end{equation}
+
+However, in our approach, we take the assumption that neighboring cells are more
+likely to share the same label distribution, i.e., to be in the same plane
+segment. A Conditional Random Field (CRF)~\cite{lafferty01conditional}
+can advantageously propagate this information at a global scale on the entire
+DEM and thus act as a \emph{smoother}. The initial labeling method from
+Section~\ref{sec:initial}, due to its inherent local nature, might indeed result
+in an over-segmented graph, that can be conveniently refined by the CRF.
+Furthermore, a CRF provides the clear and sought probabilistic outcome in terms
+of the distributions $l_i$.
+
+A CRF is a discriminative and undirected graphical model globally conditioned on
+the observations. In our setting, we use the same graph structure
+$\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$ as in Section~\ref{sec:initial} and
+the task of the CRF is to infer the label distributions $l_i$ for each node. The
+conditional joint distribution of the CRF is expressed as
+
+\begin{equation}
+\label{eqn:crf_joint}
+p(\mathbf{l}\mid\mathbf{h},\Theta)\propto\exp\bigg(\sum_{v_i\in\mathcal{V}}
+\varphi(h_i,l_i,\Theta)+\sum_{(v_i,v_j)\in\mathcal{E}}
+\psi(h_i,h_j,l_i,l_j,\Theta)\bigg),
+\end{equation}
+
+where $\mathbf{l}=[l_1,l_2,\dots,l_{M'}]^\text{T}$, $\varphi=
+\lambda\,f(h_i,l_i,\Theta)$ and $\psi=\mu\,g(h_i,h_j,l_i,l_j,\Theta)$ are the
+\emph{node potential} and the \emph{edge potential} respectively. The potential
+functions are positively defined functions. Intuitively, the node potential
+reflects the likelihood of $h_i$ being labeled $l_i$, and the edge potential the
+joint likelihood of $h_i$ and $h_j$ being labeled $l_i$ and $l_j$. In the
+original formulation of CRF, the MLE of the weights $\lambda$ and $\mu$ are
+learned from training data. Since we apply the CRF in an unsupervised manner, we
+fix these weights empirically.
+
+According to the above suggestions, we define the feature function as
+
+\begin{equation}
+\label{eqn:feature_function}
+f(h_i,l_i=k,\Theta)=\pi_k\mathcal{N}(h_i\mid\mathbf{w}_k^\text{T}
+\boldsymbol{\phi}(\mathbf{c}_i), \sigma^2_{h_i} + \sigma^2_k).
+\end{equation}
+
+In Equ.~\eqref{eqn:feature_function}, we note that the CRF does not required a
+normalized feature function. Moreover, we have taken into account the
+measurement noise by adding up the two variances $\sigma^2_{h_i}$ and
+$\sigma^2_{k}$.
+
+The edge function is finally defined by means of sigmoid functions as
+
+\begin{equation}
+\label{eqn:edge_function}
+g(h_i,h_j,l_i=k,l_j=l,\Theta)= \left\{
+\begin{array}{l l}
+1-\frac{1}{1+\exp((\sigma^2_i+\sigma^2_j)-|h_i-h_j|)} & \quad \hspace{-0.6cm}
+\text{if $k=l$}\\
+\frac{1}{1+\exp((\sigma^2_i+\sigma^2_j)-|h_i-h_j|)} & \quad \hspace{-0.6cm}
+\text{otherwise}.
+\end{array} \right.
+\end{equation}
+
+In Equ.~\eqref{eqn:edge_function}, we have also introduced the measurement
+variances and the two sigmoid functions intersect when $|h_i-h_j|=
+\sigma^2_i+\sigma^2_j$.
