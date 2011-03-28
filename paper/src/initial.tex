@@ -1,60 +1,67 @@
-Our algorithm needs an initial rough estimate of the plane segments. This
-initial estimate consists in labeling the DEM cells that belong to the same
-plane segments. More formally, we refine our definition of plane segments to
-$\mathcal{S}_i=\{\mathcal{C}_j\mid l_j=i\}$.
-
-We use the graph-based algorithm from Felzenzswalb and
+The number of mixture components $k$ in Equ.~\eqref{eqn:mixture} and initial
+responsibilities have to be specified for computing the regression parameter set
+$\Theta^\text{old}$ and running the CRF framework. For this purpose, we adopt
+the graph-based algorithm from Felzenzswalb and
 Huttenlocher~\cite{felzenszwalb04efficient}. Although this method was originally
-designed for image segmentation, we can tune it for our purposes, image regions
-corresponding to plane segments. We define an undirected graph
-$\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$, with vertices $v_i\in\mathcal{V}$ to
-be segmented and edges $(v_i,v_j)\in\mathcal{E}$ for neighboring vertices. Each
-edge has a weight $w((v_i,v_j))$ proportional to the dissimilarity between $v_i$
-and $v_j$. In our particular setting, each grid cell $\mathcal{C}_i$ is aligned
-with a vertex $v_i$ and each vertex has a 4-connected neighborhood. The goal of
-the algorithm is to find a partition of $\mathcal{V}$ into components
-$\mathcal{C}$ that correspond to the connected components of a graph
-$\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$, with
-$\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the partition such that
-vertices in a component have a high similarity and vertices in different
-components a low similarity. Therefore, edges between vertices in the same
-component should have a low weight and edges between vertices in different
-components a high weight. We define the weight function as the symmetric
-Kullback-Leibler divergence between two cells, i.e.,
-$w((v_i,v_j))=D_{KL}(h_i\mid\mid h_j)+D_{KL}(h_j\mid\mid h_i)$. For normal
-distributions, the Kullback-Leibler divergence integrates analytically to
-$D_{KL}(h_i\mid\mid h_j)=\frac{(\mu_i-\mu_j)^2}{2\sigma_j^2}+\frac{1}{2}
-(\frac{\sigma_i^2}{\sigma_j^2}-1-\ln\frac{\sigma_i^2}{\sigma_j^2})$. The
-algorithm starts with all vertices belonging to a different component. It then
-iterates by merging components based on the comparison predicate
+designed for image segmentation, we can adapt it for our intent, image regions
+corresponding to plane segments.
+
+We define an undirected graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$, with
+vertices $v_i\in\mathcal{V}$ to be segmented and edges $(v_i,v_j)\in\mathcal{E}$
+connecting neighboring vertices. Each edge has a weight $w((v_i,v_j))$
+proportional to the dissimilarity between $v_i$ and $v_j$. In our particular
+setting, each grid cell $\mathcal{C}_i$ is aligned with a vertex $v_i$ and each
+vertex has a 4-connected neighborhood. The goal of the algorithm is to find a
+partition of $\mathcal{V}$ into segments $\mathcal{S}_i$ that correspond to the
+connected components of a graph $\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$,
+with $\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the specific
+partition such that vertices in a component have a high similarity and vertices
+in different components a low similarity. Therefore, edges between vertices in
+the same component should have a low weight and edges between vertices in
+different components a high weight. The weight function can be described with
+the symmetric Kullback-Leibler divergence between two cells, i.e.,
+$w((v_i,v_j))=D_{KL}(h_i\mid\mid h_j)+D_{KL}(h_j\mid\mid h_i)$. We thus take
+into account the full height distributions, in particular the variances. For
+normal distributions, the Kullback-Leibler divergence integrates analytically to
 
 \begin{equation}
-\label{eqn:comp_pred}
-D(C_1,C_2) = \left\{
-\begin{array}{l l}
-\text{true} & \quad \text{if $Dif(C_1,C_2)>MInt(C_1,C_2)$ }\\
-\text{false} & \quad \text{otherwise},
-\end{array} \right.
+\label{eqn:kl}
+D_{KL}(h_i\mid\mid h_j)=\frac{(\mu_{h_i}-\mu_{h_j})^2}{2\sigma_{h_j}^2}+
+\frac{1}{2}(\frac{\sigma_{h_i}^2}{\sigma_{h_j}^2}-1-\ln\frac{\sigma_{h_i}^2}
+{\sigma_{h_j}^2}).
 \end{equation}
 
-where $Dif(C_1,C_2)=\min w((v_i,v_j))$, $Int(C)=\max w(e)$,
-$MInt(C_1,C_2)=\min(Int(C_1)+\tau(C_1),Int(C_2)+\tau(C_2))$ the minimum internal
-difference, and $\tau(C)=k/|C|$. Two components should be disconnected if the
-difference between them is large compared to the internal difference within at
-least one of the components. $k$ is a scale parameter that controls the
-preference for larger components. The algorithm runs in $O(m\log(m))$, where
-$m$ is the number of edges in the graph and it is guaranteed to produce a
-segmentation which is neither too fine nor too coarse.
-
-The resulting segmentation defines a probability distribution $p(l_i^{(0)})$ for
-each cell, with the domain of $l_i$ being the number of components. This initial
-distribution is expressed as
+The algorithm starts with all vertices belonging to a different component. It
+then iterates over the set of edges ordered by increasing weights. For each
+edge $(v_i,v_j)\in\mathcal{E}$ with $v_i\in\mathcal{S}_k$,
+$v_j\in\mathcal{S}_l$, and $\mathcal{S}_k\neq\mathcal{S}_l$, the two components
+are merged if
 
 \begin{equation}
-\label{eqn:comp_pred}
-p(l_i^{(0)}=j) = \left\{
+\label{eqn:merge}
+w((v_i,v_j))\leq MInt(\mathcal{S}_k, \mathcal{S}_l),
+\end{equation}
+
+
+where $MInt(\mathcal{S}_k,\mathcal{S}_l)=\min(Int(\mathcal{S}_k)+
+\tau(\mathcal{S}_k),Int(\mathcal{S}_l)+\tau(\mathcal{S}_l))$,
+$Int(\mathcal{S})=\max_{(v_i,v_j)\in\mathcal{S}} w((v_i,v_j))$, and
+$\tau(\mathcal{S})=s/|\mathcal{S}|$. Two components should be disconnected if
+the difference between them is large compared to the internal difference within
+at least one of the components. $s$ is a scale parameter that controls the
+preference for larger components. The algorithm runs in $O(n\log n)$, where
+$n=|\mathcal{E}|$.
+
+Although the algorithm does not convey any probabilistic interpretation in the
+resulting segmentation, we transform the hard assignment of a grid cell
+$\mathcal{C}_i$ to a component $\mathcal{S}_k$ into the following discrete
+distribution:
+
+\begin{equation}
+\label{eqn:label_dist}
+p(l_i=k) = \left\{
 \begin{array}{l l}
-1 & \quad \text{if $C_i$ belongs to component $j$}\\
+1 & \quad \text{if $\mathcal{C}_i\in\mathcal{S}_k$}\\
 0 & \quad \text{otherwise}.
 \end{array} \right.
 \end{equation}

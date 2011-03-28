@@ -1,64 +1,42 @@
-Given a labeling of the DEM cells belonging to the same plane segments, we show
-here how we can get an estimate of the plane parameters using a Bayesian linear
-regression framework.
+Given the responsibilities $\gamma_{ik}$, i.e. $p(l_i=k)$, for each grid cell
+$\mathcal{C}_i$, we show in this Section the derivations that lead to the
+estimation of an updated parameter set $\Theta^\text{new}$ using a modified
+linear regression framework.
 
-At time step $t$ of the algorithm, we assume the following model for the plane
-segment $j$
-
-\begin{equation}
-\label{eqn:regression1}
-p(h_i\mid\mathbf{c}_i,\sigma^2_i,l_i,\mathbf{w}_j,\sigma^2_j)=\mathcal{N}(h_i|\mathbf{w}_j^\text{T}
-\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_j).
-\end{equation}
-
-Since the $h_i$ are drawn independently, we can write the conditional likelihood
+The mixture weights are simply updated as follows:
 
 \begin{equation}
-\label{eqn:regression2}
-p(\mathbf{h}\mid\mathbf{C},\mathbf{w}_j,\sigma^2_j)=\prod_{i=1}^N\mathcal{N}(h_i|
-\mathbf{w}_j^\text{T}\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_j),
+\label{eqn:weights}
+\pi_k = \frac{1}{M'}\sum_{i=1}^{M'}\gamma_{ik}.
 \end{equation}
 
-where $\mathbf{h}=[h_1,h_2,\dots,h_N]$ and $\mathbf{C}=[\mathbf{c_1},
-\mathbf{c_2},\dots,\mathbf{c_N}]$.
+The MLE of the other parameters are determined by maximizing the
+\emph{complete-data} log likelihood, i.e. $\log p(\mathbf{h}\mid\Theta)$, where
+$\mathbf{h}=[h_1,h_2,\dots,h_{M'}]^\text{T}$.
 
-We introduce a prior for the parameters to be estimated
+The updated regression coefficients are computed as follows:
 
 \begin{equation}
-\label{eqn:regression3}
-p(\mathbf{w},\beta)=p(\beta)p(\mathbf{w}\mid\beta)
+\label{eqn:coeff}
+\mathbf{w}_k = (\boldsymbol{\Phi}\mathbf{R}_k\boldsymbol{\Phi})^{-1}
+\boldsymbol{\Phi}^\text{T}\mathbf{R}_k\mathbf{h},
 \end{equation}
 
-where $p(\beta)$ is an inverse-gamma distribution and
-$p(\mathbf{w}\mid\beta)$ a normal distribution.
+where $\mathbf{R}_k=\text{diag}(\gamma_{ik})$ is a diagonal matrix and
+$\boldsymbol{\Phi}=[\boldsymbol{\phi}(\mathbf{c}_1), \boldsymbol{\phi}
+(\mathbf{c}_2),\dots,\boldsymbol{\phi}(\mathbf{c}_{M'})]^\text{T}$ is the
+\emph{design matrix}.
 
-The posterior distribution becomes
+The regression variances are modified as
 
 \begin{equation}
-\label{eqn:regression4}
-p(\mathbf{w}\mid\mathbf{h})=\mathcal{N}(\mathbf{w}\mid \mathbf{m}_N,
-\mathbf{S}_N),
+\label{eqn:coeff}
+\sigma^2_k = \frac{1}{M'}\sum_{i=1}^{M'}\sum_{k=1}^K \gamma_{ik}(h_i-
+\mathbf{w}_k^\text{T}\boldsymbol{\phi}(\mathbf{c}_i))^2.
 \end{equation}
 
-where
-
-\begin{eqnarray}
-\label{eqn:regression5}
-\mathbf{m}_N&=&\mathbf{S}_N(\mathbf{S}_0^{-1}\mathbf{m}_0+\beta
-\boldsymbol{\Phi}^\text{T}\mathbf{h})\\\nonumber
-\mathbf{S}_N^{-1}&=&\mathbf{S}_0^{-1}+\beta\boldsymbol{\Phi}^\text{T}\boldsymbol{\Phi}
-\end{eqnarray}
-
-and
-
-\begin{equation}
-\label{eqn:regression6}
-\boldsymbol{\Phi}=
-\left(
-\begin{array}{cccc}
-\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
-\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
-\cdots             & \cdots             & \ddots & \cdots\\
-\phi_0(\mathbf{c}) & \phi_1(\mathbf{c}) & \cdots & \phi_{M-1}(\mathbf{c})\\
-\end{array} \right)
-\end{equation}
+The attentive reader might notice that, apart from the introduction of
+$\mathbf{R}_k$, these derivations are close to the case of the single linear
+regression. The responsibilities act here as a weight to the computations, that
+is, they control the degree of influence of a particular point to the
+plane regression.

@@ -25,9 +25,7 @@ Maximum-Likelihood Estimate (MLE) for the cell mean computed with the values
 $\mathbf{p}_{j_z}$, where $\mathbf{p}_j\in\mathcal{I}_i$. $\sigma^2_{h_i}$ is
 the Maximum A-Posteriori (MAP) estimate for the cell variance. The prior
 distribution for $\sigma^2_{h_i}$ is an inverse gamma distribution, where we
-have inserted a simplified cell error model in the hyperparameters. The label
-distribution is a discrete distribution over a set of labels
-$\mathcal{L}=\{1,2,\dots,M\}$.
+have inserted a simplified cell error model in the hyperparameters.
 
 The grid $\mathcal{G}$ will also be referred to as a Digital Elevation Map (DEM)
 in the rest of the paper. The choice of a DEM representation is mainly guided by
@@ -61,10 +59,13 @@ function.
 Similarly to Gaussian Mixture Models (GMM), one can resort to the popular
 Expectation-Maximization (EM) algorithm~\cite{dempster77maximum} for estimating
 the parameter set $\Theta$ given a set of observations
-$\{\{h_i,\mathbf{c}_i\}\}_{i=1}^M$. The algorithm alternates between the
-computation of \emph{responsibilities} $\gamma_{ik}$ given an old estimate
-$\Theta^\text{old}$, and the computation of $\Theta^\text{new}$ given
-$\Theta^\text{old}$ and $\gamma_{ik}$.
+$\{\{h_i,\mathbf{c}_i\}\}_{i=1}^{M'}$, where $M'$ is the number of valid cells.
+The algorithm alternates between the computation of \emph{responsibilities}
+$\gamma_{ik}$ given an old estimate $\Theta^\text{old}$, and the computation of
+$\Theta^\text{new}$ given $\gamma_{ik}$. The term $\gamma_{ik}$ can be
+interpreted as the probability of a point $h_i$ belonging to a plane $k$. We
+thus define the label distribution $l_i$ to be a discrete distribution with a
+probability mass function $P(l_i=k)=\gamma_{ik}$.
 
 In order to determine the number of planes $k$ and the initial responsibilities,
 we apply the algorithm presented in Section~\ref{sec:initial}. The following
