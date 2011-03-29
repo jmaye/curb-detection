@@ -1,3 +1,17 @@
-In this paper, we have presented a novel approach for ...
-
-In a further work, we aim at ...
+In this paper, we have presented a novel approach to the curb detection problem.
+We have devised an unsupervised method that makes
+few assumptions about the environment, restricts the set of hand-tuned
+parameters, and builds on sound probabilistic reasoning from the sensing device
+to the outcome of the algorithm. In our approach, we have constructed a piecewise
+planar model of the environment and determined curbs at plane segment boundaries.
+Initially, we have sensed the environment with a nodding laser range-finder and
+projected the 3D measurements into an efficient Digital Elevation Map (DEM). Each
+cell of the DEM maintains an error model that is propagated throughout the
+entire algorithm. Plane segments are further estimated with a mixture of linear
+regressions on the DEM. Here, we propose an original formulation of the standard
+Expectation-Maximization (EM) algorithm for mixture models. Specifically, in the
+E-step, the responsibilities are computed with a Conditional Random Field (CRF),
+that smooths the assignment of DEM cells to planes of the mixture model. An
+initial graph-based segmentation of the DEM provides the first responsibilities
+and an estimate of the number of planes. We have shown promising results of the
+algorithm on simulated and real-world data.
