@@ -1,20 +1,21 @@
 The number of mixture components $k$ in Equ.~\eqref{eqn:mixture} and initial
 responsibilities have to be specified for computing the regression parameter set
-$\Theta^\text{old}$ and running the CRF framework. For this purpose, we adopt
-the graph-based algorithm from Felzenzswalb and
+$\Theta^\text{old}$ and for running the CRF framework. For this purpose, we
+adopt the graph-based algorithm from Felzenzswalb and
 Huttenlocher~\cite{felzenszwalb04efficient}. Although this method was originally
-designed for image segmentation, we can adapt it for our intent, image regions
-corresponding to plane segments.
+designed for image segmentation, we can adapt it for our intent, by treating
+image regions as plane segments.
 
-We define an undirected graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$, with
-vertices $v_i\in\mathcal{V}$ to be segmented and edges $(v_i,v_j)\in\mathcal{E}$
-connecting neighboring vertices. Each edge has a weight $w((v_i,v_j))$
-proportional to the dissimilarity between $v_i$ and $v_j$. In our particular
-setting, each valid grid cell $\mathcal{C}_i$ is aligned with a vertex $v_i$ and
-each vertex has a 4-connected neighborhood. The goal of the algorithm is to find
-a partition of $\mathcal{V}$ into segments $\mathcal{S}_i$ that correspond to
-the connected components of a graph $\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$,
-with $\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the specific
+We hence define an undirected graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$,
+with vertices $v_i\in\mathcal{V}$ to be segmented and edges $(v_i,v_j)
+\in\mathcal{E}$ connecting neighboring vertices. Each edge has a weight
+$w((v_i,v_j))$ proportional to the dissimilarity between $v_i$ and $v_j$. In our
+particular setting, a valid grid cell $\mathcal{C}_i$ is aligned with a
+vertex $v_i$ and each vertex has a 4-connected neighborhood. The goal of the
+algorithm is to find a partition of $\mathcal{V}$ into segments $\mathcal{S}_i$
+that correspond to the connected components of a graph
+$\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$, with $\mathcal{E}'\subseteq
+\mathcal{E}$. We are interested in the specific
 partition such that vertices in a component have a high similarity and vertices
 in different components a low similarity. Therefore, edges between vertices in
 the same component should have a low weight and edges between vertices in

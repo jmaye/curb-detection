@@ -16,13 +16,14 @@ DEM and thus act as a \emph{smoother}. The initial labeling method from
 Section~\ref{sec:initial}, due to its inherent local nature, might indeed result
 in an over-segmented graph, that can be conveniently refined by the CRF.
 Furthermore, a CRF provides the clear and sought probabilistic outcome in terms
-of the distributions $l_i$.
+of the distributions over $l_i$.
 
 A CRF is a discriminative and undirected graphical model globally conditioned on
 the observations. In our setting, we use the same graph structure
 $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$ as in Section~\ref{sec:initial} and
-the task of the CRF is to infer the label distributions $l_i$ for each node. The
-conditional joint distribution of the CRF is expressed as
+the task of the CRF is to infer the label distributions $l_i$ for each node.
+
+We want to express the conditional joint distribution of the CRF as
 
 \begin{eqnarray}
 \label{eqn:crf_joint}
@@ -33,9 +34,9 @@ p(\mathbf{l}\mid\mathbf{h},\Theta)\propto
 \psi(h_i,h_j,l_i,l_j,\Theta)\bigg),
 \end{eqnarray}
 
-where $\mathbf{l}=[l_1,l_2,\dots,l_{M'}]^\text{T}$, $\varphi=
+where $\mathbf{l}=[l_1,l_2,\dots,l_{M'}]^\text{T}$, and $\varphi=
 \lambda\,f(h_i,l_i,\Theta)$ and $\psi=\mu\,g(h_i,h_j,l_i,l_j,\Theta)$ are the
-\emph{node potential} and the \emph{edge potential} respectively. The potential
+\emph{node potential} and the \emph{edge potential}, respectively. The potential
 functions are positively defined functions. Intuitively, the node potential
 reflects the likelihood of $h_i$ being labeled $l_i$, and the edge potential the
 joint likelihood of $h_i$ and $h_j$ being labeled $l_i$ and $l_j$. In the
@@ -52,11 +53,14 @@ f(h_i,l_i=k,\Theta)=\pi_k\mathcal{N}(h_i\mid\mathbf{w}_k^\text{T}
 \end{equation}
 
 In Equ.~\eqref{eqn:feature_function}, we note that the CRF does not required a
-normalized feature function. Moreover, we have taken into account the
-measurement noise by adding up the two variances $\sigma^2_{h_i}$ and
+normalized feature function. Moreover, by adding up the two variances, we have
+inherently taken into account the measurement noise introduced by both error
+models, namely the cell variance $\sigma^2_{h_i}$ and the regression variance
 $\sigma^2_{k}$.
 
-The edge function is finally defined by means of sigmoid functions as
+In analogy to the approach presented in~\cite{siegemund10curb}, we express the
+inter-node dependencies by means of two symmetric sigmoid functions. Therefore,
+we define the edge function as
 
 \begin{eqnarray}
 \label{eqn:edge_function}
@@ -70,12 +74,14 @@ g(h_i,h_j,l_i=k,l_j=l,\Theta)=\phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
 \end{array} \right.
 \end{eqnarray}
 
-where $d_{ij}=|h_i-h_j|$ is the heights difference and $\sigma^2_{ij}=\sigma^2_i
-+\sigma^2_j$ the sum of the measurement variances. The two sigmoid functions
-intersect when $|h_i-h_j|=\sigma^2_i+\sigma^2_j$.
+where $d_{ij}=|h_i-h_j|$ is the absolute height difference between the
+neighboring cells $\mathcal{C}_i$ and $\mathcal{C}_j$. Additionally,
+$\sigma^2_{ij}=\sigma^2_i+\sigma^2_j$ represents the sum of the involved
+measurement variances. Hence, we again account for the errors in both cell
+models $\sigma^2_i$ and $\sigma^2_j$.
 
-Once the node and edge potential functions are defined, we can perform inference
-on the CRF. In our configuration, \emph{Loopy} Belief
+Once the node and edge potential functions are defined, we can finally perform
+inference on the CRF. In our configuration, \emph{Loopy} Belief
 Propagation (LBP)~\cite{weiss00correctness} is an appropriate approach. LBP is
 an approximate message-passing algorithm that computes the marginal distribution
 for each latent node $l_i$ conditioned on the observations $\mathbf{h}$. As

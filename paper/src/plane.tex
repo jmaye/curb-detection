@@ -1,33 +1,35 @@
-Given the responsibilities $\gamma_{ik}$, i.e. $p(l_i=k)$, for each grid cell
-$\mathcal{C}_i$, we show in this Section the derivations that lead to the
-estimation of an updated parameter set $\Theta^\text{new}$ using a modified
-linear regression framework.
+In this Section, we will derive the necessary steps for updating the parameter
+set $\Theta$. As we shall see, this will involve the responsibilities
+$\gamma_{ik}$, i.e. $p(l_i=k)$, in a weighted linear regression framework.
 
-The mixture weights are simply updated as follows:
-
+According to standard literature on mixture models, we may compute the weight
+$\pi_k$ of the k-th plane using the sum over cell responsibilities as follows
 \begin{equation}
 \label{eqn:weights}
-\pi_k = \frac{1}{M'}\sum_{i=1}^{M'}\gamma_{ik}.
+\pi_k = \frac{1}{M'}\sum_{i=1}^{M'}\gamma_{ik},
 \end{equation}
 
-The MLE of the other parameters are determined by maximizing the
-\emph{complete-data} log likelihood, i.e. $\log p(\mathbf{h}\mid\Theta)$, where
-$\mathbf{h}=[h_1,h_2,\dots,h_{M'}]^\text{T}$.
+where once more $M'$ corresponds to the number of valid cells in the DEM.
 
-The updated regression coefficients are computed as follows:
+The MLE of the other parameters are determined by maximizing the
+\emph{complete-data} log likelihood, which is denoted by
+$\log p(\mathbf{h}\mid\Theta)$ and $\mathbf{h}=[h_1,h_2,\dots,h_{M'}]^\text{T}$.
+
+In order to estimate the regression coefficients $\mathbf{w}_k$ of the k-th
+plane, we furthermore introduce the diagonal matrix
+$\mathbf{R}_k=\text{diag}(\gamma_{ik})$ composed of the cell responsibilities.
+We may then express the regression coefficients as a function of the
+responsibilities and the so-called \emph{design matrix} $\boldsymbol{\Phi}=
+[\boldsymbol{\phi}(\mathbf{c}_1), \boldsymbol{\phi}
+(\mathbf{c}_2),\dots,\boldsymbol{\phi}(\mathbf{c}_{M'})]^\text{T}$:
 
 \begin{equation}
 \label{eqn:coeff}
 \mathbf{w}_k = (\boldsymbol{\Phi}\mathbf{R}_k\boldsymbol{\Phi})^{-1}
-\boldsymbol{\Phi}^\text{T}\mathbf{R}_k\mathbf{h},
+\boldsymbol{\Phi}^\text{T}\mathbf{R}_k\mathbf{h}.
 \end{equation}
 
-where $\mathbf{R}_k=\text{diag}(\gamma_{ik})$ is a diagonal matrix and
-$\boldsymbol{\Phi}=[\boldsymbol{\phi}(\mathbf{c}_1), \boldsymbol{\phi}
-(\mathbf{c}_2),\dots,\boldsymbol{\phi}(\mathbf{c}_{M'})]^\text{T}$ is the
-\emph{design matrix}.
-
-Finally, the regression variances are modified as
+In a final step, the regression variances are modified according to
 
 \begin{equation}
 \label{eqn:coeff}
@@ -37,6 +39,6 @@ Finally, the regression variances are modified as
 
 The attentive reader might notice that, apart from the introduction of
 $\mathbf{R}_k$, these derivations are close to the case of the single linear
-regression. The responsibilities act here as a weight to the computations, that
+regression. Here, the responsibilities act as a weight to the computations, that
 is, they control the degree of influence of a particular point to the
 plane regression.
