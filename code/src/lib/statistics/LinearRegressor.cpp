@@ -15,7 +15,8 @@ using namespace Eigen;
 using namespace std;
 
 void LinearRegressor::estimate(const DEM& dem,
-  vector<vector<double> >& coeffsMatrix, vector<double>& variancesVector) {
+  vector<vector<double> >& coeffsMatrix, vector<double>& variancesVector,
+  vector<double>& weightsVector) {
   const vector<Cell>& cellsVector = dem.getCellsVector();
   uint32_t u32ValidCellsNbr = dem.getValidCellsNbr();
   uint32_t u32LabelsNbr = dem.getLabelsNbr();
@@ -32,22 +33,18 @@ void LinearRegressor::estimate(const DEM& dem,
       designMatrix(i, 2) = cellCenter.mf64Y;
       const vector<double>& labelsDistVector =
         cellsVector[j].getLabelsDistVector();
-      for (uint32_t k = 0; k < labelsDistVector.size(); k++) {
-        weightsMatrix(k, i) = labelsDistVector[k] /
-          cellsVector[j].getHeightDist().getVariance();
+      for (uint32_t k = 0; k < u32LabelsNbr; k++) {
+        weightsMatrix(k, i) = labelsDistVector[k];
       }
       i++;
     }
   }
-  double f64Normalizer = 0;
-  for (uint32_t i = 0; i < (uint32_t)weightsMatrix.rows(); i++)
-    f64Normalizer += weightsMatrix.row(i).sum() / dem.getValidCellsNbr();
-  for (uint32_t i = 0; i < (uint32_t)weightsMatrix.rows(); i++)
-    weightsMatrix.row(i) /= f64Normalizer;
   coeffsMatrix.clear();
   coeffsMatrix.resize(u32LabelsNbr);
   variancesVector.clear();
   variancesVector.resize(u32LabelsNbr);
+  weightsVector.clear();
+  weightsVector.resize(u32LabelsNbr);
   Map<VectorXd> variancesVectorMapped(&variancesVector[0], u32LabelsNbr);
   MatrixXd coeffsMatrixEigen(u32LabelsNbr, 3);
   for (uint32_t i = 0; i < u32LabelsNbr; i++) {
@@ -65,5 +62,38 @@ void LinearRegressor::estimate(const DEM& dem,
     coeffsMatrix[i][0] = coeffsMatrixEigen(i, 0);
     coeffsMatrix[i][1] = coeffsMatrixEigen(i, 1);
     coeffsMatrix[i][2] = coeffsMatrixEigen(i, 2);
+    weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
+  }
+//  cout << endl << coeffsMatrixEigen << endl << endl;
+//  cout << variancesVectorMapped << endl << endl;
+//  for (uint32_t i = 0; i < u32LabelsNbr; i++) {
+//    cout << weightsVector[i] << endl;
+//  }
+//  cout << endl;
+}
+
+void LinearRegressor::test(DEM& dem,
+  const vector<vector<double> >& coeffsMatrix,
+  const vector<double>& variancesVector, const vector<double>& weightsVector) {
+  const vector<Cell>& cellsVector = dem.getCellsVector();
+  for (uint32_t i = 0; i < cellsVector.size(); i++) {
+    if (cellsVector[i].getInvalidFlag() == false) {
+      vector<double> distVector(dem.getLabelsNbr());
+      for (uint32_t j = 0; j < dem.getLabelsNbr(); j++) {
+        const vector<double>& coeffVector = coeffsMatrix[j];
+        Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
+        VectorXd dataVector(coeffVector.size());
+        dataVector(0) = 1;
+        dataVector(1) = cellsVector[i].getCellCenter().mf64X;
+        dataVector(2) = cellsVector[i].getCellCenter().mf64Y;
+        distVector[j] = weightsVector[j] *
+          UniGaussian(cellsVector[i].getHeightDist().getMean(),
+          cellsVector[i].getHeightDist().getVariance()).pdf(coeffVectorMapped.dot(dataVector));
+//          UniGaussian(coeffVectorMapped.dot(dataVector),
+//          cellsVector[i].getHeightDist().getVariance() +
+//          variancesVector[j]).pdf(cellsVector[i].getHeightDist().getMean());
+      }
+      dem.test(i, distVector);
+    }
   }
 }

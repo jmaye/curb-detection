@@ -15,7 +15,8 @@ using namespace std;
 
 DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   const vector<vector<double> >& coeffsMatrix,
-  const vector<double>& variancesVector) throw (OutOfBoundException) {
+  const vector<double>& variancesVector, const vector<double>& weightsVector)
+  throw (OutOfBoundException) {
   vector<Cell> cellsVector = dem.getCellsVector();
   SetNbFeatures(5);
   SetNbParameters(5, 5);
@@ -29,9 +30,6 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
       featureVector.PushBack(cellsVector[i].getMAPLabelsDist());
       uint32_t u32NodeId =
         AddNode(featureVector, cellsVector[i].getMAPLabelsDist());
-      SetLabelDistribution(u32NodeId, Vector(&(cellsVector[i].
-        getLabelsDistVector()[0]), cellsVector[i].
-        getLabelsDistVector().size()));
       mIdMap[i] = u32NodeId;
     }
   }
@@ -58,8 +56,10 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   }
   mVariancesVector = variancesVector;
   mCoeffsMatrix = coeffsMatrix;
+  mWeightsVector = weightsVector;
   if (GetNbClasses() > variancesVector.size() ||
-    GetNbClasses() > coeffsMatrix.size())
+    GetNbClasses() > coeffsMatrix.size() ||
+    GetNbClasses() > weightsVector.size())
     throw OutOfBoundException("DEMCRF:DEMCRF(): invalid input arguments");
 }
 
@@ -103,23 +103,17 @@ ifstream& operator >> (ifstream& stream,
 }
 
 Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
-  Vector featureVector = GetNodeFeatures(u32NodeId);
-  UniGaussian pointGaussian(featureVector[0], featureVector[1]);
   const vector<double>& coeffVector = mCoeffsMatrix[i32Label];
   Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
   VectorXd dataVector(coeffVector.size());
+  Vector featureVector = GetNodeFeatures(u32NodeId);
   dataVector(0) = 1;
   dataVector(1) = featureVector[2];
   dataVector(2) = featureVector[3];
-  UniGaussian planeGaussian(coeffVectorMapped.dot(dataVector),
-    mVariancesVector[i32Label]);
   Vector value;
-  value.PushBack(1.0 / pointGaussian.KLDivergence(planeGaussian));
-//  map<uint32_t, uint32_t> ::const_iterator it;
-//  it = mIdMap.begin();
-//  while (it != mIdMap.end() && it->second != u32NodeId)
-//    ++it;
-//  cout << "Node: " << (*it).first << ", Label: " << i32Label << " Value: " << value << " Initial: " << featureVector[4] << endl;
+  value.PushBack(mWeightsVector[i32Label] *
+    UniGaussian(featureVector[0], featureVector[1]).
+    pdf(coeffVectorMapped.dot(dataVector)));
   return value;
 }
 
@@ -128,15 +122,13 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   Vector featureVector1 = GetNodeFeatures(u32NodeId1);
   Vector featureVector2 = GetNodeFeatures(u32NodeId2);
   Vector value;
-  UniGaussian point1Gaussian(featureVector1[0], featureVector1[1]);
-  UniGaussian point2Gaussian(featureVector2[0], featureVector2[1]);
   if (i32Label1 == i32Label2) {
-    value.PushBack(1.0 / (point1Gaussian.KLDivergence(point2Gaussian) +
-      point2Gaussian.KLDivergence(point1Gaussian)));
+    value.PushBack(1 - (1 / (1 + exp(featureVector1[1] + featureVector2[1] -
+      fabs(featureVector1[0] - featureVector2[0])))));
   }
   else {
-    value.PushBack(point1Gaussian.KLDivergence(point2Gaussian) +
-      point2Gaussian.KLDivergence(point1Gaussian));
+    value.PushBack(1 / (1 + exp(featureVector1[1] + featureVector2[1] -
+      fabs(featureVector1[0] - featureVector2[0]))));
   }
   return value;
 }
@@ -169,4 +161,15 @@ void DEMCRF::setVariancesVector(const vector<double>& variancesVector)
  if (GetNbClasses() > variancesVector.size())
     throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): invalid input arguments");
   mVariancesVector = variancesVector;
+}
+
+const vector<double>& DEMCRF::getWeightsVector() const {
+  return mWeightsVector;
+}
+
+void DEMCRF::setWeightsVector(const vector<double>& weightsVector)
+  throw (OutOfBoundException) {
+  if (GetNbClasses() > weightsVector.size())
+    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): invalid input arguments");
+  mWeightsVector = weightsVector;
 }

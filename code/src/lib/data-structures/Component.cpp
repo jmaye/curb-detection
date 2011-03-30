@@ -66,8 +66,8 @@ ifstream& operator >> (ifstream& stream,
 
 double Component::compare(const Component& other, uint32_t u32K) const
   throw (InvalidOperationException){
-  if (mNodesIndexList.size() == 0)
-    throw InvalidOperationException("Component::compare(): component is empty");
+  if (mNodesIndexList.size() == 0 || other.mNodesIndexList.size() == 0)
+    throw InvalidOperationException("Component::compare(): one of the component is empty");
   return fmin(mf64Int +
     (double)u32K / (double)mNodesIndexList.size(),
     other.mf64Int +

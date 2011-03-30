@@ -39,20 +39,26 @@ class DEMCRF : public CRF {
   std::map<uint32_t, uint32_t> mIdMap;
   std::vector<vector<double> > mCoeffsMatrix;
   std::vector<double> mVariancesVector;
+  std::vector<double> mWeightsVector;
 
 public:
   DEMCRF(const DEM& dem, const std::multiset<Edge, EdgeCompare>& edgeSet,
-    const vector<vector<double> >& coeffsMatrix,
-    const vector<double>& variancesVector) throw (OutOfBoundException);
+    const std::vector<vector<double> >& coeffsMatrix,
+    const std::vector<double>& variancesVector,
+    const std::vector<double>& weightsVector)
+    throw (OutOfBoundException);
   ~DEMCRF();
 
   const std::map<uint32_t, uint32_t>& getIdMap() const;
   const std::vector<vector<double> >& getCoeffsMatrix() const;
   const std::vector<double>& getVariancesVector() const;
+  const std::vector<double>& getWeightsVector() const;
   void setIdMap(const std::map<uint32_t, uint32_t>& idMap);
   void setCoeffsMatrix(const std::vector<vector<double> >& coeffsMatrix)
     throw (OutOfBoundException);
   void setVariancesVector(const std::vector<double>& variancesVector)
+    throw (OutOfBoundException);
+  void setWeightsVector(const std::vector<double>& weightsVector)
     throw (OutOfBoundException);
 
 protected:

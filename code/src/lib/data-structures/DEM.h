@@ -72,6 +72,8 @@ public:
   void setLabelsNbr(uint32_t u32LabelsNbr);
   void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
 
+  void test(uint32_t i, const std::vector<double>& distVector);
+
 protected:
 
 };

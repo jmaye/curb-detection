@@ -52,8 +52,8 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       pointsVector[i].mf64Y <= f64MaxY &&
       pointsVector[i].mf64Y >= f64MinY) {
       getCell(mu32CellsNbrX - 1 - floor((pointsVector[i].mf64X - mf64MinX) /
-        mf64CellSizeX), mu32CellsNbrY - 1 - floor((pointsVector[i].mf64Y +
-        f64MaxY) / mf64CellSizeY)).addPoint(pointsVector[i].mf64Z);
+        mf64CellSizeX), mu32CellsNbrY - 1 - floor((pointsVector[i].mf64Y + f64MaxY) /
+        mf64CellSizeY)).addPoint(pointsVector[i].mf64Z);
     }
   }
 }
@@ -194,4 +194,8 @@ const Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column) const
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
     throw OutOfBoundException("DEM::getCell(): invalid indices");
   return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
+}
+
+void DEM::test(uint32_t i, const std::vector<double>& distVector) {
+  mCellsVector[i].setLabelsDistVector(distVector);
 }
