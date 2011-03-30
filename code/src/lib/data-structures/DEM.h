@@ -33,6 +33,9 @@ class DEM {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
+  Cell& getCell(uint32_t u32Row, uint32_t u32Column)
+    throw (OutOfBoundException);
+
   double mf64CellSizeX;
   double mf64CellSizeY;
   uint32_t mu32CellsNbrX;
@@ -55,6 +58,8 @@ public:
   void accept(DEMVisitor& v) const;
 
   const std::vector<Cell>& getCellsVector() const;
+  const Cell& getCell(uint32_t u32Row, uint32_t u32Column) const
+    throw (OutOfBoundException);
   uint32_t getCellsNbrX() const;
   uint32_t getCellsNbrY() const;
   uint32_t getValidCellsNbr() const;

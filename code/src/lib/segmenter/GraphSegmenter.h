@@ -40,13 +40,13 @@ public:
           if ((*it).getWeight() <=
             componentsMap[u32C1Idx].compare(componentsMap[u32C2Idx], u32K)) {
               std::list<uint32_t>::iterator nodesIt;
-              for (nodesIt = componentsMap[u32C2Idx].mNodesIndexList.begin();
-                nodesIt != componentsMap[u32C2Idx].mNodesIndexList.end();
+              for (nodesIt =
+                componentsMap[u32C2Idx].getNodesIndexList().begin();
+                nodesIt != componentsMap[u32C2Idx].getNodesIndexList().end();
                 nodesIt++) {
                 labelsVector[*nodesIt] = u32C1Idx;
               }
-              componentsMap[u32C1Idx].mNodesIndexList.
-                merge(componentsMap[u32C2Idx].mNodesIndexList);
+              componentsMap[u32C1Idx].merge(componentsMap[u32C2Idx]);
               double f64Int = fmax(componentsMap[u32C1Idx].getInt(),
                 componentsMap[u32C2Idx].getInt());
               componentsMap[u32C1Idx].setInt(fmax(f64Int, (*it).getWeight()));
@@ -57,7 +57,7 @@ public:
       for (uint32_t i = 0; i < labelsVector.size(); i++)
         if (supportsMap.find(labelsVector[i]) == supportsMap.end())
           supportsMap[labelsVector[i]] =
-            componentsMap[labelsVector[i]].mNodesIndexList.size();
+            componentsMap[labelsVector[i]].getNodesIndexList().size();
     }
 
 protected:

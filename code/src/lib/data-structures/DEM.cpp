@@ -6,8 +6,6 @@
 #include "Sensor.h"
 #include "DEMCRF.h"
 
-#include <ANN/ANN.h>
-
 #include <iostream>
 #include <fstream>
 
@@ -23,11 +21,12 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     mf64MinX(f64MinX),
     mf64HeightMin(f64HeightMin),
     mf64HeightMax(f64HeightMax),
-    mu32ValidCellsNbr(u32CellsNbrX * u32CellsNbrY),
+    mu32ValidCellsNbr(0),
     mu32LabelsNbr(0) {
+  if (u32CellsNbrX == 0 || u32CellsNbrY == 0)
+    throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
   if (f64CellSizeX <= 0 || f64CellSizeY <= 0)
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
-  ANNpointArray cellCenters = annAllocPts(mu32CellsNbrX * mu32CellsNbrY, 2);
   double f64CurX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
@@ -36,19 +35,11 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
         Sensor::getNoise(f64CurX, f64CurY, 0)), MLEstimator(),
         Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
         Point2D(mf64CellSizeX, mf64CellSizeY)));
-      ANNpoint cellCenter = annAllocPt(2);
-      cellCenter[0] = f64CurX - mf64CellSizeX / 2.0;
-      cellCenter[1] = f64CurY - mf64CellSizeY / 2.0;
-      cellCenters[i * mu32CellsNbrY + j] = cellCenter;
       f64CurY -= mf64CellSizeY;
     }
     f64CurX -= mf64CellSizeX;
     f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   }
-  ANNkd_tree* kdTree = new ANNkd_tree(cellCenters,
-    mu32CellsNbrX * mu32CellsNbrY, 2);
-  ANNidxArray nnIdxArray = new ANNidx[1];
-  ANNdistArray distArray = new ANNdist[1];
   const vector<Point3D>& pointsVector = pointCloud.getPointsVector();
   double f64MaxX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64MaxY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
@@ -60,17 +51,11 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       pointsVector[i].mf64X >= mf64MinX &&
       pointsVector[i].mf64Y <= f64MaxY &&
       pointsVector[i].mf64Y >= f64MinY) {
-      ANNpoint queryPoint = annAllocPt(2);
-      queryPoint[0] = pointsVector[i].mf64X;
-      queryPoint[1] = pointsVector[i].mf64Y;
-      kdTree->annkSearch(queryPoint, 1, nnIdxArray, distArray, 0);
-      mCellsVector[nnIdxArray[0]].addPoint(pointsVector[i].mf64Z);
+      getCell(mu32CellsNbrX - 1 - floor((pointsVector[i].mf64X - mf64MinX) /
+        mf64CellSizeX), mu32CellsNbrY - 1 - floor((pointsVector[i].mf64Y +
+        f64MaxY) / mf64CellSizeY)).addPoint(pointsVector[i].mf64Z);
     }
   }
-  delete [] nnIdxArray;
-  delete [] distArray;
-  delete kdTree;
-  annClose();
 }
 
 DEM::~DEM() {
@@ -195,4 +180,18 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
       mCellsVector[i].setLabelsDistVector(distVector);
     }
   }
+}
+
+Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column)
+  throw (OutOfBoundException) {
+  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
+    throw OutOfBoundException("DEM::getCell(): invalid indices");
+  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
+}
+
+const Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column) const
+  throw (OutOfBoundException) {
+  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
+    throw OutOfBoundException("DEM::getCell(): invalid indices");
+  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
 }

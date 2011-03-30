@@ -15,9 +15,9 @@ class Cell;
 
 class DEMVisitor : public Visitor {
   struct Color {
-    GLbyte mRedColorByte;
-    GLbyte mGreenColorByte;
-    GLbyte mBlueColorByte;
+    GLfloat mRedColorByte;
+    GLfloat mGreenColorByte;
+    GLfloat mBlueColorByte;
   };
 
   friend std::ostream& operator << (std::ostream& stream,
@@ -45,6 +45,7 @@ public:
 
   void visit(const DEM* dem);
   void visit(const Cell* cell) const;
+  void setColor(Color& color);
 
 protected:
 

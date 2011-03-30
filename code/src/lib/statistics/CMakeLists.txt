@@ -1,3 +1,1 @@
-remake_include(/usr/include/eigen2)
-remake_add_library(statistics LINK exceptions)
-remake_add_headers()
+remake_add_library(statistics LINK ${GRAPHTOOL_GRAPHMOD_LIBRARY} exceptions)

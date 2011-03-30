@@ -78,7 +78,7 @@ double Component::getInt() const {
   return mf64Int;
 }
 
-const list<uint32_t>& Component::getNodesIndexList() const {
+list<uint32_t>& Component::getNodesIndexList() {
   return mNodesIndexList;
 }
 
@@ -90,4 +90,8 @@ void Component::setInt(double f64Int) throw (OutOfBoundException) {
 
 void Component::setNodesIndexList(const list<uint32_t>& nodesIndexList) {
   mNodesIndexList = nodesIndexList;
+}
+
+void Component::merge(Component& other) {
+  mNodesIndexList.merge(other.getNodesIndexList());
 }

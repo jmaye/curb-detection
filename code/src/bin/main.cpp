@@ -53,6 +53,7 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+#if 0
   f64Time = getMsCount();
   DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector);
   cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
@@ -63,7 +64,6 @@ int main(int argc ,char** argv) {
   crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
   cout << "CRF inference: " << getMsCount() - f64Time << " [ms]" << endl;
   dem.setLabelsDist(crf);
-#if 1
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;

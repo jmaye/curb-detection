@@ -1,3 +1,6 @@
-remake_find_library(graphtool-graphmod CRF.hh package graphtool)
+remake_find_library(graphtool-graphmod CRF.hh PACKAGE graphtool)
+remake_find_file(eigen2/Eigen/Core PACKAGE libeigen2-dev)
 remake_include(${GRAPHTOOL_GRAPHMOD_HEADERS})
+remake_include(${LIBEIGEN2_DEV_FILE}/eigen2)
+remake_project_header(config.h.remake)
 remake_add_directories(lib bin)

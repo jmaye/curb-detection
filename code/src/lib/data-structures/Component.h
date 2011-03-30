@@ -25,6 +25,7 @@ class Component {
   virtual void write(std::ofstream& stream) const;
 
   double mf64Int;
+  std::list<uint32_t> mNodesIndexList;
 
 public:
   Component();
@@ -33,13 +34,12 @@ public:
   Component(const Component& other);
   Component& operator = (const Component& other);
 
-  std::list<uint32_t> mNodesIndexList;
-
   double compare(const Component& other, uint32_t u32K) const
     throw (InvalidOperationException);
+  void merge(Component& other);
 
   double getInt() const;
-  const std::list<uint32_t>& getNodesIndexList() const;
+  std::list<uint32_t>& getNodesIndexList();
   void setInt(double f64Int) throw (OutOfBoundException);
   void setNodesIndexList(const std::list<uint32_t>& nodesIndexList);
 

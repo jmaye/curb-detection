@@ -11,7 +11,7 @@ UniGaussian::UniGaussian(double f64Mean, double f64Variance)
   throw (OutOfBoundException) : mf64Mean(f64Mean),
                                 mf64Variance(f64Variance) {
   if (mf64Variance <= 0)
-    throw OutOfBoundException("UniGaussian::UniGaussian(): mf64Variance should be bigger than 0");
+    throw OutOfBoundException("UniGaussian::UniGaussian(): mf64Variance must be greater than 0");
 }
 
 UniGaussian::UniGaussian(const UniGaussian& other)
@@ -98,5 +98,5 @@ void UniGaussian::setMean(double f64Mean) {
 void UniGaussian::setVariance(double f64Variance) throw (OutOfBoundException) {
   mf64Variance = f64Variance;
   if (mf64Variance <= 0)
-    throw OutOfBoundException("UniGaussian::setVariance(): mf64Variance should be bigger than 0");
+    throw OutOfBoundException("UniGaussian::setVariance(): mf64Variance must be greater than 0");
 }
