@@ -33,7 +33,7 @@ int main(int argc ,char** argv) {
   pointCloudFile >> pointCloud;
   cout << "Reading point cloud: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
-  DEM dem(pointCloud, 0.15, 0.15, 30, 30);
+  DEM dem(pointCloud, 0.15, 0.15, 30, 30, 1, -2, 1);
   cout << "Creating DEM: " << getMsCount() - f64Time << " [ms]" << endl;
   multiset<Edge, EdgeCompare> edgeSet;
   f64Time = getMsCount();
