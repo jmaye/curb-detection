@@ -1,3 +1,6 @@
+remake_find_package(OpenGL CONFIG gl)
+remake_find_package(GLU CONFIG glu)
+remake_find_package(GLUT)
 remake_find_library(graphtool-graphmod CRF.hh PACKAGE graphtool)
 remake_find_file(eigen2/Eigen/Core PACKAGE libeigen2-dev)
 remake_include(${GRAPHTOOL_GRAPHMOD_HEADERS})

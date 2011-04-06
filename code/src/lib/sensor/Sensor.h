@@ -1,8 +1,6 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-#include <iosfwd>
-
 class Sensor {
   Sensor();
 

@@ -64,6 +64,8 @@ public:
   uint32_t getCellsNbrY() const;
   uint32_t getValidCellsNbr() const;
   uint32_t getLabelsNbr() const;
+  const Cell& operator () (uint32_t u32Row, uint32_t u32Column) const
+    throw (OutOfBoundException);
   void setInitialLabelsVector(const std::vector<uint32_t>& labelsVector,
     const std::map<uint32_t, uint32_t>& supportsMap)
     throw (InvalidOperationException);
@@ -71,8 +73,6 @@ public:
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
   void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
-
-  void test(uint32_t i, const std::vector<double>& distVector);
 
 protected:
 

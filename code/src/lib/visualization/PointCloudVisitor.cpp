@@ -65,9 +65,8 @@ void PointCloudVisitor::visit(const PointCloud* pointCloud) {
   glPointSize(mf64PointSize);
   glBegin(GL_POINTS);
   glColor3f(mRedColorByte, mGreenColorByte, mBlueColorByte);
-  const vector<Point3D>& pointsVector = pointCloud->getPointsVector();
-  for (uint32_t i = 0; i < pointsVector.size(); i++)
-    pointsVector[i].accept(*this);
+  for (uint32_t i = 0; i < pointCloud->getSize(); i++)
+    (*pointCloud)[i].accept(*this);
   glEnd();
   glEndList();
   mGLListVector.push_back(glListIdx);

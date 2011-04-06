@@ -3,9 +3,12 @@
 
 #include "Point3D.h"
 #include "PointCloudVisitor.h"
+#include "OutOfBoundException.h"
 
 #include <iosfwd>
 #include <vector>
+
+#include <stdint.h>
 
 class PointCloud {
   friend std::ostream& operator << (std::ostream& stream,
@@ -31,8 +34,10 @@ public:
   PointCloud();
   ~PointCloud();
 
-  const std::vector<Point3D>& getPointsVector() const;
+  const Point3D& operator [] (uint32_t u32Idx) const
+    throw (OutOfBoundException);
   void accept(PointCloudVisitor& v) const;
+  uint32_t getSize() const;
 
 protected:
 

@@ -2,6 +2,7 @@
 #define LINEARREGRESSOR_H
 
 #include "DEM.h"
+#include "OutOfBoundException.h"
 
 #include <iosfwd>
 #include <vector>
@@ -11,12 +12,9 @@ class LinearRegressor {
 
 public:
   static void estimate(const DEM& dem,
-    std::vector<std::vector<double> >& weightsMatrix,
-    std::vector<double>& varianceVector, std::vector<double>& weightsVector);
-  static void test(DEM& dem,
-    const std::vector<std::vector<double> >& coeffsMatrix,
-    const std::vector<double>& variancesVector,
-    const std::vector<double>& weightsVector);
+    std::vector<std::vector<double> >& coeffsMatrix,
+    std::vector<double>& variancesVector, std::vector<double>& weightsVector)
+    throw (OutOfBoundException);
 
 protected:
 

@@ -56,10 +56,17 @@ ifstream& operator >> (ifstream& stream,
   return stream;
 }
 
-const vector<Point3D>& PointCloud::getPointsVector() const {
-  return mPointsVector;
-}
-
 void PointCloud::accept(PointCloudVisitor& v) const {
   v.visit(this);
+}
+
+const Point3D& PointCloud::operator [] (uint32_t u32Idx) const
+  throw (OutOfBoundException) {
+  if (u32Idx >= mPointsVector.size())
+    throw OutOfBoundException("PointCloud::operator []: invalid index");
+  return mPointsVector[u32Idx];
+}
+
+uint32_t PointCloud::getSize() const {
+  return mPointsVector.size();
 }

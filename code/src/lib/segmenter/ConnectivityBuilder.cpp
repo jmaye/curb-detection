@@ -1,5 +1,7 @@
 #include "ConnectivityBuilder.h"
 
+#include "Cell.h"
+
 #include <vector>
 
 #include <stdint.h>
@@ -8,6 +10,7 @@ using namespace std;
 
 void ConnectivityBuilder::build(const DEM& dem,
   multiset<Edge, EdgeCompare>& edgeSet) {
+  edgeSet.clear();
   uint32_t u32CurRow = 0;
   uint32_t u32CurColumn = 0;
   uint32_t u32CellsNbrX = dem.getCellsNbrX();

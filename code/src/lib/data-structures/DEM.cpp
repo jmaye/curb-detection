@@ -40,20 +40,21 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     f64CurX -= mf64CellSizeX;
     f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   }
-  const vector<Point3D>& pointsVector = pointCloud.getPointsVector();
   double f64MaxX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64MaxY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
   double f64MinY = - f64MaxY;
-  for (uint32_t i = 0; i < pointsVector.size(); i++) {
-    if (pointsVector[i].mf64Z <= mf64HeightMax &&
-      pointsVector[i].mf64Z >= mf64HeightMin &&
-      pointsVector[i].mf64X <= f64MaxX &&
-      pointsVector[i].mf64X >= mf64MinX &&
-      pointsVector[i].mf64Y <= f64MaxY &&
-      pointsVector[i].mf64Y >= f64MinY) {
-      getCell(mu32CellsNbrX - 1 - floor((pointsVector[i].mf64X - mf64MinX) /
-        mf64CellSizeX), mu32CellsNbrY - 1 - floor((pointsVector[i].mf64Y + f64MaxY) /
-        mf64CellSizeY)).addPoint(pointsVector[i].mf64Z);
+  for (uint32_t i = 0; i < pointCloud.getSize(); i++) {
+    const Point3D& point3D = pointCloud[i];
+    if (point3D.mf64Z <= mf64HeightMax &&
+      point3D.mf64Z >= mf64HeightMin &&
+      point3D.mf64X <= f64MaxX &&
+      point3D.mf64X >= mf64MinX &&
+      point3D.mf64Y <= f64MaxY &&
+      point3D.mf64Y >= f64MinY) {
+      getCell(mu32CellsNbrX - 1 - floor((point3D.mf64X - mf64MinX) /
+        mf64CellSizeX),
+        mu32CellsNbrY - 1 - floor((point3D.mf64Y + f64MaxY) /
+        mf64CellSizeY)).addPoint(point3D.mf64Z);
     }
   }
 }
@@ -196,6 +197,9 @@ const Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column) const
   return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
 }
 
-void DEM::test(uint32_t i, const std::vector<double>& distVector) {
-  mCellsVector[i].setLabelsDistVector(distVector);
+const Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column) const
+  throw (OutOfBoundException) {
+  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
+    throw OutOfBoundException("DEM::operator (): invalid indices");
+  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
 }

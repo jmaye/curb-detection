@@ -60,7 +60,6 @@ void DEMVisitor::visit(const DEM* dem) {
   GLuint glListIdx = glGenLists(1);
   glNewList(glListIdx, GL_COMPILE);
   glPointSize(2.0);
-  const vector<Cell>& cellsVector = dem->getCellsVector();
   map<uint32_t, Color>::iterator it;
   srand(time(NULL));
   for (uint32_t i = 0; i < dem->getLabelsNbr(); i++) {
@@ -68,8 +67,10 @@ void DEMVisitor::visit(const DEM* dem) {
     setColor(color);
     mColorMap[i] = color;
   }
-  for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    cellsVector[i].accept(*this);
+  for (uint32_t i = 0; i < dem->getCellsNbrX(); i++) {
+    for (uint32_t j =  0; j < dem->getCellsNbrY(); j++) {
+      dem->getCell(i, j).accept(*this);
+    }
   }
   glEndList();
   mGLListVector.push_back(glListIdx);

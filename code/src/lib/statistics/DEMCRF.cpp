@@ -17,34 +17,37 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   const vector<vector<double> >& coeffsMatrix,
   const vector<double>& variancesVector, const vector<double>& weightsVector)
   throw (OutOfBoundException) {
-  vector<Cell> cellsVector = dem.getCellsVector();
-  SetNbFeatures(5);
-  SetNbParameters(5, 5);
-  for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    if (cellsVector[i].getInvalidFlag() == false) {
-      Vector featureVector;
-      featureVector.PushBack(cellsVector[i].getHeightDist().getMean());
-      featureVector.PushBack(cellsVector[i].getHeightDist().getVariance());
-      featureVector.PushBack(cellsVector[i].getCellCenter().mf64X);
-      featureVector.PushBack(cellsVector[i].getCellCenter().mf64Y);
-      featureVector.PushBack(cellsVector[i].getMAPLabelsDist());
-      uint32_t u32NodeId =
-        AddNode(featureVector, cellsVector[i].getMAPLabelsDist());
-      mIdMap[i] = u32NodeId;
+  SetNbFeatures(4);
+  SetNbParameters(4, 4);
+  for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
+    for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
+      const Cell& cell = dem.getCell(i, j);
+      if (cell.getInvalidFlag() == false) {
+        Vector featureVector;
+        featureVector.PushBack(cell.getHeightDist().getMean());
+        featureVector.PushBack(cell.getHeightDist().getVariance());
+        featureVector.PushBack(cell.getCellCenter().mf64X);
+        featureVector.PushBack(cell.getCellCenter().mf64Y);
+        uint32_t u32NodeId = AddNode(featureVector, cell.getMAPLabelsDist());
+        mIdMap[i * dem.getCellsNbrY() + j] = u32NodeId;
+      }
     }
   }
-  for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    if (cellsVector[i].getInvalidFlag() == false) {
-      Vector labelsDistVectorCRF(GetNbClasses());
-      const vector<double>& labelsDistVector =
-        cellsVector[i].getLabelsDistVector();
-      map<int, uint>const& labelMap = GetLabelMap();
-      map<int, uint>::const_iterator it;
-      for (uint32_t j = 0; j < GetNbClasses(); j++) {
-        it = labelMap.find(j);
-        labelsDistVectorCRF[(*it).second] = labelsDistVector[j];
+  for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
+    for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
+      const Cell& cell = dem.getCell(i, j);
+      if (cell.getInvalidFlag() == false) {
+        Vector labelsDistVectorCRF(GetNbClasses());
+        const vector<double>& labelsDistVector = cell.getLabelsDistVector();
+        map<int, uint>const& labelMap = GetLabelMap();
+        map<int, uint>::const_iterator it;
+        for (uint32_t k = 0; k < GetNbClasses(); k++) {
+          it = labelMap.find(k);
+          labelsDistVectorCRF[(*it).second] = labelsDistVector[k];
+        }
+        SetLabelDistribution(mIdMap[i * dem.getCellsNbrY()],
+          labelsDistVectorCRF);
       }
-      SetLabelDistribution(mIdMap[i], labelsDistVectorCRF);
     }
   }
   multiset<Edge>::iterator setIt;
@@ -114,6 +117,9 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
   value.PushBack(mWeightsVector[i32Label] *
     UniGaussian(featureVector[0], featureVector[1]).
     pdf(coeffVectorMapped.dot(dataVector)));
+//  value.PushBack(mWeightsVector[i32Label] *
+//    UniGaussian(featureVector[0], mVariancesVector[i32Label] + featureVector[1]).
+//    pdf(coeffVectorMapped.dot(dataVector)));
   return value;
 }
 
