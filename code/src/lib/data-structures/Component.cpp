@@ -10,18 +10,18 @@ using namespace std;
 Component::Component() : mf64Int(0) {
 }
 
-Component::Component(uint32_t u32Idx) : mf64Int(0) {
-  mNodesIndexList.push_back(u32Idx);
+Component::Component(pair<uint32_t, uint32_t> nodeCoordinates) : mf64Int(0) {
+  mNodesList.push_back(nodeCoordinates);
 }
 
 Component::Component(const Component& other)
   : mf64Int(other.mf64Int),
-    mNodesIndexList(other.mNodesIndexList) {
+    mNodesList(other.mNodesList) {
 }
 
 Component& Component::operator = (const Component& other) {
   mf64Int = other.mf64Int;
-  mNodesIndexList = other.mNodesIndexList;
+  mNodesList = other.mNodesList;
   return *this;
 }
 
@@ -66,20 +66,20 @@ ifstream& operator >> (ifstream& stream,
 
 double Component::compare(const Component& other, uint32_t u32K) const
   throw (InvalidOperationException){
-  if (mNodesIndexList.size() == 0 || other.mNodesIndexList.size() == 0)
+  if (mNodesList.size() == 0 || other.mNodesList.size() == 0)
     throw InvalidOperationException("Component::compare(): one of the component is empty");
   return fmin(mf64Int +
-    (double)u32K / (double)mNodesIndexList.size(),
+    (double)u32K / (double)mNodesList.size(),
     other.mf64Int +
-    (double)u32K / (double)other.mNodesIndexList.size());
+    (double)u32K / (double)other.mNodesList.size());
 }
 
 double Component::getInt() const {
   return mf64Int;
 }
 
-list<uint32_t>& Component::getNodesIndexList() {
-  return mNodesIndexList;
+list<pair<uint32_t, uint32_t> >& Component::getNodesList() {
+  return mNodesList;
 }
 
 void Component::setInt(double f64Int) throw (OutOfBoundException) {
@@ -88,10 +88,10 @@ void Component::setInt(double f64Int) throw (OutOfBoundException) {
   mf64Int = f64Int;
 }
 
-void Component::setNodesIndexList(const list<uint32_t>& nodesIndexList) {
-  mNodesIndexList = nodesIndexList;
+void Component::setNodesList(const list<pair<uint32_t, uint32_t> >& nodesList) {
+  mNodesList = nodesList;
 }
 
 void Component::merge(Component& other) {
-  mNodesIndexList.merge(other.getNodesIndexList());
+  mNodesList.merge(other.getNodesList());
 }

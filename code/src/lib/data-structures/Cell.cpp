@@ -12,7 +12,7 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mMLEstimator(estimator),
     mCellCenter(cellCenter),
     mCellSize(cellSize),
-    mbInvalidFlag(false) {
+    mbInvalidFlag(true) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0)
     throw OutOfBoundException("Cell::Cell(): cell size must be positive");
 }

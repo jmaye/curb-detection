@@ -40,14 +40,13 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   ConnectivityBuilder::build(dem, edgeSet);
   cout << "Building connectivity: " << getMsCount() - f64Time << " [ms]" << endl;
-  vector<uint32_t> labelsVector;
+  map<pair<uint32_t, uint32_t>, uint32_t> labelsMap;
   map<uint32_t, uint32_t> supportsMap;
   f64Time = getMsCount();
-  GraphSegmenter::segment(dem.getCellsVector(), edgeSet, labelsVector,
-    supportsMap, 100);
+  GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 100);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
-  dem.setInitialLabelsVector(labelsVector, supportsMap);
+  dem.setInitialLabels(labelsMap, supportsMap);
   cout << "Setting initial labels: " << getMsCount() - f64Time << " [ms]" << endl;
   vector<vector<double> > coeffsMatrix;
   vector<double> variancesVector;
@@ -55,7 +54,6 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector, weightsVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
-  //LinearRegressor::test(dem, coeffsMatrix, variancesVector, weightsVector);
   f64Time = getMsCount();
   DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
   cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
@@ -63,7 +61,7 @@ int main(int argc ,char** argv) {
   nodesWeightsVector.PushBack(1.0);
   edgesWeightsVector.PushBack(1.0);
   EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
-    variancesVector, weightsVector, 5);
+    variancesVector, weightsVector, 0);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);

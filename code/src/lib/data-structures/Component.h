@@ -25,11 +25,11 @@ class Component {
   virtual void write(std::ofstream& stream) const;
 
   double mf64Int;
-  std::list<uint32_t> mNodesIndexList;
+  std::list<std::pair<uint32_t, uint32_t> > mNodesList;
 
 public:
   Component();
-  Component(uint32_t u32Idx);
+  Component(std::pair<uint32_t, uint32_t> nodeCoordinates);
   ~Component();
   Component(const Component& other);
   Component& operator = (const Component& other);
@@ -39,9 +39,10 @@ public:
   void merge(Component& other);
 
   double getInt() const;
-  std::list<uint32_t>& getNodesIndexList();
+  std::list<std::pair<uint32_t, uint32_t> >& getNodesList();
+
   void setInt(double f64Int) throw (OutOfBoundException);
-  void setNodesIndexList(const std::list<uint32_t>& nodesIndexList);
+  void setNodesList(const std::list<std::pair<uint32_t, uint32_t> >& nodesList);
 
 protected:
 

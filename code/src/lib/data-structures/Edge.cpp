@@ -5,24 +5,24 @@
 
 using namespace std;
 
-Edge::Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx)
-  throw (OutOfBoundException)
+Edge::Edge(double f64Weight, pair<uint32_t, uint32_t> node1,
+  pair<uint32_t, uint32_t> node2) throw (OutOfBoundException)
   : mf64Weight(f64Weight),
-    mu32Node1Idx(u32Node1Idx),
-    mu32Node2Idx(u32Node2Idx) {
+    mNode1(node1),
+    mNode2(node2) {
   if (f64Weight <= 0)
     throw OutOfBoundException("Edge::Edge(): weight must be greater than 0");
 }
 
 Edge::Edge(const Edge& other) : mf64Weight(other.mf64Weight),
-                                mu32Node1Idx(other.mu32Node1Idx),
-                                mu32Node2Idx(other.mu32Node2Idx) {
+                                mNode1(other.mNode1),
+                                mNode2(other.mNode2) {
 }
 
 Edge& Edge::operator = (const Edge& other) {
   mf64Weight = other.mf64Weight;
-  mu32Node1Idx = other.mu32Node1Idx;
-  mu32Node2Idx = other.mu32Node2Idx;
+  mNode1 = other.mNode1;
+  mNode2 = other.mNode2;
   return *this;
 }
 
@@ -69,12 +69,12 @@ double Edge::getWeight() const {
   return mf64Weight;
 }
 
-uint32_t Edge::getNode1Idx() const {
-  return mu32Node1Idx;
+pair<uint32_t, uint32_t> Edge::getNode1() const {
+  return mNode1;
 }
 
-uint32_t Edge::getNode2Idx() const {
-  return mu32Node2Idx;
+pair<uint32_t, uint32_t> Edge::getNode2() const {
+  return mNode2;
 }
 
 void Edge::setWeight(double f64Weight) throw (OutOfBoundException) {
@@ -83,10 +83,10 @@ void Edge::setWeight(double f64Weight) throw (OutOfBoundException) {
   mf64Weight = f64Weight;
 }
 
-void Edge::setNode1Idx(uint32_t u32Node1Idx) {
-  mu32Node1Idx = u32Node1Idx;
+void Edge::setNode1(pair<uint32_t, uint32_t> node1) {
+  mNode1 = node1;
 }
 
-void Edge::setNode2Idx(uint32_t u32Node2Idx) {
-  mu32Node2Idx = u32Node2Idx;
+void Edge::setNode2(pair<uint32_t, uint32_t> node2) {
+  mNode2 = node2;
 }

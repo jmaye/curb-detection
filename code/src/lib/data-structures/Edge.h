@@ -23,22 +23,23 @@ class Edge {
   virtual void write(std::ofstream& stream) const;
 
   double mf64Weight;
-  uint32_t mu32Node1Idx;
-  uint32_t mu32Node2Idx;
+  std::pair<uint32_t, uint32_t> mNode1;
+  std::pair<uint32_t, uint32_t> mNode2;
 
 public:
-  Edge(double f64Weight, uint32_t u32Node1Idx, uint32_t u32Node2Idx)
-    throw (OutOfBoundException);
+  Edge(double f64Weight, std::pair<uint32_t, uint32_t> mNode1,
+    std::pair<uint32_t, uint32_t> mNode2) throw (OutOfBoundException);
   Edge(const Edge& other);
   Edge& operator = (const Edge& other);
   ~Edge();
 
   double getWeight() const;
-  uint32_t getNode1Idx() const;
-  uint32_t getNode2Idx() const;
+  std::pair<uint32_t, uint32_t> getNode1() const;
+  std::pair<uint32_t, uint32_t> getNode2() const;
+
   void setWeight(double f64Weight) throw (OutOfBoundException);
-  void setNode1Idx(uint32_t u32Node1Idx);
-  void setNode2Idx(uint32_t u32Node2Idx);
+  void setNode1(std::pair<uint32_t, uint32_t> node1);
+  void setNode2(std::pair<uint32_t, uint32_t> node2);
 
 protected:
 

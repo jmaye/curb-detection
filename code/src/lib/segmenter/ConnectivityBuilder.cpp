@@ -1,9 +1,5 @@
 #include "ConnectivityBuilder.h"
 
-#include "Cell.h"
-
-#include <vector>
-
 #include <stdint.h>
 
 using namespace std;
@@ -11,30 +7,20 @@ using namespace std;
 void ConnectivityBuilder::build(const DEM& dem,
   multiset<Edge, EdgeCompare>& edgeSet) {
   edgeSet.clear();
-  uint32_t u32CurRow = 0;
-  uint32_t u32CurColumn = 0;
-  uint32_t u32CellsNbrX = dem.getCellsNbrX();
-  uint32_t u32CellsNbrY = dem.getCellsNbrY();
-  const std::vector<Cell>& cellsVector = dem.getCellsVector();
-  for (uint32_t i = 0; i < cellsVector.size(); i++) {
-    if (cellsVector[i].getMLEstimator().getPointsNbr() != 0) {
-      uint32_t u32IdxDown = (u32CurRow + 1) * u32CellsNbrY + u32CurColumn;
-      if ((u32CurRow + 1) < u32CellsNbrX &&
-        cellsVector[u32IdxDown].getMLEstimator().getPointsNbr() != 0) {
-        edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxDown]),
-          i, u32IdxDown));
+  for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
+    for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
+      if (dem(i, j).getMLEstimator().getPointsNbr() != 0) {
+        if ((i + 1) < dem.getCellsNbrX() &&
+          dem(i + 1, j).getMLEstimator().getPointsNbr() != 0) {
+          edgeSet.insert(Edge(dem(i, j).compare(dem(i + 1, j)),
+            make_pair(i, j), make_pair(i + 1, j)));
+        }
+        if ((j + 1) < dem.getCellsNbrY() &&
+          dem(i, j + 1).getMLEstimator().getPointsNbr() != 0) {
+          edgeSet.insert(Edge(dem(i, j).compare(dem(i, j + 1)),
+            make_pair(i, j), make_pair(i, j + 1)));
+        }
       }
-      uint32_t u32IdxRight = u32CurRow * u32CellsNbrY + u32CurColumn + 1;
-      if ((u32CurColumn + 1) < u32CellsNbrY &&
-        cellsVector[u32IdxRight].getMLEstimator().getPointsNbr() != 0) {
-        edgeSet.insert(Edge(cellsVector[i].compare(cellsVector[u32IdxRight]),
-          i, u32IdxRight));
-      }
-    }
-    u32CurColumn++;
-    if (u32CurColumn == u32CellsNbrY) {
-      u32CurColumn = 0;
-      u32CurRow++;
     }
   }
 }

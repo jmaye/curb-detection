@@ -69,8 +69,9 @@ void DEMVisitor::visit(const DEM* dem) {
   }
   for (uint32_t i = 0; i < dem->getCellsNbrX(); i++) {
     for (uint32_t j =  0; j < dem->getCellsNbrY(); j++) {
-      dem->getCell(i, j).accept(*this);
+      (*dem)(i, j).accept(*this);
     }
+    cout << endl;
   }
   glEndList();
   mGLListVector.push_back(glListIdx);
@@ -80,6 +81,7 @@ void DEMVisitor::visit(const Cell* cell) const {
   map<uint32_t, Color>::const_iterator it;
   if (cell->getInvalidFlag() == false) {
     uint32_t u32LabelIdx = cell->getMAPLabelsDist();
+    cout << u32LabelIdx << " ";
     it = mColorMap.find(u32LabelIdx);
     Color color = (*it).second;
     glColor3f(color.mRedColorByte, color.mGreenColorByte, color.mBlueColorByte);
@@ -97,6 +99,8 @@ void DEMVisitor::visit(const Cell* cell) const {
       cellCenter.mf64Y + cellSize.mf64Y / 2.0, f64CellHeightMean);
     glEnd();
   }
+  else
+    cout << "  ";
 }
 
 void DEMVisitor::setColor(Color& color) {

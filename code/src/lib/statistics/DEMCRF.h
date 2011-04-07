@@ -36,7 +36,7 @@ class DEMCRF : public CRF {
   Vector FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
     int32_t i32Label1, int32_t i32Label2) const;
 
-  std::map<uint32_t, uint32_t> mIdMap;
+  std::map<std::pair<uint32_t, uint32_t>, uint32_t> mIdMap;
   std::vector<vector<double> > mCoeffsMatrix;
   std::vector<double> mVariancesVector;
   std::vector<double> mWeightsVector;
@@ -49,11 +49,12 @@ public:
     throw (OutOfBoundException);
   ~DEMCRF();
 
-  const std::map<uint32_t, uint32_t>& getIdMap() const;
+  const std::map<std::pair<uint32_t, uint32_t>, uint32_t>& getIdMap() const;
   const std::vector<vector<double> >& getCoeffsMatrix() const;
   const std::vector<double>& getVariancesVector() const;
   const std::vector<double>& getWeightsVector() const;
-  void setIdMap(const std::map<uint32_t, uint32_t>& idMap);
+
+  void setIdMap(const std::map<std::pair<uint32_t, uint32_t>, uint32_t>& idMap);
   void setCoeffsMatrix(const std::vector<vector<double> >& coeffsMatrix)
     throw (OutOfBoundException);
   void setVariancesVector(const std::vector<double>& variancesVector)

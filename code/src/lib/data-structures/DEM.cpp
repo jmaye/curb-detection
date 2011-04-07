@@ -13,7 +13,8 @@ using namespace std;
 
 DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
   uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64MinX,
-  double f64HeightMin, double f64HeightMax) throw (OutOfBoundException)
+  double f64HeightMin, double f64HeightMax, uint32_t u32MinPointsPerPlane)
+  throw (OutOfBoundException)
   : mf64CellSizeX(f64CellSizeX),
     mf64CellSizeY(f64CellSizeY),
     mu32CellsNbrX(u32CellsNbrX),
@@ -22,7 +23,8 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     mf64HeightMin(f64HeightMin),
     mf64HeightMax(f64HeightMax),
     mu32ValidCellsNbr(0),
-    mu32LabelsNbr(0) {
+    mu32LabelsNbr(0),
+    mu32MinPointsPerPlane(u32MinPointsPerPlane) {
   if (u32CellsNbrX == 0 || u32CellsNbrY == 0)
     throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
   if (f64CellSizeX <= 0 || f64CellSizeY <= 0)
@@ -51,7 +53,7 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       point3D.mf64X >= mf64MinX &&
       point3D.mf64Y <= f64MaxY &&
       point3D.mf64Y >= f64MinY) {
-      getCell(mu32CellsNbrX - 1 - floor((point3D.mf64X - mf64MinX) /
+      (*this)(mu32CellsNbrX - 1 - floor((point3D.mf64X - mf64MinX) /
         mf64CellSizeX),
         mu32CellsNbrY - 1 - floor((point3D.mf64Y + f64MaxY) /
         mf64CellSizeY)).addPoint(point3D.mf64Z);
@@ -98,10 +100,6 @@ ifstream& operator >> (ifstream& stream,
   return stream;
 }
 
-const vector<Cell>& DEM::getCellsVector() const {
-  return mCellsVector;
-}
-
 uint32_t DEM::getCellsNbrX() const {
   return mu32CellsNbrX;
 }
@@ -114,40 +112,38 @@ void DEM::accept(DEMVisitor& v) const {
   v.visit(this);
 }
 
-void DEM::setInitialLabelsVector(const vector<uint32_t>& labelsVector,
-  const map<uint32_t, uint32_t>& supportsMap)
+void DEM::setInitialLabels(const map<pair<uint32_t, uint32_t>, uint32_t>&
+  labelsMap, const map<uint32_t, uint32_t>& supportsMap)
   throw (InvalidOperationException) {
-  if (labelsVector.size() != mCellsVector.size())
-    throw InvalidOperationException("DEM::setInitialLabelsVector(): wrong input arguments");
-  mInitialLabelsVector = labelsVector;
+  if (labelsMap.size() != mCellsVector.size())
+    throw InvalidOperationException("DEM::setInitialLabels(): wrong input arguments");
   map<uint32_t, uint32_t>::const_iterator it;
-  map<uint32_t, uint32_t> labelsMap;
+  map<uint32_t, uint32_t> labelsConvertedMap;
   uint32_t i = 0;
   for (it = supportsMap.begin(); it != supportsMap.end(); it++) {
-    if ((*it).second >= 3) {
-      labelsMap[(*it).first] = i++;
+    if ((*it).second >= mu32MinPointsPerPlane) {
+      labelsConvertedMap[(*it).first] = i++;
     }
   }
-  mu32LabelsNbr = labelsMap.size();
+  mu32LabelsNbr = labelsConvertedMap.size();
   mu32ValidCellsNbr = mu32CellsNbrX * mu32CellsNbrY;
-  for (uint32_t i = 0; i < mCellsVector.size(); i++) {
-    map<uint32_t, uint32_t>::const_iterator it =
-      labelsMap.find(labelsVector[i]);
-    if (mCellsVector[i].getMLEstimator().getPointsNbr() == 0 ||
-      it == labelsMap.end()) {
-      mCellsVector[i].setInvalidFlag(true);
-      mu32ValidCellsNbr--;
-    }
-    else {
-      vector<double> labelsDistVector(labelsMap.size(), 0);
-      labelsDistVector[labelsMap[labelsVector[i]]] = 1.0;
-      mCellsVector[i].setLabelsDistVector(labelsDistVector);
+  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
+    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
+      map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
+      labelsMap.find(make_pair(i, j));
+      if ((*this)(i, j).getMLEstimator().getPointsNbr() == 0 ||
+        labelsConvertedMap.find((*it).second) ==
+        labelsConvertedMap.end()) {
+        mu32ValidCellsNbr--;
+      }
+      else {
+        (*this)(i, j).setInvalidFlag(false);
+        vector<double> labelsDistVector(labelsConvertedMap.size(), 0);
+        labelsDistVector[labelsConvertedMap[(*it).second]] = 1.0;
+        (*this)(i, j).setLabelsDistVector(labelsDistVector);
+      }
     }
   }
-}
-
-const vector<uint32_t>& DEM::getInitialLabelsVector() const {
-  return mInitialLabelsVector;
 }
 
 uint32_t DEM::getValidCellsNbr() const {
@@ -167,33 +163,28 @@ void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
 }
 
 void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
-  const map<uint32_t, uint32_t>& idMap = crf.getIdMap();
-  map<uint32_t, uint32_t>::const_iterator it;
-  for (uint32_t i = 0; i < mCellsVector.size(); i++) {
-    if (mCellsVector[i].getInvalidFlag() == false) {
-      it = idMap.find(i);
-      if (it == idMap.end())
-        throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
-      Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
-      vector<double> distVector(distVectorCRF.Size(), 0);
-      for (uint32_t j = 0; j < distVector.size(); j++)
-        distVector[crf.GetClassLabel(j)] = distVectorCRF[j];
-      mCellsVector[i].setLabelsDistVector(distVector);
+  const map<pair<uint32_t, uint32_t>, uint32_t>& idMap = crf.getIdMap();
+  map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it;
+  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
+    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
+      if ((*this)(i, j).getInvalidFlag() == false) {
+        it = idMap.find(make_pair(i, j));
+        if (it == idMap.end())
+          throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
+        Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
+        vector<double> distVector(distVectorCRF.Size(), 0);
+        for (uint32_t k = 0; k < distVector.size(); k++)
+          distVector[crf.GetClassLabel(k)] = distVectorCRF[k];
+        (*this)(i, j).setLabelsDistVector(distVector);
+      }
     }
   }
 }
 
-Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column)
+Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column)
   throw (OutOfBoundException) {
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
-    throw OutOfBoundException("DEM::getCell(): invalid indices");
-  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
-}
-
-const Cell& DEM::getCell(uint32_t u32Row, uint32_t u32Column) const
-  throw (OutOfBoundException) {
-  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
-    throw OutOfBoundException("DEM::getCell(): invalid indices");
+    throw OutOfBoundException("DEM::operator (): invalid indices");
   return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
 }
 
@@ -202,4 +193,12 @@ const Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column) const
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
     throw OutOfBoundException("DEM::operator (): invalid indices");
   return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
+}
+
+void DEM::setMinPointsPerPlane(uint32_t u32MinPointsPerPlane) {
+  mu32MinPointsPerPlane = u32MinPointsPerPlane;
+}
+
+uint32_t DEM::getMinPointsPerPlane() const {
+  return mu32MinPointsPerPlane;
 }

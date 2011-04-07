@@ -21,7 +21,7 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   SetNbParameters(4, 4);
   for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
     for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
-      const Cell& cell = dem.getCell(i, j);
+      const Cell& cell = dem(i, j);
       if (cell.getInvalidFlag() == false) {
         Vector featureVector;
         featureVector.PushBack(cell.getHeightDist().getMean());
@@ -29,13 +29,13 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
         featureVector.PushBack(cell.getCellCenter().mf64X);
         featureVector.PushBack(cell.getCellCenter().mf64Y);
         uint32_t u32NodeId = AddNode(featureVector, cell.getMAPLabelsDist());
-        mIdMap[i * dem.getCellsNbrY() + j] = u32NodeId;
+        mIdMap[make_pair(i, j)] = u32NodeId;
       }
     }
   }
   for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
     for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
-      const Cell& cell = dem.getCell(i, j);
+      const Cell& cell = dem(i, j);
       if (cell.getInvalidFlag() == false) {
         Vector labelsDistVectorCRF(GetNbClasses());
         const vector<double>& labelsDistVector = cell.getLabelsDistVector();
@@ -45,17 +45,17 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
           it = labelMap.find(k);
           labelsDistVectorCRF[(*it).second] = labelsDistVector[k];
         }
-        SetLabelDistribution(mIdMap[i * dem.getCellsNbrY()],
+        SetLabelDistribution(mIdMap[make_pair(i, j)],
           labelsDistVectorCRF);
       }
     }
   }
   multiset<Edge>::iterator setIt;
   for (setIt = edgeSet.begin(); setIt != edgeSet.end(); setIt++) {
-    if (mIdMap.find((*setIt).getNode1Idx()) == mIdMap.end() ||
-      mIdMap.find((*setIt).getNode2Idx()) == mIdMap.end())
+    if (mIdMap.find((*setIt).getNode1()) == mIdMap.end() ||
+      mIdMap.find((*setIt).getNode2()) == mIdMap.end())
       continue;
-    AddEdge(mIdMap[(*setIt).getNode1Idx()], mIdMap[(*setIt).getNode2Idx()]);
+    AddEdge(mIdMap[(*setIt).getNode1()], mIdMap[(*setIt).getNode2()]);
   }
   mVariancesVector = variancesVector;
   mCoeffsMatrix = coeffsMatrix;
@@ -118,8 +118,8 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
     UniGaussian(featureVector[0], featureVector[1]).
     pdf(coeffVectorMapped.dot(dataVector)));
 //  value.PushBack(mWeightsVector[i32Label] *
-//    UniGaussian(featureVector[0], mVariancesVector[i32Label] + featureVector[1]).
-//    pdf(coeffVectorMapped.dot(dataVector)));
+//    UniGaussian(featureVector[0], mVariancesVector[i32Label] +
+//    featureVector[1]). pdf(coeffVectorMapped.dot(dataVector)));
   return value;
 }
 
@@ -139,11 +139,11 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   return value;
 }
 
-const map<uint32_t, uint32_t>& DEMCRF::getIdMap() const {
+const map<pair<uint32_t, uint32_t>, uint32_t>& DEMCRF::getIdMap() const {
   return mIdMap;
 }
 
-void DEMCRF::setIdMap(const map<uint32_t, uint32_t>& idMap) {
+void DEMCRF::setIdMap(const map<pair<uint32_t, uint32_t>, uint32_t>& idMap) {
   mIdMap = idMap;
 }
 

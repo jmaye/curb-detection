@@ -54,6 +54,7 @@ public:
   const std::vector<double>& getLabelsDistVector() const;
   uint32_t getMAPLabelsDist() const throw (InvalidOperationException);
   bool getInvalidFlag() const;
+
   void setHeightDist(const UniGaussian& heightDist);
   void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);

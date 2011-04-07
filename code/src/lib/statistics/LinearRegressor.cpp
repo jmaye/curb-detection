@@ -27,7 +27,7 @@ void LinearRegressor::estimate(const DEM& dem,
   uint32_t i = 0;
   for (uint32_t j = 0; j < dem.getCellsNbrX(); j++) {
     for (uint32_t k = 0; k < dem.getCellsNbrY(); k++) {
-      const Cell& cell = dem.getCell(j, k);
+      const Cell& cell = dem(j, k);
       if (cell.getInvalidFlag() == false) {
         targetsVector(i) = cell.getHeightDist().getMean();
         const Point2D& cellCenter = cell.getCellCenter();
@@ -57,8 +57,7 @@ void LinearRegressor::estimate(const DEM& dem,
       targetsVector).transpose();
     variancesVectorMapped(i) = 0;
     for (uint32_t j = 0; j < u32ValidCellsNbr; j++)
-      for (uint32_t k = 0; k < u32LabelsNbr; k++)
-       variancesVectorMapped(i) += weightsMatrix(k, j) * pow(targetsVector(j) -
+       variancesVectorMapped(i) += weightsMatrix(i, j) * pow(targetsVector(j) -
         coeffsMatrixEigen.row(i).transpose().dot(designMatrix.row(i)), 2);
     variancesVectorMapped(i) /= u32ValidCellsNbr;
     coeffsMatrix[i].resize(3);

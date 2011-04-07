@@ -35,6 +35,8 @@ class DEM {
 
   Cell& getCell(uint32_t u32Row, uint32_t u32Column)
     throw (OutOfBoundException);
+  Cell& operator () (uint32_t u32Row, uint32_t u32Column)
+    throw (OutOfBoundException);
 
   double mf64CellSizeX;
   double mf64CellSizeY;
@@ -44,35 +46,35 @@ class DEM {
   double mf64HeightMin;
   double mf64HeightMax;
   std::vector<Cell> mCellsVector;
-  std::vector<uint32_t> mInitialLabelsVector;
   uint32_t mu32ValidCellsNbr;
   uint32_t mu32LabelsNbr;
+  uint32_t mu32MinPointsPerPlane;
 
 public:
   DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
     double f64CellSizeY = 0.4, uint32_t u32CellsNbrX = 20,
     uint32_t u32CellsNbrY = 20, double f64MinX = 1, double f64HeightMin = -10,
-    double f64HeightMax = 10) throw (OutOfBoundException);
+    double f64HeightMax = 10, uint32_t u32MinPointsPerPlane = 3)
+    throw (OutOfBoundException);
   ~DEM();
 
   void accept(DEMVisitor& v) const;
 
-  const std::vector<Cell>& getCellsVector() const;
-  const Cell& getCell(uint32_t u32Row, uint32_t u32Column) const
-    throw (OutOfBoundException);
   uint32_t getCellsNbrX() const;
   uint32_t getCellsNbrY() const;
   uint32_t getValidCellsNbr() const;
   uint32_t getLabelsNbr() const;
   const Cell& operator () (uint32_t u32Row, uint32_t u32Column) const
     throw (OutOfBoundException);
-  void setInitialLabelsVector(const std::vector<uint32_t>& labelsVector,
-    const std::map<uint32_t, uint32_t>& supportsMap)
+  uint32_t getMinPointsPerPlane() const;
+
+  void setInitialLabels(const std::map<std::pair<uint32_t, uint32_t>, uint32_t>&
+    labelsMap, const std::map<uint32_t, uint32_t>& supportsMap)
     throw (InvalidOperationException);
-  const std::vector<uint32_t>& getInitialLabelsVector() const;
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
   void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
+  void setMinPointsPerPlane(uint32_t u32MinPointsPerPlane);
 
 protected:
 
