@@ -33,23 +33,23 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
       }
     }
   }
-  for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
-    for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
-      const Cell& cell = dem(i, j);
-      if (cell.getInvalidFlag() == false) {
-        Vector labelsDistVectorCRF(GetNbClasses());
-        const vector<double>& labelsDistVector = cell.getLabelsDistVector();
-        map<int, uint>const& labelMap = GetLabelMap();
-        map<int, uint>::const_iterator it;
-        for (uint32_t k = 0; k < GetNbClasses(); k++) {
-          it = labelMap.find(k);
-          labelsDistVectorCRF[(*it).second] = labelsDistVector[k];
-        }
-        SetLabelDistribution(mIdMap[make_pair(i, j)],
-          labelsDistVectorCRF);
-      }
-    }
-  }
+//  for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
+//    for (uint32_t j = 0; j < dem.getCellsNbrY(); j++) {
+//      const Cell& cell = dem(i, j);
+//      if (cell.getInvalidFlag() == false) {
+//        Vector labelsDistVectorCRF(GetNbClasses());
+//        const vector<double>& labelsDistVector = cell.getLabelsDistVector();
+//        map<int, uint>const& labelMap = GetLabelMap();
+//        map<int, uint>::const_iterator it;
+//        for (uint32_t k = 0; k < GetNbClasses(); k++) {
+//          it = labelMap.find(k);
+//          labelsDistVectorCRF[(*it).second] = labelsDistVector[k];
+//        }
+//        SetLabelDistribution(mIdMap[make_pair(i, j)],
+//          labelsDistVectorCRF);
+//      }
+//    }
+//  }
   multiset<Edge>::iterator setIt;
   for (setIt = edgeSet.begin(); setIt != edgeSet.end(); setIt++) {
     if (mIdMap.find((*setIt).getNode1()) == mIdMap.end() ||
@@ -114,12 +114,9 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
   dataVector(1) = featureVector[2];
   dataVector(2) = featureVector[3];
   Vector value;
-  value.PushBack(mWeightsVector[i32Label] *
-    UniGaussian(featureVector[0], featureVector[1]).
-    pdf(coeffVectorMapped.dot(dataVector)));
-//  value.PushBack(mWeightsVector[i32Label] *
-//    UniGaussian(featureVector[0], mVariancesVector[i32Label] +
-//    featureVector[1]). pdf(coeffVectorMapped.dot(dataVector)));
+  value.PushBack(1 - 1 / (1 +
+    UniGaussian(coeffVectorMapped.dot(dataVector),
+    featureVector[1]).pdf(featureVector[0])));
   return value;
 }
 
@@ -129,12 +126,12 @@ Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   Vector featureVector2 = GetNodeFeatures(u32NodeId2);
   Vector value;
   if (i32Label1 == i32Label2) {
-    value.PushBack(1 - (1 / (1 + exp(featureVector1[1] + featureVector2[1] -
+    value.PushBack(1 - (1 / (1 + exp((featureVector1[1] + featureVector2[1]) -
       fabs(featureVector1[0] - featureVector2[0])))));
   }
   else {
-    value.PushBack(1 / (1 + exp(featureVector1[1] + featureVector2[1] -
-      fabs(featureVector1[0] - featureVector2[0]))));
+    value.PushBack((1 / (1 + exp((featureVector1[1] + featureVector2[1]) -
+      fabs(featureVector1[0] - featureVector2[0])))));
   }
   return value;
 }

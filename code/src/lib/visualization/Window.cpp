@@ -197,7 +197,6 @@ void Window::addDEM(const DEM& dem) {
 void Window::addConnectivity(const multiset<Edge, EdgeCompare>& edgeSet,
  const DEM& dem) {
   mEdgeSet = edgeSet;
-  //mCellsVector = dem.getCellsVector();
 }
 
 void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {

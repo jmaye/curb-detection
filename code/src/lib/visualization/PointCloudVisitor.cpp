@@ -19,8 +19,6 @@ PointCloudVisitor::PointCloudVisitor(double f64PointSize, GLbyte redColorByte,
 }
 
 PointCloudVisitor::~PointCloudVisitor() {
-  for (uint32_t i = 0; i < mGLListVector.size(); i++)
-    glDeleteLists(mGLListVector[i], 1);
 }
 
 void PointCloudVisitor::read(istream& stream) {

@@ -6,6 +6,7 @@
 #include "LinearRegressor.h"
 #include "DEMCRF.h"
 #include "EM.h"
+#include "BeliefPropagation.h"
 
 #include <iostream>
 #include <fstream>
@@ -54,14 +55,18 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector, weightsVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
+  //f64Time = getMsCount();
+  //BeliefPropagation bp(dem);
+  //bp.infer(coeffsMatrix, variancesVector, weightsVector);
+  //cout << "Belief propagation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
   DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
   cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
   Vector nodesWeightsVector, edgesWeightsVector;
-  nodesWeightsVector.PushBack(1.0);
+  nodesWeightsVector.PushBack(0.0);
   edgesWeightsVector.PushBack(1.0);
   EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
-    variancesVector, weightsVector, 0);
+    variancesVector, weightsVector, 4);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);

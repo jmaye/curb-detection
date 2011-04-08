@@ -172,6 +172,7 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
         if (it == idMap.end())
           throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
         Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
+        //cout << distVectorCRF << endl;
         vector<double> distVector(distVectorCRF.Size(), 0);
         for (uint32_t k = 0; k < distVector.size(); k++)
           distVector[crf.GetClassLabel(k)] = distVectorCRF[k];

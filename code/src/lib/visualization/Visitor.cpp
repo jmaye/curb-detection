@@ -11,6 +11,8 @@ Visitor::Visitor() {
 }
 
 Visitor::~Visitor() {
+  for (uint32_t i = 0; i < mGLListVector.size(); i++)
+    glDeleteLists(mGLListVector[i], 1);
 }
 
 void Visitor::read(istream& stream) {
