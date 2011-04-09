@@ -10,7 +10,8 @@ using namespace std;
 Component::Component() : mf64Int(0) {
 }
 
-Component::Component(pair<uint32_t, uint32_t> nodeCoordinates) : mf64Int(0) {
+Component::Component(const pair<uint32_t, uint32_t>& nodeCoordinates)
+  : mf64Int(0) {
   mNodesList.push_back(nodeCoordinates);
 }
 

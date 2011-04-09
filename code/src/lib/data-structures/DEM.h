@@ -45,7 +45,7 @@ class DEM {
   double mf64MinX;
   double mf64HeightMin;
   double mf64HeightMax;
-  std::vector<Cell> mCellsVector;
+  std::vector<std::vector<Cell> > mCellsMatrix;
   uint32_t mu32ValidCellsNbr;
   uint32_t mu32LabelsNbr;
   uint32_t mu32MinPointsPerPlane;

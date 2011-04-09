@@ -31,9 +31,10 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
   double f64CurX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
   double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
+  mCellsMatrix.resize(mu32CellsNbrX);
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
-      mCellsVector.push_back(Cell(UniGaussian(0.0,
+      mCellsMatrix[i].push_back(Cell(UniGaussian(0.0,
         Sensor::getNoise(f64CurX, f64CurY, 0)), MLEstimator(),
         Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
         Point2D(mf64CellSizeX, mf64CellSizeY)));
@@ -115,7 +116,7 @@ void DEM::accept(DEMVisitor& v) const {
 void DEM::setInitialLabels(const map<pair<uint32_t, uint32_t>, uint32_t>&
   labelsMap, const map<uint32_t, uint32_t>& supportsMap)
   throw (InvalidOperationException) {
-  if (labelsMap.size() != mCellsVector.size())
+  if (labelsMap.size() != mu32CellsNbrX * mu32CellsNbrY)
     throw InvalidOperationException("DEM::setInitialLabels(): wrong input arguments");
   map<uint32_t, uint32_t>::const_iterator it;
   map<uint32_t, uint32_t> labelsConvertedMap;
@@ -172,7 +173,6 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
         if (it == idMap.end())
           throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
         Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
-        //cout << distVectorCRF << endl;
         vector<double> distVector(distVectorCRF.Size(), 0);
         for (uint32_t k = 0; k < distVector.size(); k++)
           distVector[crf.GetClassLabel(k)] = distVectorCRF[k];
@@ -186,14 +186,14 @@ Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column)
   throw (OutOfBoundException) {
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
     throw OutOfBoundException("DEM::operator (): invalid indices");
-  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
+  return mCellsMatrix[u32Row][u32Column];
 }
 
 const Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column) const
   throw (OutOfBoundException) {
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
     throw OutOfBoundException("DEM::operator (): invalid indices");
-  return mCellsVector[u32Row * mu32CellsNbrY + u32Column];
+  return mCellsMatrix[u32Row][u32Column];
 }
 
 void DEM::setMinPointsPerPlane(uint32_t u32MinPointsPerPlane) {

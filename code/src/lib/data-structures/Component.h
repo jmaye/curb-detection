@@ -29,7 +29,7 @@ class Component {
 
 public:
   Component();
-  Component(std::pair<uint32_t, uint32_t> nodeCoordinates);
+  Component(const std::pair<uint32_t, uint32_t>& nodeCoordinates);
   ~Component();
   Component(const Component& other);
   Component& operator = (const Component& other);

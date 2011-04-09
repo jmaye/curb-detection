@@ -5,8 +5,8 @@
 
 using namespace std;
 
-Edge::Edge(double f64Weight, pair<uint32_t, uint32_t> node1,
-  pair<uint32_t, uint32_t> node2) throw (OutOfBoundException)
+Edge::Edge(double f64Weight, const pair<uint32_t, uint32_t>& node1,
+  const pair<uint32_t, uint32_t>& node2) throw (OutOfBoundException)
   : mf64Weight(f64Weight),
     mNode1(node1),
     mNode2(node2) {
@@ -69,11 +69,11 @@ double Edge::getWeight() const {
   return mf64Weight;
 }
 
-pair<uint32_t, uint32_t> Edge::getNode1() const {
+const pair<uint32_t, uint32_t>& Edge::getNode1() const {
   return mNode1;
 }
 
-pair<uint32_t, uint32_t> Edge::getNode2() const {
+const pair<uint32_t, uint32_t>& Edge::getNode2() const {
   return mNode2;
 }
 
@@ -83,10 +83,10 @@ void Edge::setWeight(double f64Weight) throw (OutOfBoundException) {
   mf64Weight = f64Weight;
 }
 
-void Edge::setNode1(pair<uint32_t, uint32_t> node1) {
+void Edge::setNode1(const pair<uint32_t, uint32_t>& node1) {
   mNode1 = node1;
 }
 
-void Edge::setNode2(pair<uint32_t, uint32_t> node2) {
+void Edge::setNode2(const pair<uint32_t, uint32_t>& node2) {
   mNode2 = node2;
 }
