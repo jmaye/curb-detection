@@ -42,7 +42,8 @@ class DEM {
   double mf64CellSizeY;
   uint32_t mu32CellsNbrX;
   uint32_t mu32CellsNbrY;
-  double mf64MinX;
+  double mf64XOffset;
+  double mf64YOffset;
   double mf64HeightMin;
   double mf64HeightMax;
   std::vector<std::vector<Cell> > mCellsMatrix;
@@ -53,9 +54,9 @@ class DEM {
 public:
   DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
     double f64CellSizeY = 0.4, uint32_t u32CellsNbrX = 20,
-    uint32_t u32CellsNbrY = 20, double f64MinX = 1, double f64HeightMin = -10,
-    double f64HeightMax = 10, uint32_t u32MinPointsPerPlane = 3)
-    throw (OutOfBoundException);
+    uint32_t u32CellsNbrY = 20, double f64XOffset = 1, double f64YOffset = 0,
+    double f64HeightMin = -10, double f64HeightMax = 10,
+    uint32_t u32MinPointsPerPlane = 3) throw (OutOfBoundException);
   ~DEM();
 
   void accept(DEMVisitor& v) const;

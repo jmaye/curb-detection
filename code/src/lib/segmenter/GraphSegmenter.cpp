@@ -30,7 +30,7 @@ void GraphSegmenter::segment(const DEM& dem,
     if (u32C1Idx != u32C2Idx) {
       if ((*it).getWeight() <=
         componentsMap[u32C1Idx].compare(componentsMap[u32C2Idx], u32K)) {
-          list<std::pair<uint32_t, uint32_t> >::iterator nodesIt;
+          list<pair<uint32_t, uint32_t> >::iterator nodesIt;
           for (nodesIt =
             componentsMap[u32C2Idx].getNodesList().begin();
             nodesIt != componentsMap[u32C2Idx].getNodesList().end();

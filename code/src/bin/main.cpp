@@ -35,7 +35,7 @@ int main(int argc ,char** argv) {
   pointCloudFile >> pointCloud;
   cout << "Reading point cloud: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
-  DEM dem(pointCloud, 0.15, 0.15, 30, 30, 1, -2, 1);
+  DEM dem(pointCloud, 0.15, 0.15, 30, 30, 1.55, -0.5, -2, 1);
   cout << "Creating DEM: " << getMsCount() - f64Time << " [ms]" << endl;
   multiset<Edge, EdgeCompare> edgeSet;
   f64Time = getMsCount();
@@ -46,27 +46,25 @@ int main(int argc ,char** argv) {
   f64Time = getMsCount();
   GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 100);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]" << endl;
-  f64Time = getMsCount();
   dem.setInitialLabels(labelsMap, supportsMap);
-  cout << "Setting initial labels: " << getMsCount() - f64Time << " [ms]" << endl;
   vector<vector<double> > coeffsMatrix;
   vector<double> variancesVector;
   vector<double> weightsVector;
   f64Time = getMsCount();
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector, weightsVector);
   cout << "Linear regression: " << getMsCount() - f64Time << " [ms]" << endl;
-  //f64Time = getMsCount();
-  //BeliefPropagation bp(dem);
-  //bp.infer(coeffsMatrix, variancesVector, weightsVector);
-  //cout << "Belief propagation: " << getMsCount() - f64Time << " [ms]" << endl;
-  f64Time = getMsCount();
-  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
-  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
-  Vector nodesWeightsVector, edgesWeightsVector;
-  nodesWeightsVector.PushBack(0.0);
-  edgesWeightsVector.PushBack(1.0);
-  EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
-    variancesVector, weightsVector, 4);
+//  f64Time = getMsCount();
+//  BeliefPropagation bp(dem);
+//  bp.infer(coeffsMatrix, variancesVector, weightsVector);
+//  cout << "Belief propagation: " << getMsCount() - f64Time << " [ms]" << endl;
+//  f64Time = getMsCount();
+//  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
+//  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
+//  Vector nodesWeightsVector, edgesWeightsVector;
+//  nodesWeightsVector.PushBack(1.0);
+//  edgesWeightsVector.PushBack(1.0);
+//  EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
+//    variancesVector, weightsVector, 10);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);

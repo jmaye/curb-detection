@@ -21,7 +21,7 @@ BeliefPropagation::BeliefPropagation(const DEM& dem) {
   mDataMatrix.resize(dem.getCellsNbrX());
   mDistanceMatrix.resize(dem.getCellsNbrX());
   for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
-    mNodesEvidenceMatrix[i].resize(dem.getCellsNbrX());
+    mNodesEvidenceMatrix[i].resize(dem.getCellsNbrY());
     mNodesUpMatrix[i].resize(dem.getCellsNbrY());
     mNodesDownMatrix[i].resize(dem.getCellsNbrY());
     mNodesLeftMatrix[i].resize(dem.getCellsNbrY());
@@ -48,30 +48,36 @@ BeliefPropagation::BeliefPropagation(const DEM& dem) {
         mDataMatrix[i][j][3] = dem(i, j).getHeightDist().getMean();
         mDataMatrix[i][j][4] = dem(i, j).getHeightDist().getVariance();
         mDistanceMatrix[i][j].resize(4);
+        cout << "Node " << i << " " << j << " ";
         if (i != dem.getCellsNbrX() - 1) {
-          mDistanceMatrix[i][j][0] = (1 / (1 + exp(dem(i, j).getHeightDist().
-            getVariance() + dem(i+1, j).getHeightDist().getVariance() -
+          mDistanceMatrix[i][j][0] = (1 / (1 + exp((dem(i, j).getHeightDist().
+            getVariance() + dem(i+1, j).getHeightDist().getVariance()) -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i+1, j).
             getHeightDist().getMean()))));
+            cout << "Down: " << mDistanceMatrix[i][j][0] << " Variance 1: " << dem(i, j).getHeightDist().getVariance() << " Variance 2: " << dem(i+1, j).getHeightDist().getVariance() << " Mean 1: " << dem(i, j).getHeightDist().getMean() << " Mean 2: " << dem(i+1, j).getHeightDist().getMean();
         }
         if (i != 0) {
-          mDistanceMatrix[i][j][1] = (1 / (1 + exp(dem(i, j).getHeightDist().
-            getVariance() + dem(i-1, j).getHeightDist().getVariance() -
+          mDistanceMatrix[i][j][1] = (1 / (1 + exp((dem(i, j).getHeightDist().
+            getVariance() + dem(i-1, j).getHeightDist().getVariance()) -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i-1, j).
             getHeightDist().getMean()))));
+            //cout << "Up: " << mDistanceMatrix[i][j][1] << " ";
         }
         if (j != dem.getCellsNbrY() - 1) {
-          mDistanceMatrix[i][j][2] = (1 / (1 + exp(dem(i, j).getHeightDist().
-            getVariance() + dem(i, j+1).getHeightDist().getVariance() -
+          mDistanceMatrix[i][j][2] = (1 / (1 + exp((dem(i, j).getHeightDist().
+            getVariance() + dem(i, j+1).getHeightDist().getVariance()) -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i, j+1).
             getHeightDist().getMean()))));
+            //cout << "Right: " << mDistanceMatrix[i][j][2] << " ";
         }
         if (j != 0) {
-          mDistanceMatrix[i][j][3] = (1 / (1 + exp(dem(i, j).getHeightDist().
-            getVariance() + dem(i, j-1).getHeightDist().getVariance() -
+          mDistanceMatrix[i][j][3] = (1 / (1 + exp((dem(i, j).getHeightDist().
+            getVariance() + dem(i, j-1).getHeightDist().getVariance()) -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i, j-1).
             getHeightDist().getMean()))));
+            //cout << "Left: " << mDistanceMatrix[i][j][3] << " ";
         }
+        cout << endl;
       }
     }
   }
@@ -97,7 +103,7 @@ void BeliefPropagation::infer(const vector<vector<double> >& coeffsMatrix,
       }
     }
   }
-  for (uint32_t it = 0; it < 5; it++) {
+  for (uint32_t it = 0; it < 100; it++) {
     for (uint32_t i = 0; i < mDataMatrix.size(); i++) {
       for (uint32_t j = 0; j < mDataMatrix[0].size(); j++) {
         vector<double> emptyVector;
@@ -200,13 +206,14 @@ void BeliefPropagation::infer(const vector<vector<double> >& coeffsMatrix,
       }
     }
   }
+  //cout << "My BP results: " << endl;
   for (uint32_t i = 1; i < mNodesEvidenceMatrix.size() - 1; i++) {
     for (uint32_t j = 1; j < mNodesEvidenceMatrix[0].size() - 1; j++) {
       if (mNodesEvidenceMatrix[i][j].size() != 0) {
         uint32_t u32BestIdx = 0;
         double f64BestVal = INFINITY;
         for (uint32_t k = 0; k < mNodesEvidenceMatrix[i][j].size(); k++) {
-          double f64Val =
+          double f64Val = mNodesEvidenceMatrix[i][j][k] + 
             mNodesUpMatrix[i+1][j][k] + mNodesDownMatrix[i-1][j][k] +
             mNodesLeftMatrix[i][j+1][k] + mNodesRightMatrix[i][j-1][k];
           if (f64Val < f64BestVal) {
@@ -214,12 +221,12 @@ void BeliefPropagation::infer(const vector<vector<double> >& coeffsMatrix,
             u32BestIdx = k;
           }
         }
-        cout << u32BestIdx << " ";
+        //cout << u32BestIdx << " ";
       }
       else
-        cout << "  ";
+        ;//cout << "  ";
     }
-    cout << endl;
+    //cout << endl;
   }
 }
 

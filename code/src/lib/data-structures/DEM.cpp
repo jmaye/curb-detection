@@ -12,14 +12,15 @@
 using namespace std;
 
 DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
-  uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64MinX,
-  double f64HeightMin, double f64HeightMax, uint32_t u32MinPointsPerPlane)
-  throw (OutOfBoundException)
+  uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64XOffset,
+  double f64YOffset, double f64HeightMin, double f64HeightMax,
+  uint32_t u32MinPointsPerPlane) throw (OutOfBoundException)
   : mf64CellSizeX(f64CellSizeX),
     mf64CellSizeY(f64CellSizeY),
     mu32CellsNbrX(u32CellsNbrX),
     mu32CellsNbrY(u32CellsNbrY),
-    mf64MinX(f64MinX),
+    mf64XOffset(f64XOffset),
+    mf64YOffset(f64YOffset),
     mf64HeightMin(f64HeightMin),
     mf64HeightMax(f64HeightMax),
     mu32ValidCellsNbr(0),
@@ -29,8 +30,8 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
   if (f64CellSizeX <= 0 || f64CellSizeY <= 0)
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
-  double f64CurX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
-  double f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
+  double f64CurX = mf64XOffset + mu32CellsNbrX * mf64CellSizeX;
+  double f64CurY = mf64YOffset + mu32CellsNbrY * mf64CellSizeY;
   mCellsMatrix.resize(mu32CellsNbrX);
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
@@ -41,23 +42,25 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
       f64CurY -= mf64CellSizeY;
     }
     f64CurX -= mf64CellSizeX;
-    f64CurY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
+    f64CurY = mf64YOffset + mu32CellsNbrY * mf64CellSizeY;
   }
-  double f64MaxX = mf64MinX + mu32CellsNbrX * mf64CellSizeX;
-  double f64MaxY = (mu32CellsNbrY * mf64CellSizeY) / 2.0;
-  double f64MinY = - f64MaxY;
+  double f64MaxX = mf64XOffset + mu32CellsNbrX * mf64CellSizeX;
+  double f64MinX = mf64XOffset;
+  double f64MaxY = mf64YOffset + mu32CellsNbrY * mf64CellSizeY;
+  double f64MinY = mf64YOffset;
   for (uint32_t i = 0; i < pointCloud.getSize(); i++) {
     const Point3D& point3D = pointCloud[i];
-    if (point3D.mf64Z <= mf64HeightMax &&
-      point3D.mf64Z >= mf64HeightMin &&
-      point3D.mf64X <= f64MaxX &&
-      point3D.mf64X >= mf64MinX &&
-      point3D.mf64Y <= f64MaxY &&
-      point3D.mf64Y >= f64MinY) {
-      (*this)(mu32CellsNbrX - 1 - floor((point3D.mf64X - mf64MinX) /
+    if (point3D.mf64Z < mf64HeightMax &&
+      point3D.mf64Z > mf64HeightMin &&
+      point3D.mf64X < f64MaxX &&
+      point3D.mf64X > f64MinX &&
+      point3D.mf64Y < f64MaxY &&
+      point3D.mf64Y > f64MinY) {
+      (*this)(mu32CellsNbrX - 1 - floor((point3D.mf64X - mf64XOffset) /
         mf64CellSizeX),
-        mu32CellsNbrY - 1 - floor((point3D.mf64Y + f64MaxY) /
-        mf64CellSizeY)).addPoint(point3D.mf64Z);
+        mu32CellsNbrY - 1 - floor((point3D.mf64Y - mf64YOffset) /
+        mf64CellSizeY)).
+        addPoint(point3D.mf64Z);
     }
   }
 }

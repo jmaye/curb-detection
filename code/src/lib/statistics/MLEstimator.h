@@ -23,6 +23,7 @@ class MLEstimator {
   virtual void write(std::ofstream& stream) const;
 
   uint32_t mu32PointsNbr;
+  bool mbStartRegular;
 
 public:
   MLEstimator();
