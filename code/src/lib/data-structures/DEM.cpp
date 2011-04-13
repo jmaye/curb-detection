@@ -26,10 +26,14 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     mu32ValidCellsNbr(0),
     mu32LabelsNbr(0),
     mu32MinPointsPerPlane(u32MinPointsPerPlane) {
-  if (u32CellsNbrX == 0 || u32CellsNbrY == 0)
+  if (u32CellsNbrX == 0 || u32CellsNbrY == 0) {
+    cerr << "Requested number of cells: " << "(" << u32CellsNbrX << "," << u32CellsNbrY << ")" << endl; 
     throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
-  if (f64CellSizeX <= 0 || f64CellSizeY <= 0)
+  }
+  if (f64CellSizeX <= 0 || f64CellSizeY <= 0) {
+    cerr << "Requested cell size: " << "(" << f64CellSizeX << "," << f64CellSizeY << ")" << endl;
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
+  }
   double f64CurX = mf64XOffset + mu32CellsNbrX * mf64CellSizeX;
   double f64CurY = mf64YOffset + mu32CellsNbrY * mf64CellSizeY;
   mCellsMatrix.resize(mu32CellsNbrX);
@@ -119,8 +123,10 @@ void DEM::accept(DEMVisitor& v) const {
 void DEM::setInitialLabels(const map<pair<uint32_t, uint32_t>, uint32_t>&
   labelsMap, const map<uint32_t, uint32_t>& supportsMap)
   throw (InvalidOperationException) {
-  if (labelsMap.size() != mu32CellsNbrX * mu32CellsNbrY)
-    throw InvalidOperationException("DEM::setInitialLabels(): wrong input arguments");
+  if (labelsMap.size() != mu32CellsNbrX * mu32CellsNbrY) {
+    cerr << "Labeling size: " << labelsMap.size() << " Cells number: " << mu32CellsNbrX * mu32CellsNbrY << endl;
+    throw InvalidOperationException("DEM::setInitialLabels(): inconsistent labeling");
+  }
   map<uint32_t, uint32_t>::const_iterator it;
   map<uint32_t, uint32_t> labelsConvertedMap;
   uint32_t i = 0;
@@ -174,7 +180,7 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
       if ((*this)(i, j).getInvalidFlag() == false) {
         it = idMap.find(make_pair(i, j));
         if (it == idMap.end())
-          throw OutOfBoundException("DEM::setLabelsDist(): invalid input arguments");
+          throw OutOfBoundException("DEM::setLabelsDist(): inconsistent labeling");
         Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
         vector<double> distVector(distVectorCRF.Size(), 0);
         for (uint32_t k = 0; k < distVector.size(); k++)
@@ -187,19 +193,28 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
 
 Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column)
   throw (OutOfBoundException) {
-  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
+  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY) {
+    cerr << "Requesting: (" << u32Row << "," << u32Column << ")" << " Number of rows: " << mu32CellsNbrX << " Number of columns: " << mu32CellsNbrY << endl;
     throw OutOfBoundException("DEM::operator (): invalid indices");
+  }
   return mCellsMatrix[u32Row][u32Column];
 }
 
 const Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column) const
   throw (OutOfBoundException) {
-  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY)
+  if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY) {
+    cerr << "Requesting: (" << u32Row << "," << u32Column << ")" << " Number of rows: " << mu32CellsNbrX << " Number of columns: " << mu32CellsNbrY << endl;
     throw OutOfBoundException("DEM::operator (): invalid indices");
+  }
   return mCellsMatrix[u32Row][u32Column];
 }
 
-void DEM::setMinPointsPerPlane(uint32_t u32MinPointsPerPlane) {
+void DEM::setMinPointsPerPlane(uint32_t u32MinPointsPerPlane)
+  throw (OutOfBoundException) {
+  if (u32MinPointsPerPlane < 3) {
+    cerr << "Requesting: " << u32MinPointsPerPlane << endl;
+    throw OutOfBoundException("DEM::setMinPointsPerPlane(): a plane must contain at least 3 points");
+  }
   mu32MinPointsPerPlane = u32MinPointsPerPlane;
 }
 

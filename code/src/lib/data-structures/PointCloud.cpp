@@ -62,8 +62,10 @@ void PointCloud::accept(PointCloudVisitor& v) const {
 
 const Point3D& PointCloud::operator [] (uint32_t u32Idx) const
   throw (OutOfBoundException) {
-  if (u32Idx >= mPointsVector.size())
+  if (u32Idx >= mPointsVector.size()) {
+    cerr << "Requesting: " << u32Idx << " Number of points: " << mPointsVector.size() << endl;
     throw OutOfBoundException("PointCloud::operator []: invalid index");
+  }
   return mPointsVector[u32Idx];
 }
 

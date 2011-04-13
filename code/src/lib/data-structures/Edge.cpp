@@ -10,8 +10,10 @@ Edge::Edge(double f64Weight, const pair<uint32_t, uint32_t>& node1,
   : mf64Weight(f64Weight),
     mNode1(node1),
     mNode2(node2) {
-  if (f64Weight <= 0)
+  if (f64Weight <= 0) {
+    cerr << "f64Weight: " << f64Weight << endl;
     throw OutOfBoundException("Edge::Edge(): weight must be greater than 0");
+  }
 }
 
 Edge::Edge(const Edge& other) : mf64Weight(other.mf64Weight),
@@ -78,8 +80,10 @@ const pair<uint32_t, uint32_t>& Edge::getNode2() const {
 }
 
 void Edge::setWeight(double f64Weight) throw (OutOfBoundException) {
-  if (f64Weight <= 0)
+  if (f64Weight <= 0) {
+    cerr << "f64Weight: " << f64Weight << endl;
     throw OutOfBoundException("Edge::setWeight(): weight must be greater than 0");
+  }
   mf64Weight = f64Weight;
 }
 

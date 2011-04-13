@@ -45,8 +45,13 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
   mWeightsVector = weightsVector;
   if (GetNbClasses() > variancesVector.size() ||
     GetNbClasses() > coeffsMatrix.size() ||
-    GetNbClasses() > weightsVector.size())
-    throw OutOfBoundException("DEMCRF:DEMCRF(): invalid input arguments");
+    GetNbClasses() > weightsVector.size()) {
+    cerr << "CRF number of classes: " << GetNbClasses() << endl;
+    cerr << "Linear regression number of classes (variances): " << variancesVector.size() << endl;
+    cerr << "Linear regression number of classes (coefficients): " << coeffsMatrix.size() << endl;
+    cerr << "Linear regression number of classes (weights): " << weightsVector.size() << endl;
+    throw OutOfBoundException("DEMCRF:DEMCRF(): inconsistent number of classes with respect to linear regression inputs");
+  }
 }
 
 DEMCRF::~DEMCRF() {
@@ -137,15 +142,21 @@ const vector<double>& DEMCRF::getVariancesVector() const {
 
 void DEMCRF::setCoeffsMatrix(const vector<vector<double> >& coeffsMatrix)
   throw (OutOfBoundException) {
- if (GetNbClasses() > coeffsMatrix.size())
-    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): invalid input arguments");
+ if (GetNbClasses() > coeffsMatrix.size()) {
+    cerr << "CRF number of classes: " << GetNbClasses() << endl;
+    cerr << "Linear regression number of classes (coefficients): " << coeffsMatrix.size() << endl;
+    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): inconsistent number of classes with respect to linear regression inputs");
+  }
   mCoeffsMatrix = coeffsMatrix;
 }
 
 void DEMCRF::setVariancesVector(const vector<double>& variancesVector)
   throw (OutOfBoundException) {
- if (GetNbClasses() > variancesVector.size())
-    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): invalid input arguments");
+ if (GetNbClasses() > variancesVector.size()) {
+    cerr << "CRF number of classes: " << GetNbClasses() << endl;
+    cerr << "Linear regression number of classes (variances): " << variancesVector.size() << endl;
+    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): inconsistent number of classes with respect to linear regression inputs");
+  }
   mVariancesVector = variancesVector;
 }
 
@@ -155,7 +166,10 @@ const vector<double>& DEMCRF::getWeightsVector() const {
 
 void DEMCRF::setWeightsVector(const vector<double>& weightsVector)
   throw (OutOfBoundException) {
-  if (GetNbClasses() > weightsVector.size())
-    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): invalid input arguments");
+  if (GetNbClasses() > weightsVector.size()) {
+    cerr << "CRF number of classes: " << GetNbClasses() << endl;
+    cerr << "Linear regression number of classes (weights): " << weightsVector.size() << endl;
+    throw OutOfBoundException("DEMCRF:setCoeffsMatrix(): inconsistent number of classes with respect to linear regression inputs");
+  }
   mWeightsVector = weightsVector;
 }

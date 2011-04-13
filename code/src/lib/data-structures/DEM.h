@@ -75,7 +75,8 @@ public:
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
   void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
-  void setMinPointsPerPlane(uint32_t u32MinPointsPerPlane);
+  void setMinPointsPerPlane(uint32_t u32MinPointsPerPlane)
+    throw (OutOfBoundException);
 
 protected:
 

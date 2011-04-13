@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <math.h>
+
 using namespace std;
 
 Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
@@ -13,8 +15,10 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mCellCenter(cellCenter),
     mCellSize(cellSize),
     mbInvalidFlag(true) {
-  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0)
+  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
+    cerr << "Requested cell size: " << "(" << cellSize.mf64X << "," << cellSize.mf64Y << ")" << endl;
     throw OutOfBoundException("Cell::Cell(): cell size must be positive");
+  }
 }
 
 Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
@@ -116,8 +120,10 @@ const Point2D& Cell::getCellSize() const {
 }
 
 void Cell::setCellSize(const Point2D& cellSize) throw (OutOfBoundException) {
-  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0)
+  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
+    cerr << "Requested cell size: " << "(" << cellSize.mf64X << "," << cellSize.mf64Y << ")" << endl;
     throw OutOfBoundException("Cell::setCellSize(): cell size must be positive");
+  }
   mCellSize = cellSize;
 }
 
@@ -125,7 +131,15 @@ const vector<double>& Cell::getLabelsDistVector() const {
   return mLabelsDistVector;
 }
 
-void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector) {
+void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector)
+  throw (OutOfBoundException) {
+  double f64Sum = 0;
+  for (uint32_t i = 0; i < labelsDistVector.size(); i++) {
+    f64Sum += labelsDistVector[i];
+  }
+  if (fabs(f64Sum - 1.0) > 1e-6) {
+    throw OutOfBoundException("Cell::setLabelsDistVector(): probability function does not sum to 1");
+  }
   mLabelsDistVector = labelsDistVector;
 }
 

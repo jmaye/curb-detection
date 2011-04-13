@@ -59,7 +59,8 @@ public:
   void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);
   void setCellSize(const Point2D& cellSize) throw (OutOfBoundException);
-  void setLabelsDistVector(const std::vector<double>& labelsDistVector);
+  void setLabelsDistVector(const std::vector<double>& labelsDistVector)
+    throw (OutOfBoundException);
   void setInvalidFlag(bool bInvalidFlag);
 
 protected:

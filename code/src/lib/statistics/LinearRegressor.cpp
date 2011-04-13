@@ -19,8 +19,11 @@ void LinearRegressor::estimate(const DEM& dem,
   vector<double>& weightsVector) throw (OutOfBoundException) {
   uint32_t u32ValidCellsNbr = dem.getValidCellsNbr();
   uint32_t u32LabelsNbr = dem.getLabelsNbr();
-  if (u32ValidCellsNbr == 0 || u32LabelsNbr == 0)
-    throw OutOfBoundException("LinearRegressor::estimate(): wrong input arguments");
+  if (u32ValidCellsNbr == 0 || u32LabelsNbr == 0) {
+    cerr << "u32ValidCellsNbr: " << u32ValidCellsNbr << endl;
+    cerr << "u32LabelsNbr: " << u32LabelsNbr << endl;
+    throw OutOfBoundException("LinearRegressor::estimate(): valid cells and labels number must be greater than 0");
+  }
   VectorXd targetsVector(u32ValidCellsNbr);
   MatrixXd designMatrix(u32ValidCellsNbr, 3);
   MatrixXd weightsMatrix(u32LabelsNbr, (int)u32ValidCellsNbr);

@@ -57,14 +57,14 @@ int main(int argc ,char** argv) {
 //  BeliefPropagation bp(dem);
 //  bp.infer(coeffsMatrix, variancesVector, weightsVector);
 //  cout << "Belief propagation: " << getMsCount() - f64Time << " [ms]" << endl;
-//  f64Time = getMsCount();
-//  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
-//  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
-//  Vector nodesWeightsVector, edgesWeightsVector;
-//  nodesWeightsVector.PushBack(1.0);
-//  edgesWeightsVector.PushBack(1.0);
-//  EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
-//    variancesVector, weightsVector, 10);
+  f64Time = getMsCount();
+  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
+  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
+  Vector nodesWeightsVector, edgesWeightsVector;
+  nodesWeightsVector.PushBack(1.0);
+  edgesWeightsVector.PushBack(1.0);
+  EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
+    variancesVector, weightsVector, 10);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);

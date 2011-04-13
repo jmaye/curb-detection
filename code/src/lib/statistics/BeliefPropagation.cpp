@@ -48,36 +48,30 @@ BeliefPropagation::BeliefPropagation(const DEM& dem) {
         mDataMatrix[i][j][3] = dem(i, j).getHeightDist().getMean();
         mDataMatrix[i][j][4] = dem(i, j).getHeightDist().getVariance();
         mDistanceMatrix[i][j].resize(4);
-        cout << "Node " << i << " " << j << " ";
         if (i != dem.getCellsNbrX() - 1) {
-          mDistanceMatrix[i][j][0] = (1 / (1 + exp((dem(i, j).getHeightDist().
-            getVariance() + dem(i+1, j).getHeightDist().getVariance()) -
+          mDistanceMatrix[i][j][0] = 1 / (1 + exp(dem(i, j).getHeightDist().
+            getVariance() + dem(i+1, j).getHeightDist().getVariance() -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i+1, j).
-            getHeightDist().getMean()))));
-            cout << "Down: " << mDistanceMatrix[i][j][0] << " Variance 1: " << dem(i, j).getHeightDist().getVariance() << " Variance 2: " << dem(i+1, j).getHeightDist().getVariance() << " Mean 1: " << dem(i, j).getHeightDist().getMean() << " Mean 2: " << dem(i+1, j).getHeightDist().getMean();
+            getHeightDist().getMean())));
         }
         if (i != 0) {
-          mDistanceMatrix[i][j][1] = (1 / (1 + exp((dem(i, j).getHeightDist().
-            getVariance() + dem(i-1, j).getHeightDist().getVariance()) -
+          mDistanceMatrix[i][j][1] = 1 / (1 + exp(dem(i, j).getHeightDist().
+            getVariance() + dem(i-1, j).getHeightDist().getVariance() -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i-1, j).
-            getHeightDist().getMean()))));
-            //cout << "Up: " << mDistanceMatrix[i][j][1] << " ";
+            getHeightDist().getMean())));
         }
         if (j != dem.getCellsNbrY() - 1) {
-          mDistanceMatrix[i][j][2] = (1 / (1 + exp((dem(i, j).getHeightDist().
-            getVariance() + dem(i, j+1).getHeightDist().getVariance()) -
+          mDistanceMatrix[i][j][2] = 1 / (1 + exp(dem(i, j).getHeightDist().
+            getVariance() + dem(i, j+1).getHeightDist().getVariance() -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i, j+1).
-            getHeightDist().getMean()))));
-            //cout << "Right: " << mDistanceMatrix[i][j][2] << " ";
+            getHeightDist().getMean())));
         }
         if (j != 0) {
-          mDistanceMatrix[i][j][3] = (1 / (1 + exp((dem(i, j).getHeightDist().
-            getVariance() + dem(i, j-1).getHeightDist().getVariance()) -
+          mDistanceMatrix[i][j][3] = 1 / (1 + exp(dem(i, j).getHeightDist().
+            getVariance() + dem(i, j-1).getHeightDist().getVariance() -
             fabs(dem(i, j).getHeightDist().getMean() - dem(i, j-1).
-            getHeightDist().getMean()))));
-            //cout << "Left: " << mDistanceMatrix[i][j][3] << " ";
+            getHeightDist().getMean())));
         }
-        cout << endl;
       }
     }
   }
@@ -96,14 +90,15 @@ void BeliefPropagation::infer(const vector<vector<double> >& coeffsMatrix,
         for (uint32_t k = 0; k < mNodesEvidenceMatrix[i][j].size(); k++) {
           const vector<double>& coeffVector = coeffsMatrix[k];
           Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
-          mNodesEvidenceMatrix[i][j][k] = 1 / (UniGaussian(coeffVectorMapped.
-            dot(dataVector), mDataMatrix[i][j][4]+ variancesVector[k]).
+          mNodesEvidenceMatrix[i][j][k] = 1 - 1 / (1 +
+            weightsVector[k] * UniGaussian(coeffVectorMapped.dot(dataVector),
+            mDataMatrix[i][j][4] + variancesVector[k]).
             pdf(mDataMatrix[i][j][3]));
         }
       }
     }
   }
-  for (uint32_t it = 0; it < 100; it++) {
+  for (uint32_t it = 0; it < 10; it++) {
     for (uint32_t i = 0; i < mDataMatrix.size(); i++) {
       for (uint32_t j = 0; j < mDataMatrix[0].size(); j++) {
         vector<double> emptyVector;

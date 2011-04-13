@@ -84,8 +84,10 @@ list<pair<uint32_t, uint32_t> >& Component::getNodesList() {
 }
 
 void Component::setInt(double f64Int) throw (OutOfBoundException) {
-  if (f64Int < 0)
+  if (f64Int < 0) {
+    cerr << "f64Int: " << f64Int << endl;
     throw OutOfBoundException("Component::setInt(): value must be greater than 0");
+  }
   mf64Int = f64Int;
 }
 
