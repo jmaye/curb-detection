@@ -32,26 +32,22 @@ void DEMVisitor::read(ifstream& stream) {
 void DEMVisitor::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const DEMVisitor& obj) {
+ostream& operator << (ostream& stream, const DEMVisitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  DEMVisitor& obj) {
+istream& operator >> (istream& stream, DEMVisitor& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const DEMVisitor& obj) {
+ofstream& operator << (ofstream& stream, const DEMVisitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  DEMVisitor& obj) {
+ifstream& operator >> (ifstream& stream, DEMVisitor& obj) {
   obj.read(stream);
   return stream;
 }

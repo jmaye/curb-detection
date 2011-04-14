@@ -35,7 +35,7 @@ class PointCloudVisitor : public Visitor {
 
 public:
   PointCloudVisitor(double f64PointSize = 1.0, GLbyte redColorByte = 0,
-  GLbyte greenColorByte = 0, GLbyte blueColorByte = 255);
+    GLbyte greenColorByte = 0, GLbyte blueColorByte = 255);
   ~PointCloudVisitor();
 
   void visit(const PointCloud* pointCloud);

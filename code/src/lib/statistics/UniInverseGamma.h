@@ -9,8 +9,7 @@
 class UniInverseGamma : public UniDistribution {
   friend std::ostream& operator << (std::ostream& stream,
     const UniInverseGamma& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    UniInverseGamma& obj);
+  friend std::istream& operator >> (std::istream& stream, UniInverseGamma& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const UniInverseGamma& obj);
   friend std::ifstream& operator >> (std::ifstream& stream,

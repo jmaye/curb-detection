@@ -5,6 +5,7 @@
 #include "MLEstimator.h"
 #include "Sensor.h"
 #include "DEMCRF.h"
+#include "BeliefPropagation.h"
 
 #include <iostream>
 #include <fstream>
@@ -27,11 +28,13 @@ DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
     mu32LabelsNbr(0),
     mu32MinPointsPerPlane(u32MinPointsPerPlane) {
   if (u32CellsNbrX == 0 || u32CellsNbrY == 0) {
-    cerr << "Requested number of cells: " << "(" << u32CellsNbrX << "," << u32CellsNbrY << ")" << endl; 
+    cerr << "Requested number of cells: " << "(" << u32CellsNbrX << ","
+         << u32CellsNbrY << ")" << endl; 
     throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
   }
   if (f64CellSizeX <= 0 || f64CellSizeY <= 0) {
-    cerr << "Requested cell size: " << "(" << f64CellSizeX << "," << f64CellSizeY << ")" << endl;
+    cerr << "Requested cell size: " << "(" << f64CellSizeX << ","
+         << f64CellSizeY << ")" << endl;
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
   }
   double f64CurX = mf64XOffset + mu32CellsNbrX * mf64CellSizeX;
@@ -84,26 +87,22 @@ void DEM::read(ifstream& stream) {
 void DEM::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const DEM& obj) {
+ostream& operator << (ostream& stream, const DEM& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  DEM& obj) {
+istream& operator >> (istream& stream, DEM& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const DEM& obj) {
+ofstream& operator << (ofstream& stream, const DEM& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  DEM& obj) {
+ifstream& operator >> (ifstream& stream, DEM& obj) {
   obj.read(stream);
   return stream;
 }
@@ -124,7 +123,8 @@ void DEM::setInitialLabels(const map<pair<uint32_t, uint32_t>, uint32_t>&
   labelsMap, const map<uint32_t, uint32_t>& supportsMap)
   throw (InvalidOperationException) {
   if (labelsMap.size() != mu32CellsNbrX * mu32CellsNbrY) {
-    cerr << "Labeling size: " << labelsMap.size() << " Cells number: " << mu32CellsNbrX * mu32CellsNbrY << endl;
+    cerr << "Labeling size: " << labelsMap.size() << " Cells number: "
+         << mu32CellsNbrX * mu32CellsNbrY << endl;
     throw InvalidOperationException("DEM::setInitialLabels(): inconsistent labeling");
   }
   map<uint32_t, uint32_t>::const_iterator it;
@@ -191,10 +191,24 @@ void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
   }
 }
 
+void DEM::setLabelsDist(const BeliefPropagation& bp)
+  throw (OutOfBoundException) {
+  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
+    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
+      if ((*this)(i, j).getInvalidFlag() == false) {
+        (*this)(i, j).
+          setLabelsDistVector(bp.getNodeDistribution(make_pair(i, j)));
+      }
+    }
+  }
+}
+
 Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column)
   throw (OutOfBoundException) {
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY) {
-    cerr << "Requesting: (" << u32Row << "," << u32Column << ")" << " Number of rows: " << mu32CellsNbrX << " Number of columns: " << mu32CellsNbrY << endl;
+    cerr << "Requesting: (" << u32Row << "," << u32Column << ")"
+         << " Number of rows: " << mu32CellsNbrX << " Number of columns: "
+         << mu32CellsNbrY << endl;
     throw OutOfBoundException("DEM::operator (): invalid indices");
   }
   return mCellsMatrix[u32Row][u32Column];
@@ -203,7 +217,9 @@ Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column)
 const Cell& DEM::operator () (uint32_t u32Row, uint32_t u32Column) const
   throw (OutOfBoundException) {
   if (u32Row >= mu32CellsNbrX || u32Column >= mu32CellsNbrY) {
-    cerr << "Requesting: (" << u32Row << "," << u32Column << ")" << " Number of rows: " << mu32CellsNbrX << " Number of columns: " << mu32CellsNbrY << endl;
+    cerr << "Requesting: (" << u32Row << "," << u32Column << ")"
+         << " Number of rows: " << mu32CellsNbrX << " Number of columns: "
+         << mu32CellsNbrY << endl;
     throw OutOfBoundException("DEM::operator (): invalid indices");
   }
   return mCellsMatrix[u32Row][u32Column];

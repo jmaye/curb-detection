@@ -11,11 +11,11 @@
 using namespace std;
 
 PointCloudVisitor::PointCloudVisitor(double f64PointSize, GLbyte redColorByte,
-  GLbyte greenColorByte,
-  GLbyte blueColorByte) : mf64PointSize(f64PointSize),
-                          mRedColorByte(redColorByte),
-                          mGreenColorByte(greenColorByte),
-                          mBlueColorByte(blueColorByte) {
+  GLbyte greenColorByte, GLbyte blueColorByte)
+  : mf64PointSize(f64PointSize),
+    mRedColorByte(redColorByte),
+    mGreenColorByte(greenColorByte),
+    mBlueColorByte(blueColorByte) {
 }
 
 PointCloudVisitor::~PointCloudVisitor() {
@@ -33,26 +33,22 @@ void PointCloudVisitor::read(ifstream& stream) {
 void PointCloudVisitor::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const PointCloudVisitor& obj) {
+ostream& operator << (ostream& stream, const PointCloudVisitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  PointCloudVisitor& obj) {
+istream& operator >> (istream& stream, PointCloudVisitor& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const PointCloudVisitor& obj) {
+ofstream& operator << (ofstream& stream, const PointCloudVisitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  PointCloudVisitor& obj) {
+ifstream& operator >> (ifstream& stream, PointCloudVisitor& obj) {
   obj.read(stream);
   return stream;
 }

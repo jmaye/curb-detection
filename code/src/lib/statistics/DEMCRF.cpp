@@ -30,6 +30,18 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
         featureVector.PushBack(cell.getCellCenter().mf64Y);
         uint32_t u32NodeId = AddNode(featureVector, cell.getMAPLabelsDist());
         mIdMap[make_pair(i, j)] = u32NodeId;
+        for (uint32_t k = 0; k < dem.getLabelsNbr(); k++) {
+          const vector<double>& coeffVector = coeffsMatrix[k];
+          Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
+          VectorXd dataVector(coeffVector.size());
+          dataVector(0) = 1;
+          dataVector(1) = cell.getCellCenter().mf64X;
+          dataVector(2) = cell.getCellCenter().mf64Y;
+          mDataMap[make_pair(u32NodeId, k)] = weightsVector[k] *
+            UniGaussian(coeffVectorMapped.dot(dataVector),
+            variancesVector[k] + cell.getHeightDist().getVariance()).
+            pdf(cell.getHeightDist().getMean());
+        }
       }
     }
   }
@@ -39,6 +51,14 @@ DEMCRF::DEMCRF(const DEM& dem, const multiset<Edge, EdgeCompare>& edgeSet,
       mIdMap.find((*setIt).getNode2()) == mIdMap.end())
       continue;
     AddEdge(mIdMap[(*setIt).getNode1()], mIdMap[(*setIt).getNode2()]);
+    Vector featureVector1 = GetNodeFeatures(mIdMap[(*setIt).getNode1()]);
+    Vector featureVector2 = GetNodeFeatures(mIdMap[(*setIt).getNode2()]);
+    mDistanceMap[make_pair(mIdMap[(*setIt).getNode1()],
+      mIdMap[(*setIt).getNode2()])] = 1 - (1 / (1 + exp((featureVector1[1] +
+      featureVector2[1]) - fabs(featureVector1[0] - featureVector2[0]))));
+    mDistanceMap[make_pair(mIdMap[(*setIt).getNode2()],
+      mIdMap[(*setIt).getNode1()])] = 1 - (1 / (1 + exp((featureVector1[1] +
+      featureVector2[1]) - fabs(featureVector1[0] - featureVector2[0]))));
   }
   mVariancesVector = variancesVector;
   mCoeffsMatrix = coeffsMatrix;
@@ -94,33 +114,16 @@ ifstream& operator >> (ifstream& stream,
 }
 
 Vector DEMCRF::FeatureFunction(uint32_t u32NodeId, int32_t i32Label) const {
-  const vector<double>& coeffVector = mCoeffsMatrix[i32Label];
-  Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
-  VectorXd dataVector(coeffVector.size());
-  Vector featureVector = GetNodeFeatures(u32NodeId);
-  dataVector(0) = 1;
-  dataVector(1) = featureVector[2];
-  dataVector(2) = featureVector[3];
   Vector value;
-  value.PushBack(1 - 1 / (1 + mWeightsVector[i32Label] *
-    UniGaussian(coeffVectorMapped.dot(dataVector),
-    mVariancesVector[i32Label] + featureVector[1]).pdf(featureVector[0])));
+  value.PushBack((*mDataMap.find(make_pair(u32NodeId, i32Label))).second);
   return value;
 }
 
 Vector DEMCRF::FeatureFunction(uint32_t u32NodeId1, uint32_t u32NodeId2,
   int32_t i32Label1, int32_t i32Label2) const {
-  Vector featureVector1 = GetNodeFeatures(u32NodeId1);
-  Vector featureVector2 = GetNodeFeatures(u32NodeId2);
   Vector value;
-  if (i32Label1 == i32Label2) {
-    value.PushBack(1 - (1 / (1 + exp((featureVector1[1] + featureVector2[1]) -
-      fabs(featureVector1[0] - featureVector2[0])))));
-  }
-  else {
-    value.PushBack((1 / (1 + exp((featureVector1[1] + featureVector2[1]) -
-      fabs(featureVector1[0] - featureVector2[0])))));
-  }
+  value.PushBack((*mDistanceMap.find(make_pair(u32NodeId1, u32NodeId2))).
+    second);
   return value;
 }
 
@@ -138,6 +141,27 @@ const vector<vector<double> >& DEMCRF::getCoeffsMatrix() const {
 
 const vector<double>& DEMCRF::getVariancesVector() const {
   return mVariancesVector;
+}
+
+void DEMCRF::updateNodesPotentials() {
+  for(NodeIterator node = NodesBegin(); node != NodesEnd(); node++) {
+    for (uint32_t i = 0; i < GetNbClasses(); i++) {
+      const vector<double>& coeffVector = mCoeffsMatrix[i];
+      if (coeffVector.size() == 0)
+        mDataMap[make_pair(node->GetID(), i)] = 0;
+      else {
+        Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
+        VectorXd dataVector(coeffVector.size());
+        Vector featureVector = GetNodeFeatures(node->GetID());
+        dataVector(0) = 1;
+        dataVector(1) = featureVector[2];
+        dataVector(2) = featureVector[3];
+        mDataMap[make_pair(node->GetID(), i)] = mWeightsVector[i] *
+          UniGaussian(coeffVectorMapped.dot(dataVector), mVariancesVector[i] +
+          featureVector[1]).pdf(featureVector[0]);
+      }
+    }
+  }
 }
 
 void DEMCRF::setCoeffsMatrix(const vector<vector<double> >& coeffsMatrix)

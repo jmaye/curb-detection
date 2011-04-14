@@ -23,26 +23,22 @@ void UniDistribution::read(ifstream& stream) {
 void UniDistribution::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const UniDistribution& obj) {
+ostream& operator << (ostream& stream, const UniDistribution& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  UniDistribution& obj) {
+istream& operator >> (istream& stream, UniDistribution& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const UniDistribution& obj) {
+ofstream& operator << (ofstream& stream, const UniDistribution& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  UniDistribution& obj) {
+ifstream& operator >> (ifstream& stream, UniDistribution& obj) {
   obj.read(stream);
   return stream;
 }

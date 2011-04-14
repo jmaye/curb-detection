@@ -38,26 +38,22 @@ void Point2D::read(ifstream& stream) {
 void Point2D::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const Point2D& obj) {
+ostream& operator << (ostream& stream, const Point2D& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  Point2D& obj) {
+istream& operator >> (istream& stream, Point2D& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const Point2D& obj) {
+ofstream& operator << (ofstream& stream, const Point2D& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  Point2D& obj) {
+ifstream& operator >> (ifstream& stream, Point2D& obj) {
   obj.read(stream);
   return stream;
 }

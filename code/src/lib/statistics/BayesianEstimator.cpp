@@ -58,7 +58,7 @@ ifstream& operator >> (ifstream& stream,
 }
 
 void BayesianEstimator::addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
-    UniInverseGamma& variancePrior, double f64DataPoint) {
+  UniInverseGamma& variancePrior, double f64DataPoint) {
   mu32PointsNbr++;
   double f64AlphaOld = variancePrior.getAlpha();
   double f64BetaOld = variancePrior.getBeta();

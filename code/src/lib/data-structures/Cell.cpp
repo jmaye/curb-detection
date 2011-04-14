@@ -16,7 +16,8 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mCellSize(cellSize),
     mbInvalidFlag(true) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
-    cerr << "Requested cell size: " << "(" << cellSize.mf64X << "," << cellSize.mf64Y << ")" << endl;
+    cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
+         << cellSize.mf64Y << ")" << endl;
     throw OutOfBoundException("Cell::Cell(): cell size must be positive");
   }
 }
@@ -54,26 +55,22 @@ void Cell::read(ifstream& stream) {
 void Cell::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const Cell& obj) {
+ostream& operator << (ostream& stream, const Cell& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  Cell& obj) {
+istream& operator >> (istream& stream, Cell& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const Cell& obj) {
+ofstream& operator << (ofstream& stream, const Cell& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  Cell& obj) {
+ifstream& operator >> (ifstream& stream, Cell& obj) {
   obj.read(stream);
   return stream;
 }
@@ -121,7 +118,8 @@ const Point2D& Cell::getCellSize() const {
 
 void Cell::setCellSize(const Point2D& cellSize) throw (OutOfBoundException) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
-    cerr << "Requested cell size: " << "(" << cellSize.mf64X << "," << cellSize.mf64Y << ")" << endl;
+    cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
+         << cellSize.mf64Y << ")" << endl;
     throw OutOfBoundException("Cell::setCellSize(): cell size must be positive");
   }
   mCellSize = cellSize;

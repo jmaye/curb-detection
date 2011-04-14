@@ -15,9 +15,8 @@ Component::Component(const pair<uint32_t, uint32_t>& nodeCoordinates)
   mNodesList.push_back(nodeCoordinates);
 }
 
-Component::Component(const Component& other)
-  : mf64Int(other.mf64Int),
-    mNodesList(other.mNodesList) {
+Component::Component(const Component& other) : mf64Int(other.mf64Int),
+                                               mNodesList(other.mNodesList) {
 }
 
 Component& Component::operator = (const Component& other) {
@@ -41,26 +40,22 @@ void Component::read(ifstream& stream) {
 void Component::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const Component& obj) {
+ostream& operator << (ostream& stream, const Component& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  Component& obj) {
+istream& operator >> (istream& stream, Component& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const Component& obj) {
+ofstream& operator << (ofstream& stream, const Component& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  Component& obj) {
+ifstream& operator >> (ifstream& stream, Component& obj) {
   obj.read(stream);
   return stream;
 }

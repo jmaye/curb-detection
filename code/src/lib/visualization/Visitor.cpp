@@ -27,26 +27,22 @@ void Visitor::read(ifstream& stream) {
 void Visitor::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const Visitor& obj) {
+ostream& operator << (ostream& stream, const Visitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  Visitor& obj) {
+istream& operator >> (istream& stream, Visitor& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const Visitor& obj) {
+ofstream& operator << (ofstream& stream, const Visitor& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  Visitor& obj) {
+ifstream& operator >> (ifstream& stream, Visitor& obj) {
   obj.read(stream);
   return stream;
 }

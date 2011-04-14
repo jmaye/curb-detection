@@ -7,14 +7,11 @@
 #include <iosfwd>
 
 class UniGamma : public UniDistribution {
-  friend std::ostream& operator << (std::ostream& stream,
-    const UniGamma& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    UniGamma& obj);
+  friend std::ostream& operator << (std::ostream& stream, const UniGamma& obj);
+  friend std::istream& operator >> (std::istream& stream, UniGamma& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const UniGamma& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    UniGamma& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, UniGamma& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

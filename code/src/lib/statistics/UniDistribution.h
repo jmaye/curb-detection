@@ -6,8 +6,7 @@
 class UniDistribution {
   friend std::ostream& operator << (std::ostream& stream,
     const UniDistribution& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    UniDistribution& obj);
+  friend std::istream& operator >> (std::istream& stream, UniDistribution& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const UniDistribution& obj);
   friend std::ifstream& operator >> (std::ifstream& stream,

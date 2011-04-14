@@ -7,14 +7,10 @@
 #include <vector>
 
 class Visitor {
-  friend std::ostream& operator << (std::ostream& stream,
-    const Visitor& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    Visitor& obj);
-  friend std::ofstream& operator << (std::ofstream& stream,
-    const Visitor& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    Visitor& obj);
+  friend std::ostream& operator << (std::ostream& stream, const Visitor& obj);
+  friend std::istream& operator >> (std::istream& stream, Visitor& obj);
+  friend std::ofstream& operator << (std::ofstream& stream, const Visitor& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, Visitor& obj);
 
   Visitor(const Visitor& other);
   Visitor& operator = (const Visitor& other);
@@ -32,6 +28,7 @@ public:
 
 protected:
   std::vector<GLuint> mGLListVector;
+
 };
 
 #endif // VISITOR_H

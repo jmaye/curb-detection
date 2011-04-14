@@ -14,14 +14,10 @@
 #include <stdint.h>
 
 class Cell {
-  friend std::ostream& operator << (std::ostream& stream,
-    const Cell& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    Cell& obj);
-  friend std::ofstream& operator << (std::ofstream& stream,
-    const Cell& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    Cell& obj);
+  friend std::ostream& operator << (std::ostream& stream, const Cell& obj);
+  friend std::istream& operator >> (std::istream& stream, Cell& obj);
+  friend std::ofstream& operator << (std::ofstream& stream, const Cell& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, Cell& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

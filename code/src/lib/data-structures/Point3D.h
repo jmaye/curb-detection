@@ -6,14 +6,10 @@
 #include <iosfwd>
 
 class Point3D {
-  friend std::ostream& operator << (std::ostream& stream,
-    const Point3D& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    Point3D& obj);
-  friend std::ofstream& operator << (std::ofstream& stream,
-    const Point3D& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    Point3D& obj);
+  friend std::ostream& operator << (std::ostream& stream, const Point3D& obj);
+  friend std::istream& operator >> (std::istream& stream, Point3D& obj);
+  friend std::ofstream& operator << (std::ofstream& stream, const Point3D& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, Point3D& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

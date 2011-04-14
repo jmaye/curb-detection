@@ -42,26 +42,22 @@ void UniInverseGamma::read(ifstream& stream) {
 void UniInverseGamma::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const UniInverseGamma& obj) {
+ostream& operator << (ostream& stream, const UniInverseGamma& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  UniInverseGamma& obj) {
+istream& operator >> (istream& stream, UniInverseGamma& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const UniInverseGamma& obj) {
+ofstream& operator << (ofstream& stream, const UniInverseGamma& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  UniInverseGamma& obj) {
+ifstream& operator >> (ifstream& stream, UniInverseGamma& obj) {
   obj.read(stream);
   return stream;
 }

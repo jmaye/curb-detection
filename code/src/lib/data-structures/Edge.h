@@ -8,14 +8,10 @@
 #include <stdint.h>
 
 class Edge {
-  friend std::ostream& operator << (std::ostream& stream,
-    const Edge& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    Edge& obj);
-  friend std::ofstream& operator << (std::ofstream& stream,
-    const Edge& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    Edge& obj);
+  friend std::ostream& operator << (std::ostream& stream, const Edge& obj);
+  friend std::istream& operator >> (std::istream& stream, Edge& obj);
+  friend std::ofstream& operator << (std::ofstream& stream, const Edge& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, Edge& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

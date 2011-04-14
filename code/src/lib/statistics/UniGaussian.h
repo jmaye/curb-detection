@@ -10,12 +10,10 @@
 class UniGaussian : public UniDistribution {
   friend std::ostream& operator << (std::ostream& stream,
     const UniGaussian& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    UniGaussian& obj);
+  friend std::istream& operator >> (std::istream& stream, UniGaussian& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const UniGaussian& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    UniGaussian& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, UniGaussian& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

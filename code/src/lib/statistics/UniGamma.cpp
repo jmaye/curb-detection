@@ -16,9 +16,8 @@ UniGamma::UniGamma(double f64Alpha, double f64Beta)
     throw OutOfBoundException("UniGamma::UniGamma(): mf64Beta should be bigger than 0");
 }
 
-UniGamma::UniGamma(const UniGamma& other)
-  : mf64Alpha(other.mf64Alpha),
-    mf64Beta(other.mf64Beta) {
+UniGamma::UniGamma(const UniGamma& other) : mf64Alpha(other.mf64Alpha),
+                                            mf64Beta(other.mf64Beta) {
 }
 
 UniGamma& UniGamma::operator = (const UniGamma& other) {
@@ -42,26 +41,22 @@ void UniGamma::read(ifstream& stream) {
 void UniGamma::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const UniGamma& obj) {
+ostream& operator << (ostream& stream, const UniGamma& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  UniGamma& obj) {
+istream& operator >> (istream& stream, UniGamma& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const UniGamma& obj) {
+ofstream& operator << (ofstream& stream, const UniGamma& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  UniGamma& obj) {
+ifstream& operator >> (ifstream& stream, UniGamma& obj) {
   obj.read(stream);
   return stream;
 }

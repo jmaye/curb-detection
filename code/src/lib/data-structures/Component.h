@@ -10,14 +10,11 @@
 #include <stdint.h>
 
 class Component {
-  friend std::ostream& operator << (std::ostream& stream,
-    const Component& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    Component& obj);
+  friend std::ostream& operator << (std::ostream& stream, const Component& obj);
+  friend std::istream& operator >> (std::istream& stream, Component& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const Component& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    Component& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, Component& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

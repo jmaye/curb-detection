@@ -13,16 +13,22 @@ void EM::run(DEMCRF& crf, Vector& nodesWeightsVector,
   uint32_t u32Iterations) {
   cout << "Initial: " << endl;
   for (uint32_t j = 0; j < crf.GetNbClasses(); j++) {
-   cout << "Plane: " << j << ", Variance: " << variancesVector[j] << ", Weight: " << weightsVector[j] << endl;
+   cout << "Plane: " << j << ", Variance: " << variancesVector[j]
+        << ", Weight: " << weightsVector[j] << endl;
   }
   for (uint32_t i = 0; i < u32Iterations; i++) {
     crf.Inference(nodesWeightsVector, edgesWeightsVector, crf.GetNbClasses());
     dem.setLabelsDist(crf);
-    LinearRegressor::estimate(dem, coeffsMatrix, variancesVector,
-      weightsVector);
+    //LinearRegressor::estimate(dem, coeffsMatrix, variancesVector,
+      //weightsVector);
+    //crf.setCoeffsMatrix(coeffsMatrix);
+    //crf.setVariancesVector(variancesVector);
+    //crf.setWeightsVector(weightsVector);
+    //crf.updateNodesPotentials();
     cout << "Iteration: " << i << endl;
     for (uint32_t j = 0; j < crf.GetNbClasses(); j++) {
-      cout << "Plane: " << j << ", Variance: " << variancesVector[j] << ", Weight: " << weightsVector[j] << endl;
+      cout << "Plane: " << j << ", Variance: " << variancesVector[j]
+           << ", Weight: " << weightsVector[j] << endl;
     }
   }
 }

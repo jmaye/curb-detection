@@ -43,26 +43,22 @@ void Edge::read(ifstream& stream) {
 void Edge::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const Edge& obj) {
+ostream& operator << (ostream& stream, const Edge& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  Edge& obj) {
+istream& operator >> (istream& stream, Edge& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const Edge& obj) {
+ofstream& operator << (ofstream& stream, const Edge& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  Edge& obj) {
+ifstream& operator >> (ifstream& stream, Edge& obj) {
   obj.read(stream);
   return stream;
 }

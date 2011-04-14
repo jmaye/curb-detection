@@ -40,26 +40,22 @@ void UniGaussian::read(ifstream& stream) {
 void UniGaussian::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const UniGaussian& obj) {
+ostream& operator << (ostream& stream, const UniGaussian& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  UniGaussian& obj) {
+istream& operator >> (istream& stream, UniGaussian& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const UniGaussian& obj) {
+ofstream& operator << (ofstream& stream, const UniGaussian& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  UniGaussian& obj) {
+ifstream& operator >> (ifstream& stream, UniGaussian& obj) {
   obj.read(stream);
   return stream;
 }

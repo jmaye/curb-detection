@@ -37,26 +37,22 @@ void MLEstimator::read(ifstream& stream) {
 void MLEstimator::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const MLEstimator& obj) {
+ostream& operator << (ostream& stream, const MLEstimator& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  MLEstimator& obj) {
+istream& operator >> (istream& stream, MLEstimator& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const MLEstimator& obj) {
+ofstream& operator << (ofstream& stream, const MLEstimator& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  MLEstimator& obj) {
+ifstream& operator >> (ifstream& stream, MLEstimator& obj) {
   obj.read(stream);
   return stream;
 }

@@ -27,6 +27,7 @@ void LinearRegressor::estimate(const DEM& dem,
   VectorXd targetsVector(u32ValidCellsNbr);
   MatrixXd designMatrix(u32ValidCellsNbr, 3);
   MatrixXd weightsMatrix(u32LabelsNbr, (int)u32ValidCellsNbr);
+  VectorXd supportPointsVector = VectorXd::Zero(u32LabelsNbr);
   uint32_t i = 0;
   for (uint32_t j = 0; j < dem.getCellsNbrX(); j++) {
     for (uint32_t k = 0; k < dem.getCellsNbrY(); k++) {
@@ -40,6 +41,8 @@ void LinearRegressor::estimate(const DEM& dem,
         const vector<double>& labelsDistVector = cell.getLabelsDistVector();
         for (uint32_t l = 0; l < u32LabelsNbr; l++) {
           weightsMatrix(l, i) = labelsDistVector[l];
+          if (labelsDistVector[l] > 1e-6)
+            supportPointsVector(l)++;
         }
         i++;
       }
@@ -54,19 +57,29 @@ void LinearRegressor::estimate(const DEM& dem,
   Map<VectorXd> variancesVectorMapped(&variancesVector[0], u32LabelsNbr);
   MatrixXd coeffsMatrixEigen(u32LabelsNbr, 3);
   for (uint32_t i = 0; i < u32LabelsNbr; i++) {
-    coeffsMatrixEigen.row(i) = ((designMatrix.transpose() *
-      weightsMatrix.row(i).asDiagonal() * designMatrix).inverse() *
-      designMatrix.transpose() * weightsMatrix.row(i).asDiagonal() *
-      targetsVector).transpose();
-    variancesVectorMapped(i) = 0;
-    for (uint32_t j = 0; j < u32ValidCellsNbr; j++)
-       variancesVectorMapped(i) += weightsMatrix(i, j) * pow(targetsVector(j) -
-        coeffsMatrixEigen.row(i).transpose().dot(designMatrix.row(i)), 2);
-    variancesVectorMapped(i) /= u32ValidCellsNbr;
-    coeffsMatrix[i].resize(3);
-    coeffsMatrix[i][0] = coeffsMatrixEigen(i, 0);
-    coeffsMatrix[i][1] = coeffsMatrixEigen(i, 1);
-    coeffsMatrix[i][2] = coeffsMatrixEigen(i, 2);
-    weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
+    if (supportPointsVector(i) >= dem.getMinPointsPerPlane()) {
+      coeffsMatrixEigen.row(i) = ((designMatrix.transpose() *
+        weightsMatrix.row(i).asDiagonal() * designMatrix).inverse() *
+        designMatrix.transpose() * weightsMatrix.row(i).asDiagonal() *
+        targetsVector).transpose();
+      variancesVectorMapped(i) = 0;
+      for (uint32_t j = 0; j < u32ValidCellsNbr; j++)
+        variancesVectorMapped(i) += weightsMatrix(i, j) * pow(targetsVector(j) -
+          coeffsMatrixEigen.row(i).transpose().dot(designMatrix.row(j)), 2);
+      variancesVectorMapped(i) /= u32ValidCellsNbr;
+      coeffsMatrix[i].resize(3);
+      coeffsMatrix[i][0] = coeffsMatrixEigen(i, 0);
+      coeffsMatrix[i][1] = coeffsMatrixEigen(i, 1);
+      coeffsMatrix[i][2] = coeffsMatrixEigen(i, 2);
+      weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
+    }
   }
+//  double f64Sum = 0;
+//  for (uint32_t i = 0; i < u32ValidCellsNbr; i++) {
+//    for (uint32_t j = 0; j < u32LabelsNbr; j++) {
+//      if (variancesVector[j] != 0)
+//        f64Sum += weightsVector[j] * UniGaussian(coeffsMatrixEigen.row(j).transpose().dot(designMatrix.row(i)), variancesVector[j]).pdf(targetsVector(i));
+//    }
+//  }
+//  cout << "Measure=" << f64Sum << endl;
 }

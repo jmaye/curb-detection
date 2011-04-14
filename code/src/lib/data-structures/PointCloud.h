@@ -13,12 +13,10 @@
 class PointCloud {
   friend std::ostream& operator << (std::ostream& stream,
     const PointCloud& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    PointCloud& obj);
+  friend std::istream& operator >> (std::istream& stream, PointCloud& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const PointCloud& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    PointCloud& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, PointCloud& obj);
 
   PointCloud(const PointCloud& other);
   PointCloud& operator = (const PointCloud& other);

@@ -14,16 +14,13 @@
 #include <stdint.h>
 
 class DEMCRF;
+class BeliefPropagation;
 
 class DEM {
-  friend std::ostream& operator << (std::ostream& stream,
-    const DEM& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    DEM& obj);
-  friend std::ofstream& operator << (std::ofstream& stream,
-    const DEM& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    DEM& obj);
+  friend std::ostream& operator << (std::ostream& stream, const DEM& obj);
+  friend std::istream& operator >> (std::istream& stream, DEM& obj);
+  friend std::ofstream& operator << (std::ofstream& stream, const DEM& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, DEM& obj);
 
   DEM(const DEM& other);
   DEM& operator = (const DEM& other);
@@ -33,8 +30,6 @@ class DEM {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
-  Cell& getCell(uint32_t u32Row, uint32_t u32Column)
-    throw (OutOfBoundException);
   Cell& operator () (uint32_t u32Row, uint32_t u32Column)
     throw (OutOfBoundException);
 
@@ -75,6 +70,7 @@ public:
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
   void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
+  void setLabelsDist(const BeliefPropagation& bp) throw (OutOfBoundException);
   void setMinPointsPerPlane(uint32_t u32MinPointsPerPlane)
     throw (OutOfBoundException);
 

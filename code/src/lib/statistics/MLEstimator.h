@@ -10,12 +10,10 @@
 class MLEstimator {
   friend std::ostream& operator << (std::ostream& stream,
     const MLEstimator& obj);
-  friend std::istream& operator >> (std::istream& stream,
-    MLEstimator& obj);
+  friend std::istream& operator >> (std::istream& stream, MLEstimator& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
     const MLEstimator& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream,
-    MLEstimator& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, MLEstimator& obj);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;

@@ -32,26 +32,22 @@ void PointCloud::read(ifstream& stream) {
 void PointCloud::write(ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const PointCloud& obj) {
+ostream& operator << (ostream& stream, const PointCloud& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  PointCloud& obj) {
+istream& operator >> (istream& stream, PointCloud& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const PointCloud& obj) {
+ofstream& operator << (ofstream& stream, const PointCloud& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  PointCloud& obj) {
+ifstream& operator >> (ifstream& stream, PointCloud& obj) {
   obj.read(stream);
   return stream;
 }
@@ -63,7 +59,8 @@ void PointCloud::accept(PointCloudVisitor& v) const {
 const Point3D& PointCloud::operator [] (uint32_t u32Idx) const
   throw (OutOfBoundException) {
   if (u32Idx >= mPointsVector.size()) {
-    cerr << "Requesting: " << u32Idx << " Number of points: " << mPointsVector.size() << endl;
+    cerr << "Requesting: " << u32Idx << " Number of points: "
+         << mPointsVector.size() << endl;
     throw OutOfBoundException("PointCloud::operator []: invalid index");
   }
   return mPointsVector[u32Idx];
