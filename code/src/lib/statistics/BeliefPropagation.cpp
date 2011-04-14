@@ -67,15 +67,19 @@ void BeliefPropagation::infer(const DEM& dem,
         dai::Factor fac(vars[u32NodeIdx]);
         for (uint32_t k = 0; k < dem.getLabelsNbr(); k++) {
           const vector<double>& coeffVector = coeffsMatrix[k];
-          Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
-          VectorXd dataVector(coeffVector.size());
-          dataVector(0) = 1;
-          dataVector(1) = cell.getCellCenter().mf64X;
-          dataVector(2) = cell.getCellCenter().mf64Y;
-          fac.set(k, weightsVector[k] *
-            UniGaussian(coeffVectorMapped.dot(dataVector), variancesVector[k] +
-            cell.getHeightDist().getVariance()).
-            pdf(cell.getHeightDist().getMean()));
+          if (coeffVector.size() == 0)
+            fac.set(k, 0);
+          else {
+            Map<VectorXd> coeffVectorMapped(&coeffVector[0], coeffVector.size());
+            VectorXd dataVector(coeffVector.size());
+            dataVector(0) = 1;
+            dataVector(1) = cell.getCellCenter().mf64X;
+            dataVector(2) = cell.getCellCenter().mf64Y;
+            fac.set(k, weightsVector[k] *
+              UniGaussian(coeffVectorMapped.dot(dataVector), variancesVector[k] +
+              cell.getHeightDist().getVariance()).
+              pdf(cell.getHeightDist().getMean()));
+          }
         }
         factors.push_back(fac);
         mIdMap[make_pair(i, j)] = u32NodeIdx;

@@ -60,19 +60,8 @@ int main(int argc ,char** argv) {
   BeliefPropagation bp;
   cout << "BP creation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
-  bp.infer(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
-  cout << "BP inference: " << getMsCount() - f64Time << " [ms]" << endl;
-  dem.setLabelsDist(bp);
-//  f64Time = getMsCount();
-//  DEMCRF crf(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector);
-//  cout << "CRF creation: " << getMsCount() - f64Time << " [ms]" << endl;
-//  Vector nodesWeightsVector, edgesWeightsVector;
-//  nodesWeightsVector.PushBack(1.0);
-//  edgesWeightsVector.PushBack(1.0);
-//  f64Time = getMsCount();
-//  EM::run(crf, nodesWeightsVector, edgesWeightsVector, dem, coeffsMatrix,
-//    variancesVector, weightsVector, 1);
-//  cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
+  EM::run(bp, dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15);
+  cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
