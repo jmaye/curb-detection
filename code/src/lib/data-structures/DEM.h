@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 
-class DEMCRF;
 class BeliefPropagation;
 
 class DEM {
@@ -69,7 +68,6 @@ public:
     throw (InvalidOperationException);
   void setValidCellsNbr(uint32_t u32ValidCellsNbr);
   void setLabelsNbr(uint32_t u32LabelsNbr);
-  void setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException);
   void setLabelsDist(const BeliefPropagation& bp) throw (OutOfBoundException);
   void setMinPointsPerPlane(uint32_t u32MinPointsPerPlane)
     throw (OutOfBoundException);

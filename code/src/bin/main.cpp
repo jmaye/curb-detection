@@ -4,7 +4,6 @@
 #include "ConnectivityBuilder.h"
 #include "GraphSegmenter.h"
 #include "LinearRegressor.h"
-#include "DEMCRF.h"
 #include "EM.h"
 #include "BeliefPropagation.h"
 
@@ -45,7 +44,7 @@ int main(int argc ,char** argv) {
   map<pair<uint32_t, uint32_t>, uint32_t> labelsMap;
   map<uint32_t, uint32_t> supportsMap;
   f64Time = getMsCount();
-  GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 100);
+  GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 200);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]"
        << endl;
   dem.setInitialLabels(labelsMap, supportsMap);
@@ -57,10 +56,10 @@ int main(int argc ,char** argv) {
   cout << "Initial linear regression: " << getMsCount() - f64Time << " [ms]"
        << endl;
   f64Time = getMsCount();
-  BeliefPropagation bp;
+  BeliefPropagation bp(dem, edgeSet);
   cout << "BP creation: " << getMsCount() - f64Time << " [ms]" << endl;
   f64Time = getMsCount();
-  EM::run(bp, dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15);
+  EM::run(bp, dem, coeffsMatrix, variancesVector, weightsVector, 5);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
 
   Window window(argc, argv);

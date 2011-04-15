@@ -74,12 +74,4 @@ void LinearRegressor::estimate(const DEM& dem,
       weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
     }
   }
-//  double f64Sum = 0;
-//  for (uint32_t i = 0; i < u32ValidCellsNbr; i++) {
-//    for (uint32_t j = 0; j < u32LabelsNbr; j++) {
-//      if (variancesVector[j] != 0)
-//        f64Sum += weightsVector[j] * UniGaussian(coeffsMatrixEigen.row(j).transpose().dot(designMatrix.row(i)), variancesVector[j]).pdf(targetsVector(i));
-//    }
-//  }
-//  cout << "Measure=" << f64Sum << endl;
 }

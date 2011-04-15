@@ -4,7 +4,6 @@
 #include "UniGaussian.h"
 #include "MLEstimator.h"
 #include "Sensor.h"
-#include "DEMCRF.h"
 #include "BeliefPropagation.h"
 
 #include <iostream>
@@ -170,25 +169,6 @@ uint32_t DEM::getLabelsNbr() const {
 
 void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
   mu32LabelsNbr = u32LabelsNbr;
-}
-
-void DEM::setLabelsDist(const DEMCRF& crf) throw (OutOfBoundException) {
-  const map<pair<uint32_t, uint32_t>, uint32_t>& idMap = crf.getIdMap();
-  map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it;
-  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
-    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
-      if ((*this)(i, j).getInvalidFlag() == false) {
-        it = idMap.find(make_pair(i, j));
-        if (it == idMap.end())
-          throw OutOfBoundException("DEM::setLabelsDist(): inconsistent labeling");
-        Vector distVectorCRF = crf.GetLabelDistribution((*it).second);
-        vector<double> distVector(distVectorCRF.Size(), 0);
-        for (uint32_t k = 0; k < distVector.size(); k++)
-          distVector[crf.GetClassLabel(k)] = distVectorCRF[k];
-        (*this)(i, j).setLabelsDistVector(distVector);
-      }
-    }
-  }
 }
 
 void DEM::setLabelsDist(const BeliefPropagation& bp)

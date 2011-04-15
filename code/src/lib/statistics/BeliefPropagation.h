@@ -36,13 +36,14 @@ class BeliefPropagation {
   std::map<std::pair<uint32_t, uint32_t>, uint32_t> mIdMap;
   dai::FactorGraph mFactorGraph;
   dai::BP mBP;
+  bool mbInferenceDone;
 
 public:
-  BeliefPropagation();
+  BeliefPropagation(const DEM& dem,
+    const std::multiset<Edge, EdgeCompare>& edgeSet);
   ~BeliefPropagation();
 
   void infer(const DEM& dem,
-    const std::multiset<Edge, EdgeCompare>& edgeSet,
     const std::vector<std::vector<double> >& coeffsMatrix,
     const std::vector<double>& variancesVector,
     const std::vector<double>& weightsVector) throw (OutOfBoundException);
