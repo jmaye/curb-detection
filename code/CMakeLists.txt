@@ -14,4 +14,4 @@ remake_project(
   INSTALL /usr
 )
 
-remake_pack_deb(libglut3 graphtool)
+remake_pack_deb(libglut3 libdai)

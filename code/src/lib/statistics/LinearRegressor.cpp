@@ -16,7 +16,7 @@ using namespace std;
 
 void LinearRegressor::estimate(const DEM& dem,
   vector<vector<double> >& coeffsMatrix, vector<double>& variancesVector,
-  vector<double>& weightsVector) throw (OutOfBoundException) {
+  vector<double>& weightsVector, double f64Tol) throw (OutOfBoundException) {
   uint32_t u32ValidCellsNbr = dem.getValidCellsNbr();
   uint32_t u32LabelsNbr = dem.getLabelsNbr();
   if (u32ValidCellsNbr == 0 || u32LabelsNbr == 0) {
@@ -27,7 +27,6 @@ void LinearRegressor::estimate(const DEM& dem,
   VectorXd targetsVector(u32ValidCellsNbr);
   MatrixXd designMatrix(u32ValidCellsNbr, 3);
   MatrixXd weightsMatrix(u32LabelsNbr, (int)u32ValidCellsNbr);
-  VectorXd supportPointsVector = VectorXd::Zero(u32LabelsNbr);
   uint32_t i = 0;
   for (uint32_t j = 0; j < dem.getCellsNbrX(); j++) {
     for (uint32_t k = 0; k < dem.getCellsNbrY(); k++) {
@@ -41,8 +40,6 @@ void LinearRegressor::estimate(const DEM& dem,
         const vector<double>& labelsDistVector = cell.getLabelsDistVector();
         for (uint32_t l = 0; l < u32LabelsNbr; l++) {
           weightsMatrix(l, i) = labelsDistVector[l];
-          if (labelsDistVector[l] > 1e-6)
-            supportPointsVector(l)++;
         }
         i++;
       }
@@ -57,9 +54,10 @@ void LinearRegressor::estimate(const DEM& dem,
   Map<VectorXd> variancesVectorMapped(&variancesVector[0], u32LabelsNbr);
   MatrixXd coeffsMatrixEigen(u32LabelsNbr, 3);
   for (uint32_t i = 0; i < u32LabelsNbr; i++) {
-    if (supportPointsVector(i) >= dem.getMinPointsPerPlane()) {
-      coeffsMatrixEigen.row(i) = ((designMatrix.transpose() *
-        weightsMatrix.row(i).asDiagonal() * designMatrix).inverse() *
+    MatrixXd invCheckMatrix = designMatrix.transpose() *
+      weightsMatrix.row(i).asDiagonal() * designMatrix;
+    if (invCheckMatrix.determinant() > f64Tol) {
+      coeffsMatrixEigen.row(i) = (invCheckMatrix.inverse() *
         designMatrix.transpose() * weightsMatrix.row(i).asDiagonal() *
         targetsVector).transpose();
       variancesVectorMapped(i) = 0;
@@ -72,6 +70,14 @@ void LinearRegressor::estimate(const DEM& dem,
       coeffsMatrix[i][1] = coeffsMatrixEigen(i, 1);
       coeffsMatrix[i][2] = coeffsMatrixEigen(i, 2);
       weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
+    }
+    else {
+      variancesVector[i] = 0;
+      weightsVector[i] = 0;
+      coeffsMatrix[i].resize(3);
+      coeffsMatrix[i][0] = 0;
+      coeffsMatrix[i][1] = 0;
+      coeffsMatrix[i][2] = 0;
     }
   }
 }

@@ -4,6 +4,7 @@
 #include "DEM.h"
 #include "Edge.h"
 #include "OutOfBoundException.h"
+#include "InvalidOperationException.h"
 
 #include <dai/bp.h>
 #include <dai/factorgraph.h>
@@ -39,18 +40,22 @@ class BeliefPropagation {
   bool mbInferenceDone;
 
 public:
-  BeliefPropagation(const DEM& dem,
-    const std::multiset<Edge, EdgeCompare>& edgeSet);
+  BeliefPropagation();
   ~BeliefPropagation();
 
   void infer(const DEM& dem,
+    const std::multiset<Edge, EdgeCompare>& edgeSet,
     const std::vector<std::vector<double> >& coeffsMatrix,
     const std::vector<double>& variancesVector,
-    const std::vector<double>& weightsVector) throw (OutOfBoundException);
+    const std::vector<double>& weightsVector,
+    uint32_t u32MaxIter, double f64Tol)
+    throw (OutOfBoundException);
 
   std::vector<double>
-    getNodeDistribution(std::pair<uint32_t, uint32_t> nodeCoordinates) const
-    throw (OutOfBoundException);
+    getNodeDistribution(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
+    const throw (OutOfBoundException, InvalidOperationException);
+
+  double getJointLogLikelihood() const throw (InvalidOperationException);
 
 protected:
 

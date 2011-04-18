@@ -5,7 +5,6 @@
 #include "GraphSegmenter.h"
 #include "LinearRegressor.h"
 #include "EM.h"
-#include "BeliefPropagation.h"
 
 #include <iostream>
 #include <fstream>
@@ -56,10 +55,8 @@ int main(int argc ,char** argv) {
   cout << "Initial linear regression: " << getMsCount() - f64Time << " [ms]"
        << endl;
   f64Time = getMsCount();
-  BeliefPropagation bp(dem, edgeSet);
-  cout << "BP creation: " << getMsCount() - f64Time << " [ms]" << endl;
-  f64Time = getMsCount();
-  EM::run(bp, dem, coeffsMatrix, variancesVector, weightsVector, 5);
+  EM::run(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15, 1e-6,
+    10000, 1e-9);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
 
   Window window(argc, argv);

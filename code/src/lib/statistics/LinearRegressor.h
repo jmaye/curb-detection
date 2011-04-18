@@ -13,7 +13,8 @@ class LinearRegressor {
 public:
   static void estimate(const DEM& dem,
     std::vector<std::vector<double> >& coeffsMatrix,
-    std::vector<double>& variancesVector, std::vector<double>& weightsVector)
+    std::vector<double>& variancesVector, std::vector<double>& weightsVector,
+    double f64Tol = 1e-6)
     throw (OutOfBoundException);
 
 protected:

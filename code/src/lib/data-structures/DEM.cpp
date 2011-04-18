@@ -173,11 +173,29 @@ void DEM::setLabelsNbr(uint32_t u32LabelsNbr) {
 
 void DEM::setLabelsDist(const BeliefPropagation& bp)
   throw (OutOfBoundException) {
+  vector<uint32_t> supportPointsVector(mu32LabelsNbr);
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
       if ((*this)(i, j).getInvalidFlag() == false) {
-        (*this)(i, j).
-          setLabelsDistVector(bp.getNodeDistribution(make_pair(i, j)));
+        vector<double> distVector = bp.getNodeDistribution(make_pair(i, j));
+        for (uint32_t k = 0; k < distVector.size(); k++) {
+          if (distVector[k] > 1e-6)
+            supportPointsVector[k]++;
+        }
+      }
+    }
+  }
+  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
+    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
+      if ((*this)(i, j).getInvalidFlag() == false) {
+        vector<double> distVector = bp.getNodeDistribution(make_pair(i, j));
+        vector<double> newDistVector;
+        for (uint32_t k = 0; k < distVector.size(); k++) {
+          if (supportPointsVector[k] >= mu32MinPointsPerPlane)
+            newDistVector.push_back(distVector[k]);
+        }
+        (*this)(i, j).setLabelsDistVector(newDistVector);
+        mu32LabelsNbr = newDistVector.size();
       }
     }
   }
