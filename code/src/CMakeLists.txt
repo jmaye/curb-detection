@@ -1,7 +1,7 @@
 remake_find_package(OpenGL CONFIG gl)
 remake_find_package(GLU CONFIG glu)
 remake_find_package(GLUT)
-remake_find_library(dai dai/alldai.h PACKAGE DAI)
+remake_find_library(dai dai/alldai.h PACKAGE libdai-dev)
 remake_find_file(eigen2/Eigen/Core PACKAGE libeigen2-dev)
 remake_include(${LIBEIGEN2_DEV_FILE}/eigen2)
 remake_include(${DAI_HEADERS})
