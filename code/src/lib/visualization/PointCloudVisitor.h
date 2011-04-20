@@ -29,25 +29,17 @@ class PointCloudVisitor : public Visitor {
   virtual void write(std::ofstream& stream) const;
 
   double mf64PointSize;
-  GLbyte mRedColorByte;
-  GLbyte mGreenColorByte;
-  GLbyte mBlueColorByte;
+  Color mColor;
 
 public:
   PointCloudVisitor(double f64PointSize = 1.0, GLbyte redColorByte = 0,
-    GLbyte greenColorByte = 0, GLbyte blueColorByte = 255);
+    GLbyte greenColorByte = 0, GLbyte blueColorByte = 1);
   ~PointCloudVisitor();
 
   void visit(const PointCloud* pointCloud);
   void visit(const Point3D* point3D) const;
   void setPointSize(double f64PointSize);
   double getPointSize() const;
-  void setRedColorByte(GLbyte colorByte);
-  GLbyte getRedColorByte() const;
-  void setGreenColorByte(GLbyte colorByte);
-  GLbyte getGreenColorByte() const;
-  void setBlueColorByte(GLbyte colorByte);
-  GLbyte getBlueColorByte() const;
 
 protected:
 

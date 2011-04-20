@@ -91,15 +91,7 @@ void Window::drawScene() const {
     drawAxes(3.0);
   mPointCloudVisitor.draw();
   mDEMVisitor.draw();
-//  glBegin(GL_LINES);
-//  glPointSize(2.0);
-//  glColor3f(1, 0, 0);
-//  multiset<Edge, EdgeCompare>::const_iterator it;
-//  for (it = mEdgeSet.begin(); it != mEdgeSet.end(); it++) {
-//    glVertex3f(mCellsVector[(*it).getNode1Idx()].getCellCenter().mf64X, mCellsVector[(*it).getNode1Idx()].getCellCenter().mf64Y, 0);
-//    glVertex3f(mCellsVector[(*it).getNode2Idx()].getCellCenter().mf64X, mCellsVector[(*it).getNode2Idx()].getCellCenter().mf64Y, 0);
-//  }
-//  glEnd();
+  mConnectivityMapVisitor.draw();
   glutSwapBuffers();
   glFlush();
 }
@@ -194,9 +186,8 @@ void Window::addDEM(const DEM& dem) {
   dem.accept(mDEMVisitor);
 }
 
-void Window::addConnectivity(const multiset<Edge, EdgeCompare>& edgeSet,
- const DEM& dem) {
-  mEdgeSet = edgeSet;
+void Window::addConnectivity(const ConnectivityMap& connectivityMap) {
+  connectivityMap.accept(mConnectivityMapVisitor);
 }
 
 void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {

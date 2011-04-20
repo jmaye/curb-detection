@@ -4,9 +4,10 @@
 #include "PointCloud.h"
 #include "Point3D.h"
 #include "DEM.h"
-#include "Edge.h"
+#include "ConnectivityMap.h"
 #include "PointCloudVisitor.h"
 #include "DEMVisitor.h"
+#include "ConnectivityMapVisitor.h"
 
 #include <GL/gl.h>
 
@@ -50,8 +51,7 @@ class Window {
 
   PointCloudVisitor mPointCloudVisitor;
   DEMVisitor mDEMVisitor;
-  std::multiset<Edge, EdgeCompare> mEdgeSet;
-  std::vector<Cell> mCellsVector;
+  ConnectivityMapVisitor mConnectivityMapVisitor;
 
 public:
   Window(int argc, char** argv, int i32Width = 640, int i32Height = 480);
@@ -66,8 +66,7 @@ public:
   void drawScene() const;
   void addPointCloud(const PointCloud& pointCloud);
   void addDEM(const DEM& dem);
-  void addConnectivity(const std::multiset<Edge, EdgeCompare>& edgeSet,
-    const DEM& dem);
+  void addConnectivity(const ConnectivityMap& connectivityMap);
 
 protected:
 

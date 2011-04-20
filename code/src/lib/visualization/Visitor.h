@@ -27,6 +27,12 @@ public:
   virtual void draw() const;
 
 protected:
+  struct Color {
+    GLfloat mRedColorByte;
+    GLfloat mGreenColorByte;
+    GLfloat mBlueColorByte;
+  };
+
   std::vector<GLuint> mGLListVector;
 
 };

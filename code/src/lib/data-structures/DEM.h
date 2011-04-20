@@ -46,10 +46,10 @@ class DEM {
   uint32_t mu32MinPointsPerPlane;
 
 public:
-  DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.4,
-    double f64CellSizeY = 0.4, uint32_t u32CellsNbrX = 20,
-    uint32_t u32CellsNbrY = 20, double f64XOffset = 1, double f64YOffset = 0,
-    double f64HeightMin = -10, double f64HeightMax = 10,
+  DEM(const PointCloud& pointCloud, double f64CellSizeX = 0.15,
+    double f64CellSizeY = 0.15, uint32_t u32CellsNbrX = 30,
+    uint32_t u32CellsNbrY = 30, double f64XOffset = 1.0, double f64YOffset = 0,
+    double f64HeightMin = -2, double f64HeightMax = 1,
     uint32_t u32MinPointsPerPlane = 3) throw (OutOfBoundException);
   ~DEM();
 

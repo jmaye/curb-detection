@@ -4,8 +4,7 @@
 #include "BeliefPropagation.h"
 
 #include <iostream>
-
-#include <math.h>
+#include <limits>
 
 using namespace std;
 
@@ -15,7 +14,7 @@ void EM::run(DEM& dem,
   vector<double>& variancesVector, vector<double>& weightsVector,
   uint32_t u32MaxEMIterations, double f64EMTol, uint32_t u32MaxBPIterations,
   double f64BPTol) {
-  double f64OldJointLogLikelihood = -INFINITY;
+  double f64OldJointLogLikelihood = -numeric_limits<double>::max();
   for (uint32_t i = 0; i < u32MaxEMIterations; i++) {
     BeliefPropagation bp;
     bp.infer(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector,

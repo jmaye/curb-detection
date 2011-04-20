@@ -48,7 +48,7 @@ public:
     const std::vector<std::vector<double> >& coeffsMatrix,
     const std::vector<double>& variancesVector,
     const std::vector<double>& weightsVector,
-    uint32_t u32MaxIter, double f64Tol)
+    uint32_t u32MaxIter = 10000, double f64Tol = 1e-9)
     throw (OutOfBoundException);
 
   std::vector<double>

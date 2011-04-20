@@ -2,9 +2,12 @@
 #include "DEM.h"
 #include "Window.h"
 #include "ConnectivityBuilder.h"
+#include "ConnectivityMap.h"
 #include "GraphSegmenter.h"
 #include "LinearRegressor.h"
 #include "EM.h"
+#include "CurbFinder.h"
+#include "CurbMap.h"
 
 #include <iostream>
 #include <fstream>
@@ -58,11 +61,14 @@ int main(int argc ,char** argv) {
   EM::run(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15, 1e-6,
     10000, 1e-9);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
+  ConnectivityMap connectivityMap(dem, edgeSet);
+  CurbMap curbMap(dem);
+  CurbFinder::find(dem, edgeSet, curbMap);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);
-  window.addConnectivity(edgeSet, dem);
+  window.addConnectivity(connectivityMap);
   window.setTranslation(0, -10, -60);
   window.setRotation(0, -90, 90);
   window.setVisibility(true);

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <limits>
 
 #include <math.h>
 
@@ -129,13 +130,15 @@ const vector<double>& Cell::getLabelsDistVector() const {
   return mLabelsDistVector;
 }
 
-void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector)
+void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
+  double f64Tol)
   throw (OutOfBoundException) {
   double f64Sum = 0;
   for (uint32_t i = 0; i < labelsDistVector.size(); i++) {
     f64Sum += labelsDistVector[i];
   }
-  if (fabs(f64Sum - 1.0) > 1e-6) {
+  if (fabs(f64Sum - 1.0) > f64Tol) {
+    cerr << scientific << f64Sum << endl;
     throw OutOfBoundException("Cell::setLabelsDistVector(): probability function does not sum to 1");
   }
   mLabelsDistVector = labelsDistVector;
@@ -144,7 +147,7 @@ void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector)
 uint32_t Cell::getMAPLabelsDist() const throw (InvalidOperationException) {
   if (mLabelsDistVector.size() == 0)
     throw InvalidOperationException("Cell::getMAPLabelsDist(): labels distribution not set");
-  double f64LargestValue = -1.0;
+  double f64LargestValue = -numeric_limits<double>::max();
   uint32_t u32LargestIdx = 0;
   for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)
     if (mLabelsDistVector[i] > f64LargestValue) {

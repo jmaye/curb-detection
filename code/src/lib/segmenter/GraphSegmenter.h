@@ -17,7 +17,7 @@ public:
   static void segment(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet,
     std::map<std::pair<uint32_t, uint32_t>, uint32_t>& labelsMap,
-    std::map<uint32_t, uint32_t>& supportsMap, uint32_t u32K = 400);
+    std::map<uint32_t, uint32_t>& supportsMap, uint32_t u32K = 200);
 
 protected:
 

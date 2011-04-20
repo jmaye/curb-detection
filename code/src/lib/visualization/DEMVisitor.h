@@ -14,12 +14,6 @@ class DEM;
 class Cell;
 
 class DEMVisitor : public Visitor {
-  struct Color {
-    GLfloat mRedColorByte;
-    GLfloat mGreenColorByte;
-    GLfloat mBlueColorByte;
-  };
-
   friend std::ostream& operator << (std::ostream& stream,
     const DEMVisitor& obj);
   friend std::istream& operator >> (std::istream& stream, DEMVisitor& obj);

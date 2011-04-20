@@ -18,8 +18,8 @@ public:
     const std::multiset<Edge, EdgeCompare>& edgeSet,
     std::vector<std::vector<double> >& coeffsMatrix,
     std::vector<double>& varianceVector, std::vector<double>& weightsVector,
-    uint32_t u32MaxEMIterations, double f64EMTol, uint32_t u32MaxBPIterations,
-    double f64BPTol);
+    uint32_t u32MaxEMIterations = 15, double f64EMTol = 1e-6,
+    uint32_t u32MaxBPIterations = 10000, double f64BPTol = 1e-9);
 
 protected:
 

@@ -12,10 +12,10 @@ using namespace std;
 
 PointCloudVisitor::PointCloudVisitor(double f64PointSize, GLbyte redColorByte,
   GLbyte greenColorByte, GLbyte blueColorByte)
-  : mf64PointSize(f64PointSize),
-    mRedColorByte(redColorByte),
-    mGreenColorByte(greenColorByte),
-    mBlueColorByte(blueColorByte) {
+  : mf64PointSize(f64PointSize){
+  mColor.mRedColorByte = redColorByte;
+  mColor.mGreenColorByte = greenColorByte;
+  mColor.mBlueColorByte = blueColorByte;
 }
 
 PointCloudVisitor::~PointCloudVisitor() {
@@ -58,7 +58,8 @@ void PointCloudVisitor::visit(const PointCloud* pointCloud) {
   glNewList(glListIdx, GL_COMPILE);
   glPointSize(mf64PointSize);
   glBegin(GL_POINTS);
-  glColor3f(mRedColorByte, mGreenColorByte, mBlueColorByte);
+  glColor3f(mColor.mRedColorByte, mColor.mGreenColorByte,
+    mColor.mBlueColorByte);
   for (uint32_t i = 0; i < pointCloud->getSize(); i++)
     (*pointCloud)[i].accept(*this);
   glEnd();
@@ -76,28 +77,4 @@ void PointCloudVisitor::setPointSize(double f64PointSize) {
 
 double PointCloudVisitor::getPointSize() const {
   return mf64PointSize;
-}
-
-void PointCloudVisitor::setRedColorByte(GLbyte colorByte) {
-  mRedColorByte = colorByte;
-}
-
-GLbyte PointCloudVisitor::getRedColorByte() const {
-  return mRedColorByte;
-}
-
-void PointCloudVisitor::setGreenColorByte(GLbyte colorByte) {
-  mGreenColorByte = colorByte;
-}
-
-GLbyte PointCloudVisitor::getGreenColorByte() const {
-  return mGreenColorByte;
-}
-
-void PointCloudVisitor::setBlueColorByte(GLbyte colorByte) {
-  mBlueColorByte = colorByte;
-}
-
-GLbyte PointCloudVisitor::getBlueColorByte() const {
-  return mBlueColorByte;
 }
