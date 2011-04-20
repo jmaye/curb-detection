@@ -14,8 +14,10 @@ ConnectivityMap::ConnectivityMap(const DEM& dem,
     const Cell& cell1 = dem((*it).getNode1().first, (*it).getNode1().second);
     const Cell& cell2 = dem((*it).getNode2().first, (*it).getNode2().second);
     if (cell1.getInvalidFlag() == false && cell2.getInvalidFlag() == false) {
-      Point3D point1(cell1.getCellCenter().mf64X, cell1.getCellCenter().mf64Y, cell1.getHeightDist().getMean());
-      Point3D point2(cell2.getCellCenter().mf64X, cell2.getCellCenter().mf64Y, cell2.getHeightDist().getMean());
+      Point3D point1(cell1.getCellCenter().mf64X, cell1.getCellCenter().mf64Y,
+        cell1.getHeightDist().getMean());
+      Point3D point2(cell2.getCellCenter().mf64X, cell2.getCellCenter().mf64Y,
+        cell2.getHeightDist().getMean());
       mEdgePositionsVector.push_back(make_pair(point1, point2));
     }
   }

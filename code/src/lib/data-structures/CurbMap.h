@@ -1,9 +1,11 @@
 #ifndef CURBMAP_H
 #define CURBMAP_H
 
-#include "DEM.h"
+#include "Point3D.h"
+#include "CurbMapVisitor.h"
 
 #include <iosfwd>
+#include <vector>
 
 class CurbMap {
   friend std::ostream& operator << (std::ostream& stream,
@@ -23,16 +25,17 @@ class CurbMap {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
-//  double mf64CellSizeX;
-//  double mf64CellSizeY;
-//  uint32_t mu32CellsNbrX;
-//  uint32_t mu32CellsNbrY;
-//  double mf64XOffset;
-//  double mf64YOffset;
+  std::vector<Point3D> mCurbPointsVector;
 
 public:
-  CurbMap(const DEM& dem);
+  CurbMap();
   ~CurbMap();
+
+  void insert(Point3D curbPoint);
+
+  void accept(CurbMapVisitor& v) const;
+
+  const std::vector<Point3D>& getCurbPointsVector() const;
 
 protected:
 

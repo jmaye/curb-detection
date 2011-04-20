@@ -5,9 +5,11 @@
 #include "Point3D.h"
 #include "DEM.h"
 #include "ConnectivityMap.h"
+#include "CurbMap.h"
 #include "PointCloudVisitor.h"
 #include "DEMVisitor.h"
 #include "ConnectivityMapVisitor.h"
+#include "CurbMapVisitor.h"
 
 #include <GL/gl.h>
 
@@ -52,6 +54,7 @@ class Window {
   PointCloudVisitor mPointCloudVisitor;
   DEMVisitor mDEMVisitor;
   ConnectivityMapVisitor mConnectivityMapVisitor;
+  CurbMapVisitor mCurbMapVisitor;
 
 public:
   Window(int argc, char** argv, int i32Width = 640, int i32Height = 480);
@@ -67,6 +70,7 @@ public:
   void addPointCloud(const PointCloud& pointCloud);
   void addDEM(const DEM& dem);
   void addConnectivity(const ConnectivityMap& connectivityMap);
+  void addCurbMap(const CurbMap& curbMap);
 
 protected:
 

@@ -91,7 +91,8 @@ void Window::drawScene() const {
     drawAxes(3.0);
   mPointCloudVisitor.draw();
   mDEMVisitor.draw();
-  mConnectivityMapVisitor.draw();
+  //mConnectivityMapVisitor.draw();
+  mCurbMapVisitor.draw();
   glutSwapBuffers();
   glFlush();
 }
@@ -188,6 +189,10 @@ void Window::addDEM(const DEM& dem) {
 
 void Window::addConnectivity(const ConnectivityMap& connectivityMap) {
   connectivityMap.accept(mConnectivityMapVisitor);
+}
+
+void Window::addCurbMap(const CurbMap& curbMap) {
+  curbMap.accept(mCurbMapVisitor);
 }
 
 void Window::keyboardCallback(unsigned char u8Key, int i32X, int i32Y) {

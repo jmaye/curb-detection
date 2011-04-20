@@ -5,7 +5,7 @@
 
 using namespace std;
 
-CurbMap::CurbMap(const DEM& dem) {
+CurbMap::CurbMap() {
 }
 
 CurbMap::~CurbMap() {
@@ -45,4 +45,16 @@ ifstream& operator >> (ifstream& stream,
   CurbMap& obj) {
   obj.read(stream);
   return stream;
+}
+
+void CurbMap::insert(Point3D curbPoint) {
+  mCurbPointsVector.push_back(curbPoint);
+}
+
+void CurbMap::accept(CurbMapVisitor& v) const {
+  v.visit(this);
+}
+
+const vector<Point3D>& CurbMap::getCurbPointsVector() const {
+  return mCurbPointsVector;
 }

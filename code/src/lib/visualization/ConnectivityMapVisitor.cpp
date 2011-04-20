@@ -53,7 +53,7 @@ void ConnectivityMapVisitor::visit(const ConnectivityMap* connectivityMap) {
   glPointSize(2.0);
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
-  const std::vector<std::pair<Point3D, Point3D> >& edgePositionsVector = 
+  const vector<pair<Point3D, Point3D> >& edgePositionsVector = 
     connectivityMap->getEdgePositionsVector();
   for (uint32_t i = 0; i < edgePositionsVector.size(); i++) {
     glVertex3f(edgePositionsVector[i].first.mf64X,

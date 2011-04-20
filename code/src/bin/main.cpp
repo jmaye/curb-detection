@@ -62,13 +62,14 @@ int main(int argc ,char** argv) {
     10000, 1e-9);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
   ConnectivityMap connectivityMap(dem, edgeSet);
-  CurbMap curbMap(dem);
+  CurbMap curbMap;
   CurbFinder::find(dem, edgeSet, curbMap);
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);
   window.addConnectivity(connectivityMap);
+  window.addCurbMap(curbMap);
   window.setTranslation(0, -10, -60);
   window.setRotation(0, -90, 90);
   window.setVisibility(true);
