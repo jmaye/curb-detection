@@ -46,7 +46,7 @@ int main(int argc ,char** argv) {
   map<pair<uint32_t, uint32_t>, uint32_t> labelsMap;
   map<uint32_t, uint32_t> supportsMap;
   f64Time = getMsCount();
-  GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 200);
+  GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 100);
   cout << "Graph-based segmentation: " << getMsCount() - f64Time << " [ms]"
        << endl;
   dem.setInitialLabels(labelsMap, supportsMap);
@@ -57,18 +57,22 @@ int main(int argc ,char** argv) {
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector, weightsVector);
   cout << "Initial linear regression: " << getMsCount() - f64Time << " [ms]"
        << endl;
+#if 1
   f64Time = getMsCount();
   EM::run(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15, 1e-6,
     10000, 1e-9);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
+#endif
   ConnectivityMap connectivityMap(dem, edgeSet);
+  f64Time = getMsCount();
   CurbMap curbMap;
   CurbFinder::find(dem, edgeSet, curbMap);
+  cout << "Detecting curbs: " << getMsCount() - f64Time << " [ms]" << endl;
 
   Window window(argc, argv);
   window.addPointCloud(pointCloud);
   window.addDEM(dem);
-  window.addConnectivity(connectivityMap);
+  window.addConnectivityMap(connectivityMap);
   window.addCurbMap(curbMap);
   window.setTranslation(0, -10, -60);
   window.setRotation(0, -90, 90);

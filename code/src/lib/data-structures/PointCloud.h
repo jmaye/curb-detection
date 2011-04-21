@@ -4,6 +4,7 @@
 #include "Point3D.h"
 #include "PointCloudVisitor.h"
 #include "OutOfBoundException.h"
+#include "IOException.h"
 
 #include <iosfwd>
 #include <vector>
@@ -23,7 +24,7 @@ class PointCloud {
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
-  virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream) throw (IOException);
   virtual void write(std::ofstream& stream) const;
 
   std::vector<Point3D> mPointsVector;

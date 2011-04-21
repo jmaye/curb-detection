@@ -17,7 +17,9 @@ void PointCloud::read(istream& stream) {
 void PointCloud::write(ostream& stream) const {
 }
 
-void PointCloud::read(ifstream& stream) {
+void PointCloud::read(ifstream& stream) throw (IOException) {
+  if (stream.is_open() == false)
+    throw IOException("PointCloud::read(): could not open file");
   while (stream.eof() == false) {
     Point3D point;
     stream >> point.mf64X;

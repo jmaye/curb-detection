@@ -187,7 +187,7 @@ void Window::addDEM(const DEM& dem) {
   dem.accept(mDEMVisitor);
 }
 
-void Window::addConnectivity(const ConnectivityMap& connectivityMap) {
+void Window::addConnectivityMap(const ConnectivityMap& connectivityMap) {
   connectivityMap.accept(mConnectivityMapVisitor);
 }
 

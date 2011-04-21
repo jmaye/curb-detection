@@ -69,7 +69,7 @@ public:
   void drawScene() const;
   void addPointCloud(const PointCloud& pointCloud);
   void addDEM(const DEM& dem);
-  void addConnectivity(const ConnectivityMap& connectivityMap);
+  void addConnectivityMap(const ConnectivityMap& connectivityMap);
   void addCurbMap(const CurbMap& curbMap);
 
 protected:
