@@ -57,12 +57,10 @@ int main(int argc ,char** argv) {
   LinearRegressor::estimate(dem, coeffsMatrix, variancesVector, weightsVector);
   cout << "Initial linear regression: " << getMsCount() - f64Time << " [ms]"
        << endl;
-#if 1
   f64Time = getMsCount();
   EM::run(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector, 15, 1e-6,
     10000, 1e-9);
   cout << "EM: " << getMsCount() - f64Time << " [ms]" << endl;
-#endif
   ConnectivityMap connectivityMap(dem, edgeSet);
   f64Time = getMsCount();
   CurbMap curbMap;
