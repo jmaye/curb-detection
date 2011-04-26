@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <sys/time.h>
+#include <stdint.h>
 
 using namespace std;
 
