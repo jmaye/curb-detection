@@ -38,8 +38,8 @@ class BeliefPropagation {
   dai::FactorGraph mFactorGraph;
   dai::BP mBP;
   bool mbInferenceDone;
+  bool mbMaxProductDone;
   std::vector<size_t> mMAPStateVector;
-  double mf64LogScore;
 
 public:
   BeliefPropagation();
@@ -50,15 +50,16 @@ public:
     const std::vector<std::vector<double> >& coeffsMatrix,
     const std::vector<double>& variancesVector,
     const std::vector<double>& weightsVector,
-    uint32_t u32MaxIter = 10000, double f64Tol = 1e-9)
+    uint32_t u32MaxIter = 10000, double f64Tol = 1e-9, bool bMaxProd = false)
     throw (OutOfBoundException);
 
   std::vector<double>
     getNodeDistribution(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
+  uint32_t getMAPState(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
+    const throw (OutOfBoundException, InvalidOperationException);
 
   double getLogPartitionSum() const throw (InvalidOperationException);
-  double getLogScore() const throw (InvalidOperationException);
 
 protected:
 

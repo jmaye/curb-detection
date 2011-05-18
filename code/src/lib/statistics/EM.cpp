@@ -27,4 +27,8 @@ void EM::run(DEM& dem,
       break;
     f64OldLogPartitionSum = f64LogPartitionSum;
   }
+  BeliefPropagation bp;
+  bp.infer(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector,
+    u32MaxBPIterations, f64BPTol, true);
+  dem.setMAPState(bp);
 }

@@ -9,8 +9,6 @@ ConnectivityMap::ConnectivityMap(const DEM& dem,
   const multiset<Edge, EdgeCompare>& edgeSet) {
   multiset<Edge>::const_iterator it;
   for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
-    const pair<uint32_t, uint32_t>& node1Coordinates = (*it).getNode1();
-    const pair<uint32_t, uint32_t>& node2Coordinates = (*it).getNode2();
     const Cell& cell1 = dem((*it).getNode1().first, (*it).getNode1().second);
     const Cell& cell2 = dem((*it).getNode2().first, (*it).getNode2().second);
     if (cell1.getInvalidFlag() == false && cell2.getInvalidFlag() == false) {

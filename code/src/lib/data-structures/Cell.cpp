@@ -15,7 +15,8 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mMLEstimator(estimator),
     mCellCenter(cellCenter),
     mCellSize(cellSize),
-    mbInvalidFlag(true) {
+    mbInvalidFlag(true),
+    mu32MAPState(numeric_limits<uint32_t>::max()) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
     cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
          << cellSize.mf64Y << ")" << endl;
@@ -28,7 +29,8 @@ Cell::Cell(const Cell& other) : mHeightDist(other.mHeightDist),
                                 mCellCenter(other.mCellCenter),
                                 mCellSize(other.mCellSize),
                                 mbInvalidFlag(other.mbInvalidFlag),
-                                mLabelsDistVector(other.mLabelsDistVector) {
+                                mLabelsDistVector(other.mLabelsDistVector),
+                                mu32MAPState(other.mu32MAPState) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
@@ -38,6 +40,7 @@ Cell& Cell::operator = (const Cell& other) {
   mCellSize = other.mCellSize;
   mbInvalidFlag = other.mbInvalidFlag;
   mLabelsDistVector = other.mLabelsDistVector;
+  mu32MAPState = other.mu32MAPState;
   return *this;
 }
 
@@ -147,14 +150,25 @@ void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
 uint32_t Cell::getMAPLabelsDist() const throw (InvalidOperationException) {
   if (mLabelsDistVector.size() == 0)
     throw InvalidOperationException("Cell::getMAPLabelsDist(): labels distribution not set");
-  double f64LargestValue = -numeric_limits<double>::max();
-  uint32_t u32LargestIdx = 0;
-  for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)
-    if (mLabelsDistVector[i] > f64LargestValue) {
-      f64LargestValue = mLabelsDistVector[i];
-      u32LargestIdx = i;
-    }
-  return u32LargestIdx;
+  if (mu32MAPState == numeric_limits<uint32_t>::max()) {
+    double f64LargestValue = -numeric_limits<double>::max();
+    uint32_t u32LargestIdx = 0;
+    for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)
+      if (mLabelsDistVector[i] > f64LargestValue) {
+        f64LargestValue = mLabelsDistVector[i];
+        u32LargestIdx = i;
+      }
+    return u32LargestIdx;
+  }
+  else {
+    return mu32MAPState;
+  }
+}
+
+void Cell::setMAPState(uint32_t u32MAPState) throw (OutOfBoundException) {
+  if (u32MAPState >= mLabelsDistVector.size())
+    throw OutOfBoundException("Cell::setMAPState(): invalid MAP state");
+  mu32MAPState = u32MAPState;
 }
 
 bool Cell::getInvalidFlag() const {

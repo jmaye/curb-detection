@@ -30,6 +30,7 @@ class Cell {
   Point2D mCellSize;
   bool mbInvalidFlag;
   std::vector<double> mLabelsDistVector;
+  uint32_t mu32MAPState;
 
 public:
   Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
@@ -58,6 +59,7 @@ public:
   void setLabelsDistVector(const std::vector<double>& labelsDistVector,
     double f64Tol = 1e-6) throw (OutOfBoundException);
   void setInvalidFlag(bool bInvalidFlag);
+  void setMAPState(uint32_t u32MAPState) throw (OutOfBoundException);
 
 protected:
 

@@ -11,7 +11,8 @@
 using namespace Eigen;
 using namespace std;
 
-BeliefPropagation::BeliefPropagation() : mbInferenceDone(false) {
+BeliefPropagation::BeliefPropagation() : mbInferenceDone(false),
+                                         mbMaxProductDone(false) {
 }
 
 BeliefPropagation::~BeliefPropagation() {
@@ -53,7 +54,8 @@ void BeliefPropagation::infer(const DEM& dem,
   const multiset<Edge, EdgeCompare>& edgeSet,
   const vector<vector<double> >& coeffsMatrix,
   const vector<double>& variancesVector,
-  const vector<double>& weightsVector, uint32_t u32MaxIter, double f64Tol)
+  const vector<double>& weightsVector, uint32_t u32MaxIter, double f64Tol,
+    bool bMaxProd)
   throw (OutOfBoundException) {
   if (dem.getLabelsNbr() != coeffsMatrix.size() ||
     dem.getLabelsNbr() != variancesVector.size() ||
@@ -114,9 +116,6 @@ void BeliefPropagation::infer(const DEM& dem,
       fac.set(i * (dem.getLabelsNbr() + 1), 1 - f64Diff);
     factorsVector.push_back(fac);
   }
-//  mFactorGraph = dai::FactorGraph(factorsVector.begin(), factorsVector.end(),
-//    varsVector.begin(), varsVector.end(), factorsVector.size(),
-//    varsVector.size());
   mFactorGraph = dai::FactorGraph(factorsVector);
   size_t maxiter = u32MaxIter;
   dai::Real tol = f64Tol;
@@ -127,14 +126,18 @@ void BeliefPropagation::infer(const DEM& dem,
   opts.set("verbose", verb);
   opts.set("updates", string("SEQRND"));
   opts.set("logdomain", false);
-  opts.set("inference", string("MAXPROD"));
+  if (bMaxProd == false)
+    opts.set("inference", string("SUMPROD"));
+  else
+    opts.set("inference", string("MAXPROD"));
   mBP = dai::BP(mFactorGraph, opts);
   mBP.init();
   mBP.run();
   mbInferenceDone = true;
-  //mFactorGraph.WriteToFile("fg.txt");
-  //mMAPStateVector = mBP.findMaximum();
-  //mf64LogScore = mFactorGraph.logScore(mMAPStateVector);
+  if (bMaxProd == true) {
+    mMAPStateVector = mBP.findMaximum();
+    mbMaxProductDone = true;
+  }
 }
 
 vector<double> BeliefPropagation::
@@ -152,16 +155,24 @@ vector<double> BeliefPropagation::
   return mBP.beliefV((*it).second).p().p();
 }
 
+uint32_t BeliefPropagation::
+  getMAPState(const pair<uint32_t, uint32_t>& nodeCoordinates) const
+  throw (OutOfBoundException, InvalidOperationException) {
+  if (mbInferenceDone == false || mbMaxProductDone == false)
+    throw InvalidOperationException("BeliefPropagation::getMAPState(): inference with max-prod has to run first");
+  map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
+    mIdMap.find(nodeCoordinates);
+  if (it == mIdMap.end()) {
+    cerr << "Requesting: (" << nodeCoordinates.first << ","
+         << nodeCoordinates.second << ")";
+    throw OutOfBoundException("BeliefPropagation::getMAPState(): invalid indices");
+  }
+  return mMAPStateVector[(*it).second];
+}
+
 double BeliefPropagation::getLogPartitionSum() const
   throw (InvalidOperationException) {
   if (mbInferenceDone == false)
     throw InvalidOperationException("BeliefPropagation::getLogPartitionSum(): inference has to run first");
   return mBP.logZ();
-}
-
-double BeliefPropagation::getLogScore() const
-  throw (InvalidOperationException) {
-  if (mbInferenceDone == false)
-    throw InvalidOperationException("BeliefPropagation::getLogScore(): inference has to run first");
-  return mf64LogScore;
 }
