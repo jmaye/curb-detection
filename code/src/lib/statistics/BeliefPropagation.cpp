@@ -114,9 +114,10 @@ void BeliefPropagation::infer(const DEM& dem,
       fac.set(i * (dem.getLabelsNbr() + 1), 1 - f64Diff);
     factorsVector.push_back(fac);
   }
-  mFactorGraph = dai::FactorGraph(factorsVector.begin(), factorsVector.end(),
-    varsVector.begin(), varsVector.end(), factorsVector.size(),
-    varsVector.size());
+//  mFactorGraph = dai::FactorGraph(factorsVector.begin(), factorsVector.end(),
+//    varsVector.begin(), varsVector.end(), factorsVector.size(),
+//    varsVector.size());
+  mFactorGraph = dai::FactorGraph(factorsVector);
   size_t maxiter = u32MaxIter;
   dai::Real tol = f64Tol;
   size_t verb = 0;
@@ -131,6 +132,9 @@ void BeliefPropagation::infer(const DEM& dem,
   mBP.init();
   mBP.run();
   mbInferenceDone = true;
+  //mFactorGraph.WriteToFile("fg.txt");
+  //mMAPStateVector = mBP.findMaximum();
+  //mf64LogScore = mFactorGraph.logScore(mMAPStateVector);
 }
 
 vector<double> BeliefPropagation::
@@ -148,9 +152,16 @@ vector<double> BeliefPropagation::
   return mBP.beliefV((*it).second).p().p();
 }
 
-double BeliefPropagation::getJointLogLikelihood() const
+double BeliefPropagation::getLogPartitionSum() const
   throw (InvalidOperationException) {
   if (mbInferenceDone == false)
-    throw InvalidOperationException("BeliefPropagation::getJointLikelihood(): inference has to run first");
+    throw InvalidOperationException("BeliefPropagation::getLogPartitionSum(): inference has to run first");
   return mBP.logZ();
+}
+
+double BeliefPropagation::getLogScore() const
+  throw (InvalidOperationException) {
+  if (mbInferenceDone == false)
+    throw InvalidOperationException("BeliefPropagation::getLogScore(): inference has to run first");
+  return mf64LogScore;
 }

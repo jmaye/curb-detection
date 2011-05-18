@@ -38,6 +38,8 @@ class BeliefPropagation {
   dai::FactorGraph mFactorGraph;
   dai::BP mBP;
   bool mbInferenceDone;
+  std::vector<size_t> mMAPStateVector;
+  double mf64LogScore;
 
 public:
   BeliefPropagation();
@@ -55,7 +57,8 @@ public:
     getNodeDistribution(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
 
-  double getJointLogLikelihood() const throw (InvalidOperationException);
+  double getLogPartitionSum() const throw (InvalidOperationException);
+  double getLogScore() const throw (InvalidOperationException);
 
 protected:
 
