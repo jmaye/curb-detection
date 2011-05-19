@@ -133,14 +133,13 @@ const vector<double>& Cell::getLabelsDistVector() const {
   return mLabelsDistVector;
 }
 
-void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
-  double f64Tol)
+void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector)
   throw (OutOfBoundException) {
   double f64Sum = 0;
   for (uint32_t i = 0; i < labelsDistVector.size(); i++) {
     f64Sum += labelsDistVector[i];
   }
-  if (fabs(f64Sum - 1.0) > f64Tol) {
+  if (fabs(f64Sum - 1.0) > numeric_limits<double>::epsilon()) {
     cerr << scientific << f64Sum << endl;
     throw OutOfBoundException("Cell::setLabelsDistVector(): probability function does not sum to 1");
   }
