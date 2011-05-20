@@ -56,8 +56,8 @@ public:
   void setMLEstimator(const MLEstimator& estimator);
   void setCellCenter(const Point2D& cellCenter);
   void setCellSize(const Point2D& cellSize) throw (OutOfBoundException);
-  void setLabelsDistVector(const std::vector<double>& labelsDistVector)
-    throw (OutOfBoundException);
+  void setLabelsDistVector(const std::vector<double>& labelsDistVector,
+    double f64Tol = 1e-6) throw (OutOfBoundException);
   void setInvalidFlag(bool bInvalidFlag);
   void setMAPState(uint32_t u32MAPState) throw (OutOfBoundException);
 
