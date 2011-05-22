@@ -15,3 +15,9 @@ remake_project(
 )
 
 remake_pack_deb(libglut3 libdai)
+
+remake_pack_deb(
+  COMPONENT dev
+  DESCRIPTION "Development headers"
+  curb-detection
+)

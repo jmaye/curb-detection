@@ -179,7 +179,7 @@ void Window::mouseCallback(int i32Button, int i32State, int i32X,
   window->redraw();
 }
 
-void Window::addPointCloud(const PointCloud& pointCloud) {
+void Window::addPointCloud(const PointCloudETH& pointCloud) {
   pointCloud.accept(mPointCloudVisitor);
 }
 

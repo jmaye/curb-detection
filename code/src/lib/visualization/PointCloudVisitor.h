@@ -7,7 +7,7 @@
 
 #include <iosfwd>
 
-class PointCloud;
+class PointCloudETH;
 class Point3D;
 
 class PointCloudVisitor : public Visitor {
@@ -36,7 +36,7 @@ public:
     GLbyte greenColorByte = 0, GLbyte blueColorByte = 1);
   ~PointCloudVisitor();
 
-  void visit(const PointCloud* pointCloud);
+  void visit(const PointCloudETH* pointCloud);
   void visit(const Point3D* point3D) const;
   void setPointSize(double f64PointSize);
   double getPointSize() const;

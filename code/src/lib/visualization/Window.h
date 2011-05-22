@@ -67,7 +67,7 @@ public:
   void setScale(double f64Scale);
   void setVisibility(bool bShowAxes);
   void drawScene() const;
-  void addPointCloud(const PointCloud& pointCloud);
+  void addPointCloud(const PointCloudETH& pointCloud);
   void addDEM(const DEM& dem);
   void addConnectivityMap(const ConnectivityMap& connectivityMap);
   void addCurbMap(const CurbMap& curbMap);

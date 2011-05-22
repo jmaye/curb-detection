@@ -11,10 +11,11 @@
 
 using namespace std;
 
-DEM::DEM(const PointCloud& pointCloud, double f64CellSizeX, double f64CellSizeY,
-  uint32_t u32CellsNbrX, uint32_t u32CellsNbrY, double f64XOffset,
-  double f64YOffset, double f64HeightMin, double f64HeightMax,
-  uint32_t u32MinPointsPerPlane) throw (OutOfBoundException)
+DEM::DEM(const PointCloudETH& pointCloud, double f64CellSizeX,
+  double f64CellSizeY, uint32_t u32CellsNbrX, uint32_t u32CellsNbrY,
+  double f64XOffset, double f64YOffset, double f64HeightMin,
+  double f64HeightMax, uint32_t u32MinPointsPerPlane)
+  throw (OutOfBoundException)
   : mf64CellSizeX(f64CellSizeX),
     mf64CellSizeY(f64CellSizeY),
     mu32CellsNbrX(u32CellsNbrX),

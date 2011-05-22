@@ -32,7 +32,7 @@ int main(int argc ,char** argv) {
   }
   double f64Time;
   ifstream pointCloudFile(argv[1]);
-  PointCloud pointCloud;
+  PointCloudETH pointCloud;
   f64Time = getMsCount();
   pointCloudFile >> pointCloud;
   cout << "Reading point cloud: " << getMsCount() - f64Time << " [ms]" << endl;

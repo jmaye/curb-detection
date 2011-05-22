@@ -53,7 +53,7 @@ ifstream& operator >> (ifstream& stream, PointCloudVisitor& obj) {
   return stream;
 }
 
-void PointCloudVisitor::visit(const PointCloud* pointCloud) {
+void PointCloudVisitor::visit(const PointCloudETH* pointCloud) {
   GLuint glListIdx = glGenLists(1);
   glNewList(glListIdx, GL_COMPILE);
   glPointSize(mf64PointSize);
