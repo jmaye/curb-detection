@@ -59,6 +59,8 @@ public:
 
 protected:
   DEM();
+  DEM(double f64CellSizeX = 0.15, double f64CellSizeY = 0.15,
+    uint32_t u32CellsNbrX = 30, uint32_t u32CellsNbrY = 30);
 
   Cell& operator () (uint32_t u32Row, uint32_t u32Column)
     throw (OutOfBoundException);
