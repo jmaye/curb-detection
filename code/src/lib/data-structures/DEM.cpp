@@ -11,9 +11,6 @@
 
 using namespace std;
 
-DEM::DEM() {
-}
-
 DEM::DEM(const PointCloudETH& pointCloud, double f64CellSizeX,
   double f64CellSizeY, uint32_t u32CellsNbrX, uint32_t u32CellsNbrY,
   double f64XOffset, double f64YOffset, double f64HeightMin,
@@ -72,6 +69,24 @@ DEM::DEM(const PointCloudETH& pointCloud, double f64CellSizeX,
         mf64CellSizeY)).
         addPoint(point3D.mf64Z);
     }
+  }
+}
+
+DEM::DEM(double f64CellSizeX, double f64CellSizeY, uint32_t u32CellsNbrX,
+  uint32_t u32CellsNbrY) throw (OutOfBoundException)
+  : mf64CellSizeX(f64CellSizeX),
+    mf64CellSizeY(f64CellSizeY),
+    mu32CellsNbrX(u32CellsNbrX),
+    mu32CellsNbrY(u32CellsNbrY) {
+  if (u32CellsNbrX == 0 || u32CellsNbrY == 0) {
+    cerr << "Requested number of cells: " << "(" << u32CellsNbrX << ","
+         << u32CellsNbrY << ")" << endl; 
+    throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
+  }
+  if (f64CellSizeX <= 0 || f64CellSizeY <= 0) {
+    cerr << "Requested cell size: " << "(" << f64CellSizeX << ","
+         << f64CellSizeY << ")" << endl;
+    throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
   }
 }
 
