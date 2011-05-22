@@ -29,22 +29,6 @@ class DEM {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
-  Cell& operator () (uint32_t u32Row, uint32_t u32Column)
-    throw (OutOfBoundException);
-
-  double mf64CellSizeX;
-  double mf64CellSizeY;
-  uint32_t mu32CellsNbrX;
-  uint32_t mu32CellsNbrY;
-  double mf64XOffset;
-  double mf64YOffset;
-  double mf64HeightMin;
-  double mf64HeightMax;
-  std::vector<std::vector<Cell> > mCellsMatrix;
-  uint32_t mu32ValidCellsNbr;
-  uint32_t mu32LabelsNbr;
-  uint32_t mu32MinPointsPerPlane;
-
 public:
   DEM(const PointCloudETH& pointCloud, double f64CellSizeX = 0.15,
     double f64CellSizeY = 0.15, uint32_t u32CellsNbrX = 30,
@@ -74,6 +58,23 @@ public:
     throw (OutOfBoundException);
 
 protected:
+  DEM();
+
+  Cell& operator () (uint32_t u32Row, uint32_t u32Column)
+    throw (OutOfBoundException);
+
+  double mf64CellSizeX;
+  double mf64CellSizeY;
+  uint32_t mu32CellsNbrX;
+  uint32_t mu32CellsNbrY;
+  double mf64XOffset;
+  double mf64YOffset;
+  double mf64HeightMin;
+  double mf64HeightMax;
+  std::vector<std::vector<Cell> > mCellsMatrix;
+  uint32_t mu32ValidCellsNbr;
+  uint32_t mu32LabelsNbr;
+  uint32_t mu32MinPointsPerPlane;
 
 };
 

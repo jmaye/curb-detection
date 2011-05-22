@@ -11,6 +11,9 @@
 
 using namespace std;
 
+DEM::DEM() {
+}
+
 DEM::DEM(const PointCloudETH& pointCloud, double f64CellSizeX,
   double f64CellSizeY, uint32_t u32CellsNbrX, uint32_t u32CellsNbrY,
   double f64XOffset, double f64YOffset, double f64HeightMin,
