@@ -88,6 +88,22 @@ DEM::DEM(double f64CellSizeX, double f64CellSizeY, uint32_t u32CellsNbrX,
          << f64CellSizeY << ")" << endl;
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
   }
+  double f64CurX = 0;
+  double f64CurY = -(mu32CellsNbrY * mf64CellSizeY / 2.0) +
+    mu32CellsNbrY * mf64CellSizeY;
+  mCellsMatrix.resize(mu32CellsNbrX);
+  for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
+    for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
+      mCellsMatrix[i].push_back(Cell(UniGaussian(0.0,
+        Sensor::getNoise(f64CurX, f64CurY, 0)), MLEstimator(),
+        Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
+        Point2D(mf64CellSizeX, mf64CellSizeY)));
+      f64CurY -= mf64CellSizeY;
+    }
+    f64CurX -= mf64CellSizeX;
+    f64CurY = -(mu32CellsNbrY * mf64CellSizeY / 2.0) +
+      mu32CellsNbrY * mf64CellSizeY;
+  }
 }
 
 DEM::~DEM() {
