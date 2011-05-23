@@ -59,8 +59,9 @@ public:
 
 protected:
   DEM(double f64CellSizeX = 0.15, double f64CellSizeY = 0.15,
-    uint32_t u32CellsNbrX = 30, uint32_t u32CellsNbrY = 30)
-    throw (OutOfBoundException);
+    uint32_t u32CellsNbrX = 30, uint32_t u32CellsNbrY = 30,
+    double f64HeightMin = -2, double f64HeightMax = 1, 
+    uint32_t u32MinPointsPerPlane = 3) throw (OutOfBoundException);
 
   Cell& operator () (uint32_t u32Row, uint32_t u32Column)
     throw (OutOfBoundException);

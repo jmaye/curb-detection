@@ -73,11 +73,17 @@ DEM::DEM(const PointCloudETH& pointCloud, double f64CellSizeX,
 }
 
 DEM::DEM(double f64CellSizeX, double f64CellSizeY, uint32_t u32CellsNbrX,
-  uint32_t u32CellsNbrY) throw (OutOfBoundException)
+  uint32_t u32CellsNbrY, double f64HeightMin, double f64HeightMax,
+  uint32_t u32MinPointsPerPlane) throw (OutOfBoundException)
   : mf64CellSizeX(f64CellSizeX),
     mf64CellSizeY(f64CellSizeY),
     mu32CellsNbrX(u32CellsNbrX),
-    mu32CellsNbrY(u32CellsNbrY) {
+    mu32CellsNbrY(u32CellsNbrY),
+    mf64HeightMin(f64HeightMin),
+    mf64HeightMax(f64HeightMax),
+    mu32ValidCellsNbr(0),
+    mu32LabelsNbr(0),
+    mu32MinPointsPerPlane(u32MinPointsPerPlane) {
   if (u32CellsNbrX == 0 || u32CellsNbrY == 0) {
     cerr << "Requested number of cells: " << "(" << u32CellsNbrX << ","
          << u32CellsNbrY << ")" << endl; 
