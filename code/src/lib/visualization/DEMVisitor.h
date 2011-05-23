@@ -29,6 +29,8 @@ class DEMVisitor : public Visitor {
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
 
+  void setColor(Color& color) const;
+
   std::map<uint32_t, Color> mColorMap;
 
 public:
@@ -37,7 +39,6 @@ public:
 
   void visit(const DEM* dem);
   void visit(const Cell* cell) const;
-  void setColor(Color& color);
 
 protected:
 

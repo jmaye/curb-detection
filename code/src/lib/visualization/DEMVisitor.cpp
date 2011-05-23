@@ -56,7 +56,6 @@ void DEMVisitor::visit(const DEM* dem) {
   GLuint glListIdx = glGenLists(1);
   glNewList(glListIdx, GL_COMPILE);
   glPointSize(2.0);
-  map<uint32_t, Color>::iterator it;
   srand(time(NULL));
   for (uint32_t i = 0; i < dem->getLabelsNbr(); i++) {
     Color color;
@@ -99,7 +98,7 @@ void DEMVisitor::visit(const Cell* cell) const {
     cout << "  ";
 }
 
-void DEMVisitor::setColor(Color& color) {
+void DEMVisitor::setColor(Color& color) const {
   double f64H = ((double)rand() / (double)RAND_MAX) * 360.0;
   double f64S = 1.0;
   double f64V = 1.0;
