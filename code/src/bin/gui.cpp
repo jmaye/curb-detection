@@ -1,11 +1,11 @@
-#include <QtGui/QApplication>
-
 #include "visualization/MainWindow.h"
 #include "visualization/ViewControl.h"
 #include "visualization/PointCloudControl.h"
 #include "visualization/DEMControl.h"
 #include "visualization/SegmenterControl.h"
 #include "visualization/EMControl.h"
+
+#include <QtGui/QApplication>
 
 int main (int argc, char **argv) {
   QApplication application(argc, argv);
