@@ -7,5 +7,5 @@ remake_qt4_ui(visualization)
 remake_qt4_moc(visualization)
 
 remake_add_library(visualization LINK ${FTGL_LIBRARIES} ${QT_QTGUI_LIBRARY}
-  ${QT_QTOPENGL_LIBRARY} data-structures)
+  ${QT_QTOPENGL_LIBRARY} data-structures segmenter)
 remake_add_headers(INSTALL visualization)
