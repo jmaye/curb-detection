@@ -1,17 +1,19 @@
-#include "Component.h"
+#include "data-structures/Component.h"
 
 #include <iostream>
 #include <fstream>
 
-#include <math.h>
+#include <cmath>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 Component::Component() : mf64Int(0) {
 }
 
-Component::Component(const pair<uint32_t, uint32_t>& nodeCoordinates)
-  : mf64Int(0) {
+Component::Component(const std::pair<uint32_t, uint32_t>& nodeCoordinates) :
+  mf64Int(0) {
   mNodesList.push_back(nodeCoordinates);
 }
 
@@ -28,36 +30,73 @@ Component& Component::operator = (const Component& other) {
 Component::~Component() {
 }
 
-void Component::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void Component::read(std::istream& stream) {
 }
 
-void Component::write(ostream& stream) const {
+void Component::write(std::ostream& stream) const {
 }
 
-void Component::read(ifstream& stream) {
+void Component::read(std::ifstream& stream) {
 }
 
-void Component::write(ofstream& stream) const {
+void Component::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const Component& obj) {
+std::ostream& operator << (std::ostream& stream, const Component& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, Component& obj) {
+std::istream& operator >> (std::istream& stream, Component& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const Component& obj) {
+std::ofstream& operator << (std::ofstream& stream, const Component& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, Component& obj) {
+std::ifstream& operator >> (std::ifstream& stream, Component& obj) {
   obj.read(stream);
   return stream;
+}
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+double Component::getInt() const {
+  return mf64Int;
+}
+
+std::list<std::pair<uint32_t, uint32_t> >& Component::getNodesList() {
+  return mNodesList;
+}
+
+void Component::setInt(double f64Int) throw (OutOfBoundException) {
+  if (f64Int < 0) {
+    std::cerr << "f64Int: " << f64Int << std::endl;
+    throw OutOfBoundException("Component::setInt(): value must be greater than 0");
+  }
+  mf64Int = f64Int;
+}
+
+void Component::setNodesList(const std::list<std::pair<uint32_t, uint32_t> >&
+  nodesList) {
+  mNodesList = nodesList;
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+void Component::merge(Component& other) {
+  mNodesList.merge(other.getNodesList());
 }
 
 double Component::compare(const Component& other, uint32_t u32K) const
@@ -68,28 +107,4 @@ double Component::compare(const Component& other, uint32_t u32K) const
     (double)u32K / (double)mNodesList.size(),
     other.mf64Int +
     (double)u32K / (double)other.mNodesList.size());
-}
-
-double Component::getInt() const {
-  return mf64Int;
-}
-
-list<pair<uint32_t, uint32_t> >& Component::getNodesList() {
-  return mNodesList;
-}
-
-void Component::setInt(double f64Int) throw (OutOfBoundException) {
-  if (f64Int < 0) {
-    cerr << "f64Int: " << f64Int << endl;
-    throw OutOfBoundException("Component::setInt(): value must be greater than 0");
-  }
-  mf64Int = f64Int;
-}
-
-void Component::setNodesList(const list<pair<uint32_t, uint32_t> >& nodesList) {
-  mNodesList = nodesList;
-}
-
-void Component::merge(Component& other) {
-  mNodesList.merge(other.getNodesList());
 }

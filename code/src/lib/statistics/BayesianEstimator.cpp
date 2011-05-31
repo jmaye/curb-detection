@@ -1,11 +1,13 @@
-#include "BayesianEstimator.h"
+#include "statistics/BayesianEstimator.h"
 
 #include <iostream>
 #include <fstream>
 
-#include <math.h>
+#include <cmath>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 BayesianEstimator::BayesianEstimator() {
 }
@@ -21,41 +23,58 @@ BayesianEstimator&
 BayesianEstimator::~BayesianEstimator() {
 }
 
-void BayesianEstimator::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void BayesianEstimator::read(std::istream& stream) {
 }
 
-void BayesianEstimator::write(ostream& stream) const {
+void BayesianEstimator::write(std::ostream& stream) const {
 }
 
-void BayesianEstimator::read(ifstream& stream) {
+void BayesianEstimator::read(std::ifstream& stream) {
 }
 
-void BayesianEstimator::write(ofstream& stream) const {
+void BayesianEstimator::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
+std::ostream& operator << (std::ostream& stream, const BayesianEstimator& obj) {
+  obj.write(stream);
+  return stream;
+}
+
+std::istream& operator >> (std::istream& stream, BayesianEstimator& obj) {
+  obj.read(stream);
+  return stream;
+}
+
+std::ofstream& operator << (std::ofstream& stream,
   const BayesianEstimator& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  BayesianEstimator& obj) {
+std::ifstream& operator >> (std::ifstream& stream, BayesianEstimator& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const BayesianEstimator& obj) {
-  obj.write(stream);
-  return stream;
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+uint32_t BayesianEstimator::getPointsNbr() const {
+  return mu32PointsNbr;
 }
 
-ifstream& operator >> (ifstream& stream,
-  BayesianEstimator& obj) {
-  obj.read(stream);
-  return stream;
+void BayesianEstimator::setPointsNbr(uint32_t u32PointsNbr) {
+  mu32PointsNbr = u32PointsNbr;
 }
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
 void BayesianEstimator::addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
   UniInverseGamma& variancePrior, double f64DataPoint) {
@@ -78,12 +97,4 @@ void BayesianEstimator::addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
   variancePrior.setBeta(f64BetaNew);
   dist.setMean(f64LambdaNew);
   dist.setVariance(f64BetaNew / (f64AlphaNew - 1));
-}
-
-uint32_t BayesianEstimator::getPointsNbr() const {
-  return mu32PointsNbr;
-}
-
-void BayesianEstimator::setPointsNbr(uint32_t u32PointsNbr) {
-  mu32PointsNbr = u32PointsNbr;
 }

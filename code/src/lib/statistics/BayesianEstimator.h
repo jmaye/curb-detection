@@ -1,8 +1,8 @@
 #ifndef BAYESIANESTIMATOR_H
 #define BAYESIANESTIMATOR_H
 
-#include "UniGaussian.h"
-#include "UniInverseGamma.h"
+#include "statistics/UniGaussian.h"
+#include "statistics/UniInverseGamma.h"
 
 #include <iosfwd>
 

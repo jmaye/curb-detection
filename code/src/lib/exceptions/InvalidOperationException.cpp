@@ -1,7 +1,5 @@
-#include "InvalidOperationException.h"
+#include "exceptions/InvalidOperationException.h"
 
-using namespace std;
-
-InvalidOperationException::InvalidOperationException(const string &msg)
-  : runtime_error(msg) {
+InvalidOperationException::InvalidOperationException(const std::string &msg) :
+  std::runtime_error(msg) {
 }

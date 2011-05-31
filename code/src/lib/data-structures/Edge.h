@@ -1,7 +1,7 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#include "OutOfBoundException.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 

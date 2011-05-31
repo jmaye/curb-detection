@@ -1,8 +1,8 @@
 #ifndef LINEARREGRESSOR_H
 #define LINEARREGRESSOR_H
 
-#include "DEM.h"
-#include "OutOfBoundException.h"
+#include "data-structures/DEM.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 #include <vector>

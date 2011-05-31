@@ -1,73 +1,84 @@
-#include "PointCloud.h"
+#include "data-structures/PointCloud.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-PointCloudETH::PointCloudETH() {
+PointCloud::PointCloud() {
 }
 
-PointCloudETH::~PointCloudETH() {
+PointCloud::~PointCloud() {
 }
 
-void PointCloudETH::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void PointCloud::read(std::istream& stream) {
 }
 
-void PointCloudETH::write(ostream& stream) const {
+void PointCloud::write(std::ostream& stream) const {
 }
 
-void PointCloudETH::read(ifstream& stream) throw (IOException) {
+void PointCloud::read(std::ifstream& stream) throw (IOException) {
+  mPointsVector.clear();
   if (stream.is_open() == false)
-    throw IOException("PointCloudETH::read(): could not open file");
+    throw IOException("PointCloud::read(): could not open file");
   while (stream.eof() == false) {
     Point3D point;
     stream >> point.mf64X;
-    stream.seekg(1, ios_base::cur);
+    stream.seekg(1, std::ios_base::cur);
     stream >> point.mf64Y;
-    stream.seekg(1, ios_base::cur);
+    stream.seekg(1, std::ios_base::cur);
     stream >> point.mf64Z;
     mPointsVector.push_back(point);
   }
 }
 
-void PointCloudETH::write(ofstream& stream) const {
+void PointCloud::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const PointCloudETH& obj) {
+std::ostream& operator << (std::ostream& stream, const PointCloud& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, PointCloudETH& obj) {
+std::istream& operator >> (std::istream& stream, PointCloud& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const PointCloudETH& obj) {
+std::ofstream& operator << (std::ofstream& stream, const PointCloud& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, PointCloudETH& obj) {
+std::ifstream& operator >> (std::ifstream& stream, PointCloud& obj) {
   obj.read(stream);
   return stream;
 }
 
-void PointCloudETH::accept(PointCloudVisitor& v) const {
-  v.visit(this);
-}
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
 
-const Point3D& PointCloudETH::operator [] (uint32_t u32Idx) const
+const Point3D& PointCloud::operator [] (uint32_t u32Idx) const
   throw (OutOfBoundException) {
   if (u32Idx >= mPointsVector.size()) {
-    cerr << "Requesting: " << u32Idx << " Number of points: "
-         << mPointsVector.size() << endl;
-    throw OutOfBoundException("PointCloudETH::operator []: invalid index");
+    std::cerr << "Requesting: " << u32Idx << " Number of points: "
+      << mPointsVector.size() << std::endl;
+    throw OutOfBoundException("PointCloud::operator []: invalid index");
   }
   return mPointsVector[u32Idx];
 }
 
-uint32_t PointCloudETH::getSize() const {
+uint32_t PointCloud::getSize() const {
   return mPointsVector.size();
+}
+
+void PointCloud::clear() {
+  mPointsVector.clear();
 }

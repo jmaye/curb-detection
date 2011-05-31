@@ -1,8 +1,8 @@
 #ifndef UNIGAUSSIAN_H
 #define UNIGAUSSIAN_H
 
-#include "UniDistribution.h"
-#include "OutOfBoundException.h"
+#include "statistics/UniDistribution.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 #include <stdint.h>

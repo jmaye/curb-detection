@@ -1,8 +1,7 @@
 #ifndef CURBMAP_H
 #define CURBMAP_H
 
-#include "Point3D.h"
-#include "CurbMapVisitor.h"
+#include "data-structures/Point3D.h"
 
 #include <iosfwd>
 #include <vector>
@@ -32,8 +31,6 @@ public:
   ~CurbMap();
 
   void insert(Point3D curbPoint);
-
-  void accept(CurbMapVisitor& v) const;
 
   const std::vector<Point3D>& getCurbPointsVector() const;
 

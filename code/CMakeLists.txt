@@ -14,10 +14,17 @@ remake_project(
   INSTALL /usr
 )
 
-remake_pack_deb(libglut3 libdai)
+remake_pack_deb(libdai libftgl2 libfreetype6 libqt4-opengl libqt4-gui)
 
 remake_pack_deb(
   COMPONENT dev
   DESCRIPTION "Development headers"
+  curb-detection
+  libdai-dev
+)
+
+remake_pack_deb(
+  COMPONENT test
+  DESCRIPTION "Test programs"
   curb-detection
 )

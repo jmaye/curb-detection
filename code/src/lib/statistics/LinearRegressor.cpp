@@ -1,6 +1,6 @@
-#include "LinearRegressor.h"
+#include "statistics/LinearRegressor.h"
 
-#include "Cell.h"
+#include "data-structures/Cell.h"
 
 #include <Eigen/Core>
 #include <Eigen/LU>
@@ -11,22 +11,21 @@
 #include <stdint.h>
 #include <math.h>
 
-using namespace Eigen;
-using namespace std;
-
 void LinearRegressor::estimate(const DEM& dem,
-  vector<vector<double> >& coeffsMatrix, vector<double>& variancesVector,
-  vector<double>& weightsVector, double f64Tol) throw (OutOfBoundException) {
+  std::vector<std::vector<double> >& coeffsMatrix,
+  std::vector<double>& variancesVector,
+  std::vector<double>& weightsVector, double f64Tol)
+  throw (OutOfBoundException) {
   uint32_t u32ValidCellsNbr = dem.getValidCellsNbr();
   uint32_t u32LabelsNbr = dem.getLabelsNbr();
   if (u32ValidCellsNbr == 0 || u32LabelsNbr == 0) {
-    cerr << "u32ValidCellsNbr: " << u32ValidCellsNbr << endl;
-    cerr << "u32LabelsNbr: " << u32LabelsNbr << endl;
+    std::cerr << "u32ValidCellsNbr: " << u32ValidCellsNbr << std::endl;
+    std::cerr << "u32LabelsNbr: " << u32LabelsNbr << std::endl;
     throw OutOfBoundException("LinearRegressor::estimate(): valid cells and labels number must be greater than 0");
   }
-  VectorXd targetsVector(u32ValidCellsNbr);
-  MatrixXd designMatrix(u32ValidCellsNbr, 3);
-  MatrixXd weightsMatrix(u32LabelsNbr, (int)u32ValidCellsNbr);
+  Eigen::VectorXd targetsVector(u32ValidCellsNbr);
+  Eigen::MatrixXd designMatrix(u32ValidCellsNbr, 3);
+  Eigen::MatrixXd weightsMatrix(u32LabelsNbr, (int)u32ValidCellsNbr);
   uint32_t i = 0;
   for (uint32_t j = 0; j < dem.getCellsNbrX(); j++) {
     for (uint32_t k = 0; k < dem.getCellsNbrY(); k++) {
@@ -37,7 +36,7 @@ void LinearRegressor::estimate(const DEM& dem,
         designMatrix(i, 0) = 1;
         designMatrix(i, 1) = cellCenter.mf64X;
         designMatrix(i, 2) = cellCenter.mf64Y;
-        const vector<double>& labelsDistVector = cell.getLabelsDistVector();
+        const std::vector<double>& labelsDistVector = cell.getLabelsDistVector();
         for (uint32_t l = 0; l < u32LabelsNbr; l++) {
           weightsMatrix(l, i) = labelsDistVector[l];
         }
@@ -51,10 +50,11 @@ void LinearRegressor::estimate(const DEM& dem,
   variancesVector.resize(u32LabelsNbr);
   weightsVector.clear();
   weightsVector.resize(u32LabelsNbr);
-  Map<VectorXd> variancesVectorMapped(&variancesVector[0], u32LabelsNbr);
-  MatrixXd coeffsMatrixEigen(u32LabelsNbr, 3);
+  Eigen::Map<Eigen::VectorXd> variancesVectorMapped(&variancesVector[0],
+    u32LabelsNbr);
+  Eigen::MatrixXd coeffsMatrixEigen(u32LabelsNbr, 3);
   for (uint32_t i = 0; i < u32LabelsNbr; i++) {
-    MatrixXd invCheckMatrix = designMatrix.transpose() *
+    Eigen::MatrixXd invCheckMatrix = designMatrix.transpose() *
       weightsMatrix.row(i).asDiagonal() * designMatrix;
     if (invCheckMatrix.determinant() > f64Tol) {
       coeffsMatrixEigen.row(i) = (invCheckMatrix.inverse() *

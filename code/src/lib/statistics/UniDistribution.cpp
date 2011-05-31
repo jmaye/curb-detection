@@ -1,9 +1,11 @@
-#include "UniDistribution.h"
+#include "statistics/UniDistribution.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 UniDistribution::UniDistribution() {
 }
@@ -11,34 +13,38 @@ UniDistribution::UniDistribution() {
 UniDistribution::~UniDistribution() {
 }
 
-void UniDistribution::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void UniDistribution::read(std::istream& stream) {
 }
 
-void UniDistribution::write(ostream& stream) const {
+void UniDistribution::write(std::ostream& stream) const {
 }
 
-void UniDistribution::read(ifstream& stream) {
+void UniDistribution::read(std::ifstream& stream) {
 }
 
-void UniDistribution::write(ofstream& stream) const {
+void UniDistribution::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const UniDistribution& obj) {
+std::ostream& operator << (std::ostream& stream, const UniDistribution& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, UniDistribution& obj) {
+std::istream& operator >> (std::istream& stream, UniDistribution& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const UniDistribution& obj) {
+std::ofstream& operator << (std::ofstream& stream, const UniDistribution& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, UniDistribution& obj) {
+std::ifstream& operator >> (std::ifstream& stream, UniDistribution& obj) {
   obj.read(stream);
   return stream;
 }

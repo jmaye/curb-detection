@@ -1,7 +1,5 @@
-#include "OutOfBoundException.h"
+#include "exceptions/OutOfBoundException.h"
 
-using namespace std;
-
-OutOfBoundException::OutOfBoundException(const string &msg)
-  : range_error(msg) {
+OutOfBoundException::OutOfBoundException(const std::string &msg) :
+  std::range_error(msg) {
 }

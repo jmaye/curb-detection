@@ -1,10 +1,10 @@
 #ifndef BELIEFPROPAGATION_H
 #define BELIEFPROPAGATION_H
 
-#include "DEM.h"
-#include "Edge.h"
-#include "OutOfBoundException.h"
-#include "InvalidOperationException.h"
+#include "data-structures/DEM.h"
+#include "data-structures/Edge.h"
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/InvalidOperationException.h"
 
 #include <dai/bp.h>
 #include <dai/factorgraph.h>
@@ -56,6 +56,7 @@ public:
   std::vector<double>
     getNodeDistribution(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
+
   uint32_t getMAPState(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
 

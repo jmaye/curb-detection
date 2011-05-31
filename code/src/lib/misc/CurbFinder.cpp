@@ -1,13 +1,11 @@
-#include "CurbFinder.h"
+#include "misc/CurbFinder.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 void CurbFinder::find(const DEM& dem,
-  const multiset<Edge, EdgeCompare>& edgeSet, CurbMap& curbMap) {
-  multiset<Edge>::const_iterator it;
+  const std::multiset<Edge, EdgeCompare>& edgeSet, CurbMap& curbMap) {
+  std::multiset<Edge>::const_iterator it;
   for (it = edgeSet.begin(); it != edgeSet.end(); it++) {
     const Cell& cell1 = dem((*it).getNode1().first, (*it).getNode1().second);
     const Cell& cell2 = dem((*it).getNode2().first, (*it).getNode2().second);

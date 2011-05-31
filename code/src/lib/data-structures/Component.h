@@ -1,8 +1,8 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "InvalidOperationException.h"
-#include "OutOfBoundException.h"
+#include "exceptions/InvalidOperationException.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 #include <list>

@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ViewControl</class>
+ <widget class="QWidget" name="ViewControl">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="transformationLayout">
+     <item row="1" column="0">
+      <widget class="QLabel" name="translationTextLabel">
+       <property name="text">
+        <string>Translation:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="xSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="ySpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QDoubleSpinBox" name="zSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="rotationTextLabel">
+       <property name="text">
+        <string>Rotation:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="scaleTextLabel">
+       <property name="text">
+        <string>Scale:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="yawSpinBox">
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>179.990000000000009</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QDoubleSpinBox" name="pitchSpinBox">
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>179.990000000000009</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QDoubleSpinBox" name="rollSpinBox">
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>179.990000000000009</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="scaleSpinBox">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>0.000100000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="groundTextLabel">
+       <property name="text">
+        <string>Ground:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="groundXSpinBox">
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QDoubleSpinBox" name="groundZSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QDoubleSpinBox" name="groundYSpinBox">
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>30.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="ColorChooser" name="colorChooser" native="true"/>
+   </item>
+   <item>
+    <widget class="Line" name="line_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="showLayout">
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="showAxesCheckBox">
+       <property name="text">
+        <string>Show coordinate axes</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="showFogCheckBox">
+       <property name="text">
+        <string>Show background fog</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="showGroundCheckBox">
+       <property name="text">
+        <string>Show ground plane</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_5">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="fontTextLabel">
+       <property name="text">
+        <string>Font file:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="fontEdit">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="fontBrowseButton">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Open...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="dumpLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="dumpDirTextLabel">
+       <property name="text">
+        <string>Dump directory:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="dumpDirEdit">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="dumpDirBrowseButton">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="dumpFormatTextLabel">
+       <property name="text">
+        <string>Dump format:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="dumpFormatEdit">
+       <property name="inputMask">
+        <string/>
+       </property>
+       <property name="text">
+        <string>dump%06d.png</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="dumpButton">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Dump</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="frameSizeTextLabel">
+       <property name="text">
+        <string>Dump frame size:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="frameSizeLayout">
+       <item>
+        <widget class="QSpinBox" name="frameWidthSpinBox">
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="frameHeightSpinBox">
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_6">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="dumpAllLayout">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="dumpAllCheckBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Dump all frames</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="frameTextLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Frame:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QSpinBox" name="frameSpinBox">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="maximum">
+        <number>999999</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorChooser</class>
+   <extends>QWidget</extends>
+   <header>ColorChooser.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>showAxesCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>showAxesToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dumpDirBrowseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ViewControl</receiver>
+   <slot>dumpDirBrowseClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dumpButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ViewControl</receiver>
+   <slot>dumpClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>252</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dumpAllCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>dumpAllToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>xSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>translationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ySpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>translationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>translationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>yawSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>rotationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>83</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pitchSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>rotationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>83</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rollSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>rotationChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>83</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scaleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>scaleChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showFogCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>showFogToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>groundXSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>groundRadiusChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>30</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showGroundCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>showGroundToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>181</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fontBrowseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ViewControl</receiver>
+   <slot>fontBrowseClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>29</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>groundYSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>groundRadiusChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>groundZSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>ViewControl</receiver>
+   <slot>groundElevationChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>104</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>dumpDirBrowseClicked()</slot>
+  <slot>dumpClicked()</slot>
+  <slot>dumpAllToggled(bool)</slot>
+  <slot>showAxesToggled(bool)</slot>
+  <slot>translationChanged()</slot>
+  <slot>rotationChanged()</slot>
+  <slot>scaleChanged()</slot>
+  <slot>showFogToggled(bool)</slot>
+  <slot>groundRadiusChanged(double)</slot>
+  <slot>showGroundToggled(bool)</slot>
+  <slot>fontBrowseClicked()</slot>
+  <slot>groundElevationChanged(double)</slot>
+ </slots>
+</ui>

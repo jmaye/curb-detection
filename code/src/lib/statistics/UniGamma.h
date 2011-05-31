@@ -1,8 +1,8 @@
 #ifndef UNIGAMMA_H
 #define UNIGAMMA_H
 
-#include "UniDistribution.h"
-#include "OutOfBoundException.h"
+#include "statistics/UniDistribution.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 

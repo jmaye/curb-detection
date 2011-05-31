@@ -1,6 +1,5 @@
-#include "IOException.h"
+#include "exceptions/IOException.h"
 
-using namespace std;
-
-IOException::IOException(const string &msg) : runtime_error(msg) {
+IOException::IOException(const std::string &msg) :
+  std::runtime_error(msg) {
 }

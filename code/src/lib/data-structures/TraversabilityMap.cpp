@@ -1,9 +1,11 @@
-#include "TraversabilityMap.h"
+#include "data-structures/TraversabilityMap.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 TraversabilityMap::TraversabilityMap() {
 }
@@ -11,38 +13,39 @@ TraversabilityMap::TraversabilityMap() {
 TraversabilityMap::~TraversabilityMap() {
 }
 
-void TraversabilityMap::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void TraversabilityMap::read(std::istream& stream) {
 }
 
-void TraversabilityMap::write(ostream& stream) const {
+void TraversabilityMap::write(std::ostream& stream) const {
 }
 
-void TraversabilityMap::read(ifstream& stream) {
+void TraversabilityMap::read(std::ifstream& stream) {
 }
 
-void TraversabilityMap::write(ofstream& stream) const {
+void TraversabilityMap::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const TraversabilityMap& obj) {
+std::ostream& operator << (std::ostream& stream, const TraversabilityMap& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  TraversabilityMap& obj) {
+std::istream& operator >> (std::istream& stream, TraversabilityMap& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
+std::ofstream& operator << (std::ofstream& stream,
   const TraversabilityMap& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  TraversabilityMap& obj) {
+std::ifstream& operator >> (std::ifstream& stream, TraversabilityMap& obj) {
   obj.read(stream);
   return stream;
 }

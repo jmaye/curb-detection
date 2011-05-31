@@ -1,12 +1,16 @@
-#include "Cell.h"
+#include "data-structures/Cell.h"
+
+#include "sensor/Sensor.h"
 
 #include <iostream>
 #include <fstream>
 #include <limits>
 
-#include <math.h>
+#include <cmath>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
   const Point2D& cellCenter, const Point2D& cellSize)
@@ -16,10 +20,10 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mCellCenter(cellCenter),
     mCellSize(cellSize),
     mbInvalidFlag(true),
-    mu32MAPState(numeric_limits<uint32_t>::max()) {
+    mu32MAPState(std::numeric_limits<uint32_t>::max()) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
-    cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
-         << cellSize.mf64Y << ")" << endl;
+    std::cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
+      << cellSize.mf64Y << ")" << std::endl;
     throw OutOfBoundException("Cell::Cell(): cell size must be positive");
   }
 }
@@ -47,50 +51,45 @@ Cell& Cell::operator = (const Cell& other) {
 Cell::~Cell() {
 }
 
-void Cell::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void Cell::read(std::istream& stream) {
 }
 
-void Cell::write(ostream& stream) const {
+void Cell::write(std::ostream& stream) const {
 }
 
-void Cell::read(ifstream& stream) {
+void Cell::read(std::ifstream& stream) {
 }
 
-void Cell::write(ofstream& stream) const {
+void Cell::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const Cell& obj) {
+std::ostream& operator << (std::ostream& stream, const Cell& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, Cell& obj) {
+std::istream& operator >> (std::istream& stream, Cell& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const Cell& obj) {
+std::ofstream& operator << (std::ofstream& stream, const Cell& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, Cell& obj) {
+std::ifstream& operator >> (std::ifstream& stream, Cell& obj) {
   obj.read(stream);
   return stream;
 }
 
-void Cell::addPoint(double f64Height) {
-  mMLEstimator.addDataPoint(mHeightDist, f64Height);
-}
-
-void Cell::accept(const DEMVisitor& v) const {
-  v.visit(this);
-}
-
-double Cell::compare(const Cell& other) const {
-  return mHeightDist.KLDivergence(other.getHeightDist()) +
-    other.getHeightDist().KLDivergence(mHeightDist);
-}
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
 
 const UniGaussian& Cell::getHeightDist() const {
   return mHeightDist;
@@ -122,14 +121,14 @@ const Point2D& Cell::getCellSize() const {
 
 void Cell::setCellSize(const Point2D& cellSize) throw (OutOfBoundException) {
   if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
-    cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
-         << cellSize.mf64Y << ")" << endl;
+    std::cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
+      << cellSize.mf64Y << ")" << std::endl;
     throw OutOfBoundException("Cell::setCellSize(): cell size must be positive");
   }
   mCellSize = cellSize;
 }
 
-const vector<double>& Cell::getLabelsDistVector() const {
+const std::vector<double>& Cell::getLabelsDistVector() const {
   return mLabelsDistVector;
 }
 
@@ -141,7 +140,7 @@ void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
     f64Sum += labelsDistVector[i];
   }
   if (fabs(f64Sum - 1.0) > f64Tol) {
-    cerr << scientific << f64Sum << endl;
+    std::cerr << std::scientific << f64Sum << std::endl;
     throw OutOfBoundException("Cell::setLabelsDistVector(): probability function does not sum to 1");
   }
   mLabelsDistVector = labelsDistVector;
@@ -150,8 +149,8 @@ void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
 uint32_t Cell::getMAPLabelsDist() const throw (InvalidOperationException) {
   if (mLabelsDistVector.size() == 0)
     throw InvalidOperationException("Cell::getMAPLabelsDist(): labels distribution not set");
-  if (mu32MAPState == numeric_limits<uint32_t>::max()) {
-    double f64LargestValue = -numeric_limits<double>::max();
+  if (mu32MAPState == std::numeric_limits<uint32_t>::max()) {
+    double f64LargestValue = -std::numeric_limits<double>::max();
     uint32_t u32LargestIdx = 0;
     for (uint32_t i = 0; i < mLabelsDistVector.size(); i++)
       if (mLabelsDistVector[i] > f64LargestValue) {
@@ -177,4 +176,26 @@ bool Cell::getInvalidFlag() const {
 
 void Cell::setInvalidFlag(bool bInvalidFlag) {
   mbInvalidFlag = bInvalidFlag;
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+void Cell::addPoint(double f64Height) {
+  mMLEstimator.addDataPoint(mHeightDist, f64Height);
+}
+
+double Cell::compare(const Cell& other) const {
+  return mHeightDist.KLDivergence(other.getHeightDist()) +
+    other.getHeightDist().KLDivergence(mHeightDist);
+}
+
+void Cell::clear() {
+  mHeightDist = UniGaussian(0.0, Sensor::getNoise(mCellCenter.mf64X,
+    mCellCenter.mf64Y, 0));
+  mMLEstimator = MLEstimator();
+  mbInvalidFlag = true;
+  mLabelsDistVector.clear();
+  mu32MAPState = std::numeric_limits<uint32_t>::max();
 }

@@ -1,19 +1,22 @@
-#include "MLEstimator.h"
+#include "statistics/MLEstimator.h"
 
 #include <iostream>
 #include <fstream>
 
-#include <math.h>
+#include <cmath>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-MLEstimator::MLEstimator() : mu32PointsNbr(0),
-                             mbStartRegular(false) {
+MLEstimator::MLEstimator() :
+  mu32PointsNbr(0),
+  mbStartRegular(false) {
 }
 
-MLEstimator::MLEstimator(const MLEstimator& other)
-  : mu32PointsNbr(other.mu32PointsNbr),
-    mbStartRegular(other.mbStartRegular) {
+MLEstimator::MLEstimator(const MLEstimator& other) :
+  mu32PointsNbr(other.mu32PointsNbr),
+  mbStartRegular(other.mbStartRegular) {
 }
 
 MLEstimator& MLEstimator::operator = (const MLEstimator& other) {
@@ -25,37 +28,57 @@ MLEstimator& MLEstimator::operator = (const MLEstimator& other) {
 MLEstimator::~MLEstimator() {
 }
 
-void MLEstimator::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void MLEstimator::read(std::istream& stream) {
 }
 
-void MLEstimator::write(ostream& stream) const {
+void MLEstimator::write(std::ostream& stream) const {
 }
 
-void MLEstimator::read(ifstream& stream) {
+void MLEstimator::read(std::ifstream& stream) {
 }
 
-void MLEstimator::write(ofstream& stream) const {
+void MLEstimator::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const MLEstimator& obj) {
+std::ostream& operator << (std::ostream& stream, const MLEstimator& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, MLEstimator& obj) {
+std::istream& operator >> (std::istream& stream, MLEstimator& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const MLEstimator& obj) {
+std::ofstream& operator << (std::ofstream& stream, const MLEstimator& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, MLEstimator& obj) {
+std::ifstream& operator >> (std::ifstream& stream, MLEstimator& obj) {
   obj.read(stream);
   return stream;
 }
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+uint32_t MLEstimator::getPointsNbr() const {
+  return mu32PointsNbr;
+}
+
+void MLEstimator::setPointsNbr(uint32_t u32PointsNbr) {
+  mu32PointsNbr = u32PointsNbr;
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
 void MLEstimator::addDataPoint(UniGaussian& dist, double f64DataPoint) {
   mu32PointsNbr++;
@@ -72,12 +95,4 @@ void MLEstimator::addDataPoint(UniGaussian& dist, double f64DataPoint) {
       (pow(f64DataPoint - f64Mean, 2) - f64Variance);
   dist.setMean(f64Mean);
   dist.setVariance(f64Variance);
-}
-
-uint32_t MLEstimator::getPointsNbr() const {
-  return mu32PointsNbr;
-}
-
-void MLEstimator::setPointsNbr(uint32_t u32PointsNbr) {
-  mu32PointsNbr = u32PointsNbr;
 }

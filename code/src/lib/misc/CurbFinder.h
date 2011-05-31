@@ -1,9 +1,9 @@
 #ifndef CURBFINDER_H
 #define CURBFINDER_H
 
-#include "DEM.h"
-#include "Edge.h"
-#include "CurbMap.h"
+#include "data-structures/DEM.h"
+#include "data-structures/Edge.h"
+#include "data-structures/CurbMap.h"
 
 #include <set>
 

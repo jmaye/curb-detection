@@ -1,9 +1,9 @@
 #ifndef EM_H
 #define EM_H
 
-#include "DEM.h"
-#include "BeliefPropagation.h"
-#include "Edge.h"
+#include "data-structures/DEM.h"
+#include "statistics/BeliefPropagation.h"
+#include "data-structures/Edge.h"
 
 #include <vector>
 #include <set>

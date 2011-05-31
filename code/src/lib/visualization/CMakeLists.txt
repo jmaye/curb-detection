@@ -1,6 +1,11 @@
-remake_find_package(gl CONFIG)
-remake_find_package(glu CONFIG)
-remake_find_package(GLUT)
-remake_add_library(visualization LINK ${OPENGL_LIBRARIES} ${GLU_LIBRARIES}
-  ${GLUT_LIBRARIES})
-remake_add_headers()
+remake_find_package(freetype2 CONFIG)
+remake_find_package(ftgl CONFIG)
+
+remake_include(${FREETYPE2_INCLUDE_DIRS})
+
+remake_qt4_ui(visualization)
+remake_qt4_moc(visualization)
+
+remake_add_library(visualization LINK ${FTGL_LIBRARIES} ${QT_QTGUI_LIBRARY}
+  ${QT_QTOPENGL_LIBRARY})
+remake_add_headers(INSTALL visualization)

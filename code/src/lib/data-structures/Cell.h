@@ -1,12 +1,11 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "DEMVisitor.h"
-#include "UniGaussian.h"
-#include "MLEstimator.h"
-#include "Point2D.h"
-#include "InvalidOperationException.h"
-#include "OutOfBoundException.h"
+#include "statistics/UniGaussian.h"
+#include "statistics/MLEstimator.h"
+#include "data-structures/Point2D.h"
+#include "exceptions/InvalidOperationException.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 #include <vector>
@@ -40,8 +39,8 @@ public:
   Cell(const Cell& other);
   Cell& operator = (const Cell& other);
 
-  void accept(const DEMVisitor& v) const;
   void addPoint(double f64Height);
+  void clear();
   double compare(const Cell& other) const;
 
   const UniGaussian& getHeightDist() const;

@@ -1,8 +1,8 @@
 #ifndef UNIINVERSEGAMMA_H
 #define UNIINVERSEGAMMA_H
 
-#include "UniDistribution.h"
-#include "OutOfBoundException.h"
+#include "statistics/UniDistribution.h"
+#include "exceptions/OutOfBoundException.h"
 
 #include <iosfwd>
 

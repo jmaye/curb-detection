@@ -1,26 +1,25 @@
-#ifndef POINTCLOUDETH_H
-#define POINTCLOUDETH_H
+#ifndef POINTCLOUD_H
+#define POINTCLOUD_H
 
-#include "Point3D.h"
-#include "PointCloudVisitor.h"
-#include "OutOfBoundException.h"
-#include "IOException.h"
+#include "data-structures/Point3D.h"
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/IOException.h"
 
 #include <iosfwd>
 #include <vector>
 
 #include <stdint.h>
 
-class PointCloudETH {
+class PointCloud {
   friend std::ostream& operator << (std::ostream& stream,
-    const PointCloudETH& obj);
-  friend std::istream& operator >> (std::istream& stream, PointCloudETH& obj);
+    const PointCloud& obj);
+  friend std::istream& operator >> (std::istream& stream, PointCloud& obj);
   friend std::ofstream& operator << (std::ofstream& stream,
-    const PointCloudETH& obj);
-  friend std::ifstream& operator >> (std::ifstream& stream, PointCloudETH& obj);
+    const PointCloud& obj);
+  friend std::ifstream& operator >> (std::ifstream& stream, PointCloud& obj);
 
-  PointCloudETH(const PointCloudETH& other);
-  PointCloudETH& operator = (const PointCloudETH& other);
+  PointCloud(const PointCloud& other);
+  PointCloud& operator = (const PointCloud& other);
 
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
@@ -30,16 +29,16 @@ class PointCloudETH {
   std::vector<Point3D> mPointsVector;
 
 public:
-  PointCloudETH();
-  ~PointCloudETH();
+  PointCloud();
+  ~PointCloud();
 
   const Point3D& operator [] (uint32_t u32Idx) const
     throw (OutOfBoundException);
-  void accept(PointCloudVisitor& v) const;
   uint32_t getSize() const;
+  void clear();
 
 protected:
 
 };
 
-#endif // POINTCLOUDETH_H
+#endif // POINTCLOUD_H

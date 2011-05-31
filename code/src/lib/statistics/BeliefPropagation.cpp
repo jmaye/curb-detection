@@ -1,15 +1,16 @@
-#include "BeliefPropagation.h"
+#include "statistics/BeliefPropagation.h"
 
-#include "Cell.h"
-#include "UniGaussian.h"
+#include "data-structures/Cell.h"
+#include "statistics/UniGaussian.h"
 
 #include <Eigen/Core>
 
 #include <iostream>
 #include <fstream>
 
-using namespace Eigen;
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 BeliefPropagation::BeliefPropagation() : mbInferenceDone(false),
                                          mbMaxProductDone(false) {
@@ -18,52 +19,101 @@ BeliefPropagation::BeliefPropagation() : mbInferenceDone(false),
 BeliefPropagation::~BeliefPropagation() {
 }
 
-void BeliefPropagation::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void BeliefPropagation::read(std::istream& stream) {
 }
 
-void BeliefPropagation::write(ostream& stream) const {
+void BeliefPropagation::write(std::ostream& stream) const {
 }
 
-void BeliefPropagation::read(ifstream& stream) {
+void BeliefPropagation::read(std::ifstream& stream) {
 }
 
-void BeliefPropagation::write(ofstream& stream) const {
+void BeliefPropagation::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream, const BeliefPropagation& obj) {
+std::ostream& operator << (std::ostream& stream, const BeliefPropagation& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream, BeliefPropagation& obj) {
+std::istream& operator >> (std::istream& stream, BeliefPropagation& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream, const BeliefPropagation& obj) {
+std::ofstream& operator << (std::ofstream& stream,
+  const BeliefPropagation& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream, BeliefPropagation& obj) {
+std::ifstream& operator >> (std::ifstream& stream, BeliefPropagation& obj) {
   obj.read(stream);
   return stream;
 }
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+std::vector<double> BeliefPropagation::getNodeDistribution(
+  const std::pair<uint32_t, uint32_t>& nodeCoordinates) const
+  throw (OutOfBoundException, InvalidOperationException) {
+  if (mbInferenceDone == false)
+    throw InvalidOperationException("BeliefPropagation::getNodeDistribution(): inference has to run first");
+  std::map<std::pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
+    mIdMap.find(nodeCoordinates);
+  if (it == mIdMap.end()) {
+    std::cerr << "Requesting: (" << nodeCoordinates.first << ","
+      << nodeCoordinates.second << ")" << std::endl;
+    throw OutOfBoundException("BeliefPropagation::getNodeDistribution(): invalid indices");
+  }
+  return mBP.beliefV((*it).second).p().p();
+}
+
+uint32_t BeliefPropagation::
+  getMAPState(const std::pair<uint32_t, uint32_t>& nodeCoordinates) const
+  throw (OutOfBoundException, InvalidOperationException) {
+  if (mbInferenceDone == false || mbMaxProductDone == false)
+    throw InvalidOperationException("BeliefPropagation::getMAPState(): inference with max-prod has to run first");
+  std::map<std::pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
+    mIdMap.find(nodeCoordinates);
+  if (it == mIdMap.end()) {
+    std::cerr << "Requesting: (" << nodeCoordinates.first << ","
+      << nodeCoordinates.second << ")" << std::endl;
+    throw OutOfBoundException("BeliefPropagation::getMAPState(): invalid indices");
+  }
+  return mMAPStateVector[(*it).second];
+}
+
+double BeliefPropagation::getLogPartitionSum() const
+  throw (InvalidOperationException) {
+  if (mbInferenceDone == false)
+    throw InvalidOperationException("BeliefPropagation::getLogPartitionSum(): inference has to run first");
+  return mBP.logZ();
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
 void BeliefPropagation::infer(const DEM& dem,
-  const multiset<Edge, EdgeCompare>& edgeSet,
-  const vector<vector<double> >& coeffsMatrix,
-  const vector<double>& variancesVector,
-  const vector<double>& weightsVector, uint32_t u32MaxIter, double f64Tol,
-    bool bMaxProd)
-  throw (OutOfBoundException) {
+  const std::multiset<Edge, EdgeCompare>& edgeSet,
+  const std::vector<std::vector<double> >& coeffsMatrix,
+  const std::vector<double>& variancesVector,
+  const std::vector<double>& weightsVector, uint32_t u32MaxIter, double f64Tol,
+  bool bMaxProd) throw (OutOfBoundException) {
   if (dem.getLabelsNbr() != coeffsMatrix.size() ||
     dem.getLabelsNbr() != variancesVector.size() ||
     dem.getLabelsNbr() != weightsVector.size())
     throw OutOfBoundException("BeliefPropagation::infer(): incompatible dem");
-  vector<dai::Var> varsVector;
+  std::vector<dai::Var> varsVector;
   varsVector.resize(dem.getValidCellsNbr());
-  vector<dai::Factor> factorsVector;
+  std::vector<dai::Factor> factorsVector;
   factorsVector.reserve(dem.getValidCellsNbr() + edgeSet.size());
   uint32_t u32NodeIdx = 0;
   for (uint32_t i = 0; i < dem.getCellsNbrX(); i++) {
@@ -74,10 +124,10 @@ void BeliefPropagation::infer(const DEM& dem,
         dai::Factor fac(varsVector[u32NodeIdx]);
         for (uint32_t k = 0; k < dem.getLabelsNbr(); k++) {
           if (weightsVector[k] != 0) {
-            const vector<double>& coeffVector = coeffsMatrix[k];
-            Map<VectorXd> coeffVectorMapped(&coeffVector[0],
+            const std::vector<double>& coeffVector = coeffsMatrix[k];
+            Eigen::Map<Eigen::VectorXd> coeffVectorMapped(&coeffVector[0],
               coeffVector.size());
-            VectorXd dataVector(coeffVector.size());
+            Eigen::VectorXd dataVector(coeffVector.size());
             dataVector(0) = 1;
             dataVector(1) = cell.getCellCenter().mf64X;
             dataVector(2) = cell.getCellCenter().mf64Y;
@@ -90,12 +140,12 @@ void BeliefPropagation::infer(const DEM& dem,
             fac.set(k, 0);
         }
         factorsVector.push_back(fac);
-        mIdMap[make_pair(i, j)] = u32NodeIdx;
+        mIdMap[std::make_pair(i, j)] = u32NodeIdx;
         u32NodeIdx++;
       }
     }
   }
-  multiset<Edge>::iterator setIt;
+  std::multiset<Edge>::iterator setIt;
   for (setIt = edgeSet.begin(); setIt != edgeSet.end(); setIt++) {
     if (mIdMap.find((*setIt).getNode1()) == mIdMap.end() ||
       mIdMap.find((*setIt).getNode2()) == mIdMap.end())
@@ -124,12 +174,12 @@ void BeliefPropagation::infer(const DEM& dem,
   opts.set("maxiter", maxiter);
   opts.set("tol", tol);
   opts.set("verbose", verb);
-  opts.set("updates", string("SEQRND"));
+  opts.set("updates", std::string("SEQRND"));
   opts.set("logdomain", false);
   if (bMaxProd == false)
-    opts.set("inference", string("SUMPROD"));
+    opts.set("inference", std::string("SUMPROD"));
   else
-    opts.set("inference", string("MAXPROD"));
+    opts.set("inference", std::string("MAXPROD"));
   mBP = dai::BP(mFactorGraph, opts);
   mBP.init();
   mBP.run();
@@ -138,41 +188,4 @@ void BeliefPropagation::infer(const DEM& dem,
     mMAPStateVector = mBP.findMaximum();
     mbMaxProductDone = true;
   }
-}
-
-vector<double> BeliefPropagation::
-  getNodeDistribution(const pair<uint32_t, uint32_t>& nodeCoordinates) const
-  throw (OutOfBoundException, InvalidOperationException) {
-  if (mbInferenceDone == false)
-    throw InvalidOperationException("BeliefPropagation::getNodeDistribution(): inference has to run first");
-  map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
-    mIdMap.find(nodeCoordinates);
-  if (it == mIdMap.end()) {
-    cerr << "Requesting: (" << nodeCoordinates.first << ","
-         << nodeCoordinates.second << ")";
-    throw OutOfBoundException("BeliefPropagation::getNodeDistribution(): invalid indices");
-  }
-  return mBP.beliefV((*it).second).p().p();
-}
-
-uint32_t BeliefPropagation::
-  getMAPState(const pair<uint32_t, uint32_t>& nodeCoordinates) const
-  throw (OutOfBoundException, InvalidOperationException) {
-  if (mbInferenceDone == false || mbMaxProductDone == false)
-    throw InvalidOperationException("BeliefPropagation::getMAPState(): inference with max-prod has to run first");
-  map<pair<uint32_t, uint32_t>, uint32_t>::const_iterator it =
-    mIdMap.find(nodeCoordinates);
-  if (it == mIdMap.end()) {
-    cerr << "Requesting: (" << nodeCoordinates.first << ","
-         << nodeCoordinates.second << ")";
-    throw OutOfBoundException("BeliefPropagation::getMAPState(): invalid indices");
-  }
-  return mMAPStateVector[(*it).second];
-}
-
-double BeliefPropagation::getLogPartitionSum() const
-  throw (InvalidOperationException) {
-  if (mbInferenceDone == false)
-    throw InvalidOperationException("BeliefPropagation::getLogPartitionSum(): inference has to run first");
-  return mBP.logZ();
 }

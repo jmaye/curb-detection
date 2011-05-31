@@ -1,9 +1,11 @@
-#include "CurbMap.h"
+#include "data-structures/CurbMap.h"
 
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
 CurbMap::CurbMap() {
 }
@@ -11,50 +13,54 @@ CurbMap::CurbMap() {
 CurbMap::~CurbMap() {
 }
 
-void CurbMap::read(istream& stream) {
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void CurbMap::read(std::istream& stream) {
 }
 
-void CurbMap::write(ostream& stream) const {
+void CurbMap::write(std::ostream& stream) const {
 }
 
-void CurbMap::read(ifstream& stream) {
+void CurbMap::read(std::ifstream& stream) {
 }
 
-void CurbMap::write(ofstream& stream) const {
+void CurbMap::write(std::ofstream& stream) const {
 }
 
-ostream& operator << (ostream& stream,
-  const CurbMap& obj) {
+std::ostream& operator << (std::ostream& stream, const CurbMap& obj) {
   obj.write(stream);
   return stream;
 }
 
-istream& operator >> (istream& stream,
-  CurbMap& obj) {
+std::istream& operator >> (std::istream& stream, CurbMap& obj) {
   obj.read(stream);
   return stream;
 }
 
-ofstream& operator << (ofstream& stream,
-  const CurbMap& obj) {
+std::ofstream& operator << (std::ofstream& stream, const CurbMap& obj) {
   obj.write(stream);
   return stream;
 }
 
-ifstream& operator >> (ifstream& stream,
-  CurbMap& obj) {
+std::ifstream& operator >> (std::ifstream& stream, CurbMap& obj) {
   obj.read(stream);
   return stream;
 }
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+const std::vector<Point3D>& CurbMap::getCurbPointsVector() const {
+  return mCurbPointsVector;
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
 void CurbMap::insert(Point3D curbPoint) {
   mCurbPointsVector.push_back(curbPoint);
-}
-
-void CurbMap::accept(CurbMapVisitor& v) const {
-  v.visit(this);
-}
-
-const vector<Point3D>& CurbMap::getCurbPointsVector() const {
-  return mCurbPointsVector;
 }

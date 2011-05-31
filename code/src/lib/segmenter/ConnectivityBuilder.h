@@ -1,8 +1,8 @@
 #ifndef CONNECTIVITYBUILDER_H
 #define CONNECTIVITYBUILDER_H
 
-#include "DEM.h"
-#include "Edge.h"
+#include "data-structures/DEM.h"
+#include "data-structures/Edge.h"
 
 #include <set>
 

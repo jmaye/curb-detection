@@ -1,11 +1,11 @@
 #ifndef POINT3D_H
 #define POINT3D_H
 
-#include "PointCloudVisitor.h"
+#include "data-structures/Point2D.h"
 
 #include <iosfwd>
 
-class Point3D {
+class Point3D : public Point2D {
   friend std::ostream& operator << (std::ostream& stream, const Point3D& obj);
   friend std::istream& operator >> (std::istream& stream, Point3D& obj);
   friend std::ofstream& operator << (std::ofstream& stream, const Point3D& obj);
@@ -23,10 +23,6 @@ public:
   Point3D(const Point3D& other);
   Point3D& operator = (const Point3D& other);
 
-  void accept(const PointCloudVisitor& v) const;
-
-  double mf64X;
-  double mf64Y;
   double mf64Z;
 
 protected:

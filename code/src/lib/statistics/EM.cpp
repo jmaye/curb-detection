@@ -1,20 +1,18 @@
-#include "EM.h"
+#include "statistics/EM.h"
 
-#include "LinearRegressor.h"
-#include "BeliefPropagation.h"
+#include "statistics/LinearRegressor.h"
+#include "statistics/BeliefPropagation.h"
 
 #include <iostream>
 #include <limits>
 
-using namespace std;
-
 void EM::run(DEM& dem,
-  const multiset<Edge, EdgeCompare>& edgeSet,
-  vector<vector<double> >& coeffsMatrix,
-  vector<double>& variancesVector, vector<double>& weightsVector,
+  const std::multiset<Edge, EdgeCompare>& edgeSet,
+  std::vector<std::vector<double> >& coeffsMatrix,
+  std::vector<double>& variancesVector, std::vector<double>& weightsVector,
   uint32_t u32MaxEMIterations, double f64EMTol, uint32_t u32MaxBPIterations,
   double f64BPTol) {
-  double f64OldLogPartitionSum = -numeric_limits<double>::max();
+  double f64OldLogPartitionSum = -std::numeric_limits<double>::max();
   for (uint32_t i = 0; i < u32MaxEMIterations; i++) {
     BeliefPropagation bp;
     bp.infer(dem, edgeSet, coeffsMatrix, variancesVector, weightsVector,

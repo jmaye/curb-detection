@@ -1,8 +1,8 @@
 #ifndef GRAPHSEGMENTER_H
 #define GRAPHSEGMENTER_H
 
-#include "Edge.h"
-#include "DEM.h"
+#include "data-structures/Edge.h"
+#include "data-structures/DEM.h"
 
 #include <set>
 #include <map>

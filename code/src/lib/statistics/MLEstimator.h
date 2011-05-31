@@ -1,7 +1,7 @@
 #ifndef MLESTIMATOR_H
 #define MLESTIMATOR_H
 
-#include "UniGaussian.h"
+#include "statistics/UniGaussian.h"
 
 #include <iosfwd>
 

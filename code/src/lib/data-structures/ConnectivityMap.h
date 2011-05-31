@@ -1,10 +1,9 @@
 #ifndef CONNECTIVITYMAP_H
 #define CONNECTIVITYMAP_H
 
-#include "DEM.h"
-#include "Edge.h"
-#include "ConnectivityMapVisitor.h"
-#include "Point3D.h"
+#include "data-structures/DEM.h"
+#include "data-structures/Edge.h"
+#include "data-structures/Point3D.h"
 
 #include <iosfwd>
 #include <set>
@@ -34,8 +33,6 @@ public:
   ConnectivityMap(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet);
   ~ConnectivityMap();
-
-  void accept(ConnectivityMapVisitor& v) const;
 
   const std::vector<std::pair<Point3D, Point3D> >& getEdgePositionsVector()
     const;
