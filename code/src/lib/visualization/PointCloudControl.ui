@@ -229,7 +229,6 @@
   </connection>
  </connections>
  <slots>
-  <slot>calibrationBrowseClicked()</slot>
   <slot>logBrowseClicked()</slot>
   <slot>pointSizeChanged(double)</slot>
   <slot>smoothPointsToggled(bool)</slot>

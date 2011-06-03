@@ -17,6 +17,7 @@ PointCloudControl::PointCloudControl(bool bShowPoints) :
   mpUi->setupUi(this);
 
   mpUi->colorChooser->setPalette(&mPalette);
+
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
 

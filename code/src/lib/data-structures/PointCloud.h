@@ -36,6 +36,8 @@ public:
     throw (OutOfBoundException);
   uint32_t getSize() const;
   void clear();
+  void addPoint(const Point3D& point);
+  void addPointCloud(const PointCloud& pointCloud);
 
 protected:
 

@@ -82,3 +82,12 @@ uint32_t PointCloud::getSize() const {
 void PointCloud::clear() {
   mPointsVector.clear();
 }
+
+void PointCloud::addPoint(const Point3D& point) {
+  mPointsVector.push_back(point);
+}
+
+void PointCloud::addPointCloud(const PointCloud& pointCloud) {
+  for (uint32_t i = 0; i < pointCloud.getSize(); i++)
+    mPointsVector.push_back(pointCloud[i]);
+}
