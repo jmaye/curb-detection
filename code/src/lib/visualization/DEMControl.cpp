@@ -4,9 +4,6 @@
 
 #include "ui_DEMControl.h"
 
-#include <iostream>
-#include <fstream>
-
 #include <stdint.h>
 
 /******************************************************************************/

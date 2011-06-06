@@ -6,8 +6,6 @@
 
 #include "ui_EMControl.h"
 
-#include <iostream>
-#include <fstream>
 #include <map>
 
 #include <cmath>
