@@ -78,6 +78,8 @@ void EMControl::setBPTolerance(double f64Tol) {
 /******************************************************************************/
 
 void EMControl::renderEM() {
+  glPushAttrib(GL_CURRENT_BIT);
+
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   for (uint32_t i = 0; i < mpDEM->getCellsNbrX(); i++) {
@@ -107,6 +109,8 @@ void EMControl::renderEM() {
       }
     }
   }
+
+  glPopAttrib();
 }
 
 void EMControl::render(GLView& view) {

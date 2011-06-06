@@ -52,6 +52,8 @@ void SegmenterControl::setShowSegmenter(bool bShowSegmenter) {
 /******************************************************************************/
 
 void SegmenterControl::renderSegmenter() {
+  glPushAttrib(GL_CURRENT_BIT);
+
   if (mLabelsMap.size() != 0) {
 
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -84,6 +86,8 @@ void SegmenterControl::renderSegmenter() {
       }
     }
   }
+
+  glPopAttrib();
 }
 
 void SegmenterControl::render(GLView& view) {

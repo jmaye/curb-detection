@@ -78,6 +78,8 @@ void PointCloudControl::setLogFilename(const QString& filename) {
 /******************************************************************************/
 
 void PointCloudControl::renderPoints(double f64Size, bool bSmooth) {
+  glPushAttrib(GL_CURRENT_BIT);
+
   if (f64Size > 1.0)
     glPointSize(f64Size);
   else
@@ -97,6 +99,8 @@ void PointCloudControl::renderPoints(double f64Size, bool bSmooth) {
 
   glPointSize(1.0);
   glDisable(GL_POINT_SMOOTH);
+
+  glPopAttrib();
 }
 
 void PointCloudControl::logBrowseClicked() {

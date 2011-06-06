@@ -78,6 +78,8 @@ void DEMControl::setSmoothLines(bool bSmoothLines) {
 /******************************************************************************/
 
 void DEMControl::renderDEM(double f64Size, bool bSmooth) {
+  glPushAttrib(GL_CURRENT_BIT);
+
   if (f64Size > 1.0)
     glLineWidth(f64Size);
   else
@@ -121,6 +123,8 @@ void DEMControl::renderDEM(double f64Size, bool bSmooth) {
 
   glLineWidth(1.0);
   glDisable(GL_LINE_SMOOTH);
+
+  glPopAttrib();
 }
 
 void DEMControl::colorChanged(const QString& role, const QColor& color) {
@@ -161,7 +165,6 @@ void DEMControl::demChanged() {
 void DEMControl::pointCloudRead(const PointCloud* pPointCloud) {
   mpPointCloud = pPointCloud;
   demChanged();
-  GLView::getInstance().update();
 }
 
 void DEMControl::render(GLView& view) {

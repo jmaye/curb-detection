@@ -136,13 +136,17 @@ void ViewControl::dumpFrame() {
 }
 
 void ViewControl::renderBackground() {
+  glPushAttrib(GL_CURRENT_BIT);
   QColor backgroundColor = mPalette.getColor("Background");
   glClearColor(backgroundColor.redF(), backgroundColor.greenF(),
     backgroundColor.blueF(), 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glPopAttrib();
 }
 
 void ViewControl::renderFog(double f64Start, double f64End, double f64Density) {
+  glPushAttrib(GL_CURRENT_BIT);
+
   QColor color = mPalette.getColor("Fog");
   float f32Colorfv[] = {color.redF(), color.greenF(), color.blueF(), 1.0};
   double f64Scale = GLView::getInstance().getScale();
@@ -154,10 +158,14 @@ void ViewControl::renderFog(double f64Start, double f64End, double f64Density) {
   glHint(GL_FOG_HINT, GL_DONT_CARE);
   glFogf(GL_FOG_START, f64Distance + f64Start * f64Scale);
   glFogf(GL_FOG_END, f64Distance + f64End * f64Scale);
+
+  glPopAttrib();
 }
 
 void ViewControl::renderGround(double f64Radius, double f64Elevation,
   double f64AngleStep, double f64RangeStep) {
+  glPushAttrib(GL_CURRENT_BIT);
+
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "Ground");
   for (double f64Angle = -M_PI; f64Angle < M_PI; f64Angle += f64AngleStep) {
@@ -183,6 +191,8 @@ void ViewControl::renderGround(double f64Radius, double f64Elevation,
     if (f64Range == f64Radius)
       break;
   }
+
+  glPopAttrib();
 }
 
 void ViewControl::renderAxes(double f64Length) {
