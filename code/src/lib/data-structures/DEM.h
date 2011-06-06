@@ -48,6 +48,12 @@ public:
   const Cell& operator () (uint32_t u32Row, uint32_t u32Column) const
     throw (OutOfBoundException);
   uint32_t getMinPointsPerPlane() const;
+  double getCellSizeX() const;
+  double getCellSizeY() const;
+  double getHeightFilterMin() const;
+  double getHeightFilterMax() const;
+  double getTranslationX() const;
+  double getTranslationY() const;
 
   void setInitialLabels(const std::map<std::pair<uint32_t, uint32_t>, uint32_t>&
     labelsMap, const std::map<uint32_t, uint32_t>& supportsMap)

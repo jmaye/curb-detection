@@ -282,6 +282,30 @@ uint32_t DEM::getMinPointsPerPlane() const {
   return mu32MinPointsPerPlane;
 }
 
+double DEM::getCellSizeX() const {
+  return mf64CellSizeX;
+}
+
+double DEM::getCellSizeY() const {
+  return mf64CellSizeY;
+}
+
+double DEM::getHeightFilterMin() const {
+  return mf64HeightFilterMin;
+}
+
+double DEM::getHeightFilterMax() const {
+  return mf64HeightFilterMax;
+}
+
+double DEM::getTranslationX() const {
+  return mf64TranslationX;
+}
+
+double DEM::getTranslationY() const {
+  return mf64TranslationY;
+}
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -312,4 +336,6 @@ void DEM::clear() {
       (*this)(i, j).clear();
     }
   }
+  mu32ValidCellsNbr = 0;
+  mu32LabelsNbr = 0;
 }
