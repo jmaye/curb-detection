@@ -93,7 +93,8 @@ void EMControl::renderEM() {
         Color color = (*it).second;
 
         glBegin(GL_POLYGON);
-        glColor3f(color.mRedColorByte, color.mGreenColorByte, color.mBlueColorByte);
+        glColor3f(color.mRedColorByte, color.mGreenColorByte,
+          color.mBlueColorByte);
         glVertex3f(cellCenter.mf64X + cellSize.mf64X / 2.0,
           cellCenter.mf64Y + cellSize.mf64Y / 2.0, f64CellHeightMean);
         glVertex3f(cellCenter.mf64X + cellSize.mf64X / 2.0,
