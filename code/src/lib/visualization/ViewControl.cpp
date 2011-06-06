@@ -186,6 +186,7 @@ void ViewControl::renderGround(double f64Radius, double f64Elevation,
 }
 
 void ViewControl::renderAxes(double f64Length) {
+  glPushAttrib(GL_CURRENT_BIT);
   glBegin(GL_LINES);
   glColor3f(1.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, 0.0);
@@ -209,6 +210,7 @@ void ViewControl::renderAxes(double f64Length) {
   glEnd();
   GLView::getInstance().render(0, 0, f64Length, "Z", 0.2 * f64Length,
     true, true, true);
+  glPopAttrib();
 }
 
 void ViewControl::dumpFrame(const QString& format, int i32Frame, size_t width,
