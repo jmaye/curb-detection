@@ -51,8 +51,7 @@ protected slots:
   void showSegmenterToggled(bool bChecked);
 
 signals:
-  void segmenterUpdated(DEM* pDEM, const std::map<std::pair<uint32_t, uint32_t>,
-    uint32_t>* pLabelsMap, const std::map<uint32_t, uint32_t>* pSupportsMap,
+  void segmenterUpdated(DEM* pDEM,
     const std::multiset<Edge, EdgeCompare>* pEdgeSet);
 
 };

@@ -108,7 +108,7 @@ void SegmenterControl::demUpdated(DEM* pDEM) {
   }
   pDEM->setInitialLabels(mLabelsMap, mSupportsMap);
   mpUi->showSegmenterCheckBox->setEnabled(true);
-  emit segmenterUpdated(mpDEM, &mLabelsMap, &mSupportsMap, &mEdgeSet);
+  emit segmenterUpdated(mpDEM, &mEdgeSet);
   GLView::getInstance().update();
 }
 

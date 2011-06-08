@@ -17,8 +17,6 @@
 EMControl::EMControl(bool bShowEM) :
   mpUi(new Ui_EMControl()),
   mpDEM(0),
-  mpLabelsMap(0),
-  mpSupportsMap(0),
   mu32EMIterations(15),
   mf64EMTolerance(1e-6),
   mu32BPIterations(10000),
@@ -29,12 +27,8 @@ EMControl::EMControl(bool bShowEM) :
     this, SLOT(render(GLView&, Scene&)));
 
   connect(&SegmenterControl::getInstance(), SIGNAL(segmenterUpdated(DEM*,
-    const std::map<std::pair<uint32_t, uint32_t>, uint32_t>*,
-    const std::map<uint32_t, uint32_t>*,
     const std::multiset<Edge, EdgeCompare>*)), this,
     SLOT(segmenterUpdated(DEM*,
-    const std::map<std::pair<uint32_t, uint32_t>, uint32_t>*,
-    const std::map<uint32_t, uint32_t>*,
     const std::multiset<Edge, EdgeCompare>*)));
 
   setShowEM(bShowEM);
@@ -207,12 +201,8 @@ void EMControl::runEMPushed() {
 }
 
 void EMControl::segmenterUpdated(DEM* pDEM,
-  const std::map<std::pair<uint32_t, uint32_t>, uint32_t>* pLabelsMap,
-  const std::map<uint32_t, uint32_t>* pSupportsMap,
   const std::multiset<Edge, EdgeCompare>* pEdgeSet) {
   mpDEM = pDEM;
-  mpLabelsMap = pLabelsMap;
-  mpSupportsMap = pSupportsMap;
   mpEdgeSet = pEdgeSet;
   mpUi->showEMCheckBox->setChecked(false);
   mpUi->showEMCheckBox->setEnabled(false);

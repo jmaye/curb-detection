@@ -43,8 +43,6 @@ protected:
   Ui_EMControl* mpUi;
   DEM* mpDEM;
   std::map<uint32_t, Color> mColorMap;
-  const std::map<std::pair<uint32_t, uint32_t>, uint32_t>* mpLabelsMap;
-  const std::map<uint32_t, uint32_t>* mpSupportsMap;
   const std::multiset<Edge, EdgeCompare>* mpEdgeSet;
   uint32_t mu32EMIterations;
   double mf64EMTolerance;
@@ -59,8 +57,7 @@ protected slots:
   void BPIterationsChanged(int i32Iterations);
   void BPToleranceChanged(double f64Tol);
   void runEMPushed();
-  void segmenterUpdated(DEM* pDEM, const std::map<std::pair<uint32_t, uint32_t>,
-    uint32_t>* pLabelsMap, const std::map<uint32_t, uint32_t>* pSupportsMap,
+  void segmenterUpdated(DEM* pDEM,
     const std::multiset<Edge, EdgeCompare>* pEdgeSet);
 
 };
