@@ -25,8 +25,8 @@ EMControl::EMControl(bool bShowEM) :
   mf64BPTolerance(1e-9) {
   mpUi->setupUi(this);
 
-  connect(&GLView::getInstance(), SIGNAL(render(GLView&)), this,
-    SLOT(render(GLView&)));
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
 
   connect(&SegmenterControl::getInstance(), SIGNAL(segmenterUpdated(DEM*,
     const std::map<std::pair<uint32_t, uint32_t>, uint32_t>*,
@@ -113,7 +113,7 @@ void EMControl::renderEM() {
   glPopAttrib();
 }
 
-void EMControl::render(GLView& view) {
+void EMControl::render(GLView& view, Scene& scene) {
   if (mpUi->showEMCheckBox->isChecked())
     renderEM();
 }

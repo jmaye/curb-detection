@@ -20,8 +20,8 @@ DEMControl::DEMControl(bool bShowDEM) :
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
 
-  connect(&GLView::getInstance(), SIGNAL(render(GLView&)), this,
-    SLOT(render(GLView&)));
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
 
   connect(&PointCloudControl::getInstance(),
     SIGNAL(pointCloudRead(const PointCloud*)), this,
@@ -167,7 +167,7 @@ void DEMControl::pointCloudRead(const PointCloud* pPointCloud) {
   demChanged();
 }
 
-void DEMControl::render(GLView& view) {
+void DEMControl::render(GLView& view, Scene& scene) {
   if (mpUi->showDEMCheckBox->isChecked())
     renderDEM(mpUi->lineSizeSpinBox->value(),
       mpUi->smoothLinesCheckBox->isChecked());

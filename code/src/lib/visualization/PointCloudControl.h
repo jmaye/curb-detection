@@ -5,6 +5,7 @@
 #include "visualization/Control.h"
 #include "visualization/Singleton.h"
 #include "visualization/GLView.h"
+#include "visualization/Scene.h"
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
@@ -39,7 +40,7 @@ protected slots:
   void pointSizeChanged(double f64PointSize);
   void showPointsToggled(bool bChecked);
   void smoothPointsToggled(bool bChecked);
-  void render(GLView& view);
+  void render(GLView& view, Scene& scene);
 
 signals:
   void pointCloudRead(const PointCloud* pPointCloud);

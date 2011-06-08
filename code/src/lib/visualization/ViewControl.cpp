@@ -26,20 +26,29 @@ ViewControl::ViewControl(bool bShowFog, bool bShowGround, bool bShowAxes) :
     SLOT(fontChanged(const QString&)));
   fontChanged(GLView::getInstance().getFont());
 
-  connect(&GLView::getInstance(),
-    SIGNAL(translationChanged(const std::vector<double>&)), this,
-    SLOT(translationChanged(const std::vector<double>&)));
-  translationChanged(GLView::getInstance().getTranslation());
-  connect(&GLView::getInstance(),
-    SIGNAL(rotationChanged(const std::vector<double>&)), this,
-    SLOT(rotationChanged(const std::vector<double>&)));
-  rotationChanged(GLView::getInstance().getRotation());
-  connect(&GLView::getInstance(), SIGNAL(scaleChanged(double)), this,
-    SLOT(scaleChanged(double)));
-  scaleChanged(GLView::getInstance().getScale());
+  connect(&GLView::getInstance().getCamera(),
+    SIGNAL(positionChanged(const std::vector<double>&)), this,
+    SLOT(cameraPositionChanged(const std::vector<double>&)));
+  cameraPositionChanged(GLView::getInstance().getCamera().getPosition());
+  connect(&GLView::getInstance().getCamera(),
+    SIGNAL(viewpointChanged(const std::vector<double>&)), this,
+    SLOT(cameraViewpointChanged(const std::vector<double>&)));
+  cameraViewpointChanged(GLView::getInstance().getCamera().getViewpoint());
 
-  connect(&GLView::getInstance(), SIGNAL(render(GLView&)), this,
-    SLOT(render(GLView&)));
+  connect(&GLView::getInstance().getScene(),
+    SIGNAL(translationChanged(const std::vector<double>&)), this,
+    SLOT(sceneTranslationChanged(const std::vector<double>&)));
+  sceneTranslationChanged(GLView::getInstance().getScene().getTranslation());
+  connect(&GLView::getInstance().getScene(),
+    SIGNAL(rotationChanged(const std::vector<double>&)), this,
+    SLOT(sceneRotationChanged(const std::vector<double>&)));
+  sceneRotationChanged(GLView::getInstance().getScene().getRotation());
+  connect(&GLView::getInstance().getScene(), SIGNAL(scaleChanged(double)),
+    this, SLOT(sceneScaleChanged(double)));
+  sceneScaleChanged(GLView::getInstance().getScene().getScale());
+
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
   connect(&GLView::getInstance(), SIGNAL(updated()), this, SLOT(dumpFrame()));
 
   setBackgroundColor(Qt::white);
@@ -55,6 +64,8 @@ ViewControl::ViewControl(bool bShowFog, bool bShowGround, bool bShowAxes) :
   setDumpDirectory(QDir::current().path());
   setDumpFrameSize(1280, 720);
   setDumpAll(false);
+  setRotateFrames(false);
+  setFrameRotation(1.0 * M_PI / 180.0);
 }
 
 ViewControl::~ViewControl() {
@@ -126,13 +137,38 @@ void ViewControl::setDumpAll(bool bDumpAll) {
   mpUi->dumpAllCheckBox->setChecked(bDumpAll);
 }
 
+
+void ViewControl::setRotateFrames(bool bRotateFrames) {
+  mpUi->rotateFramesCheckBox->setChecked(bRotateFrames);
+}
+
+void ViewControl::setFrameRotation(double f64Yaw) {
+  mpUi->frameRotationSpinBox->setValue(f64Yaw * 180.0 / M_PI);
+}
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 void ViewControl::dumpFrame() {
+  static bool bDumping = false;
+  if (bDumping)
+    return;
+
+  bDumping = true;
+  QApplication::processEvents();
+
   dumpFrame(mpUi->dumpFormatEdit->text(), mpUi->frameSpinBox->value(),
     mpUi->frameWidthSpinBox->value(), mpUi->frameHeightSpinBox->value());
+  if (mpUi->dumpAllCheckBox->isChecked() &&
+      mpUi->rotateFramesCheckBox->isChecked())
+    GLView::getInstance().getScene().setRotation(
+      (mpUi->sceneYawSpinBox->value() + mpUi->frameRotationSpinBox->value())
+        * M_PI / 180.0,
+      mpUi->scenePitchSpinBox->value() * M_PI / 180.0,
+      mpUi->sceneRollSpinBox->value() * M_PI / 180.0);
+
+  bDumping = false;
 }
 
 void ViewControl::renderBackground() {
@@ -149,8 +185,8 @@ void ViewControl::renderFog(double f64Start, double f64End, double f64Density) {
 
   QColor color = mPalette.getColor("Fog");
   float f32Colorfv[] = {color.redF(), color.greenF(), color.blueF(), 1.0};
-  double f64Scale = GLView::getInstance().getScale();
-  double f64Distance = GLView::getInstance().getViewpointDistance();
+  double f64Scale = GLView::getInstance().getScene().getScale();
+  double f64Distance = GLView::getInstance().getCamera().getViewpointDistance();
 
   glFogi(GL_FOG_MODE, GL_LINEAR);
   glFogfv(GL_FOG_COLOR, f32Colorfv);
@@ -256,19 +292,36 @@ void ViewControl::groundElevationChanged(double f64Elevation) {
   setGroundElevation(f64Elevation);
 }
 
-void ViewControl::translationChanged() {
-  GLView::getInstance().setTranslation(mpUi->xSpinBox->value(),
-    mpUi->ySpinBox->value(), mpUi->zSpinBox->value());
+void ViewControl::cameraPositionChanged() {
+  GLView::getInstance().getCamera().setPosition(
+    mpUi->cameraXSpinBox->value(),
+    mpUi->cameraYSpinBox->value(),
+    mpUi->cameraZSpinBox->value());
 }
 
-void ViewControl::rotationChanged() {
-  GLView::getInstance().setRotation(mpUi->yawSpinBox->value() * M_PI / 180.0,
-    mpUi->pitchSpinBox->value() * M_PI / 180.0,
-    mpUi->rollSpinBox->value() * M_PI / 180.0);
+void ViewControl::cameraViewpointChanged() {
+  GLView::getInstance().getCamera().setViewpoint(
+    mpUi->cameraViewXSpinBox->value(),
+    mpUi->cameraViewYSpinBox->value(),
+    mpUi->cameraViewZSpinBox->value());
 }
 
-void ViewControl::scaleChanged() {
-  GLView::getInstance().setScale(mpUi->scaleSpinBox->value());
+void ViewControl::sceneTranslationChanged() {
+  GLView::getInstance().getScene().setTranslation(
+    mpUi->sceneXSpinBox->value(),
+    mpUi->sceneYSpinBox->value(),
+    mpUi->sceneZSpinBox->value());
+}
+
+void ViewControl::sceneRotationChanged() {
+  GLView::getInstance().getScene().setRotation(
+    mpUi->sceneYawSpinBox->value() * M_PI / 180.0,
+    mpUi->scenePitchSpinBox->value() * M_PI / 180.0,
+    mpUi->sceneRollSpinBox->value() * M_PI / 180.0);
+}
+
+void ViewControl::sceneScaleChanged() {
+  GLView::getInstance().getScene().setScale(mpUi->sceneScaleSpinBox->value());
 }
 
 void ViewControl::showFogToggled(bool bChecked) {
@@ -309,53 +362,84 @@ void ViewControl::fontChanged(const QString& filename) {
   mpUi->fontEdit->blockSignals(false);
 }
 
-void ViewControl::translationChanged(const std::vector<double>&
+void ViewControl::cameraPositionChanged(const std::vector<double>&
+  positionVector) {
+  mpUi->cameraXSpinBox->blockSignals(true);
+  mpUi->cameraYSpinBox->blockSignals(true);
+  mpUi->cameraZSpinBox->blockSignals(true);
+
+  mpUi->cameraXSpinBox->setValue(positionVector[0]);
+  mpUi->cameraYSpinBox->setValue(positionVector[1]);
+  mpUi->cameraZSpinBox->setValue(positionVector[2]);
+
+  mpUi->cameraXSpinBox->blockSignals(false);
+  mpUi->cameraYSpinBox->blockSignals(false);
+  mpUi->cameraZSpinBox->blockSignals(false);
+}
+
+void ViewControl::cameraViewpointChanged(const std::vector<double>&
+  viewpointVector) {
+  mpUi->cameraViewXSpinBox->blockSignals(true);
+  mpUi->cameraViewYSpinBox->blockSignals(true);
+  mpUi->cameraViewZSpinBox->blockSignals(true);
+
+  mpUi->cameraViewXSpinBox->setValue(viewpointVector[0]);
+  mpUi->cameraViewYSpinBox->setValue(viewpointVector[1]);
+  mpUi->cameraViewZSpinBox->setValue(viewpointVector[2]);
+
+  mpUi->cameraViewXSpinBox->blockSignals(false);
+  mpUi->cameraViewYSpinBox->blockSignals(false);
+  mpUi->cameraViewZSpinBox->blockSignals(false);
+}
+
+void ViewControl::sceneTranslationChanged(const std::vector<double>&
   translationVector) {
-  mpUi->xSpinBox->blockSignals(true);
-  mpUi->ySpinBox->blockSignals(true);
-  mpUi->zSpinBox->blockSignals(true);
-  
-  mpUi->xSpinBox->setValue(translationVector[0]);
-  mpUi->ySpinBox->setValue(translationVector[1]);
-  mpUi->zSpinBox->setValue(translationVector[2]);
+  mpUi->sceneXSpinBox->blockSignals(true);
+  mpUi->sceneYSpinBox->blockSignals(true);
+  mpUi->sceneZSpinBox->blockSignals(true);
 
-  mpUi->xSpinBox->blockSignals(false);
-  mpUi->ySpinBox->blockSignals(false);
-  mpUi->zSpinBox->blockSignals(false);
+  mpUi->sceneXSpinBox->setValue(translationVector[0]);
+  mpUi->sceneYSpinBox->setValue(translationVector[1]);
+  mpUi->sceneZSpinBox->setValue(translationVector[2]);
+
+  mpUi->sceneXSpinBox->blockSignals(false);
+  mpUi->sceneYSpinBox->blockSignals(false);
+  mpUi->sceneZSpinBox->blockSignals(false);
 }
 
-void ViewControl::rotationChanged(const std::vector<double>& rotationVector) {
-  mpUi->yawSpinBox->blockSignals(true);
-  mpUi->pitchSpinBox->blockSignals(true);
-  mpUi->rollSpinBox->blockSignals(true);
+void ViewControl::sceneRotationChanged(const std::vector<double>&
+  rotationVector) {
+  mpUi->sceneYawSpinBox->blockSignals(true);
+  mpUi->scenePitchSpinBox->blockSignals(true);
+  mpUi->sceneRollSpinBox->blockSignals(true);
 
-  mpUi->yawSpinBox->setValue(rotationVector[0] * 180.0 / M_PI);
-  mpUi->pitchSpinBox->setValue(rotationVector[1] * 180.0 / M_PI);
-  mpUi->rollSpinBox->setValue(rotationVector[2] * 180.0 / M_PI);
+  mpUi->sceneYawSpinBox->setValue(rotationVector[0] * 180.0 / M_PI);
+  mpUi->scenePitchSpinBox->setValue(rotationVector[1] * 180.0 / M_PI);
+  mpUi->sceneRollSpinBox->setValue(rotationVector[2] * 180.0 / M_PI);
 
-  mpUi->yawSpinBox->blockSignals(false);
-  mpUi->pitchSpinBox->blockSignals(false);
-  mpUi->rollSpinBox->blockSignals(false);
+  mpUi->sceneYawSpinBox->blockSignals(false);
+  mpUi->scenePitchSpinBox->blockSignals(false);
+  mpUi->sceneRollSpinBox->blockSignals(false);
 }
 
-void ViewControl::scaleChanged(double f64Scale) {
-  mpUi->scaleSpinBox->blockSignals(true);
-  mpUi->scaleSpinBox->setValue(f64Scale);
-  mpUi->scaleSpinBox->blockSignals(false);
+void ViewControl::sceneScaleChanged(double f64Scale) {
+  mpUi->sceneScaleSpinBox->blockSignals(true);
+  mpUi->sceneScaleSpinBox->setValue(f64Scale);
+  mpUi->sceneScaleSpinBox->blockSignals(false);
 }
 
-void ViewControl::render(GLView& view) {
-  double radius = mpUi->groundXSpinBox->value();
+void ViewControl::render(GLView& view, Scene& scene) {
+  double f64Radius = mpUi->groundXSpinBox->value();
 
   renderBackground();
   if (mpUi->showFogCheckBox->isChecked()) {
     glEnable(GL_FOG);
-    renderFog(radius, 2.0 * radius, 1.0);
+    renderFog(f64Radius, 2.0 * f64Radius, 1.0);
   }
   else
     glDisable(GL_FOG);
   if (mpUi->showGroundCheckBox->isChecked())
-    renderGround(radius, mpUi->groundZSpinBox->value(), 30.0 * M_PI / 180.0,
+    renderGround(f64Radius, mpUi->groundZSpinBox->value(), 30.0 * M_PI / 180.0,
       5.0);
   if (mpUi->showAxesCheckBox->isChecked())
     renderAxes(2.5);

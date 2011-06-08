@@ -6,6 +6,7 @@
 #include "visualization/Control.h"
 #include "visualization/Singleton.h"
 #include "visualization/GLView.h"
+#include "visualization/Scene.h"
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
@@ -41,7 +42,7 @@ protected slots:
   void smoothLinesToggled(bool bChecked);
   void pointCloudRead(const PointCloud* pPointCloud);
   void demChanged();
-  void render(GLView& view);
+  void render(GLView& view, Scene& scene);
 
 signals:
   void demUpdated(DEM* pDEM);

@@ -19,8 +19,8 @@ SegmenterControl::SegmenterControl(bool bShowSegmenter) :
   mpDEM(0) {
   mpUi->setupUi(this);
 
-  connect(&GLView::getInstance(), SIGNAL(render(GLView&)), this,
-    SLOT(render(GLView&)));
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
 
   connect(&DEMControl::getInstance(), SIGNAL(demUpdated(DEM*)), this,
     SLOT(demUpdated(DEM*)));
@@ -90,7 +90,7 @@ void SegmenterControl::renderSegmenter() {
   glPopAttrib();
 }
 
-void SegmenterControl::render(GLView& view) {
+void SegmenterControl::render(GLView& view, Scene& scene) {
   if (mpUi->showSegmenterCheckBox->isChecked())
     renderSegmenter();
 }

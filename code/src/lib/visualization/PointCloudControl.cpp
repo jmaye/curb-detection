@@ -21,8 +21,8 @@ PointCloudControl::PointCloudControl(bool bShowPoints) :
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
 
-  connect(&GLView::getInstance(), SIGNAL(render(GLView&)), this,
-    SLOT(render(GLView&)));
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
 
   setPointColor(Qt::gray);
 
@@ -128,7 +128,7 @@ void PointCloudControl::smoothPointsToggled(bool bChecked) {
   setSmoothPoints(bChecked);
 }
 
-void PointCloudControl::render(GLView& view) {
+void PointCloudControl::render(GLView& view, Scene& scene) {
   if (mpUi->showPointsCheckBox->isChecked())
     renderPoints(mpUi->pointSizeSpinBox->value(),
       mpUi->smoothPointsCheckBox->isChecked());

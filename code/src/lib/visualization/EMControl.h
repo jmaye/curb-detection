@@ -4,6 +4,7 @@
 #include "visualization/Control.h"
 #include "visualization/Singleton.h"
 #include "visualization/GLView.h"
+#include "visualization/Scene.h"
 #include "data-structures/DEM.h"
 #include "data-structures/Edge.h"
 
@@ -51,7 +52,7 @@ protected:
   double mf64BPTolerance;
 
 protected slots:
-  void render(GLView& view);
+  void render(GLView& view, Scene& scene);
   void showEMToggled(bool bChecked);
   void EMIterationsChanged(int i32Iterations);
   void EMToleranceChanged(double f64Tol);

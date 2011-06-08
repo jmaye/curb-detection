@@ -4,6 +4,7 @@
 #include "visualization/Control.h"
 #include "visualization/Singleton.h"
 #include "visualization/GLView.h"
+#include "visualization/Scene.h"
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
@@ -34,6 +35,8 @@ public:
   void setDumpFrameSize(size_t width, size_t height);
   void setDumpFormat(const QString& format);
   void setDumpAll(bool bDumpAll);
+  void setRotateFrames(bool bRotateFrames);
+  void setFrameRotation(double f64Yaw);
 
 public slots:
   void dumpFrame();
@@ -52,9 +55,11 @@ protected:
 
 protected slots:
   void fontBrowseClicked();
-  void translationChanged();
-  void rotationChanged();
-  void scaleChanged();
+  void cameraPositionChanged();
+  void cameraViewpointChanged();
+  void sceneTranslationChanged();
+  void sceneRotationChanged();
+  void sceneScaleChanged();
   void groundRadiusChanged(double f64Radius);
   void groundElevationChanged(double f64Elevation);
   void showFogToggled(bool bChecked);
@@ -65,10 +70,12 @@ protected slots:
   void dumpAllToggled(bool bChecked);
   void colorChanged(const QString& role, const QColor& color);
   void fontChanged(const QString& filename);
-  void translationChanged(const std::vector<double>& translationVector);
-  void rotationChanged(const std::vector<double>& rotationVector);
-  void scaleChanged(double f64Scale);
-  void render(GLView& view);
+  void cameraPositionChanged(const std::vector<double>& positionVector);
+  void cameraViewpointChanged(const std::vector<double>& viewpointVector);
+  void sceneTranslationChanged(const std::vector<double>& translationVector);
+  void sceneRotationChanged(const std::vector<double>& rotationVector);
+  void sceneScaleChanged(double f64Scale);
+  void render(GLView& view, Scene& scene);
 
 };
 

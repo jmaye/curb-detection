@@ -4,6 +4,7 @@
 #include "visualization/Control.h"
 #include "visualization/Singleton.h"
 #include "visualization/GLView.h"
+#include "visualization/Scene.h"
 #include "data-structures/DEM.h"
 #include "data-structures/Edge.h"
 
@@ -44,7 +45,7 @@ protected:
   std::multiset<Edge, EdgeCompare> mEdgeSet;
 
 protected slots:
-  void render(GLView& view);
+  void render(GLView& view, Scene& scene);
   void demUpdated(DEM* pDEM);
   void KChanged(int i32Value);
   void showSegmenterToggled(bool bChecked);
