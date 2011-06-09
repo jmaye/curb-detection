@@ -3,7 +3,7 @@
 
 #include "data-structures/DEM.h"
 #include "data-structures/Edge.h"
-#include "data-structures/CurbMap.h"
+#include "data-structures/PointCloud.h"
 
 #include <set>
 
@@ -12,7 +12,7 @@ class CurbFinder {
 
 public:
   static void find(const DEM& dem,
-    const std::multiset<Edge, EdgeCompare>& edgeSet, CurbMap& curbMap);
+    const std::multiset<Edge, EdgeCompare>& edgeSet, PointCloud& pointCloud);
 
 protected:
 

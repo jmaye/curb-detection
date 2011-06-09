@@ -28,3 +28,8 @@ remake_pack_deb(
   DESCRIPTION "Test programs"
   curb-detection
 )
+
+remake_doc(
+  html
+  latex
+)
