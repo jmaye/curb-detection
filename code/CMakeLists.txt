@@ -21,6 +21,7 @@ remake_pack_deb(
   DESCRIPTION "Development headers"
   curb-detection
   libdai-dev
+  libeigen2-dev
 )
 
 remake_pack_deb(
