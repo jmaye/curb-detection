@@ -102,17 +102,17 @@ void BayesianEstimator::addDataPoint(UniGaussian& dist, UniGaussian& meanPrior,
   double f64LambdaOld = meanPrior.getMean();
   double f64NuOld = meanPrior.getVariance();
 
-  double f64AlphaNew = f64AlphaOld + 1/2;
+  double f64AlphaNew = f64AlphaOld + 1.0 / 2.0;
   double f64BetaNew = f64BetaOld + (f64NuOld *
-    pow(f64DataPoint - f64LambdaOld, 2)) / (2 * (f64NuOld + 1));
+    pow(f64DataPoint - f64LambdaOld, 2.0)) / (2.0 * (f64NuOld + 1.0));
   double f64LambdaNew = (f64NuOld * f64LambdaOld + f64DataPoint) /
     (f64NuOld + 1);
-  double f64NuNew = f64NuOld + 1;
+  double f64NuNew = f64NuOld + 1.0;
 
   meanPrior.setMean(f64LambdaNew);
   meanPrior.setVariance(f64NuNew);
   variancePrior.setAlpha(f64AlphaNew);
   variancePrior.setBeta(f64BetaNew);
   dist.setMean(f64LambdaNew);
-  dist.setVariance(f64BetaNew / (f64AlphaNew - 1));
+  dist.setVariance(f64BetaNew / (f64AlphaNew - 1.0));
 }

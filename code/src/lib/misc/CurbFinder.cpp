@@ -32,9 +32,9 @@ void CurbFinder::find(const DEM& dem,
       uint32_t u32Label2 = cell2.getMAPLabelsDist();
       if (u32Label1 != u32Label2) {
         Point3D curbPoint((cell1.getCellCenter().mf64X +
-          cell2.getCellCenter().mf64X) / 2, (cell1.getCellCenter().mf64Y +
-          cell2.getCellCenter().mf64Y) / 2, (cell1.getHeightDist().getMean() +
-          cell2.getHeightDist().getMean()) / 2);
+          cell2.getCellCenter().mf64X) / 2.0, (cell1.getCellCenter().mf64Y +
+          cell2.getCellCenter().mf64Y) / 2.0, (cell1.getHeightDist().getMean() +
+          cell2.getHeightDist().getMean()) / 2.0);
         pointCloud.addPoint(curbPoint);
       }
     }

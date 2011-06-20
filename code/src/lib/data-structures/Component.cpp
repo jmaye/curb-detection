@@ -27,11 +27,11 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Component::Component() : mf64Int(0) {
+Component::Component() : mf64Int(0.0) {
 }
 
 Component::Component(const std::pair<uint32_t, uint32_t>& nodeCoordinates) :
-  mf64Int(0) {
+  mf64Int(0.0) {
   mNodesList.push_back(nodeCoordinates);
 }
 
@@ -97,7 +97,7 @@ std::list<std::pair<uint32_t, uint32_t> >& Component::getNodesList() {
 }
 
 void Component::setInt(double f64Int) throw (OutOfBoundException) {
-  if (f64Int < 0) {
+  if (f64Int < 0.0) {
     std::cerr << "f64Int: " << f64Int << std::endl;
     throw OutOfBoundException("Component::setInt(): value must be greater than 0");
   }

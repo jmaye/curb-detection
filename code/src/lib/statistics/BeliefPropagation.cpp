@@ -146,7 +146,7 @@ void BeliefPropagation::infer(const DEM& dem,
             Eigen::Map<Eigen::VectorXd> coeffVectorMapped(&coeffVector[0],
               coeffVector.size());
             Eigen::VectorXd dataVector(coeffVector.size());
-            dataVector(0) = 1;
+            dataVector(0) = 1.0;
             dataVector(1) = cell.getCellCenter().mf64X;
             dataVector(2) = cell.getCellCenter().mf64Y;
             fac.set(k, weightsVector[k] *
@@ -155,7 +155,7 @@ void BeliefPropagation::infer(const DEM& dem,
               pdf(cell.getHeightDist().getMean()));
           }
           else
-            fac.set(k, 0);
+            fac.set(k, 0.0);
         }
         factorsVector.push_back(fac);
         mIdMap[std::make_pair(i, j)] = u32NodeIdx;
@@ -176,12 +176,12 @@ void BeliefPropagation::infer(const DEM& dem,
       (*setIt).getNode1().second).getHeightDist().getMean();
     double f64Mean2 = dem((*setIt).getNode2().first,
       (*setIt).getNode2().second).getHeightDist().getMean();
-    double f64Diff = (1 / (1 + exp(f64Variance1 +
+    double f64Diff = (1.0 / (1.0 + exp(f64Variance1 +
         f64Variance2 - fabs(f64Mean1 - f64Mean2))));
     dai::Factor fac(dai::VarSet(varsVector[mIdMap[(*setIt).getNode1()]],
       varsVector[mIdMap[(*setIt).getNode2()]]), 1e-12);
     for(uint32_t i = 0; i < dem.getLabelsNbr(); i++)
-      fac.set(i * (dem.getLabelsNbr() + 1), 1 - f64Diff);
+      fac.set(i * (dem.getLabelsNbr() + 1), 1.0 - f64Diff);
     factorsVector.push_back(fac);
   }
   mFactorGraph = dai::FactorGraph(factorsVector);

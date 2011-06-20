@@ -39,7 +39,7 @@ Cell::Cell(const UniGaussian& heightDist, const MLEstimator& estimator,
     mCellSize(cellSize),
     mbInvalidFlag(true),
     mu32MAPState(std::numeric_limits<uint32_t>::max()) {
-  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
+  if (cellSize.mf64X <= 0.0 || cellSize.mf64Y <= 0.0) {
     std::cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
       << cellSize.mf64Y << ")" << std::endl;
     throw OutOfBoundException("Cell::Cell(): cell size must be positive");
@@ -138,7 +138,7 @@ const Point2D& Cell::getCellSize() const {
 }
 
 void Cell::setCellSize(const Point2D& cellSize) throw (OutOfBoundException) {
-  if (cellSize.mf64X <= 0 || cellSize.mf64Y <= 0) {
+  if (cellSize.mf64X <= 0.0 || cellSize.mf64Y <= 0.0) {
     std::cerr << "Requested cell size: " << "(" << cellSize.mf64X << ","
       << cellSize.mf64Y << ")" << std::endl;
     throw OutOfBoundException("Cell::setCellSize(): cell size must be positive");
@@ -153,7 +153,7 @@ const std::vector<double>& Cell::getLabelsDistVector() const {
 void Cell::setLabelsDistVector(const std::vector<double>& labelsDistVector,
   double f64Tol)
   throw (OutOfBoundException) {
-  double f64Sum = 0;
+  double f64Sum = 0.0;
   for (uint32_t i = 0; i < labelsDistVector.size(); i++) {
     f64Sum += labelsDistVector[i];
   }
@@ -211,7 +211,7 @@ double Cell::compare(const Cell& other) const {
 
 void Cell::clear() {
   mHeightDist = UniGaussian(0.0, Sensor::getNoise(mCellCenter.mf64X,
-    mCellCenter.mf64Y, 0));
+    mCellCenter.mf64Y, 0.0));
   mMLEstimator = MLEstimator();
   mbInvalidFlag = true;
   mLabelsDistVector.clear();

@@ -32,9 +32,9 @@ UniInverseGamma::UniInverseGamma(double f64Alpha, double f64Beta)
   throw (OutOfBoundException) :
   mf64Alpha(f64Alpha),
   mf64Beta(f64Beta) {
-  if (mf64Alpha <= 0)
+  if (mf64Alpha <= 0.0)
     throw OutOfBoundException("UniInverseGamma::UniInverseGamma(): mf64Alpha should be bigger than 0");
-  if (mf64Beta <= 0)
+  if (mf64Beta <= 0.0)
     throw OutOfBoundException("UniInverseGamma::UniInverseGamma(): mf64Beta should be bigger than 0");
 }
 
@@ -102,13 +102,13 @@ double UniInverseGamma::getBeta() const {
 
 void UniInverseGamma::setAlpha(double f64Alpha) throw (OutOfBoundException) {
   mf64Alpha = f64Alpha;
-  if (mf64Alpha <= 0)
+  if (mf64Alpha <= 0.0)
     throw OutOfBoundException("UniInverseGamma::setAlpha(): mf64Alpha should be bigger than 0");
 }
 
 void UniInverseGamma::setBeta(double f64Beta) throw (OutOfBoundException) {
   mf64Beta = f64Beta;
-  if (mf64Beta <= 0)
+  if (mf64Beta <= 0.0)
     throw OutOfBoundException("UniInverseGamma::setBeta(): mf64Beta should be bigger than 0");
 }
 
@@ -117,15 +117,15 @@ void UniInverseGamma::setBeta(double f64Beta) throw (OutOfBoundException) {
 /******************************************************************************/
 
 double UniInverseGamma::pdf(double f64X) const throw (OutOfBoundException) {
-  if (f64X < 0)
+  if (f64X < 0.0)
     throw OutOfBoundException("UniInverseGamma::pdf(): f64X should be bigger or equal to 0");
   return (pow(mf64Beta, mf64Alpha) / tgamma(mf64Alpha)) *
-    pow(f64X, -mf64Alpha - 1) * exp(-mf64Beta / f64X);
+    pow(f64X, -mf64Alpha - 1.0) * exp(-mf64Beta / f64X);
 }
 
 double UniInverseGamma::logpdf(double f64X) const throw (OutOfBoundException) {
-  if (f64X < 0)
+  if (f64X < 0.0)
     throw OutOfBoundException("UniInverseGamma::logpdf(): f64X should be bigger or equal to 0");
   return (mf64Alpha * log(mf64Beta)) - lgamma(mf64Alpha) -
-    ((mf64Alpha + 1) * log(f64X)) - (mf64Beta / f64X);
+    ((mf64Alpha + 1.0) * log(f64X)) - (mf64Beta / f64X);
 }

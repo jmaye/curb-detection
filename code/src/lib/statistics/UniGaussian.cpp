@@ -31,7 +31,7 @@ UniGaussian::UniGaussian(double f64Mean, double f64Variance)
   throw (OutOfBoundException) :
   mf64Mean(f64Mean),
   mf64Variance(f64Variance) {
-  if (mf64Variance <= 0)
+  if (mf64Variance <= 0.0)
     throw OutOfBoundException("UniGaussian::UniGaussian(): mf64Variance must be greater than 0");
 }
 
@@ -103,7 +103,7 @@ void UniGaussian::setMean(double f64Mean) {
 
 void UniGaussian::setVariance(double f64Variance) throw (OutOfBoundException) {
   mf64Variance = f64Variance;
-  if (mf64Variance <= 0) {
+  if (mf64Variance <= 0.0) {
     throw OutOfBoundException("UniGaussian::setVariance(): mf64Variance must be greater than 0");
   }
 }
@@ -114,12 +114,12 @@ void UniGaussian::setVariance(double f64Variance) throw (OutOfBoundException) {
 
 double UniGaussian::pdf(double f64X) const {
   return (1.0 / sqrt(2.0 * M_PI * mf64Variance)) *
-    exp(-pow(f64X - mf64Mean, 2) / (2.0 * mf64Variance));
+    exp(-pow(f64X - mf64Mean, 2.0) / (2.0 * mf64Variance));
 }
 
 double UniGaussian::logpdf(double f64X) const {
-  return -log(M_PI * mf64Variance) -
-    (pow(f64X - mf64Mean, 2) / (2.0 * mf64Variance));
+  return -1.0 / 2.0 * (log(2.0) + log(M_PI) + log(mf64Variance)) -
+    (pow(f64X - mf64Mean, 2.0) / (2.0 * mf64Variance));
 }
 
 double UniGaussian::KLDivergence(const UniGaussian& other) const {
@@ -127,6 +127,6 @@ double UniGaussian::KLDivergence(const UniGaussian& other) const {
   double f64Mu2 = other.mf64Mean;
   double f64Var1 = mf64Variance;
   double f64Var2 = other.mf64Variance;
-  return pow(f64Mu1 - f64Mu2, 2) / (2 * f64Var2) +
-    1 / 2 * (f64Var1 / f64Var2 - 1 - log(f64Var1 / f64Var2));
+  return pow(f64Mu1 - f64Mu2, 2.0) / (2.0 * f64Var2) +
+    1.0 / 2.0 * (f64Var1 / f64Var2 - 1.0 - log(f64Var1 / f64Var2));
 }

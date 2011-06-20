@@ -51,7 +51,7 @@ DEM::DEM(double f64CellSizeX, double f64CellSizeY, uint32_t u32CellsNbrX,
       << u32CellsNbrY << ")" << std::endl;
     throw OutOfBoundException("DEM::DEM(): number of cells must be greater than 0");
   }
-  if (f64CellSizeX <= 0 || f64CellSizeY <= 0) {
+  if (f64CellSizeX <= 0 || f64CellSizeY <= 0.0) {
     std::cerr << "Requested cell size: " << "(" << f64CellSizeX << ","
       << f64CellSizeY << ")" << std::endl;
     throw OutOfBoundException("DEM::DEM(): cell size must be greater than 0");
@@ -68,7 +68,7 @@ DEM::DEM(double f64CellSizeX, double f64CellSizeY, uint32_t u32CellsNbrX,
   for (uint32_t i = 0; i < mu32CellsNbrX; i++) {
     for (uint32_t j = 0; j < mu32CellsNbrY; j++) {
       mCellsMatrix[i].push_back(Cell(UniGaussian(0.0,
-        Sensor::getNoise(f64CurX, f64CurY, 0)), MLEstimator(),
+        Sensor::getNoise(f64CurX, f64CurY, 0.0)), MLEstimator(),
         Point2D(f64CurX - mf64CellSizeX / 2.0, f64CurY - mf64CellSizeY / 2.0),
         Point2D(mf64CellSizeX, mf64CellSizeY)));
       f64CurY -= mf64CellSizeY;
@@ -237,7 +237,7 @@ void DEM::setLabelsDist(const BeliefPropagation& bp, double f64Tol) {
         std::vector<double> distVector =
           bp.getNodeDistribution(std::make_pair(i, j));
         std::vector<double> newDistVector;
-        double f64Sum = 0;
+        double f64Sum = 0.0;
         for (uint32_t k = 0; k < distVector.size(); k++) {
           if (supportPointsVector[k] >= mu32MinPointsPerPlane) {
             newDistVector.push_back(distVector[k]);

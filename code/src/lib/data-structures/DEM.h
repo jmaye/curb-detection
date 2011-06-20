@@ -46,8 +46,8 @@ class DEM {
 public:
    DEM(double f64CellSizeX = 0.15, double f64CellSizeY = 0.15,
     uint32_t u32CellsNbrX = 30, uint32_t u32CellsNbrY = 30,
-    double f64HeightFilterMin = -2, double f64HeightFilterMax = 1,
-    double f64TranslationX = 0, double f64TranslationY = 0,
+    double f64HeightFilterMin = -2.0, double f64HeightFilterMax = 1.0,
+    double f64TranslationX = 0.0, double f64TranslationY = 0.0,
     uint32_t u32MinPointsPerPlane = 3) throw (OutOfBoundException);
 
   DEM(const DEM& other);

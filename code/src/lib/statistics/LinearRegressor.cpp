@@ -51,7 +51,7 @@ void LinearRegressor::estimate(const DEM& dem,
       if (cell.getInvalidFlag() == false) {
         targetsVector(i) = cell.getHeightDist().getMean();
         const Point2D& cellCenter = cell.getCellCenter();
-        designMatrix(i, 0) = 1;
+        designMatrix(i, 0) = 1.0;
         designMatrix(i, 1) = cellCenter.mf64X;
         designMatrix(i, 2) = cellCenter.mf64Y;
         const std::vector<double>& labelsDistVector = cell.getLabelsDistVector();
@@ -90,12 +90,12 @@ void LinearRegressor::estimate(const DEM& dem,
       weightsVector[i] = weightsMatrix.row(i).sum() / u32ValidCellsNbr;
     }
     else {
-      variancesVector[i] = 0;
-      weightsVector[i] = 0;
+      variancesVector[i] = 0.0;
+      weightsVector[i] = 0.0;
       coeffsMatrix[i].resize(3);
-      coeffsMatrix[i][0] = 0;
-      coeffsMatrix[i][1] = 0;
-      coeffsMatrix[i][2] = 0;
+      coeffsMatrix[i][0] = 0.0;
+      coeffsMatrix[i][1] = 0.0;
+      coeffsMatrix[i][2] = 0.0;
     }
   }
 }
