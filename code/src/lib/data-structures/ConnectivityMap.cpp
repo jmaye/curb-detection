@@ -41,6 +41,15 @@ ConnectivityMap::ConnectivityMap(const DEM& dem,
   }
 }
 
+ConnectivityMap::ConnectivityMap(const ConnectivityMap& other) :
+  mEdgePositionsVector(other.mEdgePositionsVector) {
+}
+
+ConnectivityMap& ConnectivityMap::operator = (const ConnectivityMap& other) {
+  mEdgePositionsVector = other.mEdgePositionsVector;
+  return *this;
+}
+
 ConnectivityMap::~ConnectivityMap() {
 }
 

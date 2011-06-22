@@ -16,6 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file Point3D.h
+    \brief This file define the Point3D class, which represents 3d points.
+  */
+
 #ifndef POINT3D_H
 #define POINT3D_H
 
@@ -23,25 +27,49 @@
 
 #include <iosfwd>
 
+/** The class Point3D represents 3d points.
+    \brief A 3d point
+  */
 class Point3D : public Point2D {
   friend std::ostream& operator << (std::ostream& stream, const Point3D& obj);
   friend std::istream& operator >> (std::istream& stream, Point3D& obj);
   friend std::ofstream& operator << (std::ofstream& stream, const Point3D& obj);
   friend std::ifstream& operator >> (std::ifstream& stream, Point3D& obj);
 
+  /** \name Streaming methods
+    @{
+    */
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
   Point3D();
+  /// Constructs point from coordinates
   Point3D(double f64X, double f64Y, double f64Z);
-  ~Point3D();
+  /// Copy constructor
   Point3D(const Point3D& other);
+  /// Assignment operator
   Point3D& operator = (const Point3D& other);
+  /// Destructor
+  ~Point3D();
+  /** @}
+    */
 
+  /** \name Public members
+    @{
+    */
+  /// Z coordinate of the point
   double mf64Z;
+  /** @}
+    */
 
 protected:
 

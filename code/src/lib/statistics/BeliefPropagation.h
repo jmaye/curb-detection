@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file BeliefPropagation.h
+    \brief This file defines the BeliefPropagation class, which implements the
+           belief propagation algorithm
+  */
+
 #ifndef BELIEFPROPAGATION_H
 #define BELIEFPROPAGATION_H
 
@@ -34,6 +39,9 @@
 
 #include <stdint.h>
 
+/** The class BeliefPropagation implements the belief propagation algorithm
+    \brief Belief propagation algorithm
+  */
 class BeliefPropagation {
   friend std::ostream& operator << (std::ostream& stream,
     const BeliefPropagation& obj);
@@ -44,25 +52,59 @@ class BeliefPropagation {
   friend std::ifstream& operator >> (std::ifstream& stream,
     BeliefPropagation& obj);
 
+  /** \name Private constructors
+    @{
+    */
+  /// Copy constructor
   BeliefPropagation(const BeliefPropagation& other);
+  /// Assignment operator
   BeliefPropagation& operator = (const BeliefPropagation& other);
+  /** @}
+    */
 
+  /** \name Streaming methods
+    @{
+    */
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
 
+  /** \name Private members
+    @{
+    */
+  /// Mapping between DEM nodes and BP nodes
   std::map<std::pair<uint32_t, uint32_t>, uint32_t> mIdMap;
+  /// Factor graph representation of the CRF
   dai::FactorGraph mFactorGraph;
+  /// Inference engine
   dai::BP mBP;
+  /// True when the inference has run
   bool mbInferenceDone;
+  /// True whem the max-product algorithm has run
   bool mbMaxProductDone;
+  /// MAP state after BP
   std::vector<size_t> mMAPStateVector;
+  /** @}
+    */
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
   BeliefPropagation();
+  /// Destructor
   ~BeliefPropagation();
+  /** @}
+    */
 
+  /** \name Methods
+    @{
+    */
+  /// Runs belief propagation
   void infer(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet,
     const std::vector<std::vector<double> >& coeffsMatrix,
@@ -70,15 +112,23 @@ public:
     const std::vector<double>& weightsVector,
     uint32_t u32MaxIter = 10000, double f64Tol = 1e-9, bool bMaxProd = false)
     throw (OutOfBoundException);
+  /** @}
+    */
 
+  /** \name Accessors
+    @{
+    */
+  /// Returns node distribution (after sum-product run)
   std::vector<double>
     getNodeDistribution(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
-
+  /// Returns MAP state (after max-product run)
   uint32_t getMAPState(const std::pair<uint32_t, uint32_t>& nodeCoordinates)
     const throw (OutOfBoundException, InvalidOperationException);
-
+  /// Returns log partition sum after BP run
   double getLogPartitionSum() const throw (InvalidOperationException);
+  /** @}
+    */
 
 protected:
 

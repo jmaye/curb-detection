@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file CurbFinder.h
+    \brief This file defines the CurbFinder class, which implements the curb
+           finder algorithm
+  */
+
 #ifndef CURBFINDER_H
 #define CURBFINDER_H
 
@@ -25,12 +30,28 @@
 
 #include <set>
 
+/** The class CurbFinder implements the curb finder algorithm for the DEM
+    \brief Finds curbs in a processed DEM
+  */
 class CurbFinder {
+  /** \name Private constructor (not to be instantiated)
+    @{
+    */
+  /// Default constructor
   CurbFinder();
+  /** @}
+    */
 
 public:
+  /** \name Methods
+    @{
+    */
+  /// Finds curbs on the DEM
   static void find(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet, PointCloud& pointCloud);
+  /** @}
+    */
+
 
 protected:
 

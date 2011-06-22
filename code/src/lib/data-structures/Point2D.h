@@ -16,31 +16,60 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file Point2D.h
+    \brief This file defines the Point2D class, which represents 2d points.
+  */
+
 #ifndef POINT2D_H
 #define POINT2D_H
 
 #include <iosfwd>
 
+/** The class Point2D represents 2d points.
+    \brief A 2d point
+  */
 class Point2D {
   friend std::ostream& operator << (std::ostream& stream, const Point2D& obj);
   friend std::istream& operator >> (std::istream& stream, Point2D& obj);
   friend std::ofstream& operator << (std::ofstream& stream, const Point2D& obj);
   friend std::ifstream& operator >> (std::ifstream& stream, Point2D& obj);
 
+  /** \name Streaming methods
+    @{
+    */
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
   Point2D();
+  /// Constructs point from coordinates
   Point2D(double f64X, double f64Y);
-  ~Point2D();
+  /// Copy constructor
   Point2D(const Point2D& other);
+  /// Assignment operator
   Point2D& operator = (const Point2D& other);
+  /// Destructor
+  ~Point2D();
+  /** @}
+    */
 
+  /** \name Public members
+      @{
+    */
+  /// x coordinate of the point
   double mf64X;
+  /// y coordinate of the point
   double mf64Y;
+  /** @}
+    */
 
 protected:
 

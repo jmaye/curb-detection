@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file ConnectivityMap.h
+    \brief This file defines the ConnectivityMap class, which represents the
+           connectivity in a DEM
+  */
+
 #ifndef CONNECTIVITYMAP_H
 #define CONNECTIVITYMAP_H
 
@@ -27,6 +32,9 @@
 #include <set>
 #include <vector>
 
+/** The class ConnectivityMap represents the connectivity in a DEM
+    \brief Connectivity of a DEM
+  */
 class ConnectivityMap {
   friend std::ostream& operator << (std::ostream& stream,
     const ConnectivityMap& obj);
@@ -37,23 +45,48 @@ class ConnectivityMap {
   friend std::ifstream& operator >> (std::ifstream& stream,
     ConnectivityMap& obj);
 
-  ConnectivityMap(const ConnectivityMap& other);
-  ConnectivityMap& operator = (const ConnectivityMap& other);
-
+  /** \name Streaming methods
+    @{
+    */
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
 
+  /** \name Private members
+      @{
+    */
+  /// Stores the edges
   std::vector<std::pair<Point3D, Point3D> > mEdgePositionsVector;
+  /** @}
+    */
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs connectivity map from DEM
   ConnectivityMap(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet);
+  /// Copy constructor
+  ConnectivityMap(const ConnectivityMap& other);
+  /// Assignment operator
+  ConnectivityMap& operator = (const ConnectivityMap& other);
+  /// Destructor
   ~ConnectivityMap();
+  /** @}
+    */
 
+  /** \name Accessors
+    @{
+    */
+  /// Returns the edges
   const std::vector<std::pair<Point3D, Point3D> >& getEdgePositionsVector()
     const;
+  /** @}
+    */
 
 protected:
 

@@ -16,14 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file Sensor.h
+    \brief This file defines the Sensor class, which represents the sensor
+           characteristics
+  */
+
 #ifndef SENSOR_H
 #define SENSOR_H
 
+/** The class Sensor represents the sensor characteristics
+    \brief Sensor characteristics
+  */
 class Sensor {
+  /** \name Private constructor (not to be instantiated)
+    @{
+    */
+  /// Default constructor
   Sensor();
+  /** @}
+    */
 
 public:
+  /** \name Methods
+    @{
+    */
+  /// Returns the sensor noise for a given position in space
   static double getNoise(double f64X, double f64Y, double f64Z);
+  /** @}
+    */
 
 protected:
 

@@ -16,6 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file Component.h
+    \brief This file defines the Component class, which represents a component
+           in the graph-based segmentation algorithm
+  */
+
+
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
@@ -27,6 +33,10 @@
 
 #include <stdint.h>
 
+/** The class Component represents a component of the graph-based segmentation
+    algorithm
+    \brief Component of the segmentation algorithm
+  */
 class Component {
   friend std::ostream& operator << (std::ostream& stream, const Component& obj);
   friend std::istream& operator >> (std::istream& stream, Component& obj);
@@ -34,20 +44,41 @@ class Component {
     const Component& obj);
   friend std::ifstream& operator >> (std::ifstream& stream, Component& obj);
 
+  /** \name Streaming methods
+    @{
+    */
   virtual void read(std::istream& stream);
   virtual void write(std::ostream& stream) const;
   virtual void read(std::ifstream& stream);
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
 
+  /** \name Private members
+    @{
+    */
+  /// Internal value of the component
   double mf64Int;
+  /// Stores vertex associated with this component
   std::list<std::pair<uint32_t, uint32_t> > mNodesList;
+  /** @}
+    */
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
   Component();
+  /// Constructs component from nodes
   Component(const std::pair<uint32_t, uint32_t>& nodeCoordinates);
-  ~Component();
+  /// Copy constructor
   Component(const Component& other);
+  /// Assignment operator
   Component& operator = (const Component& other);
+  ~Component();
+  /** @}
+    */
 
   double compare(const Component& other, uint32_t u32K) const
     throw (InvalidOperationException);

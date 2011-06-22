@@ -28,6 +28,15 @@
 PointCloud::PointCloud() {
 }
 
+PointCloud::PointCloud(const PointCloud& other) :
+  mPointsVector(other.mPointsVector) {
+}
+
+PointCloud& PointCloud::operator = (const PointCloud& other) {
+  mPointsVector = other.mPointsVector;
+  return *this;
+}
+
 PointCloud::~PointCloud() {
 }
 

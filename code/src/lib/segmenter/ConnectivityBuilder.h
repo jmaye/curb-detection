@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file ConnectivityBuilder.h
+    \brief This file defines the ConnectivityBuilder class, which implements the
+           connectivity building algorithm for the DEM
+  */
+
 #ifndef CONNECTIVITYBUILDER_H
 #define CONNECTIVITYBUILDER_H
 
@@ -24,11 +29,27 @@
 
 #include <set>
 
+/** The class ConnectivityBuilder implements the connectivity building algorithm
+    for the DEM
+    \brief Builds the connectivity in a DEM
+  */
 class ConnectivityBuilder {
+  /** \name Private constructor (not to be instatiatied)
+    @{
+    */
+  /// Default constructor
   ConnectivityBuilder();
+  /** @}
+    */
 
 public:
+  /** \name Methods
+    @{
+    */
+  /// Builds the connectivity
   static void build(const DEM& dem, std::multiset<Edge, EdgeCompare>& edgeSet);
+  /** @}
+    */
 
 protected:
 

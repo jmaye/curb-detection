@@ -16,18 +16,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file OutOfBoundException.h
+    \brief This file defines the OutOfBoundException class, which represents any
+           exceptions where the input variables are out of bound
+  */
+
 #ifndef OUTOFBOUNDEXCEPTION_H
 #define OUTOFBOUNDEXCEPTION_H
 
 #include <stdexcept>
 #include <string>
 
+/** The class OutOfBoundException represents any
+    exceptions where the input variables are out of bound
+    \brief Out of bounds exception for input variables
+  */
 class OutOfBoundException : public std::range_error {
+  /// Assignment operator
   OutOfBoundException& operator = (const OutOfBoundException &other);
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs exception from message
   OutOfBoundException(const std::string &msg = "");
+  /// Copy constructor
   OutOfBoundException(const OutOfBoundException &other);
+  /** @}
+    */
 
 protected:
 

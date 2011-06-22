@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file EM.h
+    \brief This file defines the EM class, which implements the
+           expectation-maximization algorithm
+  */
+
 #ifndef EM_H
 #define EM_H
 
@@ -28,16 +33,31 @@
 
 #include <stdint.h>
 
+/** The class EM implements the expectation-maximization algorithm
+    \brief Expectation-Maximization algorithm
+  */
 class EM {
+  /** \name Private constructor (not to be instantiated)
+    @{
+    */
+  /// Default constructor
   EM();
+  /** @}
+    */
 
 public:
+  /** \name Methods
+    @{
+    */
+  /// Runs the EM algorithm
   static void run(DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet,
     std::vector<std::vector<double> >& coeffsMatrix,
     std::vector<double>& varianceVector, std::vector<double>& weightsVector,
     uint32_t u32MaxEMIterations = 15, double f64EMTol = 1e-6,
     uint32_t u32MaxBPIterations = 10000, double f64BPTol = 1e-9);
+  /** @}
+    */
 
 protected:
 

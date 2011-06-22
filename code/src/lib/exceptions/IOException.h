@@ -16,18 +16,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file IOException.h
+    \brief This file defines the IOException class, which represents any
+           exceptions occuring with input/output operations (e.g. files)
+  */
+
 #ifndef IOEXCEPTION_H
 #define IOEXCEPTION_H
 
 #include <stdexcept>
 #include <string>
 
+/** The class IOException represents any
+    exceptions occuring with input/output operations (e.g. files)
+    \brief Input/Output exception
+  */
 class IOException : public std::runtime_error {
+  /// Assignment operator
   IOException& operator = (const IOException &other);
 
 public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs exception from message
   IOException(const std::string &msg = "");
+  /// Copy constructor
   IOException(const IOException &other);
+  /** @}
+    */
 
 protected:
 

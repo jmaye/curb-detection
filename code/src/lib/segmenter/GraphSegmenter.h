@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+/** \file GraphSegmenter.h
+    \brief This file defines the GraphSegmenter class, which implements the
+           graph-based segmentation algorithm on the DEM
+  */
+
 #ifndef GRAPHSEGMENTER_H
 #define GRAPHSEGMENTER_H
 
@@ -27,15 +32,30 @@
 
 #include <stdint.h>
 
-
+/** The class GraphSegmenter implements the graph-based segmentation algorithm
+    on the DEM
+    \brief Segments a DEM
+  */
 class GraphSegmenter {
+  /** \name Private constructor (not to be instantiated)
+    @{
+    */
+  /// Default constructor
   GraphSegmenter();
+  /** @}
+    */
 
 public:
+  /** \name Methods
+    @{
+    */
+  /// Segments the DEM
   static void segment(const DEM& dem,
     const std::multiset<Edge, EdgeCompare>& edgeSet,
     std::map<std::pair<uint32_t, uint32_t>, uint32_t>& labelsMap,
     std::map<uint32_t, uint32_t>& supportsMap, uint32_t u32K = 100);
+  /** @}
+    */
 
 protected:
 
