@@ -6,7 +6,7 @@ remake_project(
   curb-detection
   VERSION 0.1
   RELEASE alpha
-  SUMMARY "Curb detection module"
+  SUMMARY "A C++ based library for curb detection"
   AUTHOR "Jerome Maye"
   CONTACT "jerome.maye@mavt.ethz.ch"
   HOME "http://aslforge.ethz.ch/projects/curb-detection"
