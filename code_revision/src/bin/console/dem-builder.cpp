@@ -36,6 +36,10 @@ int main (int argc, char **argv) {
   Grid<double, Cell> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.5, 0.5));
-  std::cout << "Number of cells: " << dem.getNumCells().transpose() << std::endl;
+  std::cout << "Number of cells: " << dem.getNumCells().transpose()
+    << std::endl;
+  for (size_t i = 0; i < dem.getNumCells()(0); ++i)
+    for (size_t j = 0; j < dem.getNumCells()(1); ++j)
+      dem((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
   return 0;
 }

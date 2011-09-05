@@ -126,6 +126,14 @@ const C& Grid<T, C>::operator () (const Grid<T, C>::IndexType& idx) const
   if ((idx.cwise() > mNumCells).any())
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C>::operator (): index out of range", __FILE__, __LINE__);
+  size_t linIdx = 0;
+  for (size_t i = 0; i < idx.size(); ++i) {
+    size_t prod = 1.0;
+    for (size_t j = i + 1; j < idx.size(); ++j)
+      prod *= mNumCells(j);
+    linIdx += prod * idx(i);
+  }
+  return mCells[linIdx];
 }
 
 template <typename T, typename C>
@@ -134,6 +142,14 @@ C& Grid<T, C>::operator () (const Grid<T, C>::IndexType& idx)
   if ((idx.cwise() >= mNumCells).any())
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C>::operator (): index out of range", __FILE__, __LINE__);
+  size_t linIdx = 0;
+  for (size_t i = 0; i < idx.size(); ++i) {
+    size_t prod = 1.0;
+    for (size_t j = i + 1; j < idx.size(); ++j)
+      prod *= mNumCells(j);
+    linIdx += prod * idx(i);
+  }
+  return mCells[linIdx];
 }
 
 template <typename T, typename C>
