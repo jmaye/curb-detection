@@ -39,10 +39,14 @@ Grid<T, C, M>::Grid(const CoordinateType& minimum, const CoordinateType&
        __FILE__, __LINE__);
   mNumCells.resize(resolution.size());
   mNumCellsTot = 1.0;
+  mLinProd = IndexType::Ones(resolution.size());
   for (size_t i = 0; i < (size_t)minimum.size(); ++i) {
-    mNumCells(i) = (maximum(i) - minimum(i)) / resolution(i);
+    mNumCells(i) = ceil((maximum(i) - minimum(i)) / resolution(i));
     mNumCellsTot *= mNumCells(i);
   }
+  for (size_t i = 0; i < (size_t)minimum.size(); ++i)
+    for (size_t j = i + 1; j < (size_t)minimum.size(); ++j)
+      mLinProd(i) *= mNumCells(j);
   mCells.resize(mNumCellsTot);
 }
 
@@ -53,7 +57,8 @@ Grid<T, C, M>::Grid(const Grid& other) :
   mMaximum(other.mMaximum),
   mResolution(other.mResolution),
   mNumCells(other.mNumCells),
-  mNumCellsTot(other.mNumCellsTot) {
+  mNumCellsTot(other.mNumCellsTot),
+  mLinProd(other.mLinProd) {
 }
 
 template <typename T, typename C, size_t M>
@@ -65,6 +70,7 @@ Grid<T, C, M>& Grid<T, C, M>::operator = (const Grid<T, C, M>& other) {
     mResolution = other.mResolution;
     mNumCells = other.mNumCells;
     mNumCellsTot = other.mNumCellsTot;
+    mLinProd = other.mLinProd;
   }
   return *this;
 }
@@ -132,10 +138,7 @@ size_t Grid<T, C, M>::computeLinearIndex(const Grid<T, C, M>::IndexType& idx)
   const {
   size_t linIdx = 0;
   for (size_t i = 0; i < (size_t)idx.size(); ++i) {
-    size_t prod = 1.0;
-    for (size_t j = i + 1; j < (size_t)idx.size(); ++j)
-      prod *= mNumCells(j);
-    linIdx += prod * idx(i);
+    linIdx += mLinProd(i) * idx(i);
   }
   return linIdx;
 }

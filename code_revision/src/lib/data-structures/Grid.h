@@ -155,6 +155,8 @@ protected:
   IndexType mNumCells;
   /// Total number of cells
   size_t mNumCellsTot;
+  /// Pre-computation for linear indices
+  IndexType mLinProd;
   /** @}
     */
 

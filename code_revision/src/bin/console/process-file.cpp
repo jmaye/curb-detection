@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
   before = Timestamp::now();
   Grid<double, Cell, 2> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
-    Eigen::Matrix<double, 2, 1>(0.5, 0.5));
+    Eigen::Matrix<double, 2, 1>(0.1, 0.1));
   for (size_t i = 0; i < pointCloud.getNumPoints(); ++i)
     if (dem.isInRange(pointCloud[i].segment(0, 2)))
       dem(pointCloud[i].segment(0, 2)).addPoint(pointCloud[i](2));

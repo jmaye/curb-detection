@@ -160,10 +160,9 @@ void DEMControl::demChanged() {
   mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
-  for (size_t i = 0; i < mPointCloud.getNumPoints(); ++i) {
+  for (size_t i = 0; i < mPointCloud.getNumPoints(); ++i)
     if (mDEM.isInRange(mPointCloud[i].segment(0, 2)))
       mDEM(mPointCloud[i].segment(0, 2)).addPoint(mPointCloud[i](2));
-  }
   GLView::getInstance().update();
 }
 
