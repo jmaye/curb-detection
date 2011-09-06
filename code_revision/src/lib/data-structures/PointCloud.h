@@ -74,6 +74,8 @@ public:
     throw (OutOfBoundException<size_t>);
   /// Returns a point using [] operator
   PointType& operator [] (size_t idx) throw (OutOfBoundException<size_t>);
+  /// Check if an index is valid
+  bool isValidIndex(size_t idx) const;
   /// Returns the size of the point cloud
   size_t getNumPoints() const;
   /// Clears the point cloud

@@ -80,7 +80,7 @@ void PointCloud<X, M>::write(std::ofstream& stream) const {
 template <typename X, size_t M>
 const typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator []
   (size_t idx) const throw (OutOfBoundException<size_t>) {
-  if (idx >= mPoints.size())
+  if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);
   return mPoints[idx];
@@ -89,10 +89,15 @@ const typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator []
 template <typename X, size_t M>
 typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator [] (size_t idx)
   throw (OutOfBoundException<size_t>) {
-  if (idx >= mPoints.size())
+  if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);
   return mPoints[idx];
+}
+
+template <typename X, size_t M>
+bool PointCloud<X, M>::isValidIndex(size_t idx) const {
+  return idx < mPoints.size();
 }
 
 template <typename X, size_t M>

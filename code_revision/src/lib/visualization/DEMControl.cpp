@@ -161,11 +161,8 @@ void DEMControl::demChanged() {
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
   for (size_t i = 0; i < mPointCloud.getNumPoints(); ++i) {
-    try {
+    if (mDEM.isInRange(mPointCloud[i].segment(0, 2)))
       mDEM(mPointCloud[i].segment(0, 2)).addPoint(mPointCloud[i](2));
-    }
-    catch (OutOfBoundException<Eigen::Matrix<double, 2, 1> >& e) {
-    }
   }
   GLView::getInstance().update();
 }
