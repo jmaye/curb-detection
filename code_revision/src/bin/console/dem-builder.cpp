@@ -16,30 +16,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file point-viewer.cpp
-    \brief This file is a testing binary for viewing a 3D point cloud loaded
-           from a log file.
+/** \file dem-builder.cpp
+    \brief This file is a testing binary for building a DEM.
   */
 
-#include "data-structures/PointCloud.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 
 int main (int argc, char **argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <log-file>" << std::endl;
-    return 1;
-  }
-  std::ifstream logFile(argv[1]);
-  PointCloud<> pointCloud;
-  logFile >> pointCloud;
-  Grid<double, Cell> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
+  Grid<double, Cell, 2> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.5, 0.5));
-  std::cout << "Number of cells: " << dem.getNumCells().transpose()
-    << std::endl;
+  std::cout << "DEM parameters: " << std::endl << dem << std::endl;
   for (size_t i = 0; i < dem.getNumCells()(0); ++i)
     for (size_t j = 0; j < dem.getNumCells()(1); ++j)
-      dem((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+      dem[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+  std::cout << "point(0.0, 0.0) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(0.0, 0.0)).transpose()
+    << std::endl;
+  std::cout << "point(0.5, 0.5) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(0.5, 0.5)).transpose()
+    << std::endl;
+  std::cout << "point(1.0, 1.0) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(1.0, 1.0)).transpose()
+    << std::endl;
+  std::cout << "point(2.0, 2.0) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(2.0, 2.0)).transpose()
+    << std::endl;
+  std::cout << "point(3.0, 3.0) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(3.0, 3.0)).transpose()
+    << std::endl;
+  std::cout << "point(3.9, 3.9) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(3.9, 3.9)).transpose()
+    << std::endl;
+  std::cout << "point(4.0, 4.0) is at index: " <<
+    dem.getIndex(Eigen::Matrix<double, 2, 1>(4.0, 4.0)).transpose()
+    << std::endl;
   return 0;
 }

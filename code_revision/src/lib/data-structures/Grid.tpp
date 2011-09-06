@@ -22,32 +22,32 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-template <typename T, typename C>
-Grid<T, C>::Grid(const CoordinateType& minimum, const CoordinateType& maximum,
-  const CoordinateType& resolution)
-  throw (BadArgumentException<Grid<T, C>::CoordinateType>) :
+template <typename T, typename C, size_t M>
+Grid<T, C, M>::Grid(const CoordinateType& minimum, const CoordinateType&
+  maximum, const CoordinateType& resolution)
+  throw (BadArgumentException<Grid<T, C, M>::CoordinateType>) :
   mMinimum(minimum),
   mMaximum(maximum),
   mResolution(resolution) {
   if ((resolution.cwise() <= 0).any())
     throw BadArgumentException<CoordinateType>(resolution,
-      "Grid<T, C>::Grid(): resolution must be strictly positive",
+      "Grid<T, C, M>::Grid(): resolution must be strictly positive",
        __FILE__, __LINE__);
   if ((minimum.cwise() >= maximum).any())
     throw BadArgumentException<CoordinateType>(minimum,
-      "Grid<T, C>::Grid(): minimum must be strictly smaller than maximum",
+      "Grid<T, C, M>::Grid(): minimum must be strictly smaller than maximum",
        __FILE__, __LINE__);
   mNumCells.resize(resolution.size());
-  size_t numCellsTot = 1.0;
-  for (size_t i = 0; i < minimum.size(); ++i) {
+  mNumCellsTot = 1.0;
+  for (size_t i = 0; i < (size_t)minimum.size(); ++i) {
     mNumCells(i) = (maximum(i) - minimum(i)) / resolution(i);
-    numCellsTot *= mNumCells(i);
+    mNumCellsTot *= mNumCells(i);
   }
-  mCells.resize(numCellsTot);
+  mCells.resize(mNumCellsTot);
 }
 
-template <typename T, typename C>
-Grid<T, C>::Grid(const Grid& other) :
+template <typename T, typename C, size_t M>
+Grid<T, C, M>::Grid(const Grid& other) :
   mCells(other.mCells),
   mMinimum(other.mMinimum),
   mMaximum(other.mMaximum),
@@ -55,8 +55,8 @@ Grid<T, C>::Grid(const Grid& other) :
   mNumCells(other.mNumCells) {
 }
 
-template <typename T, typename C>
-Grid<T, C>& Grid<T, C>::operator = (const Grid<T, C>& other) {
+template <typename T, typename C, size_t M>
+Grid<T, C, M>& Grid<T, C, M>::operator = (const Grid<T, C, M>& other) {
   if (this != &other) {
     mCells = other.mCells;
     mMinimum = other.mMinimum;
@@ -67,128 +67,158 @@ Grid<T, C>& Grid<T, C>::operator = (const Grid<T, C>& other) {
   return *this;
 }
 
-template <typename T, typename C>
-Grid<T, C>::~Grid() {
+template <typename T, typename C, size_t M>
+Grid<T, C, M>::~Grid() {
 }
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-template <typename T, typename C>
-void Grid<T, C>::read(std::istream& stream) {
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::read(std::istream& stream) {
 }
 
-template <typename T, typename C>
-void Grid<T, C>::write(std::ostream& stream) const {
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::write(std::ostream& stream) const {
+  stream << "minimum: " << mMinimum.transpose() << std::endl
+    << "maximum: " << mMaximum.transpose() << std::endl
+    << "resolution: " << mResolution.transpose() << std::endl
+    << "number of cells per dim: " << mNumCells.transpose() << std:: endl
+    << "total number of cells: " << mNumCellsTot;
 }
 
-template <typename T, typename C>
-void Grid<T, C>::read(std::ifstream& stream) {
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::read(std::ifstream& stream) {
 }
 
-template <typename T, typename C>
-void Grid<T, C>::write(std::ofstream& stream) const {
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-template <typename T, typename C>
-typename Grid<T, C>::ConstIteratorType Grid<T, C>::getItBegin() const {
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::ConstIteratorType Grid<T, C, M>::getItBegin() const {
   return mCells.begin();
 }
 
-template <typename T, typename C>
-typename Grid<T, C>::IteratorType Grid<T, C>::getItBegin() {
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::IteratorType Grid<T, C, M>::getItBegin() {
   return mCells.begin();
 }
 
-template <typename T, typename C>
-typename Grid<T, C>::ConstIteratorType Grid<T, C>::getItEnd() const {
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::ConstIteratorType Grid<T, C, M>::getItEnd() const {
   return mCells.end();
 }
 
-template <typename T, typename C>
-typename Grid<T, C>::IteratorType Grid<T, C>::getItEnd() {
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::IteratorType Grid<T, C, M>::getItEnd() {
   return mCells.end();
 }
 
-template <typename T, typename C>
-const typename Grid<T, C>::ContainerType& Grid<T, C>::getCells() const {
+template <typename T, typename C, size_t M>
+const typename Grid<T, C, M>::ContainerType& Grid<T, C, M>::getCells() const {
   return mCells;
 }
 
-template <typename T, typename C>
-const C& Grid<T, C>::operator () (const Grid<T, C>::IndexType& idx) const
-  throw (OutOfBoundException<Grid<T, C>::IndexType>) {
+template <typename T, typename C, size_t M>
+size_t Grid<T, C, M>::computeLinearIndex(const Grid<T, C, M>::IndexType& idx)
+  const {
+  size_t linIdx = 0;
+  for (size_t i = 0; i < (size_t)idx.size(); ++i) {
+    size_t prod = 1.0;
+    for (size_t j = i + 1; j < (size_t)idx.size(); ++j)
+      prod *= mNumCells(j);
+    linIdx += prod * idx(i);
+  }
+  return linIdx;
+}
+
+template <typename T, typename C, size_t M>
+const C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx) const
+  throw (OutOfBoundException<IndexType>) {
   if ((idx.cwise() > mNumCells).any())
     throw OutOfBoundException<IndexType>(idx,
-      "Grid<T, C>::operator (): index out of range", __FILE__, __LINE__);
-  size_t linIdx = 0;
-  for (size_t i = 0; i < idx.size(); ++i) {
-    size_t prod = 1.0;
-    for (size_t j = i + 1; j < idx.size(); ++j)
-      prod *= mNumCells(j);
-    linIdx += prod * idx(i);
-  }
-  return mCells[linIdx];
+      "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
+  return mCells[computeLinearIndex(idx)];
 }
 
-template <typename T, typename C>
-C& Grid<T, C>::operator () (const Grid<T, C>::IndexType& idx)
-  throw (OutOfBoundException<Grid<T, C>::IndexType>) {
-  if ((idx.cwise() >= mNumCells).any())
+template <typename T, typename C, size_t M>
+C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx)
+  throw (OutOfBoundException<IndexType>) {
+  if ((idx.cwise() > mNumCells).any())
     throw OutOfBoundException<IndexType>(idx,
-      "Grid<T, C>::operator (): index out of range", __FILE__, __LINE__);
-  size_t linIdx = 0;
-  for (size_t i = 0; i < idx.size(); ++i) {
-    size_t prod = 1.0;
-    for (size_t j = i + 1; j < idx.size(); ++j)
-      prod *= mNumCells(j);
-    linIdx += prod * idx(i);
+      "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
+  return mCells[computeLinearIndex(idx)];
+}
+
+template <typename T, typename C, size_t M>
+const C& Grid<T, C, M>::operator [] (const Grid<T, C, M>::IndexType& idx)
+  const {
+  return getCell(idx);
+}
+
+template <typename T, typename C, size_t M>
+C& Grid<T, C, M>::operator [] (const Grid<T, C, M>::IndexType& idx) {
+  return getCell(idx);
+}
+
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const
+  Grid<T, C, M>::CoordinateType& point) const
+  throw (OutOfBoundException<CoordinateType>) {
+  if ((point.cwise() > mMaximum).any() || (point.cwise() < mMinimum).any())
+    throw OutOfBoundException<CoordinateType>(point,
+      "Grid<T, C, M>::operator (): point out of range", __FILE__, __LINE__);
+  IndexType idx(mResolution.size());
+  for (size_t i = 0; i < (size_t)mResolution.size(); ++i) {
+    if (point(i) == mMaximum(i))
+      idx(i) = mNumCells(i) - 1;
+    else
+      idx(i) = (point(i) - mMinimum(i)) / mResolution(i);
   }
-  return mCells[linIdx];
+  return idx;
 }
 
-template <typename T, typename C>
-const C& Grid<T, C>::operator () (const Grid<T, C>::CoordinateType& point) const
-  throw (OutOfBoundException<Grid<T, C>::CoordinateType>) {
-  if ((point.cwise() > mMaximum).any() || (point.cwise() < mMinimum).any())
-    throw OutOfBoundException<IndexType>(point,
-      "Grid<T, C>::operator (): point out of range", __FILE__, __LINE__);
+template <typename T, typename C, size_t M>
+const C& Grid<T, C, M>::operator () (const Grid<T, C, M>::CoordinateType& point)
+  const {
+  return operator[](getIndex(point));
 }
 
-template <typename T, typename C>
-C& Grid<T, C>::operator () (const Grid<T, C>::CoordinateType& point)
-  throw (OutOfBoundException<Grid<T, C>::CoordinateType>) {
-  if ((point.cwise() > mMaximum).any() || (point.cwise() < mMinimum).any())
-    throw OutOfBoundException<IndexType>(point,
-      "Grid<T, C>::operator (): point out of range", __FILE__, __LINE__);
+template <typename T, typename C, size_t M>
+C& Grid<T, C, M>::operator () (const Grid<T, C, M>::CoordinateType& point) {
+  return operator[](getIndex(point));
 }
 
-template <typename T, typename C>
-const typename Grid<T, C>::IndexType& Grid<T, C>::getNumCells() const {
+template <typename T, typename C, size_t M>
+const typename Grid<T, C, M>::IndexType& Grid<T, C, M>::getNumCells() const {
   return mNumCells;
 }
 
-template <typename T, typename C>
-const typename Grid<T, C>::CoordinateType& Grid<T, C>::getMinimum() const {
+template <typename T, typename C, size_t M>
+size_t Grid<T, C, M>::getNumCellsTot() const {
+  return mNumCellsTot;
+}
+
+template <typename T, typename C, size_t M>
+const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getMinimum()
+  const {
   return mMinimum;
 }
 
-template <typename T, typename C>
-const typename Grid<T, C>::CoordinateType& Grid<T, C>::getMaximum() const {
+template <typename T, typename C, size_t M>
+const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getMaximum()
+  const {
   return mMaximum;
 }
 
-template <typename T, typename C>
-const typename Grid<T, C>::CoordinateType& Grid<T, C>::getResolution() const {
+template <typename T, typename C, size_t M>
+const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getResolution()
+  const {
   return mResolution;
 }
-
-/******************************************************************************/
-/* Methods                                                                    */
-/******************************************************************************/
-

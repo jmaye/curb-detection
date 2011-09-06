@@ -69,9 +69,11 @@ public:
   /** \name Accessors
       @{
     */
-  /// Returns a point using () operator
-  const PointType& operator () (size_t idx) const
+  /// Returns a point using [] operator
+  const PointType& operator [] (size_t idx) const
     throw (OutOfBoundException<size_t>);
+  /// Returns a point using [] operator
+  PointType& operator [] (size_t idx) throw (OutOfBoundException<size_t>);
   /// Returns the size of the point cloud
   size_t getNumPoints() const;
   /// Clears the point cloud
