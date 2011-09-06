@@ -16,55 +16,63 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "data-structures/Cell.h"
+#include <QtCore/QString>
+#include <qwt-qt4/qwt_plot_canvas.h>
+#include <qwt-qt4/qwt_symbol.h>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Cell::Cell() :
-  mHeightHist(-10, 10, 0.01) {
-}
-
-Cell::Cell(const Cell& other) :
-  mHeightHist(other.mHeightHist) {
-}
-
-Cell& Cell::operator = (const Cell& other) {
-  if (this != &other) {
-    mHeightHist = other.mHeightHist;
+template <typename T>
+HistogramPlot<T, 1>::HistogramPlot(const std::string& title, const
+  Histogram<T, 1>& histogram) :
+  QwtPlot(0),
+  mPanner(canvas()),
+  mMagnifier(canvas()) {
+  QwtPlot::setTitle(QString(title.c_str()));
+  mXData.resize(histogram.getNumBins() + 1);
+  mYData.resize(histogram.getNumBins() + 1);
+  mXData[0] = histogram.getBinStart(0);
+  mYData[0] = histogram.getBinContent(0);
+  for (size_t i = 0; i < histogram.getNumBins(); ++i) {
+    mXData[i + 1] = histogram.getBinStart(i) + histogram.getBinWidth();
+    mYData[i + 1] = histogram.getBinContent(i);
   }
-  return *this;
+  mHistogram.setData(mXData, mYData);
+  mHistogram.setBrush(QBrush(QColor(Qt::blue)));
+  mHistogram.setPen(QPen(QColor(Qt::blue)));
+  mHistogram.setStyle(QwtPlotCurve::Steps);
+  mHistogram.attach(this);
+  mGrid.enableX(true);
+  mGrid.enableY(true);
+  mGrid.enableXMin(false);
+  mGrid.enableYMin(false);
+  mGrid.setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+  mGrid.attach(this);
+  canvas()->setLineWidth(2);
+  QPalette palette = canvas()->palette();
+  palette.setColor(backgroundRole(), Qt::white);
+  canvas()->setPalette(palette);
+  canvas()->setAutoFillBackground(true);
+  setAxisTitle(QwtPlot::xBottom, QString('x'));
+  setAxisTitle(QwtPlot::yLeft, QString('y'));
+  replot();
 }
 
-Cell::~Cell() {
-}
-
-/******************************************************************************/
-/* Stream operations                                                          */
-/******************************************************************************/
-
-void Cell::read(std::istream& stream) {
-}
-
-void Cell::write(std::ostream& stream) const {
-  stream << "height histogram: " << std::endl << mHeightHist;
-}
-
-void Cell::read(std::ifstream& stream) {
-}
-
-void Cell::write(std::ofstream& stream) const {
+template <typename T>
+HistogramPlot<T, 1>::~HistogramPlot() {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void Cell::addPoint(double point) {
-  mHeightHist.addSample(point);
-}
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
 
-const Histogram<double, 1>& Cell::getHeightHist() const {
-  return mHeightHist;
+template <typename T>
+void HistogramPlot<T, 1>::show() {
+  QWidget::show();
 }

@@ -52,7 +52,8 @@ Grid<T, C, M>::Grid(const Grid& other) :
   mMinimum(other.mMinimum),
   mMaximum(other.mMaximum),
   mResolution(other.mResolution),
-  mNumCells(other.mNumCells) {
+  mNumCells(other.mNumCells),
+  mNumCellsTot(other.mNumCellsTot) {
 }
 
 template <typename T, typename C, size_t M>
@@ -63,6 +64,7 @@ Grid<T, C, M>& Grid<T, C, M>::operator = (const Grid<T, C, M>& other) {
     mMaximum = other.mMaximum;
     mResolution = other.mResolution;
     mNumCells = other.mNumCells;
+    mNumCellsTot = other.mNumCellsTot;
   }
   return *this;
 }

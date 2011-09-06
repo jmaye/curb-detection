@@ -30,9 +30,9 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-GLView::GLView(QWidget* pParent) :
-  QGLWidget(pParent),
-  mpFont(0),
+GLView::GLView(QWidget* parent) :
+  QGLWidget(parent),
+  mFont(0),
   mMouse(2, 0),
   mViewport(4, 0),
   mProjection(16, 0.0),
@@ -55,8 +55,8 @@ GLView::GLView(QWidget* pParent) :
 }
 
 GLView::~GLView() {
-  if (mpFont)
-    delete mpFont;
+  if (mFont)
+    delete mFont;
 }
 
 /******************************************************************************/
@@ -90,9 +90,9 @@ void GLView::setColor(const Palette& palette, const QString& role) {
 
 void GLView::setFont(const QString& filename) {
   if (mFontFilename != filename) {
-    if (mpFont) {
-      delete mpFont;
-      mpFont = 0;
+    if (mFont) {
+      delete mFont;
+      mFont = 0;
     }
     mFontFilename = filename;
     emit fontChanged(mFontFilename);
@@ -120,15 +120,15 @@ std::vector<double> GLView::unproject(const QPoint& point, double distance) {
 
 void GLView::render(double x, double y, double z, const QString& text,
   double scale, bool faceX, bool faceY, bool faceZ) {
-  if (!mpFont) {
+  if (!mFont) {
     QFileInfo fileInfo(mFontFilename);
     if (fileInfo.isFile() && fileInfo.isReadable()) {
-      mpFont = new FTPolygonFont(mFontFilename.toAscii().constData());
-      mpFont->UseDisplayList(false);
-      mpFont->FaceSize(100);
+      mFont = new FTPolygonFont(mFontFilename.toAscii().constData());
+      mFont->UseDisplayList(false);
+      mFont->FaceSize(100);
     }
   }
-  if (mpFont) {
+  if (mFont) {
     glPushMatrix();
     glTranslatef(x, y, z);
     if (faceZ)
@@ -141,7 +141,7 @@ void GLView::render(double x, double y, double z, const QString& text,
     glRotatef(-90.0, 0, 1, 0);
     glScalef(mScene.getScale() * 1e-2, mScene.getScale() * 1e-2,
       mScene.getScale() * 1e-2);
-    mpFont->Render(text.toAscii().constData());
+    mFont->Render(text.toAscii().constData());
     glPopMatrix();
   }
 }

@@ -1,1 +1,1 @@
-remake_add_executables(LINK visualization data-structures)
+remake_add_executables(LINK visualization)

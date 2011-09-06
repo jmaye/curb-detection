@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DEMControl</class>
+ <widget class="QWidget" name="DEMControl">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>387</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="cellLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="rangeMinTextLabel">
+       <property name="text">
+        <string>Range minimum:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="rangeMaxXSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>4.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QDoubleSpinBox" name="rangeMaxYSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>4.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="rangeMaxTextLabel">
+       <property name="text">
+        <string>Range maximum:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="resolutionTextLabel">
+       <property name="text">
+        <string>Resolution:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="resXSpinBox">
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QDoubleSpinBox" name="resYSpinBox">
+       <property name="minimum">
+        <double>0.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="rangeMinXSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QDoubleSpinBox" name="rangeMinYSpinBox">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_8">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_5">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="lineSizeLayout">
+     <item>
+      <widget class="QLabel" name="lineSizeTextLabel">
+       <property name="text">
+        <string>Line size:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="lineSizeSpinBox">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+       <property name="decimals">
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="smoothLinesCheckBox">
+       <property name="text">
+        <string>Smooth</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_4">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="ColorChooser" name="colorChooser" native="true"/>
+   </item>
+   <item>
+    <widget class="Line" name="line_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="showLayout">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="showDEMCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Show DEM</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Expanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+  <action name="testAction">
+   <property name="text">
+    <string>Test</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorChooser</class>
+   <extends>QWidget</extends>
+   <header>ColorChooser.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>lineSizeSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>lineSizeChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>27</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>smoothLinesCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>smoothLinesToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>389</x>
+     <y>33</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showDEMCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>showDEMToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>209</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rangeMaxXSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rangeMaxYSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>328</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>resXSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>resYSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>328</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rangeMinXSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rangeMinYSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>328</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>lineSizeChanged(double)</slot>
+  <slot>smoothLinesToggled(bool)</slot>
+  <slot>showDEMToggled(bool)</slot>
+  <slot>demChanged()</slot>
+ </slots>
+</ui>

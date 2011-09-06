@@ -18,6 +18,8 @@
 
 #include "statistics/Randomizer.h"
 
+#include <limits>
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -209,21 +211,22 @@ double Histogram<T, 1>::getSample() const {
   }
   Randomizer<double> randomizer;
   double u = randomizer.sampleUniform();
-  for (size_t i = 1; i < (size_t)mBins.size() + 1; ++i) {
-    if (u > cumProbabilities(i - 1) && u <= cumProbabilities(i)) {
+  for (size_t i = 1; i < (size_t)mBins.size() + 1; ++i)
+    if (u > cumProbabilities(i - 1) && u <= cumProbabilities(i))
       return getBinCenter(i - 1);
-    }
-  }
   return getBinCenter(mBins.size() - 1);
 }
 
 template <typename T>
 double Histogram<T, 1>::getSampleMean() const {
-  double mean = 0.0;
-  for (size_t i = 0; i < (size_t)mBins.size(); ++i) {
-    mean += mBins(i) * getBinCenter(i);
+  if (mBins.sum()) {
+    double mean = 0.0;
+    for (size_t i = 0; i < (size_t)mBins.size(); ++i)
+      mean += mBins(i) * getBinCenter(i);
+    return mean / mBins.sum();
   }
-  return mean / mBins.sum();
+  else
+    return std::numeric_limits<double>::quiet_NaN();
 }
 
 template <typename T>
@@ -277,12 +280,17 @@ T Histogram<T, 1>::getBinStart(size_t bin) const
 
 template <typename T>
 double Histogram<T, 1>::getSampleVariance() const {
-  double mean = getSampleMean();
-  double variance = 0.0;
-  for (size_t i = 0; i < (size_t)mBins.size(); ++i) {
-    variance += mBins(i) * (mean - getBinCenter(i)) * (mean - getBinCenter(i));
+  if (mBins.sum()) {
+    double mean = getSampleMean();
+    double variance = 0.0;
+    for (size_t i = 0; i < (size_t)mBins.size(); ++i) {
+      variance += mBins(i) * (mean - getBinCenter(i)) *
+        (mean - getBinCenter(i));
+    }
+    return variance / mBins.sum();
   }
-  return variance / mBins.sum();
+  else
+    return std::numeric_limits<double>::quiet_NaN();
 }
 
 template <typename T>

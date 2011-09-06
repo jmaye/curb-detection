@@ -9,77 +9,87 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Cell.h
-    \brief This file defines the Cell class, which represents a cell of a
-           Digital Elevation Map (DEM).
+/** \file HistogramPlot1v.h
+    \brief This file contains a plotting tool for univariate histograms
   */
 
-#ifndef CELL_H
-#define CELL_H
+#ifndef HISTOGRAMPLOT1V_H
+#define HISTOGRAMPLOT1V_H
 
 #include "statistics/Histogram.h"
-#include "base/Serializable.h"
 
-/** The class Cell represents a cell of a Digital Elevation Map (DEM).
-    \brief A cell of Digital Elevation Map (DEM)
+#include <QtCore/QVector>
+
+#include <qwt-qt4/qwt_plot.h>
+#include <qwt-qt4/qwt_plot_curve.h>
+#include <qwt-qt4/qwt_plot_grid.h>
+#include <qwt-qt4/qwt_plot_panner.h>
+#include <qwt-qt4/qwt_plot_magnifier.h>
+
+template <typename T, size_t M = 1> class HistogramPlot;
+
+/** The HistogramPlot1v class is a plotting tool for univariate histograms.
+    \brief 1-v histogram plot
   */
-class Cell :
-  public virtual Serializable {
+template <typename T> class HistogramPlot<T, 1> :
+  public QwtPlot {
+  /** \name Private constructors
+    @{
+    */
+  /// Copy constructor
+  HistogramPlot(const HistogramPlot<T, 1>& other);
+  /// Assignment operator
+  HistogramPlot<T, 1>& operator = (const HistogramPlot<T, 1>& other);
+  /** @}
+    */
+
 public:
   /** \name Constructors/destructor
     @{
     */
-  /// Creates a cell
-  Cell();
-  /// Copy constructor
-  Cell(const Cell& other);
-  /// Assignment operator
-  Cell& operator = (const Cell& other);
+  /// Constructs plot from parameters
+  HistogramPlot(const std::string& title, const Histogram<T, 1>& histogram);
   /// Destructor
-  ~Cell();
+  virtual ~HistogramPlot();
   /** @}
     */
 
-  /** \name Accessors
-      @{
+  /** \name Methods
+    @{
     */
-  /// Adds a point into the cell
-  void addPoint(double point);
-  /// Returns the height histogram
-  const Histogram<double, 1>& getHeightHist() const;
+  /// Show the plot
+  virtual void show();
   /** @}
     */
 
 protected:
-  /** \name Stream methods
-    @{
-    */
-  /// Reads from standard input
-  virtual void read(std::istream& stream);
-  /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
-  /// Reads from a file
-  virtual void read(std::ifstream& stream);
-  /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
   /** \name Protected members
     @{
     */
-  /// Histogram of the height values
-  Histogram<double, 1> mHeightHist;
+  /// Histogram plotted
+  QwtPlotCurve mHistogram;
+  /// Grid
+  QwtPlotGrid mGrid;
+  /// Panner
+  QwtPlotPanner mPanner;
+  /// Magnifier
+  QwtPlotMagnifier mMagnifier;
+  /// Data on the x-axis
+  QVector<double> mXData;
+  /// Data on the y-axis
+  QVector<double> mYData;
   /** @}
     */
 
 };
 
-#endif // CELL_H
+#include "visualization/HistogramPlot1v.tpp"
+
+#endif // HISTOGRAMPLOT1V_H

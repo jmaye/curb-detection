@@ -16,16 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file dem-builder.cpp
-    \brief This file is a testing binary for building a DEM.
+/** \file process-file.cpp
+    \brief This file is a testing binary for processing a log file.
   */
 
 #include "data-structures/PointCloud.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
-#include "visualization/HistogramPlot.h"
-
-#include <QtGui/QApplication>
+#include "base/Timestamp.h"
 
 int main (int argc, char **argv) {
   if (argc != 2) {
@@ -34,29 +32,21 @@ int main (int argc, char **argv) {
   }
   std::ifstream logFile(argv[1]);
   PointCloud<> pointCloud;
+  double before = Timestamp::now();
   logFile >> pointCloud;
+  double after = Timestamp::now();
+  std::cout << "Loading point cloud: " << after - before << " [s]" << std::endl;
+  before = Timestamp::now();
   Grid<double, Cell, 2> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.5, 0.5));
-  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i) {
+  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i)
     try {
       dem(pointCloud[i].segment(0, 2)).addPoint(pointCloud[i](2));
     }
     catch (OutOfBoundException<Eigen::Matrix<double, 2, 1> >& e) {
     }
-  }
-  std::cout << "sample mean at (7, 7): "
-    << dem[(Eigen::Matrix<size_t, 2, 1>() << 7, 7).finished()].getHeightHist().
-    getSampleMean() << std::endl;
-  std::cout << "sample variance at (7, 7): "
-    << dem[(Eigen::Matrix<size_t, 2, 1>() << 7, 7).finished()].getHeightHist().
-    getSampleVariance() << std::endl;
-  std::cout << "number of points at (7, 7): "
-    << dem[(Eigen::Matrix<size_t, 2, 1>() << 7, 7).finished()].getHeightHist().
-    getBinsSum() << std::endl;
-  QApplication app(argc, argv);
-  HistogramPlot<double, 1> plot("Cell(7, 7) Height Histogram",
-    dem[(Eigen::Matrix<size_t, 2, 1>() << 7, 7).finished()].getHeightHist());
-  plot.show();
-  return app.exec();
+  after = Timestamp::now();
+  std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
+  return 0;
 }

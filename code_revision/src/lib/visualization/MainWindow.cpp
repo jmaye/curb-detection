@@ -16,55 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "data-structures/Cell.h"
+#include "visualization/MainWindow.h"
+
+#include "ui_MainWindow.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Cell::Cell() :
-  mHeightHist(-10, 10, 0.01) {
+MainWindow::MainWindow() :
+  mpUi(new Ui_MainWindow()) {
+  mpUi->setupUi(this);
+
+  while (mpUi->toolBox->count())
+    mpUi->toolBox->removeItem(0);
 }
 
-Cell::Cell(const Cell& other) :
-  mHeightHist(other.mHeightHist) {
-}
-
-Cell& Cell::operator = (const Cell& other) {
-  if (this != &other) {
-    mHeightHist = other.mHeightHist;
-  }
-  return *this;
-}
-
-Cell::~Cell() {
+MainWindow::~MainWindow() {
+  delete mpUi;
 }
 
 /******************************************************************************/
-/* Stream operations                                                          */
+/* Methods                                                                    */
 /******************************************************************************/
 
-void Cell::read(std::istream& stream) {
-}
-
-void Cell::write(std::ostream& stream) const {
-  stream << "height histogram: " << std::endl << mHeightHist;
-}
-
-void Cell::read(std::ifstream& stream) {
-}
-
-void Cell::write(std::ofstream& stream) const {
-}
-
-/******************************************************************************/
-/* Accessors                                                                  */
-/******************************************************************************/
-
-void Cell::addPoint(double point) {
-  mHeightHist.addSample(point);
-}
-
-const Histogram<double, 1>& Cell::getHeightHist() const {
-  return mHeightHist;
+void MainWindow::addControl(const QString& title, Control& control) {
+  mpUi->toolBox->addItem(&control, title);
+  if (!control.getMenu().isEmpty())
+    mpUi->menuBar->addMenu(&control.getMenu())->setText(title);
 }

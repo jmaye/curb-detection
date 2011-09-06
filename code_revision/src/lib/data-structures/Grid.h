@@ -64,7 +64,7 @@ public:
   /// Assignment operator
   Grid& operator = (const Grid& other);
   /// Destructor
-  ~Grid();
+  virtual ~Grid();
   /** @}
     */
 

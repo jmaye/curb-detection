@@ -18,6 +18,8 @@
 
 #include "statistics/Randomizer.h"
 
+#include <limits>
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -229,16 +231,21 @@ Eigen::Matrix<double, 2, 1> Histogram<T, 2>::getSample() const {
 
 template <typename T>
 Eigen::Matrix<double, 2, 1> Histogram<T, 2>::getSampleMean() const {
-  Eigen::Matrix<double, 2, 1> mean = Eigen::Matrix<double, 2, 1>::Zero();
-  for (size_t i = 0; i < (size_t)mBins.rows(); ++i) {
-    for (size_t j = 0; j < (size_t)mBins.cols(); ++j) {
-      mean(0) += mBins(i, j) *
-        getBinCenter((Eigen::Matrix<size_t, 2, 1>() << i, j).finished())(0);
-      mean(1) += mBins(i, j) *
-        getBinCenter((Eigen::Matrix<size_t, 2, 1>() << i, j).finished())(1);
+  if (mBins.sum()) {
+    Eigen::Matrix<double, 2, 1> mean = Eigen::Matrix<double, 2, 1>::Zero();
+    for (size_t i = 0; i < (size_t)mBins.rows(); ++i) {
+      for (size_t j = 0; j < (size_t)mBins.cols(); ++j) {
+        mean(0) += mBins(i, j) *
+          getBinCenter((Eigen::Matrix<size_t, 2, 1>() << i, j).finished())(0);
+        mean(1) += mBins(i, j) *
+          getBinCenter((Eigen::Matrix<size_t, 2, 1>() << i, j).finished())(1);
+      }
     }
+    return mean / mBins.sum();
   }
-  return mean / mBins.sum();
+  else
+    return Eigen::Matrix<double, 2, 1>::
+      Constant(std::numeric_limits<double>::quiet_NaN());
 }
 
 template <typename T>
@@ -309,25 +316,31 @@ Eigen::Matrix<T, 2, 1> Histogram<T, 2>::getBinStart(const
 
 template <typename T>
 Eigen::Matrix<double, 2, 2> Histogram<T, 2>::getSampleCovariance() const {
-  Eigen::Matrix<T, 2, 1> value = mMinValue;
-  Eigen::Matrix<double, 2, 1> mean = getSampleMean();
-  Eigen::Matrix<double, 2, 2> covariance = Eigen::Matrix<double, 2, 2>::Zero();
-  for (size_t i = 0; i < (size_t)mBins.rows(); ++i) {
-    value(1) = mMinValue(1);
-    for (size_t j = 0; j < (size_t)mBins.cols(); ++j) {
-      covariance(0, 0) += mBins(i, j) * (value(0) - mean(0)) * (value(0) -
-        mean(0));
-      covariance(0, 1) += mBins(i, j) * (value(0) - mean(0)) * (value(1) -
-        mean(1));
-      covariance(1, 0) += mBins(i, j) * (value(0) - mean(0)) * (value(1) -
-        mean(1));
-      covariance(1, 1) += mBins(i, j) * (value(1) - mean(1)) * (value(1) -
-        mean(1));
-      value(1) += mBinWidth(1);
+  if (mBins.sum() > 1) {
+    Eigen::Matrix<T, 2, 1> value = mMinValue;
+    Eigen::Matrix<double, 2, 1> mean = getSampleMean();
+    Eigen::Matrix<double, 2, 2> covariance =
+      Eigen::Matrix<double, 2, 2>::Zero();
+    for (size_t i = 0; i < (size_t)mBins.rows(); ++i) {
+      value(1) = mMinValue(1);
+      for (size_t j = 0; j < (size_t)mBins.cols(); ++j) {
+        covariance(0, 0) += mBins(i, j) * (value(0) - mean(0)) * (value(0) -
+          mean(0));
+        covariance(0, 1) += mBins(i, j) * (value(0) - mean(0)) * (value(1) -
+          mean(1));
+        covariance(1, 0) += mBins(i, j) * (value(0) - mean(0)) * (value(1) -
+          mean(1));
+        covariance(1, 1) += mBins(i, j) * (value(1) - mean(1)) * (value(1) -
+          mean(1));
+        value(1) += mBinWidth(1);
+      }
+      value(0) += mBinWidth(0);
     }
-    value(0) += mBinWidth(0);
+    return covariance / (mBins.sum() - 1);
   }
-  return covariance / (mBins.sum() - 1);
+  else
+    return Eigen::Matrix<double, 2, 2>::
+      Constant(std::numeric_limits<double>::quiet_NaN());
 }
 
 /******************************************************************************/

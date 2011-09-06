@@ -16,28 +16,62 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file gui.cpp
-    \brief This file is a GUI for curb detection qualitative analysis.
+/** \file Control.h
+    \brief This file defines a Qt control
   */
 
-#include "visualization/MainWindow.h"
-#include "visualization/ViewControl.h"
-#include "visualization/PointCloudControl.h"
-#include "visualization/DEMControl.h"
+#ifndef CONTROL_H
+#define CONTROL_H
 
-#include <QtGui/QApplication>
+#include <QtGui/QWidget>
+#include <QtGui/QMenu>
 
-int main (int argc, char **argv) {
-  QApplication application(argc, argv);
-  MainWindow mainWindow;
-  ViewControl viewControl;
-  PointCloudControl pointCloudControl(true);
-  DEMControl demControl(true);
-  if (argc > 1)
-    pointCloudControl.setLogFilename(argv[1]);
-  mainWindow.addControl("View", viewControl);
-  mainWindow.addControl("PointCloud", pointCloudControl);
-  mainWindow.addControl("DEM", demControl);
-  mainWindow.show();
-  return application.exec();
-}
+/** The Control class represents a Qt control.
+    \brief Qt control
+  */
+class Control :
+  public QWidget {
+Q_OBJECT
+  /** \name Private constructors
+    @{
+    */
+  /// Copy constructor
+  Control(const Control& other);
+  /// Assignment operator
+  Control& operator = (const Control& other);
+  /** @}
+    */
+
+public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
+  Control();
+  /// Destructor
+  ~Control();
+  /** @}
+    */
+
+  /** \name Accessors
+    @{
+    */
+  /// Returns the menu
+  QMenu& getMenu();
+  /// Returns the menu
+  const QMenu& getMenu() const;
+  /** @}
+    */
+
+protected:
+  /** \name Protected members
+    @{
+    */
+  /// Menu
+  QMenu mMenu;
+  /** @}
+    */
+
+};
+
+#endif // CONTROL_H

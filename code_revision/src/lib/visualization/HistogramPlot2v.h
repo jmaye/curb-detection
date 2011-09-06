@@ -9,77 +9,71 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Cell.h
-    \brief This file defines the Cell class, which represents a cell of a
-           Digital Elevation Map (DEM).
+/** \file HistogramPlot2v.h
+    \brief This file contains a plotting tool for bivariate histogram plots
   */
 
-#ifndef CELL_H
-#define CELL_H
+#ifndef HISTOGRAMPLOT2V_H
+#define HISTOGRAMPLOT2V_H
 
 #include "statistics/Histogram.h"
-#include "base/Serializable.h"
 
-/** The class Cell represents a cell of a Digital Elevation Map (DEM).
-    \brief A cell of Digital Elevation Map (DEM)
+#include <qwtplot3d-qt4/qwt3d_surfaceplot.h>
+
+template <typename T, size_t M> class HistogramPlot;
+
+/** The HistogramPlot2v class is a plotting tool for bivariate histogram plots.
+    \brief 2-v histogram plot
   */
-class Cell :
-  public virtual Serializable {
+template <typename T> class HistogramPlot<T, 2> :
+  public Qwt3D::SurfacePlot {
+  /** \name Private constructors
+    @{
+    */
+  /// Copy constructor
+  HistogramPlot(const HistogramPlot<T, 2>& other);
+  /// Assignment operator
+  HistogramPlot<T, 2>& operator = (const HistogramPlot<T, 2>& other);
+  /** @}
+    */
+
 public:
   /** \name Constructors/destructor
     @{
     */
-  /// Creates a cell
-  Cell();
-  /// Copy constructor
-  Cell(const Cell& other);
-  /// Assignment operator
-  Cell& operator = (const Cell& other);
+  /// Constructs plot from parameters
+  HistogramPlot(const std::string& title, const Histogram<T, 2>& histogram);
   /// Destructor
-  ~Cell();
+  virtual ~HistogramPlot();
   /** @}
     */
 
-  /** \name Accessors
-      @{
+  /** \name Methods
+    @{
     */
-  /// Adds a point into the cell
-  void addPoint(double point);
-  /// Returns the height histogram
-  const Histogram<double, 1>& getHeightHist() const;
+  /// Show the plot
+  virtual void show();
   /** @}
     */
 
 protected:
-  /** \name Stream methods
-    @{
-    */
-  /// Reads from standard input
-  virtual void read(std::istream& stream);
-  /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
-  /// Reads from a file
-  virtual void read(std::ifstream& stream);
-  /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
   /** \name Protected members
     @{
     */
-  /// Histogram of the height values
-  Histogram<double, 1> mHeightHist;
+  /// Data on to be plotted
+  double** mData;
   /** @}
     */
 
 };
 
-#endif // CELL_H
+#include "visualization/HistogramPlot2v.tpp"
+
+#endif // HISTOGRAMPLOT2V_H

@@ -16,70 +16,80 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Cell.h
-    \brief This file defines the Cell class, which represents a cell of a
-           Digital Elevation Map (DEM).
+/** \file ColorChooser.h
+    \brief This file contains a color chooser widget for Qt
   */
 
-#ifndef CELL_H
-#define CELL_H
+#ifndef COLORCHOOSER_H
+#define COLORCHOOSER_H
 
-#include "statistics/Histogram.h"
-#include "base/Serializable.h"
+#include "visualization/Palette.h"
 
-/** The class Cell represents a cell of a Digital Elevation Map (DEM).
-    \brief A cell of Digital Elevation Map (DEM)
+#include <QtCore/QSignalMapper>
+#include <QtGui/QWidget>
+#include <QtGui/QGridLayout>
+
+/** The ColorChooser class represents a color chooser widget for Qt.
+    \brief Color chooser widget for Qt
   */
-class Cell :
-  public virtual Serializable {
+class ColorChooser :
+  public QWidget {
+Q_OBJECT
+  /** \name Private constructors
+    @{
+    */
+  /// Copy constructor
+  ColorChooser(const ColorChooser& other);
+  /// Assignment operator
+  ColorChooser& operator = (const ColorChooser& other);
+  /** @}
+    */
+
 public:
   /** \name Constructors/destructor
     @{
     */
-  /// Creates a cell
-  Cell();
-  /// Copy constructor
-  Cell(const Cell& other);
-  /// Assignment operator
-  Cell& operator = (const Cell& other);
+  /// Constructs color chooser from parent
+  ColorChooser(QWidget* parent = 0);
   /// Destructor
-  ~Cell();
+  ~ColorChooser();
   /** @}
     */
 
   /** \name Accessors
-      @{
+    @{
     */
-  /// Adds a point into the cell
-  void addPoint(double point);
-  /// Returns the height histogram
-  const Histogram<double, 1>& getHeightHist() const;
+  /// Sets the palette
+  void setPalette(Palette* palette);
+  /// Returns the palette
+  Palette* getPalette() const;
   /** @}
     */
 
 protected:
-  /** \name Stream methods
-    @{
-    */
-  /// Reads from standard input
-  virtual void read(std::istream& stream);
-  /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
-  /// Reads from a file
-  virtual void read(std::ifstream& stream);
-  /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
   /** \name Protected members
     @{
     */
-  /// Histogram of the height values
-  Histogram<double, 1> mHeightHist;
+  /// Layout of the widget
+  QGridLayout mLayout;
+  /// Signal mapper
+  QSignalMapper mSignalMapper;
+  /// Palette
+  Palette* mPalette;
+  /** @}
+    */
+
+protected slots:
+  /** \name Qt slots
+    @{
+    */
+  /// Button clicked
+  void buttonClicked(const QString& role);
+  /// Color changed
+  void colorChanged(const QString& role, const QColor& color);
   /** @}
     */
 
 };
 
-#endif // CELL_H
+#endif // COLORCHOOSER_H

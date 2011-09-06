@@ -16,55 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "data-structures/Cell.h"
+#include "visualization/Control.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Cell::Cell() :
-  mHeightHist(-10, 10, 0.01) {
+Control::Control() :
+  mMenu(this) {
 }
 
-Cell::Cell(const Cell& other) :
-  mHeightHist(other.mHeightHist) {
-}
-
-Cell& Cell::operator = (const Cell& other) {
-  if (this != &other) {
-    mHeightHist = other.mHeightHist;
-  }
-  return *this;
-}
-
-Cell::~Cell() {
-}
-
-/******************************************************************************/
-/* Stream operations                                                          */
-/******************************************************************************/
-
-void Cell::read(std::istream& stream) {
-}
-
-void Cell::write(std::ostream& stream) const {
-  stream << "height histogram: " << std::endl << mHeightHist;
-}
-
-void Cell::read(std::ifstream& stream) {
-}
-
-void Cell::write(std::ofstream& stream) const {
+Control::~Control() {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void Cell::addPoint(double point) {
-  mHeightHist.addSample(point);
+QMenu& Control::getMenu() {
+  return mMenu;
 }
 
-const Histogram<double, 1>& Cell::getHeightHist() const {
-  return mHeightHist;
+const QMenu& Control::getMenu() const {
+  return mMenu;
 }

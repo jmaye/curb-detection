@@ -1,1 +1,1 @@
-remake_add_executables()
+remake_add_executables(LINK visualization)

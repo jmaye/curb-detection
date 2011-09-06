@@ -59,7 +59,7 @@ public:
     @{
     */
   /// Constructs the viewer
-  GLView(QWidget* pParent = 0);
+  GLView(QWidget* parent = 0);
   /// Destructor
   ~GLView();
   /** @}
@@ -126,7 +126,7 @@ protected:
   /// Filename for the font
   QString mFontFilename;
   /// Font object
-  FTPolygonFont* mpFont;
+  FTPolygonFont* mFont;
   /// Camera
   Camera mCamera;
   /// Scene
