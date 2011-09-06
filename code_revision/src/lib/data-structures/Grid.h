@@ -100,6 +100,10 @@ public:
   /// Returns the coordinates of a cell using index
   CoordinateType getCoordinates(const IndexType& idx) const
     throw (OutOfBoundException<IndexType>);
+  /// Check if the grid contains the point
+  bool isInRange(const CoordinateType& point) const;
+  /// Check if an index is valid
+  bool isValidIndex(const IndexType& index) const;
   /// Returns the number of cells in each dimension
   const IndexType& getNumCells() const;
   /// Returns the total number of cells

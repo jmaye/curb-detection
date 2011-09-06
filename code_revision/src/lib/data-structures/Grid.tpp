@@ -143,7 +143,7 @@ size_t Grid<T, C, M>::computeLinearIndex(const Grid<T, C, M>::IndexType& idx)
 template <typename T, typename C, size_t M>
 const C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx) const
   throw (OutOfBoundException<IndexType>) {
-  if ((idx.cwise() > mNumCells).any())
+  if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
   return mCells[computeLinearIndex(idx)];
@@ -152,7 +152,7 @@ const C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx) const
 template <typename T, typename C, size_t M>
 C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx)
   throw (OutOfBoundException<IndexType>) {
-  if ((idx.cwise() > mNumCells).any())
+  if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
   return mCells[computeLinearIndex(idx)];
@@ -173,7 +173,7 @@ template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const
   Grid<T, C, M>::CoordinateType& point) const
   throw (OutOfBoundException<CoordinateType>) {
-  if ((point.cwise() > mMaximum).any() || (point.cwise() < mMinimum).any())
+  if (!isInRange(point))
     throw OutOfBoundException<CoordinateType>(point,
       "Grid<T, C, M>::operator (): point out of range", __FILE__, __LINE__);
   IndexType idx(point.size());
@@ -199,7 +199,7 @@ C& Grid<T, C, M>::operator () (const Grid<T, C, M>::CoordinateType& point) {
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::CoordinateType Grid<T, C, M>::getCoordinates(const
   Grid<T, C, M>::IndexType& idx) const throw (OutOfBoundException<IndexType>) {
-  if ((idx.cwise() > mNumCells).any())
+  if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C, M>::getCoordinates(): index out of range",
       __FILE__, __LINE__);
@@ -207,6 +207,18 @@ typename Grid<T, C, M>::CoordinateType Grid<T, C, M>::getCoordinates(const
   for (size_t i = 0; i < (size_t)idx.size(); ++i)
     point[i] = mMinimum(i) + (idx(i) + 0.5) * mResolution(i);
   return point;
+}
+
+template <typename T, typename C, size_t M>
+bool Grid<T, C, M>::isInRange(const Grid<T, C, M>::CoordinateType& point)
+  const {
+  return ((point.cwise() <= mMaximum).all() &&
+    (point.cwise() >= mMinimum).all());
+}
+
+template <typename T, typename C, size_t M>
+bool Grid<T, C, M>::isValidIndex(const Grid<T, C, M>::IndexType& idx) const {
+  return ((idx.cwise() < mNumCells).all());
 }
 
 template <typename T, typename C, size_t M>

@@ -41,11 +41,8 @@ int main (int argc, char **argv) {
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.5, 0.5));
   for (size_t i = 0; i < pointCloud.getNumPoints(); ++i)
-    try {
+    if (dem.isInRange(pointCloud[i].segment(0, 2)))
       dem(pointCloud[i].segment(0, 2)).addPoint(pointCloud[i](2));
-    }
-    catch (OutOfBoundException<Eigen::Matrix<double, 2, 1> >& e) {
-    }
   after = Timestamp::now();
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
   return 0;

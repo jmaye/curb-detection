@@ -62,7 +62,8 @@ void PointCloud<X, M>::read(std::ifstream& stream) throw (IOException) {
     PointType point;
     for (size_t i = 0; i < M; ++i) {
       stream >> point(i);
-      stream.seekg(1, std::ios_base::cur);
+      if (i != M - 1)
+        stream.seekg(1, std::ios_base::cur);
     }
     mPoints.push_back(point);
   }
