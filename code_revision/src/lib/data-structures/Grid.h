@@ -97,6 +97,9 @@ public:
   const C& operator () (const CoordinateType& point) const;
   /// Returns a cell using (coordinate) operator
   C& operator () (const CoordinateType& point);
+  /// Returns the coordinates of a cell using index
+  CoordinateType getCoordinates(const IndexType& idx) const
+    throw (OutOfBoundException<IndexType>);
   /// Returns the number of cells in each dimension
   const IndexType& getNumCells() const;
   /// Returns the total number of cells
