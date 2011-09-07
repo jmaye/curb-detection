@@ -20,83 +20,95 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const Eigen::Matrix<double, M, 1>&
-  coefficients, double variance, const Eigen::Matrix<double, M, 1>& basis) :
-  NormalDistribution<1>(mCoefficients.dot(mBasis), variance),
-  mCoefficients(coefficients),
-  mBasis(basis) {
+template <typename V, typename P>
+Component<V, P>::Component(const VertexType& vertex, const PropertyType&
+  property) :
+  mProperty(property) {
+  mVertices.insert(vertex);
 }
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const LinearRegression<M>& other) :
-  NormalDistribution<1>(other),
-  mCoefficients(other.mCoefficients),
-  mBasis(other.mBasis) {
+template <typename V, typename P>
+Component<V, P>::Component(const PropertyType& property) :
+  mProperty(property) {
 }
 
-template <size_t M>
-LinearRegression<M>& LinearRegression<M>::operator = (const LinearRegression<M>&
-  other) {
+template <typename V, typename P>
+Component<V, P>::Component(const Component<V, P>::Component& other) :
+  mVertices(other.mVertices),
+  mProperty(other.mProperty) {
+}
+
+template <typename V, typename P>
+Component<V, P>& Component<V, P>::operator = (const Component<V, P>& other) {
   if (this != &other) {
-    this->NormalDistribution<1>::operator=(other);
-    mCoefficients = other.mCoefficients;
-    mBasis = other.mBasis;
+    mVertices = other.mVertices;
+    mProperty = other.mProperty;
   }
   return *this;
 }
 
-template <size_t M>
-LinearRegression<M>::~LinearRegression() {
+template <typename V, typename P>
+Component<V, P>::~Component() {
 }
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::read(std::istream& stream) {
+template <typename V, typename P>
+void Component<V, P>::read(std::istream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ostream& stream) const {
-  stream << "coefficients: " << std::endl << mCoefficients << std::endl
-    << "basis: " << std::endl << mBasis << std::endl
-    << "variance: " << mVariance;
+template <typename V, typename P>
+void Component<V, P>::write(std::ostream& stream) const {
+  stream << "vertices: " << mVertices << std::endl
+    << "property: " << mProperty;
 }
 
-template <size_t M>
-void LinearRegression<M>::read(std::ifstream& stream) {
+template <typename V, typename P>
+void Component<V, P>::read(std::ifstream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ofstream& stream) const {
+template <typename V, typename P>
+void Component<V, P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::setCoefficients(const Eigen::Matrix<double, M, 1>&
-  coefficients) {
-  setMean(coefficients.dot(mBasis));
-  mCoefficients = coefficients;
+template <typename V, typename P>
+void Component<V, P>::insertVertex(const VertexType& vertex) {
+  mVertices.insert(vertex);
 }
 
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getCoefficients()
+template <typename V, typename P>
+void Component<V, P>::removeVertex(const VertexType& vertex) {
+  mVertices.remove(vertex);
+}
+
+template <typename V, typename P>
+void Component<V, P>::merge(const Component<V, P>& other) {
+  mVertices.merge(other.mVertices);
+}
+
+template <typename V, typename P>
+void Component<V, P>::clear() {
+  mVertices.clear();
+}
+
+template <typename V, typename P>
+size_t Component<V, P>::getNumVertices() const {
+  return mVertices.size();
+}
+
+template <typename V, typename P>
+void Component<V, P>::setProperty(const PropertyType& property) {
+  mProperty = property;
+}
+
+template <typename V, typename P>
+const typename Component<V, P>::PropertyType& Component<V, P>::getProperty()
   const {
-  return mCoefficients;
-}
-
-template <size_t M>
-void LinearRegression<M>::setBasis(const Eigen::Matrix<double, M, 1>& basis) {
-  setMean(mCoefficients.dot(basis));
-  mBasis = basis;
-}
-
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getBasis() const {
-  return mBasis;
+  return mProperty;
 }

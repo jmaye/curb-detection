@@ -134,17 +134,15 @@ const typename Grid<T, C, M>::ContainerType& Grid<T, C, M>::getCells() const {
 }
 
 template <typename T, typename C, size_t M>
-size_t Grid<T, C, M>::computeLinearIndex(const Grid<T, C, M>::IndexType& idx)
-  const {
+size_t Grid<T, C, M>::computeLinearIndex(const IndexType& idx) const {
   size_t linIdx = 0;
-  for (size_t i = 0; i < (size_t)idx.size(); ++i) {
+  for (size_t i = 0; i < (size_t)idx.size(); ++i)
     linIdx += mLinProd(i) * idx(i);
-  }
   return linIdx;
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx) const
+const C& Grid<T, C, M>::getCell(const IndexType& idx) const
   throw (OutOfBoundException<IndexType>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
@@ -153,7 +151,7 @@ const C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx) const
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx)
+C& Grid<T, C, M>::getCell(const IndexType& idx)
   throw (OutOfBoundException<IndexType>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
@@ -162,19 +160,18 @@ C& Grid<T, C, M>::getCell(const Grid<T, C, M>::IndexType& idx)
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::operator [] (const Grid<T, C, M>::IndexType& idx)
-  const {
+const C& Grid<T, C, M>::operator [] (const IndexType& idx) const {
   return getCell(idx);
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::operator [] (const Grid<T, C, M>::IndexType& idx) {
+C& Grid<T, C, M>::operator [] (const IndexType& idx) {
   return getCell(idx);
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const
-  Grid<T, C, M>::CoordinateType& point) const
+typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const CoordinateType&
+  point) const
   throw (OutOfBoundException<CoordinateType>) {
   if (!isInRange(point))
     throw OutOfBoundException<CoordinateType>(point,
@@ -189,19 +186,18 @@ typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::operator () (const Grid<T, C, M>::CoordinateType& point)
-  const {
+const C& Grid<T, C, M>::operator () (const CoordinateType& point) const {
   return operator[](getIndex(point));
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::operator () (const Grid<T, C, M>::CoordinateType& point) {
+C& Grid<T, C, M>::operator () (const CoordinateType& point) {
   return operator[](getIndex(point));
 }
 
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::CoordinateType Grid<T, C, M>::getCoordinates(const
-  Grid<T, C, M>::IndexType& idx) const throw (OutOfBoundException<IndexType>) {
+  IndexType& idx) const throw (OutOfBoundException<IndexType>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<IndexType>(idx,
       "Grid<T, C, M>::getCoordinates(): index out of range",
@@ -213,14 +209,13 @@ typename Grid<T, C, M>::CoordinateType Grid<T, C, M>::getCoordinates(const
 }
 
 template <typename T, typename C, size_t M>
-bool Grid<T, C, M>::isInRange(const Grid<T, C, M>::CoordinateType& point)
-  const {
+bool Grid<T, C, M>::isInRange(const CoordinateType& point) const {
   return ((point.cwise() <= mMaximum).all() &&
     (point.cwise() >= mMinimum).all());
 }
 
 template <typename T, typename C, size_t M>
-bool Grid<T, C, M>::isValidIndex(const Grid<T, C, M>::IndexType& idx) const {
+bool Grid<T, C, M>::isValidIndex(const IndexType& idx) const {
   return ((idx.cwise() < mNumCells).all());
 }
 

@@ -16,28 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file gui.cpp
-    \brief This file is a GUI for curb detection qualitative analysis.
+/** \file edge-test.cpp
+    \brief This file is a testing binary for testing the edge structure.
   */
 
-#include "visualization/MainWindow.h"
-#include "visualization/ViewControl.h"
-#include "visualization/PointCloudControl.h"
-#include "visualization/DEMControl.h"
-
-#include <QtGui/QApplication>
+#include "data-structures/Edge.h"
 
 int main (int argc, char** argv) {
-  QApplication application(argc, argv);
-  MainWindow mainWindow;
-  ViewControl viewControl;
-  PointCloudControl pointCloudControl(true);
-  DEMControl demControl(true);
-  if (argc > 1)
-    pointCloudControl.setLogFilename(argv[1]);
-  mainWindow.addControl("View", viewControl);
-  mainWindow.addControl("PointCloud", pointCloudControl);
-  mainWindow.addControl("DEM", demControl);
-  mainWindow.show();
-  return application.exec();
+  Edge<size_t, double> edge(0, 1, 2.5);
+  std::cout << "Edge:" << std::endl << edge << std::endl;
+  return 0;
 }

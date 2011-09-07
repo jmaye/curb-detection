@@ -20,83 +20,59 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const Eigen::Matrix<double, M, 1>&
-  coefficients, double variance, const Eigen::Matrix<double, M, 1>& basis) :
-  NormalDistribution<1>(mCoefficients.dot(mBasis), variance),
-  mCoefficients(coefficients),
-  mBasis(basis) {
+template <typename P>
+Vertex<P>::Vertex(const Vertex<P>::PropertyType& property) :
+  mProperty(property) {
 }
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const LinearRegression<M>& other) :
-  NormalDistribution<1>(other),
-  mCoefficients(other.mCoefficients),
-  mBasis(other.mBasis) {
+template <typename P>
+Vertex<P>::Vertex(const Vertex<P>::Vertex& other) :
+  mProperty(other.mProperty) {
 }
 
-template <size_t M>
-LinearRegression<M>& LinearRegression<M>::operator = (const LinearRegression<M>&
-  other) {
+template <typename P>
+Vertex<P>& Vertex<P>::operator = (const Vertex<P>& other) {
   if (this != &other) {
-    this->NormalDistribution<1>::operator=(other);
-    mCoefficients = other.mCoefficients;
-    mBasis = other.mBasis;
+    mProperty = other.mProperty;
   }
   return *this;
 }
 
-template <size_t M>
-LinearRegression<M>::~LinearRegression() {
+template <typename P>
+Vertex<P>::~Vertex() {
 }
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::read(std::istream& stream) {
+template <typename P>
+void Vertex<P>::read(std::istream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ostream& stream) const {
-  stream << "coefficients: " << std::endl << mCoefficients << std::endl
-    << "basis: " << std::endl << mBasis << std::endl
-    << "variance: " << mVariance;
+template <typename P>
+void Vertex<P>::write(std::ostream& stream) const {
+  stream << "property: " << mProperty;
 }
 
-template <size_t M>
-void LinearRegression<M>::read(std::ifstream& stream) {
+template <typename P>
+void Vertex<P>::read(std::ifstream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ofstream& stream) const {
+template <typename P>
+void Vertex<P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::setCoefficients(const Eigen::Matrix<double, M, 1>&
-  coefficients) {
-  setMean(coefficients.dot(mBasis));
-  mCoefficients = coefficients;
+template <typename P>
+void Vertex<P>::setProperty(const PropertyType& property) {
+  mProperty = property;
 }
 
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getCoefficients()
-  const {
-  return mCoefficients;
-}
-
-template <size_t M>
-void LinearRegression<M>::setBasis(const Eigen::Matrix<double, M, 1>& basis) {
-  setMean(mCoefficients.dot(basis));
-  mBasis = basis;
-}
-
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getBasis() const {
-  return mBasis;
+template <typename P>
+const typename Vertex<P>::PropertyType& Vertex<P>::getProperty() const {
+  return mProperty;
 }

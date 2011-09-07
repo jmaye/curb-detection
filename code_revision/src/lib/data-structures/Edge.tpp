@@ -20,83 +20,88 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const Eigen::Matrix<double, M, 1>&
-  coefficients, double variance, const Eigen::Matrix<double, M, 1>& basis) :
-  NormalDistribution<1>(mCoefficients.dot(mBasis), variance),
-  mCoefficients(coefficients),
-  mBasis(basis) {
+template <typename V, typename P>
+Edge<V, P>::Edge(const Edge<V, P>::VertexType& head, const
+  Edge<V, P>::VertexType& tail, const Edge<V, P>::PropertyType& property) :
+  mHead(head),
+  mTail(tail),
+  mProperty(property) {
 }
 
-template <size_t M>
-LinearRegression<M>::LinearRegression(const LinearRegression<M>& other) :
-  NormalDistribution<1>(other),
-  mCoefficients(other.mCoefficients),
-  mBasis(other.mBasis) {
+template <typename V, typename P>
+Edge<V, P>::Edge(const Edge<V, P>::Edge& other) :
+  mHead(other.mHead),
+  mTail(other.mTail),
+  mProperty(other.mProperty) {
 }
 
-template <size_t M>
-LinearRegression<M>& LinearRegression<M>::operator = (const LinearRegression<M>&
-  other) {
+template <typename V, typename P>
+Edge<V, P>& Edge<V, P>::operator = (const Edge<V, P>& other) {
   if (this != &other) {
-    this->NormalDistribution<1>::operator=(other);
-    mCoefficients = other.mCoefficients;
-    mBasis = other.mBasis;
+    mHead = other.mHead;
+    mTail = other.mTail;
+    mProperty = other.mProperty;
   }
   return *this;
 }
 
-template <size_t M>
-LinearRegression<M>::~LinearRegression() {
+template <typename V, typename P>
+Edge<V, P>::~Edge() {
 }
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::read(std::istream& stream) {
+template <typename V, typename P>
+void Edge<V, P>::read(std::istream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ostream& stream) const {
-  stream << "coefficients: " << std::endl << mCoefficients << std::endl
-    << "basis: " << std::endl << mBasis << std::endl
-    << "variance: " << mVariance;
+template <typename V, typename P>
+void Edge<V, P>::write(std::ostream& stream) const {
+  stream << "head node: " << mHead << std::endl
+    << "tail node: " << mTail << std::endl
+    << "property: " << mProperty;
 }
 
-template <size_t M>
-void LinearRegression<M>::read(std::ifstream& stream) {
+template <typename V, typename P>
+void Edge<V, P>::read(std::ifstream& stream) {
 }
 
-template <size_t M>
-void LinearRegression<M>::write(std::ofstream& stream) const {
+template <typename V, typename P>
+void Edge<V, P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-template <size_t M>
-void LinearRegression<M>::setCoefficients(const Eigen::Matrix<double, M, 1>&
-  coefficients) {
-  setMean(coefficients.dot(mBasis));
-  mCoefficients = coefficients;
+template <typename V, typename P>
+void Edge<V, P>::setHead(const VertexType& head) {
+  mHead = head;
 }
 
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getCoefficients()
-  const {
-  return mCoefficients;
+template <typename V, typename P>
+const typename Edge<V, P>::VertexType& Edge<V, P>::getHead() const {
+  return mHead;
 }
 
-template <size_t M>
-void LinearRegression<M>::setBasis(const Eigen::Matrix<double, M, 1>& basis) {
-  setMean(mCoefficients.dot(basis));
-  mBasis = basis;
+template <typename V, typename P>
+void Edge<V, P>::setTail(const VertexType& tail) {
+  mTail = tail;
 }
 
-template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getBasis() const {
-  return mBasis;
+template <typename V, typename P>
+const typename Edge<V, P>::VertexType& Edge<V, P>::getTail() const {
+  return mTail;
+}
+
+template <typename V, typename P>
+void Edge<V, P>::setProperty(const PropertyType& property) {
+  mProperty = property;
+}
+
+template <typename V, typename P>
+const typename Edge<V, P>::PropertyType& Edge<V, P>::getProperty() const {
+  return mProperty;
 }

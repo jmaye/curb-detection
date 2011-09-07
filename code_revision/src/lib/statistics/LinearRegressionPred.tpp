@@ -25,7 +25,7 @@ LinearRegressionPred<M>::LinearRegressionPred(double degrees, const
   Eigen::Matrix<double, M, 1>& coefficients, const Eigen::Matrix<double, M, M>&
   coeffCovariance, double regressionVariance, const Eigen::Matrix<double, M, 1>&
   basis) :
-  StudentDistribution<1>(degrees, (mCoefficients.transpose() * basis)(0),
+  StudentDistribution<1>(degrees, mCoefficients.dot(basis),
   mRegressionVariance * (1 + (basis.transpose() * mCoeffCovariance *
   basis)(0))),
   mCoefficients(coefficients),
@@ -92,7 +92,7 @@ void LinearRegressionPred<M>::write(std::ofstream& stream) const {
 template <size_t M>
 void LinearRegressionPred<M>::setCoefficients(const Eigen::Matrix<double, M, 1>&
   coefficients) {
-  setLocation((coefficients.transpose() * mBasis)(0));
+  setLocation(coefficients.dot(mBasis));
   mCoefficients = coefficients;
 }
 
@@ -131,7 +131,7 @@ double LinearRegressionPred<M>::getRegressionVariance() const {
 template <size_t M>
 void LinearRegressionPred<M>::setBasis(const Eigen::Matrix<double, M, 1>&
   basis) {
-  setLocation((mCoefficients.transpose() * basis)(0));
+  setLocation(mCoefficients.dot(basis));
   setScale(mRegressionVariance * (1 + (basis.transpose() *
     mCoeffCovariance * basis)(0)));
   mBasis = basis;

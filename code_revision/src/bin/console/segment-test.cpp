@@ -16,28 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file gui.cpp
-    \brief This file is a GUI for curb detection qualitative analysis.
+/** \file segment-test.cpp
+    \brief This file is a testing binary for segmenting a graph
   */
 
-#include "visualization/MainWindow.h"
-#include "visualization/ViewControl.h"
-#include "visualization/PointCloudControl.h"
-#include "visualization/DEMControl.h"
-
-#include <QtGui/QApplication>
+#include "segmenter/GraphSegmenter.h"
 
 int main (int argc, char** argv) {
-  QApplication application(argc, argv);
-  MainWindow mainWindow;
-  ViewControl viewControl;
-  PointCloudControl pointCloudControl(true);
-  DEMControl demControl(true);
-  if (argc > 1)
-    pointCloudControl.setLogFilename(argv[1]);
-  mainWindow.addControl("View", viewControl);
-  mainWindow.addControl("PointCloud", pointCloudControl);
-  mainWindow.addControl("DEM", demControl);
-  mainWindow.show();
-  return application.exec();
+  return 0;
 }
