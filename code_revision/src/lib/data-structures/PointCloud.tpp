@@ -111,14 +111,15 @@ void PointCloud<X, M>::clear() {
 }
 
 template <typename X, size_t M>
-void PointCloud<X, M>::addPoint(const Point& point) {
+void PointCloud<X, M>::insertPoint(const Point& point) {
   mPoints.push_back(point);
 }
 
 template <typename X, size_t M>
-void PointCloud<X, M>::addPointCloud(const PointCloud& pointCloud) {
-  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i)
-    mPoints.push_back(pointCloud[i]);
+void PointCloud<X, M>::merge(const PointCloud& other) {
+  for (ConstPointIterator it = other.getPointBegin(); it != other.getPointEnd();
+    ++it)
+    insertPoint(*it);
 }
 
 template <typename X, size_t M>

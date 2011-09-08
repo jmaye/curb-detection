@@ -80,10 +80,10 @@ public:
   size_t getNumPoints() const;
   /// Clears the point cloud
   void clear();
-  /// Adds a point to the point cloud
-  void addPoint(const Point& point);
-  /// Adds a point cloud to the point cloud
-  void addPointCloud(const PointCloud& pointCloud);
+  /// Inserts a point into the point cloud
+  void insertPoint(const Point& point);
+  /// Merge point clouds
+  void merge(const PointCloud& other);
   /// Returns iterator at start of the container
   ConstPointIterator getPointBegin() const;
   /// Returns iterator at start of the container
