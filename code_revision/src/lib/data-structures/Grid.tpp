@@ -23,23 +23,23 @@
 /******************************************************************************/
 
 template <typename T, typename C, size_t M>
-Grid<T, C, M>::Grid(const CoordinateType& minimum, const CoordinateType&
-  maximum, const CoordinateType& resolution)
-  throw (BadArgumentException<Grid<T, C, M>::CoordinateType>) :
+Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
+  Coordinate& resolution) throw
+  (BadArgumentException<Grid<T, C, M>::Coordinate>) :
   mMinimum(minimum),
   mMaximum(maximum),
   mResolution(resolution) {
   if ((resolution.cwise() <= 0).any())
-    throw BadArgumentException<CoordinateType>(resolution,
+    throw BadArgumentException<Coordinate>(resolution,
       "Grid<T, C, M>::Grid(): resolution must be strictly positive",
        __FILE__, __LINE__);
   if ((minimum.cwise() >= maximum).any())
-    throw BadArgumentException<CoordinateType>(minimum,
+    throw BadArgumentException<Coordinate>(minimum,
       "Grid<T, C, M>::Grid(): minimum must be strictly smaller than maximum",
        __FILE__, __LINE__);
   mNumCells.resize(resolution.size());
   mNumCellsTot = 1.0;
-  mLinProd = IndexType::Ones(resolution.size());
+  mLinProd = Index::Ones(resolution.size());
   for (size_t i = 0; i < (size_t)minimum.size(); ++i) {
     mNumCells(i) = ceil((maximum(i) - minimum(i)) / resolution(i));
     mNumCellsTot *= mNumCells(i);
@@ -109,32 +109,32 @@ void Grid<T, C, M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::ConstIteratorType Grid<T, C, M>::getItBegin() const {
+typename Grid<T, C, M>::ConstCellIterator Grid<T, C, M>::getCellBegin() const {
   return mCells.begin();
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::IteratorType Grid<T, C, M>::getItBegin() {
+typename Grid<T, C, M>::CellIterator Grid<T, C, M>::getCellBegin() {
   return mCells.begin();
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::ConstIteratorType Grid<T, C, M>::getItEnd() const {
+typename Grid<T, C, M>::ConstCellIterator Grid<T, C, M>::getCellEnd() const {
   return mCells.end();
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::IteratorType Grid<T, C, M>::getItEnd() {
+typename Grid<T, C, M>::CellIterator Grid<T, C, M>::getCellEnd() {
   return mCells.end();
 }
 
 template <typename T, typename C, size_t M>
-const typename Grid<T, C, M>::ContainerType& Grid<T, C, M>::getCells() const {
+const typename Grid<T, C, M>::Container& Grid<T, C, M>::getCells() const {
   return mCells;
 }
 
 template <typename T, typename C, size_t M>
-size_t Grid<T, C, M>::computeLinearIndex(const IndexType& idx) const {
+size_t Grid<T, C, M>::computeLinearIndex(const Index& idx) const {
   size_t linIdx = 0;
   for (size_t i = 0; i < (size_t)idx.size(); ++i)
     linIdx += mLinProd(i) * idx(i);
@@ -142,41 +142,39 @@ size_t Grid<T, C, M>::computeLinearIndex(const IndexType& idx) const {
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::getCell(const IndexType& idx) const
-  throw (OutOfBoundException<IndexType>) {
+const C& Grid<T, C, M>::getCell(const Index& idx) const throw
+  (OutOfBoundException<Index>) {
   if (!isValidIndex(idx))
-    throw OutOfBoundException<IndexType>(idx,
+    throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
   return mCells[computeLinearIndex(idx)];
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::getCell(const IndexType& idx)
-  throw (OutOfBoundException<IndexType>) {
+C& Grid<T, C, M>::getCell(const Index& idx) throw (OutOfBoundException<Index>) {
   if (!isValidIndex(idx))
-    throw OutOfBoundException<IndexType>(idx,
+    throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
   return mCells[computeLinearIndex(idx)];
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::operator [] (const IndexType& idx) const {
+const C& Grid<T, C, M>::operator [] (const Index& idx) const {
   return getCell(idx);
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::operator [] (const IndexType& idx) {
+C& Grid<T, C, M>::operator [] (const Index& idx) {
   return getCell(idx);
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const CoordinateType&
-  point) const
-  throw (OutOfBoundException<CoordinateType>) {
+typename Grid<T, C, M>::Index Grid<T, C, M>::getIndex(const Coordinate& point)
+  const throw (OutOfBoundException<Coordinate>) {
   if (!isInRange(point))
-    throw OutOfBoundException<CoordinateType>(point,
+    throw OutOfBoundException<Coordinate>(point,
       "Grid<T, C, M>::operator (): point out of range", __FILE__, __LINE__);
-  IndexType idx(point.size());
+  Index idx(point.size());
   for (size_t i = 0; i < (size_t)point.size(); ++i)
     if (point(i) == mMaximum(i))
       idx(i) = mNumCells(i) - 1;
@@ -186,41 +184,41 @@ typename Grid<T, C, M>::IndexType Grid<T, C, M>::getIndex(const CoordinateType&
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::operator () (const CoordinateType& point) const {
+const C& Grid<T, C, M>::operator () (const Coordinate& point) const {
   return operator[](getIndex(point));
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::operator () (const CoordinateType& point) {
+C& Grid<T, C, M>::operator () (const Coordinate& point) {
   return operator[](getIndex(point));
 }
 
 template <typename T, typename C, size_t M>
-typename Grid<T, C, M>::CoordinateType Grid<T, C, M>::getCoordinates(const
-  IndexType& idx) const throw (OutOfBoundException<IndexType>) {
+typename Grid<T, C, M>::Coordinate Grid<T, C, M>::getCoordinates(const Index&
+  idx) const throw (OutOfBoundException<Index>) {
   if (!isValidIndex(idx))
-    throw OutOfBoundException<IndexType>(idx,
+    throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCoordinates(): index out of range",
       __FILE__, __LINE__);
-  CoordinateType point(idx.size());
+  Coordinate point(idx.size());
   for (size_t i = 0; i < (size_t)idx.size(); ++i)
     point[i] = mMinimum(i) + (idx(i) + 0.5) * mResolution(i);
   return point;
 }
 
 template <typename T, typename C, size_t M>
-bool Grid<T, C, M>::isInRange(const CoordinateType& point) const {
+bool Grid<T, C, M>::isInRange(const Coordinate& point) const {
   return ((point.cwise() <= mMaximum).all() &&
     (point.cwise() >= mMinimum).all());
 }
 
 template <typename T, typename C, size_t M>
-bool Grid<T, C, M>::isValidIndex(const IndexType& idx) const {
+bool Grid<T, C, M>::isValidIndex(const Index& idx) const {
   return ((idx.cwise() < mNumCells).all());
 }
 
 template <typename T, typename C, size_t M>
-const typename Grid<T, C, M>::IndexType& Grid<T, C, M>::getNumCells() const {
+const typename Grid<T, C, M>::Index& Grid<T, C, M>::getNumCells() const {
   return mNumCells;
 }
 
@@ -230,19 +228,16 @@ size_t Grid<T, C, M>::getNumCellsTot() const {
 }
 
 template <typename T, typename C, size_t M>
-const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getMinimum()
-  const {
+const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getMinimum() const {
   return mMinimum;
 }
 
 template <typename T, typename C, size_t M>
-const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getMaximum()
-  const {
+const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getMaximum() const {
   return mMaximum;
 }
 
 template <typename T, typename C, size_t M>
-const typename Grid<T, C, M>::CoordinateType& Grid<T, C, M>::getResolution()
-  const {
+const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getResolution() const {
   return mResolution;
 }

@@ -16,14 +16,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file component-test.cpp
-    \brief This file is a testing binary for testing the component structure.
+/** \file graph-test.cpp
+    \brief This file is a testing binary for testing the graph structure.
   */
 
-#include "data-structures/Component.h"
+#include "data-structures/Graph.h"
 
 int main (int argc, char** argv) {
-  Component<size_t, double> component;
+  Graph<size_t, double> component;
   component.insertVertex(2);
   component.insertVertex(3);
   std::cout << "Component initial:" << std::endl << component << std::endl;

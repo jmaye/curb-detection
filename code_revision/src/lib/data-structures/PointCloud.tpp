@@ -59,7 +59,7 @@ void PointCloud<X, M>::read(std::ifstream& stream) throw (IOException) {
   if (stream.is_open() == false)
     throw IOException("PointCloud<X, M>::read(): could not open file");
   while (stream.eof() == false) {
-    PointType point;
+    Point point;
     for (size_t i = 0; i < M; ++i) {
       stream >> point(i);
       if (i != M - 1)
@@ -78,8 +78,8 @@ void PointCloud<X, M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename X, size_t M>
-const typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator []
-  (size_t idx) const throw (OutOfBoundException<size_t>) {
+const typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t
+  idx) const throw (OutOfBoundException<size_t>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);
@@ -87,7 +87,7 @@ const typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator []
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::PointType& PointCloud<X, M>::operator [] (size_t idx)
+typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t idx)
   throw (OutOfBoundException<size_t>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
@@ -111,7 +111,7 @@ void PointCloud<X, M>::clear() {
 }
 
 template <typename X, size_t M>
-void PointCloud<X, M>::addPoint(const PointType& point) {
+void PointCloud<X, M>::addPoint(const Point& point) {
   mPoints.push_back(point);
 }
 
@@ -122,29 +122,29 @@ void PointCloud<X, M>::addPointCloud(const PointCloud& pointCloud) {
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::ConstIteratorType PointCloud<X, M>::getItBegin()
+typename PointCloud<X, M>::ConstPointIterator PointCloud<X, M>::getPointBegin()
   const {
   return mPoints.begin();
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::IteratorType PointCloud<X, M>::getItBegin() {
+typename PointCloud<X, M>::PointIterator PointCloud<X, M>::getPointBegin() {
   return mPoints.begin();
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::ConstIteratorType PointCloud<X, M>::getItEnd()
+typename PointCloud<X, M>::ConstPointIterator PointCloud<X, M>::getPointEnd()
   const {
   return mPoints.end();
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::IteratorType PointCloud<X, M>::getItEnd() {
+typename PointCloud<X, M>::PointIterator PointCloud<X, M>::getPointEnd() {
   return mPoints.end();
 }
 
 template <typename X, size_t M>
-const typename PointCloud<X, M>::ContainerType& PointCloud<X, M>::getPoints()
+const typename PointCloud<X, M>::Container& PointCloud<X, M>::getPoints()
   const {
   return mPoints;
 }

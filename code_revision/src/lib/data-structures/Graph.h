@@ -16,23 +16,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Component.h
-    \brief This file defines the Component class, which represents a component
-           in the graph-based segmentation
+/** \file Graph.h
+    \brief This file defines the Graph class, which represents a graph
   */
 
-#ifndef COMPONENT_H
-#define COMPONENT_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "base/Serializable.h"
 
 #include <list>
 
-/** The class Component represents a component in the graph-based segmentation,
-    i.e., a list of vertices, with some internal value.
-    \brief A segmented component
+/** The class Graph represents a graph.
+    \brief A graph
   */
-template <typename V, typename P> class Component :
+template <typename V, typename P> class Graph :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -40,7 +38,7 @@ public:
     */
   /// Vertex descriptor
   typedef V VertexDescriptor;
-  /// Component property
+  /// Graph property
   typedef P Property;
   /// Container type
   typedef std::list<V> Container;
@@ -55,15 +53,15 @@ public:
     @{
     */
   /// Constructor with one vertex and property parameter
-  Component(const V& vertex, const P& property = P(0));
+  Graph(const V& vertex, const P& property = P(0));
   /// Constructor with property parameter
-  Component(const P& property = P(0));
+  Graph(const P& property = P(0));
   /// Copy constructor
-  Component(const Component& other);
+  Graph(const Graph& other);
   /// Assignment operator
-  Component& operator = (const Component& other);
+  Graph& operator = (const Graph& other);
   /// Destructor
-  virtual ~Component();
+  virtual ~Graph();
   /** @}
     */
 
@@ -75,15 +73,13 @@ public:
   /// Remove a vertex from the component
   void removeVertex(const V& vertex);
   /// Merge components
-  void merge(const Component& other);
+  void merge(const Graph& other);
   /// Clears the component
   void clear();
   /// Returns the number of vertices
   size_t getNumVertices() const;
   /// Sets the component property
   void setProperty(const P& property);
-  /// Returns the component property
-  P& getProperty();
   /// Returns the component property
   const P& getProperty() const;
   /// Returns iterator at start of the container
@@ -117,13 +113,13 @@ protected:
     */
   /// Vertices in the component
   Container mVertices;
-  /// Component property
+  /// Graph property
   P mProperty;
   /** @}
     */
 
 };
 
-#include "data-structures/Component.tpp"
+#include "data-structures/Graph.tpp"
 
-#endif // COMPONENT_H
+#endif // GRAPH_H

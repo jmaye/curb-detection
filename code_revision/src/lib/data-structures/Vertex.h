@@ -36,7 +36,7 @@ public:
     @{
     */
   /// Vertex property
-  typedef P PropertyType;
+  typedef P Property;
   /** @}
     */
 
@@ -44,7 +44,7 @@ public:
     @{
     */
   /// Constructor with parameter
-  Vertex(const PropertyType& property);
+  Vertex(const P& property);
   /// Copy constructor
   Vertex(const Vertex& other);
   /// Assignment operator
@@ -58,9 +58,11 @@ public:
       @{
     */
   /// Sets the vertex property
-  void setProperty(const PropertyType& property);
+  void setProperty(const P& property);
   /// Returns the vertex property
-  const PropertyType& getProperty() const;
+  P& getProperty();
+  /// Returns the vertex property
+  const P& getProperty() const;
   /** @}
     */
 
@@ -83,7 +85,7 @@ protected:
       @{
     */
   /// Vertex property
-  PropertyType mProperty;
+  P mProperty;
   /** @}
     */
 

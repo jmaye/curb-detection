@@ -43,7 +43,7 @@ public:
   /// Assignment operator
   Cell& operator = (const Cell& other);
   /// Destructor
-  ~Cell();
+  virtual ~Cell();
   /** @}
     */
 

@@ -21,7 +21,7 @@
 /******************************************************************************/
 
 template <typename P>
-Vertex<P>::Vertex(const Vertex<P>::PropertyType& property) :
+Vertex<P>::Vertex(const P& property) :
   mProperty(property) {
 }
 
@@ -68,11 +68,16 @@ void Vertex<P>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename P>
-void Vertex<P>::setProperty(const PropertyType& property) {
+void Vertex<P>::setProperty(const P& property) {
   mProperty = property;
 }
 
 template <typename P>
-const typename Vertex<P>::PropertyType& Vertex<P>::getProperty() const {
+const P& Vertex<P>::getProperty() const {
+  return mProperty;
+}
+
+template <typename P>
+P& Vertex<P>::getProperty() {
   return mProperty;
 }

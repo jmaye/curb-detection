@@ -21,33 +21,33 @@
 /******************************************************************************/
 
 template <typename V, typename P>
-Edge<V, P>::Edge(const Edge<V, P>::VertexDescriptorType& head, const
-  Edge<V, P>::VertexDescriptorType& tail, const Edge<V, P>::PropertyType&
-    property) :
-  mHead(head),
-  mTail(tail),
+Graph<V, P>::Graph(const V& vertex, const P& property) :
+  mProperty(property) {
+  mVertices.insert(vertex);
+}
+
+template <typename V, typename P>
+Graph<V, P>::Graph(const P& property) :
   mProperty(property) {
 }
 
 template <typename V, typename P>
-Edge<V, P>::Edge(const Edge<V, P>::Edge& other) :
-  mHead(other.mHead),
-  mTail(other.mTail),
+Graph<V, P>::Graph(const Graph<V, P>::Graph& other) :
+  mVertices(other.mVertices),
   mProperty(other.mProperty) {
 }
 
 template <typename V, typename P>
-Edge<V, P>& Edge<V, P>::operator = (const Edge<V, P>& other) {
+Graph<V, P>& Graph<V, P>::operator = (const Graph<V, P>& other) {
   if (this != &other) {
-    mHead = other.mHead;
-    mTail = other.mTail;
+    mVertices = other.mVertices;
     mProperty = other.mProperty;
   }
   return *this;
 }
 
 template <typename V, typename P>
-Edge<V, P>::~Edge() {
+Graph<V, P>::~Graph() {
 }
 
 /******************************************************************************/
@@ -55,22 +55,23 @@ Edge<V, P>::~Edge() {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Edge<V, P>::read(std::istream& stream) {
+void Graph<V, P>::read(std::istream& stream) {
 }
 
 template <typename V, typename P>
-void Edge<V, P>::write(std::ostream& stream) const {
-  stream << "head node: " << mHead << std::endl
-    << "tail node: " << mTail << std::endl
-    << "property: " << mProperty;
+void Graph<V, P>::write(std::ostream& stream) const {
+  stream << "vertices: " << std::endl;
+  for (ConstVertexIterator it = getVertexBegin(); it != getVertexEnd(); ++it)
+    stream << *it << std::endl;
+  stream << "property: " << mProperty;
 }
 
 template <typename V, typename P>
-void Edge<V, P>::read(std::ifstream& stream) {
+void Graph<V, P>::read(std::ifstream& stream) {
 }
 
 template <typename V, typename P>
-void Edge<V, P>::write(std::ofstream& stream) const {
+void Graph<V, P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
@@ -78,31 +79,58 @@ void Edge<V, P>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Edge<V, P>::setHead(const VertexDescriptorType& head) {
-  mHead = head;
+void Graph<V, P>::insertVertex(const V& vertex) {
+  mVertices.push_back(vertex);
 }
 
 template <typename V, typename P>
-const typename Edge<V, P>::VertexDescriptorType& Edge<V, P>::getHead() const {
-  return mHead;
+void Graph<V, P>::removeVertex(const V& vertex) {
+  mVertices.remove(vertex);
 }
 
 template <typename V, typename P>
-void Edge<V, P>::setTail(const VertexDescriptorType& tail) {
-  mTail = tail;
+void Graph<V, P>::merge(const Graph<V, P>& other) {
+  mVertices.merge(other.mVertices);
 }
 
 template <typename V, typename P>
-const typename Edge<V, P>::VertexDescriptorType& Edge<V, P>::getTail() const {
-  return mTail;
+void Graph<V, P>::clear() {
+  mVertices.clear();
 }
 
 template <typename V, typename P>
-void Edge<V, P>::setProperty(const PropertyType& property) {
+size_t Graph<V, P>::getNumVertices() const {
+  return mVertices.size();
+}
+
+template <typename V, typename P>
+void Graph<V, P>::setProperty(const P& property) {
   mProperty = property;
 }
 
 template <typename V, typename P>
-const typename Edge<V, P>::PropertyType& Edge<V, P>::getProperty() const {
+const P& Graph<V, P>::getProperty() const {
   return mProperty;
+}
+
+template <typename V, typename P>
+typename Graph<V, P>::ConstVertexIterator Graph<V, P>::getVertexBegin()
+  const {
+  return mVertices.begin();
+}
+
+template <typename V, typename P>
+typename Graph<V, P>::VertexIterator Graph<V, P>::getVertexBegin() {
+  return mVertices.begin();
+}
+
+template <typename V, typename P>
+typename Graph<V, P>::ConstVertexIterator Graph<V, P>::getVertexEnd()
+  const {
+  return mVertices.end();
+}
+
+template <typename V, typename P>
+typename Graph<V, P>::VertexIterator Graph<V, P>::getVertexEnd() {
+  return mVertices.end();
 }

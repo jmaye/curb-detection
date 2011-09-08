@@ -25,5 +25,7 @@
 int main (int argc, char** argv) {
   Vertex<double> vertex(2.5);
   std::cout << "Vertex:" << std::endl << vertex << std::endl;
+  vertex.setProperty(3.0);
+  std::cout << vertex.getProperty() << std::endl;
   return 0;
 }

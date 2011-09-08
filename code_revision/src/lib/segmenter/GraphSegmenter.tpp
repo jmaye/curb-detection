@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include <algorithm>
+#include <map>
 
 /******************************************************************************/
 /* Methods                                                                    */
@@ -24,39 +25,51 @@
 
 template <typename G>
 double GraphSegmenter<G>::getTau(const
-  Component<typename GraphType::VertexDescriptorType, double>& c) {
+  Component<typename Graph::VertexDescriptor, double>& c) {
   return mK / c.getNumVertices();
 }
 
 template <typename G>
 double GraphSegmenter<G>::getMInt(const
-  Component<typename GraphType::VertexDescriptorType, double>& c1, const
-  Component<typename GraphType::VertexDescriptorType, double>& c2) {
+  Component<typename Graph::VertexDescriptor, double>& c1, const
+  Component<typename Graph::VertexDescriptor, double>& c2) {
   return std::min(c1.getProperty() + getTau(c1), c2.getProperty() + getTau(c2));
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(const GraphType& graph,
-  std::list<Component<typename GraphType::VertexDescriptorType, double> >&
-  components, double k) {
+void GraphSegmenter<G>::segment(const Graph& graph,
+  std::list<Component<typename Graph::VertexDescriptor, double> >& components,
+  double k) {
   mK = k;
   components.clear();
   size_t componentIdx = 0;
-  // At the beginning, every vertex is in one component
-  for (typename GraphType::VertexIterator it = graph.getVertexBegin();
+  std::map<size_t, Component<typename Graph::VertexDescriptor, double> >
+    componentsMap;
+  for (typename Graph::VertexIterator it = graph.getVertexBegin();
     it != graph.getVertexBegin(); ++it) {
-    components.insert(Component<typename GraphType::VertexDescriptorType,
-      double>(*it));
-    it->setProperty(componentIdx++);
+    componentsMap[componentIdx] = Component<typename Graph::VertexDescriptor,
+      double>(graph.getVertex(it));
+    graph.setVertexProperty(graph.getVertex(it), componentIdx++);
   }
-  // Assume the edges are sorted in non-decreasing order
-  for (typename GraphType::EdgeIterator it = graph.getEdgeBegin();
+  for (typename Graph::ConstEdgeIterator it = graph.getEdgeBegin();
     it != graph.getEdgeEnd(); ++it) {
-    // get the vertices connected by the current edge
-    it->getHead().getProperty();
-    it->getTail().getProperty();
-    // if the vertices are in 2 different components:
-    // if (it->getProperty() <= getMInt(C1, C2))
-    //   merge the 2 components
+    typename Graph::VertexDescriptor v1 = it->getHead();
+    size_t c1  = graph.getVertexProperty(v1);
+    typename Graph::VertexDescriptor v2 = it->getTail();
+    size_t c2 = graph.getVertexProperty(v2);
+    typename Graph::EdgeDescriptor e = graph.getEdge(it);
+    if (c1 != c2 && graph.getEdgeProperty(e) <= geMInt(componentsMap[c1],
+      componentsMap[c2])) {
+      for (typename Component<typename
+        Graph::VertexDescriptor, double>::VertexIterator it =
+        componentsMap[c2].getVertexBegin();
+        it != componentsMap[c2].getVertexEnd(); ++it)
+        graph.setVertexProperty(graph.getVertex(it), c1);
+      double maxInt = std::max(componentsMap[c1].getProperty(),
+        componentsMap[c2].getProperty());
+      componentsMap[c1].setProperty(std::max(maxInt, graph.getEdgeProperty(e)));
+      componentsMap[c1].merge(componentsMap[c2]);
+      componentsMap.erase(c2);
+    }
   }
 }

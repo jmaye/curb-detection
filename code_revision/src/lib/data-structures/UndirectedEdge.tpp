@@ -21,33 +21,34 @@
 /******************************************************************************/
 
 template <typename V, typename P>
-Component<V, P>::Component(const V& vertex, const P& property) :
-  mProperty(property) {
-  mVertices.insert(vertex);
-}
-
-template <typename V, typename P>
-Component<V, P>::Component(const P& property) :
+UndirectedEdge<V, P>::UndirectedEdge(const V& head, const V& tail, const P&
+  property) :
+  mHead(head),
+  mTail(tail),
   mProperty(property) {
 }
 
 template <typename V, typename P>
-Component<V, P>::Component(const Component<V, P>::Component& other) :
-  mVertices(other.mVertices),
+UndirectedEdge<V, P>::UndirectedEdge(const UndirectedEdge<V, P>::UndirectedEdge&
+  other) :
+  mHead(other.mHead),
+  mTail(other.mTail),
   mProperty(other.mProperty) {
 }
 
 template <typename V, typename P>
-Component<V, P>& Component<V, P>::operator = (const Component<V, P>& other) {
+UndirectedEdge<V, P>& UndirectedEdge<V, P>::operator = (const
+  UndirectedEdge<V, P>& other) {
   if (this != &other) {
-    mVertices = other.mVertices;
+    mHead = other.mHead;
+    mTail = other.mTail;
     mProperty = other.mProperty;
   }
   return *this;
 }
 
 template <typename V, typename P>
-Component<V, P>::~Component() {
+UndirectedEdge<V, P>::~UndirectedEdge() {
 }
 
 /******************************************************************************/
@@ -55,23 +56,22 @@ Component<V, P>::~Component() {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Component<V, P>::read(std::istream& stream) {
+void UndirectedEdge<V, P>::read(std::istream& stream) {
 }
 
 template <typename V, typename P>
-void Component<V, P>::write(std::ostream& stream) const {
-  stream << "vertices: " << std::endl;
-  for (ConstVertexIterator it = getVertexBegin(); it != getVertexEnd(); ++it)
-    stream << *it << std::endl;
-  stream << "property: " << mProperty;
+void UndirectedEdge<V, P>::write(std::ostream& stream) const {
+  stream << "head node: " << mHead << std::endl
+    << "tail node: " << mTail << std::endl
+    << "property: " << mProperty;
 }
 
 template <typename V, typename P>
-void Component<V, P>::read(std::ifstream& stream) {
+void UndirectedEdge<V, P>::read(std::ifstream& stream) {
 }
 
 template <typename V, typename P>
-void Component<V, P>::write(std::ofstream& stream) const {
+void UndirectedEdge<V, P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
@@ -79,63 +79,36 @@ void Component<V, P>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Component<V, P>::insertVertex(const V& vertex) {
-  mVertices.push_back(vertex);
+void UndirectedEdge<V, P>::setHead(const V& head) {
+  mHead = head;
 }
 
 template <typename V, typename P>
-void Component<V, P>::removeVertex(const V& vertex) {
-  mVertices.remove(vertex);
+const V& UndirectedEdge<V, P>::getHead() const {
+  return mHead;
 }
 
 template <typename V, typename P>
-void Component<V, P>::merge(const Component<V, P>& other) {
-  mVertices.merge(other.mVertices);
+void UndirectedEdge<V, P>::setTail(const V& tail) {
+  mTail = tail;
 }
 
 template <typename V, typename P>
-void Component<V, P>::clear() {
-  mVertices.clear();
+const V& UndirectedEdge<V, P>::getTail() const {
+  return mTail;
 }
 
 template <typename V, typename P>
-size_t Component<V, P>::getNumVertices() const {
-  return mVertices.size();
-}
-
-template <typename V, typename P>
-void Component<V, P>::setProperty(const P& property) {
+void UndirectedEdge<V, P>::setProperty(const P& property) {
   mProperty = property;
 }
 
 template <typename V, typename P>
-const P& Component<V, P>::getProperty() const {
+const P& UndirectedEdge<V, P>::getProperty() const {
   return mProperty;
 }
 
 template <typename V, typename P>
-P& Component<V, P>::getProperty() {
+P& UndirectedEdge<V, P>::getProperty() {
   return mProperty;
-}
-
-template <typename V, typename P>
-typename Component<V, P>::ConstVertexIterator Component<V, P>::getVertexBegin()
-  const {
-  return mVertices.begin();
-}
-
-template <typename V, typename P>
-typename Component<V, P>::VertexIterator Component<V, P>::getVertexBegin() {
-  return mVertices.begin();
-}
-
-template <typename V, typename P>
-typename Component<V, P>::ConstVertexIterator Component<V, P>::getVertexEnd()
-  const {
-  return mVertices.end();
-}
-
-template <typename V, typename P>
-typename Component<V, P>::VertexIterator Component<V, P>::getVertexEnd() {
-  return mVertices.end();
 }

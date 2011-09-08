@@ -16,29 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Edge.h
-    \brief This file defines the Edge class, which represents an undirected
-           graph edge
+/** \file UndirectedEdge.h
+    \brief This file defines the UndirectedEdge class, which represents an
+           undirected graph edge
   */
 
-#ifndef EDGE_H
-#define EDGE_H
+#ifndef UNDIRECTEDEDGE_H
+#define UNDIRECTEDEDGE_H
 
 #include "base/Serializable.h"
 
-/** The class Edge represents an undirected graph edge.
+/** The class UndirectedEdge represents an undirected graph edge.
     \brief Undirected graph edge
   */
-template <typename V, typename P> class Edge :
+template <typename V, typename P> class UndirectedEdge :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Vertex descriptor
-  typedef V VertexDescriptorType;
+  typedef V VertexDescriptor;
   /// Edge property
-  typedef P PropertyType;
+  typedef P Property;
   /** @}
     */
 
@@ -46,14 +46,13 @@ public:
     @{
     */
   /// Constructor with parameter
-  Edge(const VertexDescriptorType& head, const VertexDescriptorType& tail, const
-    PropertyType& property);
+  UndirectedEdge(const V& head, const V& tail, const P& property);
   /// Copy constructor
-  Edge(const Edge& other);
+  UndirectedEdge(const UndirectedEdge& other);
   /// Assignment operator
-  Edge& operator = (const Edge& other);
+  UndirectedEdge& operator = (const UndirectedEdge& other);
   /// Destructor
-  virtual ~Edge();
+  virtual ~UndirectedEdge();
   /** @}
     */
 
@@ -61,17 +60,19 @@ public:
       @{
     */
   /// Sets the head of the edge
-  void setHead(const VertexDescriptorType& head);
+  void setHead(const V& head);
   /// Returns the head of the edge
-  const VertexDescriptorType& getHead() const;
+  const V& getHead() const;
   /// Sets the tail of the edge
-  void setTail(const VertexDescriptorType& tail);
+  void setTail(const V& tail);
   /// Returns the tail of the edge
-  const VertexDescriptorType& getTail() const;
+  const V& getTail() const;
   /// Sets the edge property
-  void setProperty(const PropertyType& property);
+  void setProperty(const P& property);
   /// Returns the edge property
-  const PropertyType& getProperty() const;
+  P& getProperty();
+  /// Returns the edge property
+  const P& getProperty() const;
   /** @}
     */
 
@@ -94,16 +95,16 @@ protected:
       @{
     */
   /// Head vertex
-  VertexDescriptorType mHead;
+  V mHead;
   /// Tail vertex
-  VertexDescriptorType mTail;
+  V mTail;
   /// Edge property
-  PropertyType mProperty;
+  P mProperty;
   /** @}
     */
 
 };
 
-#include "data-structures/Edge.tpp"
+#include "data-structures/UndirectedEdge.tpp"
 
-#endif // EDGE_H
+#endif // UNDIRECTEDEDGE_H

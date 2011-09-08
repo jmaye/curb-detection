@@ -35,7 +35,7 @@ template <typename G> class GraphSegmenter {
       @{
     */
   /// Graph type
-  typedef G GraphType;
+  typedef G Graph;
   /** @}
     */
 
@@ -52,11 +52,11 @@ template <typename G> class GraphSegmenter {
     */
   /// Threshold function
   static double getTau(const
-    Component<typename GraphType::VertexDescriptorType, double>& c);
+    Component<typename Graph::VertexDescriptor, double>& c);
   /// Returns the minimum internal difference between two components
   static double getMInt(const
-    Component<typename GraphType::VertexDescriptorType, double>& c1, const
-    Component<typename GraphType::VertexDescriptorType, double>& c2);
+    Component<typename Graph::VertexDescriptor, double>& c1, const
+    Component<typename Graph::VertexDescriptor, double>& c2);
   /** @}
     */
 
@@ -73,9 +73,9 @@ public:
       @{
     */
   /// Segment the graph
-  static void segment(const GraphType& graph,
-    std::list<Component<typename GraphType::VertexDescriptorType, double> >&
-    components, double k = 100.0);
+  static void segment(const Graph& graph,
+    std::list<Component<typename Graph::VertexDescriptor, double> >& components,
+    double k = 100.0);
   /** @}
     */
 

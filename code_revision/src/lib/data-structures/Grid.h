@@ -41,15 +41,15 @@ public:
     @{
     */
   /// Constant iterator type
-  typedef typename std::vector<C>::const_iterator ConstIteratorType;
+  typedef typename std::vector<C>::const_iterator ConstCellIterator;
   /// Iterator type
-  typedef typename std::vector<C>::iterator IteratorType;
+  typedef typename std::vector<C>::iterator CellIterator;
   /// Container type
-  typedef std::vector<C> ContainerType;
+  typedef std::vector<C> Container;
   /// Index type
-  typedef Eigen::Matrix<size_t, M, 1> IndexType;
+  typedef Eigen::Matrix<size_t, M, 1> Index;
   /// Coordinate type
-  typedef Eigen::Matrix<T, M, 1> CoordinateType;
+  typedef Eigen::Matrix<T, M, 1> Coordinate;
   /** @}
     */
 
@@ -57,8 +57,8 @@ public:
     @{
     */
   /// Constructs grid with parameters
-  Grid(const CoordinateType& minimum, const CoordinateType& maximum, const
-    CoordinateType& resolution) throw (BadArgumentException<CoordinateType>);
+  Grid(const Coordinate& minimum, const Coordinate& maximum, const Coordinate&
+    resolution) throw (BadArgumentException<Coordinate>);
   /// Copy constructor
   Grid(const Grid& other);
   /// Assignment operator
@@ -72,48 +72,47 @@ public:
       @{
     */
   /// Returns iterator at start of the container
-  ConstIteratorType getItBegin() const;
+  ConstCellIterator getCellBegin() const;
   /// Returns iterator at start of the container
-  IteratorType getItBegin();
+  CellIterator getCellBegin();
   /// Returns iterator at end of the container
-  ConstIteratorType getItEnd() const;
+  ConstCellIterator getCellEnd() const;
   /// Returns iterator at end of the container
-  IteratorType getItEnd();
+  CellIterator getCellEnd();
   /// Returns the container
-  const ContainerType& getCells() const;
+  const Container& getCells() const;
   /// Returns the cell at index
-  const C& getCell(const IndexType& idx) const
-    throw (OutOfBoundException<IndexType>);
+  const C& getCell(const Index& idx) const throw (OutOfBoundException<Index>);
   /// Returns the cell at index
-  C& getCell(const IndexType& idx) throw (OutOfBoundException<IndexType>);
+  C& getCell(const Index& idx) throw (OutOfBoundException<Index>);
   /// Returns a cell using [index] operator
-  const C& operator [] (const IndexType& idx) const;
+  const C& operator [] (const Index& idx) const;
   /// Returns a cell using [index] operator
-  C& operator [] (const IndexType& idx);
+  C& operator [] (const Index& idx);
   /// Returns the index of a cell using coordinates
-  IndexType getIndex(const CoordinateType& point) const
-    throw (OutOfBoundException<CoordinateType>);
+  Index getIndex(const Coordinate& point) const throw
+    (OutOfBoundException<Coordinate>);
   /// Returns a cell using (coordinate) operator
-  const C& operator () (const CoordinateType& point) const;
+  const C& operator () (const Coordinate& point) const;
   /// Returns a cell using (coordinate) operator
-  C& operator () (const CoordinateType& point);
+  C& operator () (const Coordinate& point);
   /// Returns the coordinates of a cell using index
-  CoordinateType getCoordinates(const IndexType& idx) const
-    throw (OutOfBoundException<IndexType>);
+  Coordinate getCoordinates(const Index& idx) const throw
+    (OutOfBoundException<Index>);
   /// Check if the grid contains the point
-  bool isInRange(const CoordinateType& point) const;
+  bool isInRange(const Coordinate& point) const;
   /// Check if an index is valid
-  bool isValidIndex(const IndexType& idx) const;
+  bool isValidIndex(const Index& idx) const;
   /// Returns the number of cells in each dimension
-  const IndexType& getNumCells() const;
+  const Index& getNumCells() const;
   /// Returns the total number of cells
   size_t getNumCellsTot() const;
   /// Returns the minimum of the grid
-  const CoordinateType& getMinimum() const;
+  const Coordinate& getMinimum() const;
   /// Returns the maximum of the grid
-  const CoordinateType& getMaximum() const;
+  const Coordinate& getMaximum() const;
   /// Returns the resolution of the grid
-  const CoordinateType& getResolution() const;
+  const Coordinate& getResolution() const;
   /** @}
     */
 
@@ -136,27 +135,27 @@ protected:
     @{
     */
   /// Computes linear index
-  size_t computeLinearIndex(const IndexType& idx) const;
+  size_t computeLinearIndex(const Index& idx) const;
   /** @}
     */
 
   /** \name Protected members
       @{
     */
-  /// Cells container
-  ContainerType mCells;
+  /// Cell container
+  Container mCells;
   /// Minimum coordinate of the grid
-  CoordinateType mMinimum;
+  Coordinate mMinimum;
   /// Maximum coordinate of the grid
-  CoordinateType mMaximum;
+  Coordinate mMaximum;
   /// Resolution of the grid
-  CoordinateType mResolution;
+  Coordinate mResolution;
   /// Number of cells in each dimension
-  IndexType mNumCells;
+  Index mNumCells;
   /// Total number of cells
   size_t mNumCellsTot;
   /// Pre-computation for linear indices
-  IndexType mLinProd;
+  Index mLinProd;
   /** @}
     */
 

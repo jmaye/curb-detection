@@ -20,10 +20,17 @@
     \brief This file is a testing binary for testing the edge structure.
   */
 
-#include "data-structures/Edge.h"
+#include "data-structures/UndirectedEdge.h"
 
 int main (int argc, char** argv) {
-  Edge<size_t, double> edge(0, 1, 2.5);
-  std::cout << "Edge:" << std::endl << edge << std::endl;
+  UndirectedEdge<size_t, double> edge(0, 1, 2.5);
+  std::cout << "Edge initial:" << std::endl << edge << std::endl;
+  edge.setHead(2);
+  edge.setTail(4);
+  edge.setProperty(3.0);
+  std::cout << "Edge after:" << std::endl << edge << std::endl;
+  std::cout << edge.getHead() << std::endl;
+  std::cout << edge.getTail() << std::endl;
+  std::cout << edge.getProperty() << std::endl;
   return 0;
 }
