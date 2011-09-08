@@ -21,8 +21,9 @@
 /******************************************************************************/
 
 template <typename V, typename P>
-Edge<V, P>::Edge(const Edge<V, P>::VertexType& head, const
-  Edge<V, P>::VertexType& tail, const Edge<V, P>::PropertyType& property) :
+Edge<V, P>::Edge(const Edge<V, P>::VertexDescriptorType& head, const
+  Edge<V, P>::VertexDescriptorType& tail, const Edge<V, P>::PropertyType&
+    property) :
   mHead(head),
   mTail(tail),
   mProperty(property) {
@@ -77,22 +78,22 @@ void Edge<V, P>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Edge<V, P>::setHead(const VertexType& head) {
+void Edge<V, P>::setHead(const VertexDescriptorType& head) {
   mHead = head;
 }
 
 template <typename V, typename P>
-const typename Edge<V, P>::VertexType& Edge<V, P>::getHead() const {
+const typename Edge<V, P>::VertexDescriptorType& Edge<V, P>::getHead() const {
   return mHead;
 }
 
 template <typename V, typename P>
-void Edge<V, P>::setTail(const VertexType& tail) {
+void Edge<V, P>::setTail(const VertexDescriptorType& tail) {
   mTail = tail;
 }
 
 template <typename V, typename P>
-const typename Edge<V, P>::VertexType& Edge<V, P>::getTail() const {
+const typename Edge<V, P>::VertexDescriptorType& Edge<V, P>::getTail() const {
   return mTail;
 }
 

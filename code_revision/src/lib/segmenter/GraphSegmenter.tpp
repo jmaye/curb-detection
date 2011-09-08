@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 #include <algorithm>
-#include <map>
 
 /******************************************************************************/
 /* Methods                                                                    */
@@ -25,34 +24,39 @@
 
 template <typename G>
 double GraphSegmenter<G>::getTau(const
-  Component<typename GraphType::VertexType, double>& c) {
+  Component<typename GraphType::VertexDescriptorType, double>& c) {
   return mK / c.getNumVertices();
 }
 
 template <typename G>
 double GraphSegmenter<G>::getMInt(const
-  Component<typename GraphType::VertexType, double>& c1, const
-  Component<typename GraphType::VertexType, double>& c2) {
+  Component<typename GraphType::VertexDescriptorType, double>& c1, const
+  Component<typename GraphType::VertexDescriptorType, double>& c2) {
   return std::min(c1.getProperty() + getTau(c1), c2.getProperty() + getTau(c2));
 }
 
 template <typename G>
 void GraphSegmenter<G>::segment(const GraphType& graph,
-  std::list<Component<typename GraphType::VertexType, double> >& components,
-  double k) {
+  std::list<Component<typename GraphType::VertexDescriptorType, double> >&
+  components, double k) {
   mK = k;
   components.clear();
-  std::map<typename GraphType::VertexType,
-    Component<typename GraphType::VertexType, double> > vertexToComponent;
+  size_t componentIdx = 0;
+  // At the beginning, every vertex is in one component
   for (typename GraphType::VertexIterator it = graph.getVertexBegin();
-    it != graph.getVertexBegin(); ++it)
-      components.insert(Component<typename GraphType::VertexType,
-        double>(*it));
+    it != graph.getVertexBegin(); ++it) {
+    components.insert(Component<typename GraphType::VertexDescriptorType,
+      double>(*it));
+    it->setProperty(componentIdx++);
+  }
+  // Assume the edges are sorted in non-decreasing order
   for (typename GraphType::EdgeIterator it = graph.getEdgeBegin();
     it != graph.getEdgeEnd(); ++it) {
-    it->getHead();
-    it->getTail();
-    if (it->getProperty() <= 0)
-      ;
+    // get the vertices connected by the current edge
+    it->getHead().getProperty();
+    it->getTail().getProperty();
+    // if the vertices are in 2 different components:
+    // if (it->getProperty() <= getMInt(C1, C2))
+    //   merge the 2 components
   }
 }

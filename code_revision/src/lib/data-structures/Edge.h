@@ -36,7 +36,7 @@ public:
     @{
     */
   /// Vertex descriptor
-  typedef V VertexType;
+  typedef V VertexDescriptorType;
   /// Edge property
   typedef P PropertyType;
   /** @}
@@ -46,8 +46,8 @@ public:
     @{
     */
   /// Constructor with parameter
-  Edge(const VertexType& head, const VertexType& tail, const PropertyType&
-    property);
+  Edge(const VertexDescriptorType& head, const VertexDescriptorType& tail, const
+    PropertyType& property);
   /// Copy constructor
   Edge(const Edge& other);
   /// Assignment operator
@@ -61,13 +61,13 @@ public:
       @{
     */
   /// Sets the head of the edge
-  void setHead(const VertexType& head);
+  void setHead(const VertexDescriptorType& head);
   /// Returns the head of the edge
-  const VertexType& getHead() const;
+  const VertexDescriptorType& getHead() const;
   /// Sets the tail of the edge
-  void setTail(const VertexType& tail);
+  void setTail(const VertexDescriptorType& tail);
   /// Returns the tail of the edge
-  const VertexType& getTail() const;
+  const VertexDescriptorType& getTail() const;
   /// Sets the edge property
   void setProperty(const PropertyType& property);
   /// Returns the edge property
@@ -94,9 +94,9 @@ protected:
       @{
     */
   /// Head vertex
-  VertexType mHead;
+  VertexDescriptorType mHead;
   /// Tail vertex
-  VertexType mTail;
+  VertexDescriptorType mTail;
   /// Edge property
   PropertyType mProperty;
   /** @}

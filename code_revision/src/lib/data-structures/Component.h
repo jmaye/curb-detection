@@ -39,11 +39,11 @@ public:
     @{
     */
   /// Vertex descriptor
-  typedef V VertexType;
+  typedef V VertexDescriptorType;
   /// Component property
   typedef P PropertyType;
   /// Container type
-  typedef std::list<VertexType> ContainerType;
+  typedef std::list<VertexDescriptorType> ContainerType;
   /** @}
     */
 
@@ -51,7 +51,7 @@ public:
     @{
     */
   /// Constructor with one vertex and property parameter
-  Component(const VertexType& vertex, const PropertyType& property =
+  Component(const VertexDescriptorType& vertex, const PropertyType& property =
     PropertyType(0));
   /// Constructor with property parameter
   Component(const PropertyType& property = PropertyType(0));
@@ -68,9 +68,9 @@ public:
       @{
     */
   /// Insert a vertex in the component
-  void insertVertex(const VertexType& vertex);
+  void insertVertex(const VertexDescriptorType& vertex);
   /// Remove a vertex from the component
-  void removeVertex(const VertexType& vertex);
+  void removeVertex(const VertexDescriptorType& vertex);
   /// Merge components
   void merge(const Component& other);
   /// Clears the component

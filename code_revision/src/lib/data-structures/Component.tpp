@@ -21,8 +21,8 @@
 /******************************************************************************/
 
 template <typename V, typename P>
-Component<V, P>::Component(const VertexType& vertex, const PropertyType&
-  property) :
+Component<V, P>::Component(const VertexDescriptorType& vertex, const
+  PropertyType& property) :
   mProperty(property) {
   mVertices.insert(vertex);
 }
@@ -78,12 +78,12 @@ void Component<V, P>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename V, typename P>
-void Component<V, P>::insertVertex(const VertexType& vertex) {
+void Component<V, P>::insertVertex(const VertexDescriptorType& vertex) {
   mVertices.insert(vertex);
 }
 
 template <typename V, typename P>
-void Component<V, P>::removeVertex(const VertexType& vertex) {
+void Component<V, P>::removeVertex(const VertexDescriptorType& vertex) {
   mVertices.remove(vertex);
 }
 
