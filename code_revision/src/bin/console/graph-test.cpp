@@ -23,15 +23,21 @@
 #include "data-structures/Graph.h"
 
 int main (int argc, char** argv) {
-  Graph<size_t, double> component;
-  component.insertVertex(2);
-  component.insertVertex(3);
-  std::cout << "Component initial:" << std::endl << component << std::endl;
-  component.removeVertex(3);
-  component.removeVertex(5);
-  component.setProperty(3.0);
-  std::cout << "Component after:" << std::endl << component << std::endl;
-  std::cout << component.getNumVertices() << std::endl;
-  std::cout << component.getProperty() << std::endl;
+  Graph<size_t, size_t, size_t, double> graph;
+  graph.insertEdge(0, 1);
+  graph.insertEdge(1, 2);
+  std::cout << "Initial graph: " << std::endl << graph << std::endl;
+  graph.setEdgeProperty(0, 2.5);
+  graph.setVertexProperty(0, 2);
+  std::cout << "Final graph: " << std::endl << graph << std::endl;
+  std::cout << graph.getNumVertices() << std::endl;
+  std::cout << graph.getNumEdges() << std::endl;
+  std::cout << graph.getEdge(0, 1) << std::endl;
+  std::cout << graph.containsVertex(3) << std::endl;
+  std::cout << graph.containsEdge(3, 4) << std::endl;
+  std::cout << graph.getEdgeProperty(0) << std::endl;
+  std::cout << graph.getVertexProperty(0) << std::endl;
+  std::cout << graph.getTailVertex(0) << std::endl;
+  std::cout << graph.getHeadVertex(0) << std::endl;
   return 0;
 }

@@ -46,7 +46,8 @@ public:
     @{
     */
   /// Constructor with parameter
-  UndirectedEdge(const V& head, const V& tail, const P& property);
+  UndirectedEdge(const V& head = V(), const V& tail = V(), const P& property =
+    P(0));
   /// Copy constructor
   UndirectedEdge(const UndirectedEdge& other);
   /// Assignment operator

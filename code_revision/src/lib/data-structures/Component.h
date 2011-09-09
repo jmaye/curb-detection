@@ -45,9 +45,9 @@ public:
   /// Container type
   typedef std::list<V> Container;
   /// Constant vertex iterator
-  typedef typename std::list<V>::const_iterator ConstVertexIterator;
+  typedef typename Container::const_iterator ConstVertexIterator;
   /// Vertex iterator
-  typedef typename std::list<V>::iterator VertexIterator;
+  typedef typename Container::iterator VertexIterator;
   /** @}
     */
 

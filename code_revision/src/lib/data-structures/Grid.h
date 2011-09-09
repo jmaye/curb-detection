@@ -40,12 +40,12 @@ public:
   /** \name Types definitions
     @{
     */
-  /// Constant iterator type
-  typedef typename std::vector<C>::const_iterator ConstCellIterator;
-  /// Iterator type
-  typedef typename std::vector<C>::iterator CellIterator;
   /// Container type
   typedef std::vector<C> Container;
+  /// Constant iterator type
+  typedef typename Container::const_iterator ConstCellIterator;
+  /// Iterator type
+  typedef typename Container::iterator CellIterator;
   /// Index type
   typedef Eigen::Matrix<size_t, M, 1> Index;
   /// Coordinate type

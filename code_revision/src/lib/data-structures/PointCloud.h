@@ -43,12 +43,12 @@ public:
     */
   /// Point type
   typedef Eigen::Matrix<X, M, 1> Point;
-  /// Constant iterator type
-  typedef typename std::vector<Point>::const_iterator ConstPointIterator;
-  /// Iterator type
-  typedef typename std::vector<Point>::iterator PointIterator;
   /// Container type
   typedef std::vector<Point> Container;
+  /// Constant iterator type
+  typedef typename Container::const_iterator ConstPointIterator;
+  /// Iterator type
+  typedef typename Container::iterator PointIterator;
   /** @}
     */
 

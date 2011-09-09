@@ -20,117 +20,279 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-template <typename V, typename P>
-Graph<V, P>::Graph(const V& vertex, const P& property) :
-  mProperty(property) {
-  mVertices.insert(vertex);
+template <typename V, typename E, typename T, typename P>
+Graph<V, E, T, P>::Graph() {
 }
 
-template <typename V, typename P>
-Graph<V, P>::Graph(const P& property) :
-  mProperty(property) {
-}
-
-template <typename V, typename P>
-Graph<V, P>::Graph(const Graph<V, P>::Graph& other) :
+template <typename V, typename E, typename T, typename P>
+Graph<V, E, T, P>::Graph(const Graph<V, E, T, P>::Graph& other) :
   mVertices(other.mVertices),
-  mProperty(other.mProperty) {
+  mEdges(other.mEdges) {
 }
 
-template <typename V, typename P>
-Graph<V, P>& Graph<V, P>::operator = (const Graph<V, P>& other) {
+template <typename V, typename E, typename T, typename P>
+Graph<V, E, T, P>& Graph<V, E, T, P>::operator = (const Graph<V, E, T, P>&
+  other) {
   if (this != &other) {
     mVertices = other.mVertices;
-    mProperty = other.mProperty;
+    mEdges = other.mEdges;
   }
   return *this;
 }
 
-template <typename V, typename P>
-Graph<V, P>::~Graph() {
+template <typename V, typename E, typename T, typename P>
+Graph<V, E, T, P>::~Graph() {
 }
 
 /******************************************************************************/
 /* Stream operations                                                          */
 /******************************************************************************/
 
-template <typename V, typename P>
-void Graph<V, P>::read(std::istream& stream) {
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::read(std::istream& stream) {
 }
 
-template <typename V, typename P>
-void Graph<V, P>::write(std::ostream& stream) const {
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::write(std::ostream& stream) const {
   stream << "vertices: " << std::endl;
   for (ConstVertexIterator it = getVertexBegin(); it != getVertexEnd(); ++it)
-    stream << *it << std::endl;
-  stream << "property: " << mProperty;
+    stream << it->second << std::endl;
+  stream << "edges: " << std::endl;
+  for (ConstEdgeIterator it = getEdgeBegin(); it != getEdgeEnd(); ++it)
+    stream << it->second << std::endl;
 }
 
-template <typename V, typename P>
-void Graph<V, P>::read(std::ifstream& stream) {
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::read(std::ifstream& stream) {
 }
 
-template <typename V, typename P>
-void Graph<V, P>::write(std::ofstream& stream) const {
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-template <typename V, typename P>
-void Graph<V, P>::insertVertex(const V& vertex) {
-  mVertices.push_back(vertex);
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::ConstVertexIterator
+Graph<V, E, T, P>::getVertexBegin() const {
+  return mVertices.begin();
 }
 
-template <typename V, typename P>
-void Graph<V, P>::removeVertex(const V& vertex) {
-  mVertices.remove(vertex);
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::VertexIterator Graph<V, E, T, P>::getVertexBegin() {
+  return mVertices.begin();
 }
 
-template <typename V, typename P>
-void Graph<V, P>::merge(const Graph<V, P>& other) {
-  mVertices.merge(other.mVertices);
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::ConstVertexIterator
+Graph<V, E, T, P>::getVertexEnd() const {
+  return mVertices.end();
 }
 
-template <typename V, typename P>
-void Graph<V, P>::clear() {
-  mVertices.clear();
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::VertexIterator Graph<V, E, T, P>::getVertexEnd() {
+  return mVertices.end();
 }
 
-template <typename V, typename P>
-size_t Graph<V, P>::getNumVertices() const {
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::ConstEdgeIterator Graph<V, E, T, P>::getEdgeBegin()
+  const {
+  return mEdges.begin();
+}
+
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::EdgeIterator Graph<V, E, T, P>::getEdgeBegin() {
+  return mEdges.begin();
+}
+
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::ConstEdgeIterator Graph<V, E, T, P>::getEdgeEnd()
+  const {
+  return mEdges.end();
+}
+
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::EdgeIterator Graph<V, E, T, P>::getEdgeEnd() {
+  return mEdges.end();
+}
+
+template <typename V, typename E, typename T, typename P>
+size_t Graph<V, E, T, P>::getNumVertices() const {
   return mVertices.size();
 }
 
-template <typename V, typename P>
-void Graph<V, P>::setProperty(const P& property) {
-  mProperty = property;
+template <typename V, typename E, typename T, typename P>
+size_t Graph<V, E, T, P>::getNumEdges() const {
+  return mEdges.size();
 }
 
-template <typename V, typename P>
-const P& Graph<V, P>::getProperty() const {
-  return mProperty;
+template <typename V, typename E, typename T, typename P>
+E Graph<V, E, T, P>::getEdge(ConstEdgeIterator it) const throw
+  (OutOfBoundException<size_t>) {
+  for (ConstEdgeIterator itE = getEdgeBegin(); itE != getEdgeEnd(); ++itE)
+    if (itE == it)
+      return it->first;
+  throw OutOfBoundException<size_t>(0,
+    "Graph<V, E, T, P>::getEdge(): invalid iterator", __FILE__, __LINE__);
 }
 
-template <typename V, typename P>
-typename Graph<V, P>::ConstVertexIterator Graph<V, P>::getVertexBegin()
-  const {
-  return mVertices.begin();
+template <typename V, typename E, typename T, typename P>
+E Graph<V, E, T, P>::getEdge(const V& tail, const V& head) const
+  throw (OutOfBoundException<V>) {
+  for (ConstEdgeIterator it = getEdgeBegin(); it != getEdgeEnd(); ++it) {
+    E edge = getEdge(it);
+    if (getTailVertex(edge) == tail && getHeadVertex(edge) == head)
+      return edge;
+  }
+  throw OutOfBoundException<V>(tail,
+    "Graph<V, E, T, P>::getEdge(): invalid edge", __FILE__, __LINE__);
 }
 
-template <typename V, typename P>
-typename Graph<V, P>::VertexIterator Graph<V, P>::getVertexBegin() {
-  return mVertices.begin();
+template <typename V, typename E, typename T, typename P>
+bool Graph<V, E, T, P>::containsVertex(const V& vertex) const {
+  return findVertex(vertex) != getVertexEnd();
 }
 
-template <typename V, typename P>
-typename Graph<V, P>::ConstVertexIterator Graph<V, P>::getVertexEnd()
-  const {
-  return mVertices.end();
+template <typename V, typename E, typename T, typename P>
+bool Graph<V, E, T, P>::containsEdge(const V& tail, const V& head) const {
+  for (ConstEdgeIterator it = getEdgeBegin(); it != getEdgeEnd(); ++it) {
+    E edge = getEdge(it);
+    if ((getTailVertex(edge) == tail && getHeadVertex(edge) == head) ||
+      (getTailVertex(edge) == head && getHeadVertex(edge) == tail))
+      return true;
+  }
+  return false;
 }
 
-template <typename V, typename P>
-typename Graph<V, P>::VertexIterator Graph<V, P>::getVertexEnd() {
-  return mVertices.end();
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::EdgeIterator
+Graph<V, E, T, P>::findEdge(const E& edge) const {
+  return ((EdgeContainer&)mEdges).find(edge);
+}
+
+template <typename V, typename E, typename T, typename P>
+typename Graph<V, E, T, P>::VertexIterator
+Graph<V, E, T, P>::findVertex(const V& vertex) const {
+  return ((VertexContainer&)mVertices).find(vertex);
+}
+
+template <typename V, typename E, typename T, typename P>
+V Graph<V, E, T, P>::getVertex(ConstVertexIterator it) const throw
+  (OutOfBoundException<size_t>) {
+  for (ConstVertexIterator itE = getVertexBegin(); itE != getVertexEnd(); ++itE)
+    if (itE == it)
+      return it->first;
+  throw OutOfBoundException<size_t>(0,
+    "Graph<V, E, T, P>::getVertex(): invalid iterator", __FILE__, __LINE__);
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::setEdgeProperty(const E& edge, const P& property) {
+  getEdgeProperty(edge) = property;
+}
+
+template <typename V, typename E, typename T, typename P>
+P& Graph<V, E, T, P>::getEdgeProperty(const E& edge) throw
+  (OutOfBoundException<E>) {
+  EdgeIterator it = findEdge(edge);
+  if (it == getEdgeEnd())
+    throw OutOfBoundException<E>(edge,
+      "Graph<V, E, T, P>::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
+  else
+    return it->second.getProperty();
+}
+
+template <typename V, typename E, typename T, typename P>
+const P& Graph<V, E, T, P>::getEdgeProperty(const E& edge) const throw
+  (OutOfBoundException<E>) {
+  EdgeIterator it = findEdge(edge);
+  if (it == getEdgeEnd())
+    throw OutOfBoundException<E>(edge,
+      "Graph<V, E, T, P>::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
+  else
+    return it->second.getProperty();
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::setVertexProperty(const V& vertex, const T& property) {
+  getVertexProperty(vertex) = property;
+}
+
+template <typename V, typename E, typename T, typename P>
+T& Graph<V, E, T, P>::getVertexProperty(const V& vertex) throw
+  (OutOfBoundException<V>) {
+  VertexIterator it = findVertex(vertex);
+  if (it == getVertexEnd())
+    throw OutOfBoundException<V>(vertex,
+      "Graph<V, E, T, P>::getVertexProperty(): invalid vertex", __FILE__,
+       __LINE__);
+  else
+    return it->second.getProperty();
+}
+
+template <typename V, typename E, typename T, typename P>
+const T& Graph<V, E, T, P>::getVertexProperty(const V& vertex) const throw
+  (OutOfBoundException<V>) {
+  VertexIterator it = findVertex(vertex);
+  if (it == getVertexEnd())
+    throw OutOfBoundException<V>(vertex,
+      "Graph<V, E, T, P>::getVertexProperty(): invalid vertex", __FILE__,
+       __LINE__);
+  else
+    return it->second.getProperty();
+}
+
+template <typename V, typename E, typename T, typename P>
+V Graph<V, E, T, P>::getTailVertex(const E& edge) const {
+  return findEdge(edge)->second.getTail();
+}
+
+template <typename V, typename E, typename T, typename P>
+V Graph<V, E, T, P>::getHeadVertex(const E& edge) const {
+  return findEdge(edge)->second.getHead();
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::insertEdge(const V& tail, const V& head) {
+  if (!containsEdge(tail, head)) {
+    if (!containsVertex(tail))
+      mVertices[tail] = Vertex<T>();
+    if (!containsVertex(head))
+      mVertices[head] = Vertex<T>();
+    mEdges[getNumEdges()] = UndirectedEdge<V, P>(head, tail);
+  }
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::removeEdge(ConstEdgeIterator& it) {
+  mEdges.erase(it);
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::clearEdges() {
+  mEdges.clear();
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::insertVertex(const V& vertex) {
+  if (!containsVertex(vertex))
+    mVertices[vertex] = Vertex<T>();
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::removeVertex(ConstVertexIterator& it) {
+  mVertices.erase(it);
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::clearVertices() {
+  mVertices.clear();
+}
+
+template <typename V, typename E, typename T, typename P>
+void Graph<V, E, T, P>::clear() {
+  clearEdges();
+  clearVertices();
 }

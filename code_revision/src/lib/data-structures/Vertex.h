@@ -44,7 +44,7 @@ public:
     @{
     */
   /// Constructor with parameter
-  Vertex(const P& property);
+  Vertex(const P& property = P(0));
   /// Copy constructor
   Vertex(const Vertex& other);
   /// Assignment operator
