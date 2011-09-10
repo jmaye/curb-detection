@@ -24,6 +24,12 @@
 #ifndef DEMGRAPH_H
 #define DEMGRAPH_H
 
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/UndirectedEdge.h"
+
+#include <vector>
+
 /** The class DEMGraph represents a special graph implementation for a DEM.
     \brief DEM graph
   */
@@ -34,17 +40,17 @@ public:
     @{
     */
   /// Vertex descriptor
-  typedef V VertexDescriptor;
+  typedef Grid<double, Cell, 2>::Index VertexDescriptor;
   /// Edge descriptor
-  typedef E EdgeDescriptor;
+  typedef size_t EdgeDescriptor;
   /// Edge property
-  typedef P EdgeProperty;
+  typedef double EdgeProperty;
   /// Edge container
-  typedef std::map<E, UndirectedEdge<V, P> > EdgeContainer;
+  typedef std::vector<UndirectedEdge<VertexDescriptor, double> > EdgeContainer;
   /// Constant edge iterator
-  typedef typename EdgeContainer::const_iterator ConstEdgeIterator;
+  typedef EdgeContainer::const_iterator ConstEdgeIterator;
   /// Edge iterator
-  typedef typename EdgeContainer::iterator EdgeIterator;
+  typedef EdgeContainer::iterator EdgeIterator;
   /** @}
     */
 
@@ -75,46 +81,46 @@ public:
   EdgeIterator getEdgeEnd();
   /// Returns the number of edges
   size_t getNumEdges() const;
-  /// Returns an edge descriptor from an iterator
-  E getEdge(ConstEdgeIterator it) const throw
-    (OutOfBoundException<size_t>);
-  /// Returns an edge descriptor from a tail and head vertex
-  E getEdge(const V& tail, const V& head) const throw (OutOfBoundException<V>);
-  /// Checks if graph contains an edge
-  bool containsEdge(const V& tail, const V& head) const;
-  /// Finds an edge in the graph
-  EdgeIterator findEdge(const E& edge) const;
-  /// Sets an edge property
-  void setEdgeProperty(const E& edge, const P& property);
-  /// Returns an edge property
-  P& getEdgeProperty(const E& edge) throw (OutOfBoundException<E>);
-  /// Returns an edge property
-  const P& getEdgeProperty(const E& edge) const throw (OutOfBoundException<E>);
-  /// Sets a vertex property
-  void setVertexProperty(const V& vertex, const T& property);
-  /// Returns a vertex property
-  T& getVertexProperty(const V& vertex) throw (OutOfBoundException<V>);
-  /// Returns a vertex property
-  const T& getVertexProperty(const V& vertex) const
-    throw (OutOfBoundException<V>);
-  /// Returns tail vertex from an edge
-  V getTailVertex(const E& edge) const;
-  /// Returns head vertex from an edge
-  V getHeadVertex(const E& edge) const;
-  /// Inserts an edge in the graph
-  void insertEdge(const V& tail, const V& head);
-  /// Removes an edge from the graph
-  void removeEdge(ConstEdgeIterator& it);
-  /// Clears the edges
-  void clearEdges();
-  /// Inserts a vertex in the graph
-  void insertVertex(const V& vertex);
-  /// Removes a vertex from the graph
-  void removeVertex(ConstVertexIterator& it);
-  /// Clears the vertices
-  void clearVertices();
-  /// Clears the graph
-  void clear();
+//  /// Returns an edge descriptor from an iterator
+//  E getEdge(ConstEdgeIterator it) const throw
+//    (OutOfBoundException<size_t>);
+//  /// Returns an edge descriptor from a tail and head vertex
+//  E getEdge(const V& tail, const V& head) const throw (OutOfBoundException<V>);
+//  /// Checks if graph contains an edge
+//  bool containsEdge(const V& tail, const V& head) const;
+//  /// Finds an edge in the graph
+//  EdgeIterator findEdge(const E& edge) const;
+//  /// Sets an edge property
+//  void setEdgeProperty(const E& edge, const P& property);
+//  /// Returns an edge property
+//  P& getEdgeProperty(const E& edge) throw (OutOfBoundException<E>);
+//  /// Returns an edge property
+//  const P& getEdgeProperty(const E& edge) const throw (OutOfBoundException<E>);
+//  /// Sets a vertex property
+//  void setVertexProperty(const V& vertex, const T& property);
+//  /// Returns a vertex property
+//  T& getVertexProperty(const V& vertex) throw (OutOfBoundException<V>);
+//  /// Returns a vertex property
+//  const T& getVertexProperty(const V& vertex) const
+//    throw (OutOfBoundException<V>);
+//  /// Returns tail vertex from an edge
+//  V getTailVertex(const E& edge) const;
+//  /// Returns head vertex from an edge
+//  V getHeadVertex(const E& edge) const;
+//  /// Inserts an edge in the graph
+//  void insertEdge(const V& tail, const V& head);
+//  /// Removes an edge from the graph
+//  void removeEdge(ConstEdgeIterator& it);
+//  /// Clears the edges
+//  void clearEdges();
+//  /// Inserts a vertex in the graph
+//  void insertVertex(const V& vertex);
+//  /// Removes a vertex from the graph
+//  void removeVertex(ConstVertexIterator& it);
+//  /// Clears the vertices
+//  void clearVertices();
+//  /// Clears the graph
+//  void clear();
   /** @}
     */
 

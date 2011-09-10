@@ -23,8 +23,7 @@
 #include "data-structures/PointCloud.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
-#include "data-structures/Graph.h"
-#include "misc/BuildDEMGraph.h"
+#include "data-structures/DEMGraph.h"
 #include "base/Timestamp.h"
 
 int main (int argc, char** argv) {
@@ -50,7 +49,9 @@ int main (int argc, char** argv) {
   }
   after = Timestamp::now();
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
-  Graph<Grid<double, Cell, 2>::Index, size_t, size_t, double> graph;
-  BuildDEMGraph::build(dem, graph);
+  before = Timestamp::now();
+  DEMGraph graph(dem);
+  after = Timestamp::now();
+  std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
   return 0;
 }
