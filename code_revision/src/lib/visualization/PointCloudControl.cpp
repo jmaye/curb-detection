@@ -98,8 +98,9 @@ void PointCloudControl::renderPoints(double size, bool smooth) {
     glDisable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
   GLView::getInstance().setColor(mPalette, "Point");
-  for (size_t i = 0; i < mPointCloud.getNumPoints(); ++i)
-    glVertex3f(mPointCloud[i](0), mPointCloud[i](1), mPointCloud[i](2));
+  for (PointCloud<double, 3>::ConstPointIterator it =
+    mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it)
+    glVertex3f((*it)(0), (*it)(1), (*it)(2));
   glEnd();
   glPointSize(1.0);
   glDisable(GL_POINT_SMOOTH);

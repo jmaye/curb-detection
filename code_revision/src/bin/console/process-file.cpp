@@ -23,6 +23,8 @@
 #include "data-structures/PointCloud.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
+#include "data-structures/Graph.h"
+#include "misc/BuildDEMGraph.h"
 #include "base/Timestamp.h"
 
 int main (int argc, char** argv) {
@@ -40,12 +42,15 @@ int main (int argc, char** argv) {
   Grid<double, Cell, 2> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.1, 0.1));
-  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i) {
-    Eigen::Matrix<double, 2, 1> point = pointCloud[i].segment(0, 2);
+  for (PointCloud<double, 3>::ConstPointIterator it =
+    pointCloud.getPointBegin(); it != pointCloud.getPointEnd(); ++it) {
+    Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
     if (dem.isInRange(point))
-      dem(point).addPoint(pointCloud[i](2));
+      dem(point).addPoint((*it)(2));
   }
   after = Timestamp::now();
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
+  Graph<Grid<double, Cell, 2>::Index, size_t, size_t, double> graph;
+  BuildDEMGraph::build(dem, graph);
   return 0;
 }

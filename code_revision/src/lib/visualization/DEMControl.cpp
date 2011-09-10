@@ -102,8 +102,8 @@ void DEMControl::renderDEM(double size, bool smooth) {
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "DEM");
   Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
-  for (size_t i = 0; i < mDEM.getNumCells()(0); ++i) {
-    for (size_t j =  0; j < mDEM.getNumCells()(1); ++j) {
+  for (size_t i = 0; i < mDEM.getNumCells()(0); ++i)
+    for (size_t j = 0; j < mDEM.getNumCells()(1); ++j) {
       Eigen::Matrix<double, 2, 1> point = 
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       const Cell& cell =
@@ -128,7 +128,6 @@ void DEMControl::renderDEM(double size, bool smooth) {
       glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
         sampleMean);
     }
-  }
   glEnd();
   glLineWidth(1.0);
   glDisable(GL_LINE_SMOOTH);
@@ -161,9 +160,12 @@ void DEMControl::demChanged() {
   mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
-  for (size_t i = 0; i < mPointCloud.getNumPoints(); ++i)
-    if (mDEM.isInRange(mPointCloud[i].segment(0, 2)))
-      mDEM(mPointCloud[i].segment(0, 2)).addPoint(mPointCloud[i](2));
+  for (PointCloud<double, 3>::ConstPointIterator it =
+    mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it) {
+    Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
+    if (mDEM.isInRange(point))
+      mDEM(point).addPoint((*it)(2));
+  }
   GLView::getInstance().update();
 }
 

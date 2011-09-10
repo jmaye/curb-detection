@@ -93,7 +93,10 @@ void Grid<T, C, M>::write(std::ostream& stream) const {
     << "maximum: " << mMaximum.transpose() << std::endl
     << "resolution: " << mResolution.transpose() << std::endl
     << "number of cells per dim: " << mNumCells.transpose() << std:: endl
-    << "total number of cells: " << mNumCellsTot;
+    << "total number of cells: " << mNumCellsTot << std::endl
+    << "cells: " << std::endl;
+    for (ConstCellIterator it = getCellBegin(); it != getCellEnd(); ++it)
+      stream << *it << std::endl;
 }
 
 template <typename T, typename C, size_t M>

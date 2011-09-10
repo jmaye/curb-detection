@@ -24,7 +24,6 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "statistics/Histogram.h"
 #include "statistics/EstimatorML.h"
 #include "base/Serializable.h"
 
@@ -53,8 +52,6 @@ public:
     */
   /// Adds a point into the cell
   void addPoint(double point);
-  /// Returns the height histogram
-  const Histogram<double, 1>& getHeightHist() const;
   /// Returns the height estimator
   const EstimatorML<NormalDistribution<1> >& getHeightEstimator() const;
   /** @}
@@ -78,8 +75,6 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Histogram of the height values
-  Histogram<double, 1> mHeightHist;
   /// Estimator for the height values
   EstimatorML<NormalDistribution<1> > mHeightEstimator;
   /** @}
