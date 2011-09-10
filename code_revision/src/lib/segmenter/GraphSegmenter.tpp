@@ -19,6 +19,9 @@
 #include <algorithm>
 #include <map>
 
+template <typename G>
+double GraphSegmenter<G>::mK = 100.0;
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -37,7 +40,7 @@ double GraphSegmenter<G>::getMInt(const
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(const Graph& graph,
+void GraphSegmenter<G>::segment(Graph& graph,
   std::list<Component<typename Graph::VertexDescriptor, double> >& components,
   double k) {
   mK = k;
@@ -47,24 +50,25 @@ void GraphSegmenter<G>::segment(const Graph& graph,
     componentsMap;
   for (typename Graph::VertexIterator it = graph.getVertexBegin();
     it != graph.getVertexBegin(); ++it) {
+    typename Graph::VertexDescriptor v = graph.getVertex(it);
     componentsMap[componentIdx] = Component<typename Graph::VertexDescriptor,
-      double>(graph.getVertex(it));
-    graph.setVertexProperty(graph.getVertex(it), componentIdx++);
+      double>(v);
+    graph.setVertexProperty(v, componentIdx++);
   }
   for (typename Graph::ConstEdgeIterator it = graph.getEdgeBegin();
     it != graph.getEdgeEnd(); ++it) {
-    typename Graph::VertexDescriptor v1 = it->getHead();
-    size_t c1  = graph.getVertexProperty(v1);
-    typename Graph::VertexDescriptor v2 = it->getTail();
-    size_t c2 = graph.getVertexProperty(v2);
     typename Graph::EdgeDescriptor e = graph.getEdge(it);
-    if (c1 != c2 && graph.getEdgeProperty(e) <= geMInt(componentsMap[c1],
+    typename Graph::VertexDescriptor v1 = graph.getHeadVertex(e);
+    size_t c1  = graph.getVertexProperty(v1);
+    typename Graph::VertexDescriptor v2 = graph.getTailVertex(e);
+    size_t c2 = graph.getVertexProperty(v2);
+    if (c1 != c2 && graph.getEdgeProperty(e) <= getMInt(componentsMap[c1],
       componentsMap[c2])) {
       for (typename Component<typename
         Graph::VertexDescriptor, double>::VertexIterator it =
         componentsMap[c2].getVertexBegin();
         it != componentsMap[c2].getVertexEnd(); ++it)
-        graph.setVertexProperty(graph.getVertex(it), c1);
+        graph.setVertexProperty(*it, c1);
       double maxInt = std::max(componentsMap[c1].getProperty(),
         componentsMap[c2].getProperty());
       componentsMap[c1].setProperty(std::max(maxInt, graph.getEdgeProperty(e)));
@@ -72,4 +76,5 @@ void GraphSegmenter<G>::segment(const Graph& graph,
       componentsMap.erase(c2);
     }
   }
+  //componentsMap::const_iterator;
 }

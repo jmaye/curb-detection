@@ -40,9 +40,11 @@ int main (int argc, char** argv) {
   Grid<double, Cell, 2> dem(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.1, 0.1));
-  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i)
-    if (dem.isInRange(pointCloud[i].segment(0, 2)))
-      dem(pointCloud[i].segment(0, 2)).addPoint(pointCloud[i](2));
+  for (size_t i = 0; i < pointCloud.getNumPoints(); ++i) {
+    Eigen::Matrix<double, 2, 1> point = pointCloud[i].segment(0, 2);
+    if (dem.isInRange(point))
+      dem(point).addPoint(pointCloud[i](2));
+  }
   after = Timestamp::now();
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
   return 0;

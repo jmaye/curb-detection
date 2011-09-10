@@ -25,6 +25,7 @@
 #define CELL_H
 
 #include "statistics/Histogram.h"
+#include "statistics/EstimatorML.h"
 #include "base/Serializable.h"
 
 /** The class Cell represents a cell of a Digital Elevation Map (DEM).
@@ -54,6 +55,8 @@ public:
   void addPoint(double point);
   /// Returns the height histogram
   const Histogram<double, 1>& getHeightHist() const;
+  /// Returns the height estimator
+  const EstimatorML<NormalDistribution<1> >& getHeightEstimator() const;
   /** @}
     */
 
@@ -77,9 +80,13 @@ protected:
     */
   /// Histogram of the height values
   Histogram<double, 1> mHeightHist;
+  /// Estimator for the height values
+  EstimatorML<NormalDistribution<1> > mHeightEstimator;
   /** @}
     */
 
 };
+
+#include "data-structures/Cell.tpp"
 
 #endif // CELL_H

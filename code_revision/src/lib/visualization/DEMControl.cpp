@@ -19,6 +19,7 @@
 #include "visualization/DEMControl.h"
 
 #include "visualization/PointCloudControl.h"
+#include "data-structures/Cell.h"
 
 #include "ui_DEMControl.h"
 
@@ -100,15 +101,15 @@ void DEMControl::renderDEM(double size, bool smooth) {
     glDisable(GL_LINE_SMOOTH);
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "DEM");
+  Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
   for (size_t i = 0; i < mDEM.getNumCells()(0); ++i) {
     for (size_t j =  0; j < mDEM.getNumCells()(1); ++j) {
       Eigen::Matrix<double, 2, 1> point = 
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
-      double sampleMean =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()].
-        getHeightHist().getSampleMean();
-      if (std::isnan(sampleMean))
+      const Cell& cell =
+        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      double sampleMean = cell.getHeightEstimator().getMean();
+      if (cell.getHeightEstimator().getValid() == false)
         continue;
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
         sampleMean);

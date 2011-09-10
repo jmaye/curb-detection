@@ -23,7 +23,7 @@
 template <typename V, typename P>
 Component<V, P>::Component(const V& vertex, const P& property) :
   mProperty(property) {
-  mVertices.insert(vertex);
+  mVertices.push_back(vertex);
 }
 
 template <typename V, typename P>
@@ -89,7 +89,7 @@ void Component<V, P>::removeVertex(const V& vertex) {
 }
 
 template <typename V, typename P>
-void Component<V, P>::merge(const Component<V, P>& other) {
+void Component<V, P>::merge(Component<V, P>& other) {
   mVertices.merge(other.mVertices);
 }
 

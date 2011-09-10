@@ -75,7 +75,7 @@ public:
   /// Remove a vertex from the component
   void removeVertex(const V& vertex);
   /// Merge components
-  void merge(const Component& other);
+  void merge(Component& other);
   /// Clears the component
   void clear();
   /// Returns the number of vertices

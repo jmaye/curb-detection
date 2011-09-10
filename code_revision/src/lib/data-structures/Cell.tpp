@@ -16,8 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "data-structures/Cell.h"
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -27,12 +25,14 @@ Cell::Cell() :
 }
 
 Cell::Cell(const Cell& other) :
-  mHeightHist(other.mHeightHist) {
+  mHeightHist(other.mHeightHist),
+  mHeightEstimator(other.mHeightEstimator) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
   if (this != &other) {
     mHeightHist = other.mHeightHist;
+    mHeightEstimator = other.mHeightEstimator;
   }
   return *this;
 }
@@ -48,7 +48,8 @@ void Cell::read(std::istream& stream) {
 }
 
 void Cell::write(std::ostream& stream) const {
-  stream << "height histogram: " << std::endl << mHeightHist;
+  stream << "height histogram: " << std::endl << mHeightHist << std::endl
+    << "height estimator: " << std::endl;
 }
 
 void Cell::read(std::ifstream& stream) {
@@ -63,8 +64,13 @@ void Cell::write(std::ofstream& stream) const {
 
 void Cell::addPoint(double point) {
   mHeightHist.addSample(point);
+  mHeightEstimator.addPoint(point);
 }
 
 const Histogram<double, 1>& Cell::getHeightHist() const {
   return mHeightHist;
+}
+
+const EstimatorML<NormalDistribution<1> >& Cell::getHeightEstimator() const {
+  return mHeightEstimator;
 }

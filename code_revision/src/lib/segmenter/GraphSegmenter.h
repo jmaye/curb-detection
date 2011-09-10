@@ -73,7 +73,7 @@ public:
       @{
     */
   /// Segment the graph
-  static void segment(const Graph& graph,
+  static void segment(Graph& graph,
     std::list<Component<typename Graph::VertexDescriptor, double> >& components,
     double k = 100.0);
   /** @}

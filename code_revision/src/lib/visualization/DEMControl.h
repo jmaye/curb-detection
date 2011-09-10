@@ -24,7 +24,6 @@
 #define DEMCONTROL_H
 
 #include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "data-structures/PointCloud.h"
 #include "visualization/Control.h"
 #include "base/Singleton.h"
@@ -34,6 +33,7 @@
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
+class Cell;
 class Ui_DEMControl;
 
 /** The DEMControl class represents a Qt control for DEM.
