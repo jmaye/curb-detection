@@ -75,8 +75,6 @@ public:
   void setShowDEM(bool showDEM);
   /// Smoothes the lines
   void setSmoothLines(bool smoothLines);
-  /// Sets the segmentation parameter
-  void setK(double value);
   /** @}
     */
 
@@ -98,12 +96,8 @@ protected:
   Palette mPalette;
   /// DEM
   Grid<double, Cell, 2> mDEM;
-  /// DEM graph
-  //DEMGraph mGraph;
   /// Point cloud
   PointCloud<double, 3> mPointCloud;
-  /// Parameter for the segmentation
-  double mK;
   /** @}
     */
 
@@ -125,8 +119,6 @@ protected slots:
   void demChanged();
   /// Render DEM
   void render(GLView& view, Scene& scene);
-  /// Segmentation parameter changed
-  //void kChanged(double value);
   /** @}
     */
 
