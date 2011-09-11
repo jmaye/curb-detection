@@ -37,9 +37,10 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
             NormalDistribution<1> cellDownDist(
               cellDown.getHeightEstimator().getMean(),
               cellDown.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<VertexDescriptor, double>(
-              (Grid<double, Cell, 2>::Index() << i, j).finished(),
-              (Grid<double, Cell, 2>::Index() << i + 1, j).finished(),
+            mEdges.push_back(UndirectedEdge<V, P>(dem.computeLinearIndex(
+              (Grid<double, Cell, 2>::Index() << i, j).finished()),
+              dem.computeLinearIndex(
+              (Grid<double, Cell, 2>::Index() << i + 1, j).finished()),
               cellDist.KLDivergence(cellDownDist) +
               cellDownDist.KLDivergence(cellDist)));
           }
@@ -51,9 +52,10 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
             NormalDistribution<1> cellRightDist(
               cellRight.getHeightEstimator().getMean(),
               cellRight.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<VertexDescriptor, double>(
-              (Grid<double, Cell, 2>::Index() << i, j).finished(),
-              (Grid<double, Cell, 2>::Index() << i, j + 1).finished(),
+            mEdges.push_back(UndirectedEdge<V, P>(dem.computeLinearIndex(
+              (Grid<double, Cell, 2>::Index() << i, j).finished()),
+              dem.computeLinearIndex(
+              (Grid<double, Cell, 2>::Index() << i + 1, j + 1).finished()),
               cellDist.KLDivergence(cellRightDist) +
               cellRightDist.KLDivergence(cellDist)));
           }
@@ -119,149 +121,50 @@ size_t DEMGraph::getNumEdges() const {
   return mEdges.size();
 }
 
-//E DEMGraph::getEdge(ConstEdgeIterator it) const throw
-//  (OutOfBoundException<size_t>) {
-//  for (ConstEdgeIterator itE = getEdgeBegin(); itE != getEdgeEnd(); ++itE)
-//    if (itE == it)
-//      return it->first;
-//  throw OutOfBoundException<size_t>(0,
-//    "DEMGraph::getEdge(): invalid iterator", __FILE__, __LINE__);
-//}
+DEMGraph::E DEMGraph::getEdge(ConstEdgeIterator it) const throw
+  (OutOfBoundException<size_t>) {
+  if (it >= getEdgeEnd())
+    throw OutOfBoundException<size_t>(0,
+      "DEMGraph::getEdge(): invalid iterator", __FILE__, __LINE__);
+  else
+    return it - getEdgeBegin();
+}
 
-//E DEMGraph::getEdge(const V& tail, const V& head) const
-//  throw (OutOfBoundException<V>) {
-//  for (ConstEdgeIterator it = getEdgeBegin(); it != getEdgeEnd(); ++it) {
-//    E edge = getEdge(it);
-//    if (getTailVertex(edge) == tail && getHeadVertex(edge) == head)
-//      return edge;
-//  }
-//  throw OutOfBoundException<V>(tail,
-//    "DEMGraph::getEdge(): invalid edge", __FILE__, __LINE__);
-//}
+DEMGraph::EdgeIterator DEMGraph::findEdge(const E& edge) const {
+  if (getEdgeBegin() + edge >= getEdgeEnd())
+    return ((EdgeContainer&)mEdges).end();
+  else
+    return ((EdgeContainer&)mEdges).begin() + edge;
+}
 
-//bool DEMGraph::containsVertex(const V& vertex) const {
-//  return findVertex(vertex) != getVertexEnd();
-//}
+void DEMGraph::setEdgeProperty(const E& edge, const P& property) {
+  getEdgeProperty(edge) = property;
+}
 
-//bool DEMGraph::containsEdge(const V& tail, const V& head) const {
-//  for (ConstEdgeIterator it = getEdgeBegin(); it != getEdgeEnd(); ++it) {
-//    E edge = getEdge(it);
-//    if ((getTailVertex(edge) == tail && getHeadVertex(edge) == head) ||
-//      (getTailVertex(edge) == head && getHeadVertex(edge) == tail))
-//      return true;
-//  }
-//  return false;
-//}
+DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) throw
+  (OutOfBoundException<E>) {
+  EdgeIterator it = findEdge(edge);
+  if (it == getEdgeEnd())
+    throw OutOfBoundException<E>(edge,
+      "DEMGraph::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
+  else
+    return it->getProperty();
+}
 
-//typename DEMGraph::EdgeIterator
-//DEMGraph::findEdge(const E& edge) const {
-//  return ((EdgeContainer&)mEdges).find(edge);
-//}
+const DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) const throw
+  (OutOfBoundException<E>) {
+  EdgeIterator it = findEdge(edge);
+  if (it == getEdgeEnd())
+    throw OutOfBoundException<E>(edge,
+      "DEMGraph::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
+  else
+    return it->getProperty();
+}
 
-//typename DEMGraph::VertexIterator
-//DEMGraph::findVertex(const V& vertex) const {
-//  return ((VertexContainer&)mVertices).find(vertex);
-//}
+DEMGraph::V DEMGraph::getTailVertex(const E& edge) const {
+  return findEdge(edge)->getTail();
+}
 
-//V DEMGraph::getVertex(ConstVertexIterator it) const throw
-//  (OutOfBoundException<size_t>) {
-//  for (ConstVertexIterator itE = getVertexBegin(); itE != getVertexEnd(); ++itE)
-//    if (itE == it)
-//      return it->first;
-//  throw OutOfBoundException<size_t>(0,
-//    "DEMGraph::getVertex(): invalid iterator", __FILE__, __LINE__);
-//}
-
-//void DEMGraph::setEdgeProperty(const E& edge, const P& property) {
-//  getEdgeProperty(edge) = property;
-//}
-
-//P& DEMGraph::getEdgeProperty(const E& edge) throw
-//  (OutOfBoundException<E>) {
-//  EdgeIterator it = findEdge(edge);
-//  if (it == getEdgeEnd())
-//    throw OutOfBoundException<E>(edge,
-//      "DEMGraph::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
-//  else
-//    return it->second.getProperty();
-//}
-
-//const P& DEMGraph::getEdgeProperty(const E& edge) const throw
-//  (OutOfBoundException<E>) {
-//  EdgeIterator it = findEdge(edge);
-//  if (it == getEdgeEnd())
-//    throw OutOfBoundException<E>(edge,
-//      "DEMGraph::getEdgeProperty(): invalid edge", __FILE__, __LINE__);
-//  else
-//    return it->second.getProperty();
-//}
-
-//void DEMGraph::setVertexProperty(const V& vertex, const T& property) {
-//  getVertexProperty(vertex) = property;
-//}
-
-//T& DEMGraph::getVertexProperty(const V& vertex) throw
-//  (OutOfBoundException<V>) {
-//  VertexIterator it = findVertex(vertex);
-//  if (it == getVertexEnd())
-//    throw OutOfBoundException<V>(vertex,
-//      "DEMGraph::getVertexProperty(): invalid vertex", __FILE__,
-//       __LINE__);
-//  else
-//    return it->second.getProperty();
-//}
-
-//const T& DEMGraph::getVertexProperty(const V& vertex) const throw
-//  (OutOfBoundException<V>) {
-//  VertexIterator it = findVertex(vertex);
-//  if (it == getVertexEnd())
-//    throw OutOfBoundException<V>(vertex,
-//      "DEMGraph::getVertexProperty(): invalid vertex", __FILE__,
-//       __LINE__);
-//  else
-//    return it->second.getProperty();
-//}
-
-//V DEMGraph::getTailVertex(const E& edge) const {
-//  return findEdge(edge)->second.getTail();
-//}
-
-//V DEMGraph::getHeadVertex(const E& edge) const {
-//  return findEdge(edge)->second.getHead();
-//}
-
-//void DEMGraph::insertEdge(const V& tail, const V& head) {
-//  if (!containsEdge(tail, head)) {
-//    if (!containsVertex(tail))
-//      mVertices[tail] = Vertex<T>();
-//    if (!containsVertex(head))
-//      mVertices[head] = Vertex<T>();
-//    mEdges[getNumEdges()] = UndirectedEdge<V, P>(head, tail);
-//  }
-//}
-
-//void DEMGraph::removeEdge(ConstEdgeIterator& it) {
-//  mEdges.erase(it);
-//}
-
-//void DEMGraph::clearEdges() {
-//  mEdges.clear();
-//}
-
-//void DEMGraph::insertVertex(const V& vertex) {
-//  if (!containsVertex(vertex))
-//    mVertices[vertex] = Vertex<T>();
-//}
-
-//void DEMGraph::removeVertex(ConstVertexIterator& it) {
-//  mVertices.erase(it);
-//}
-
-//void DEMGraph::clearVertices() {
-//  mVertices.clear();
-//}
-
-//void DEMGraph::clear() {
-//  clearEdges();
-//  clearVertices();
-//}
+DEMGraph::V DEMGraph::getHeadVertex(const E& edge) const {
+  return findEdge(edge)->getHead();
+}

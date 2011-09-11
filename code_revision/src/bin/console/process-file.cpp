@@ -24,7 +24,10 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
+#include "segmenter/GraphSegmenter.h"
 #include "base/Timestamp.h"
+
+#include <map>
 
 int main (int argc, char** argv) {
   if (argc != 2) {
@@ -51,6 +54,9 @@ int main (int argc, char** argv) {
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
   before = Timestamp::now();
   DEMGraph graph(dem);
+  std::map<size_t, Component<size_t, double> > components;
+  std::map<size_t, size_t> vertices;
+  GraphSegmenter<DEMGraph>::segment(graph, components, vertices);
   after = Timestamp::now();
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
   return 0;

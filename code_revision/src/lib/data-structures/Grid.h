@@ -113,6 +113,8 @@ public:
   const Coordinate& getMaximum() const;
   /// Returns the resolution of the grid
   const Coordinate& getResolution() const;
+  /// Computes linear index
+  size_t computeLinearIndex(const Index& idx) const;
   /** @}
     */
 
@@ -128,14 +130,6 @@ protected:
   virtual void read(std::ifstream& stream);
   /// Writes to a file
   virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
-  /** \name Protected methods
-    @{
-    */
-  /// Computes linear index
-  size_t computeLinearIndex(const Index& idx) const;
   /** @}
     */
 
