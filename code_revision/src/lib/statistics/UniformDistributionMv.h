@@ -21,9 +21,6 @@
            distributions
   */
 
-#ifndef UNIFORMDISTRIBUTIONMV_H
-#define UNIFORMDISTRIBUTIONMV_H
-
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
@@ -148,5 +145,3 @@ protected:
 };
 
 #include "statistics/UniformDistributionMv.tpp"
-
-#endif // UNIFORMDISTRIBUTIONMV_H

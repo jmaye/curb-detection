@@ -21,9 +21,6 @@
            distributions
   */
 
-#ifndef DISCRETEDISTRIBUTIONMV_H
-#define DISCRETEDISTRIBUTIONMV_H
-
 #include "functions/DiscreteFunction.h"
 #include "statistics/Distribution.h"
 
@@ -78,5 +75,3 @@ protected:
 };
 
 #include "statistics/DiscreteDistributionMv.tpp"
-
-#endif // DISCRETEDISTRIBUTIONMV_H

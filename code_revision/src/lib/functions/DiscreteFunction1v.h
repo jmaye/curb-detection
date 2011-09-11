@@ -21,13 +21,7 @@
            to the univariate functions
   */
 
-#ifndef DISCRETEFUNCTION1V_H
-#define DISCRETEFUNCTION1V_H
-
 #include "functions/Function.h"
-
-template <typename Y, typename X, size_t M = 1, size_t N = 1>
-  class DiscreteFunction;
 
 /** The class DiscreteFunction1v is an interface to the univariate discrete
     functions.
@@ -69,5 +63,3 @@ protected:
 };
 
 #include "functions/DiscreteFunction1v.tpp"
-
-#endif // DISCRETEFUNCTION1V_H

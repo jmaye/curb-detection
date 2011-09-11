@@ -20,15 +20,10 @@
     \brief This file defines the univariate normal distribution
   */
 
-#ifndef NORMALDISTRIBUTION1V_H
-#define NORMALDISTRIBUTION1V_H
-
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
-
-template <size_t M = 1> class NormalDistribution;
 
 /** The NormalDistribution1v class represents a univariate normal distribution.
     \brief Univariate normal distribution
@@ -122,5 +117,3 @@ protected:
 };
 
 #include "statistics/NormalDistribution1v.tpp"
-
-#endif // NORMALDISTRIBUTION1V_H

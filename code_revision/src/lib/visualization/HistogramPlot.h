@@ -23,6 +23,10 @@
 #ifndef HISTOGRAMPLOT_H
 #define HISTOGRAMPLOT_H
 
+#include <cstdlib>
+
+template <typename T, size_t M = 1> class HistogramPlot;
+
 #include "visualization/HistogramPlot1v.h"
 #include "visualization/HistogramPlot2v.h"
 

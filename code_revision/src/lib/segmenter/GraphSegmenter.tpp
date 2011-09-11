@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 #include <algorithm>
-#include <map>
 
 template <typename G>
 double GraphSegmenter<G>::mK = 100.0;
@@ -27,54 +26,45 @@ double GraphSegmenter<G>::mK = 100.0;
 /******************************************************************************/
 
 template <typename G>
-double GraphSegmenter<G>::getTau(const
-  Component<typename Graph::VertexDescriptor, double>& c) {
+double GraphSegmenter<G>::getTau(const Component<V, double>& c) {
   return mK / c.getNumVertices();
 }
 
 template <typename G>
-double GraphSegmenter<G>::getMInt(const
-  Component<typename Graph::VertexDescriptor, double>& c1, const
-  Component<typename Graph::VertexDescriptor, double>& c2) {
+double GraphSegmenter<G>::getMInt(const Component<V, double>& c1, const
+  Component<V, double>& c2) {
   return std::min(c1.getProperty() + getTau(c1), c2.getProperty() + getTau(c2));
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(Graph& graph,
-  std::list<Component<typename Graph::VertexDescriptor, double> >& components,
-  double k) {
-  mK = k;
-  components.clear();
-  size_t componentIdx = 0;
-  std::map<size_t, Component<typename Graph::VertexDescriptor, double> >
-    componentsMap;
-  for (typename Graph::VertexIterator it = graph.getVertexBegin();
-    it != graph.getVertexBegin(); ++it) {
-    typename Graph::VertexDescriptor v = graph.getVertex(it);
-    componentsMap[componentIdx] = Component<typename Graph::VertexDescriptor,
-      double>(v);
-    graph.setVertexProperty(v, componentIdx++);
+void GraphSegmenter<G>::segment(G& graph,
+  std::map<size_t, Component<V, double> >& components, std::map<V, size_t>&
+  vertices, double k) {
+  std::multimap<double, E> edges;
+  for (CstItE it = graph.getEdgeBegin(); it != graph.getEdgeEnd(); ++it) {
+    E e = graph.getEdge(it);
+    edges.insert(std::pair<double, E>(graph.getEdgeProperty(e), e));
   }
-  for (typename Graph::ConstEdgeIterator it = graph.getEdgeBegin();
-    it != graph.getEdgeEnd(); ++it) {
-    typename Graph::EdgeDescriptor e = graph.getEdge(it);
-    typename Graph::VertexDescriptor v1 = graph.getHeadVertex(e);
-    size_t c1  = graph.getVertexProperty(v1);
-    typename Graph::VertexDescriptor v2 = graph.getTailVertex(e);
-    size_t c2 = graph.getVertexProperty(v2);
-    if (c1 != c2 && graph.getEdgeProperty(e) <= getMInt(componentsMap[c1],
-      componentsMap[c2])) {
-      for (typename Component<typename
-        Graph::VertexDescriptor, double>::VertexIterator it =
-        componentsMap[c2].getVertexBegin();
-        it != componentsMap[c2].getVertexEnd(); ++it)
-        graph.setVertexProperty(*it, c1);
-      double maxInt = std::max(componentsMap[c1].getProperty(),
-        componentsMap[c2].getProperty());
-      componentsMap[c1].setProperty(std::max(maxInt, graph.getEdgeProperty(e)));
-      componentsMap[c1].merge(componentsMap[c2]);
-      componentsMap.erase(c2);
+  components.clear();
+  for (CstItV it = vertices.begin(); it != vertices.end(); ++it)
+    components[it->second] = Component<V, double>(it->first);
+  mK = k;
+  typename std::multimap<double, E>::const_iterator it;
+  for (it = edges.begin(); it != edges.end(); ++it) {
+    E e = it->second;
+    V v1 = graph.getHeadVertex(e);
+    size_t c1  = vertices[v1];
+    V v2 = graph.getTailVertex(e);
+    size_t c2 = vertices[v2];
+    if (c1 != c2 && it->first <= getMInt(components[c1], components[c2])) {
+      for (CstItCV itC = components[c2].getVertexBegin();
+        itC != components[c2].getVertexEnd(); ++itC)
+        vertices[*itC] = c1;
+      double maxInt = std::max(components[c1].getProperty(),
+        components[c2].getProperty());
+      components[c1].setProperty(std::max(maxInt, it->first));
+      components[c1].merge(components[c2]);
+      components.erase(c2);
     }
   }
-  //componentsMap::const_iterator;
 }

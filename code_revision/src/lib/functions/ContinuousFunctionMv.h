@@ -21,9 +21,6 @@
            interface to the multivariate continuous functions
   */
 
-#ifndef CONTINUOUSFUNCTIONMV_H
-#define CONTINUOUSFUNCTIONMV_H
-
 #include "functions/Function.h"
 
 #include <Eigen/Core>
@@ -60,5 +57,3 @@ protected:
 };
 
 #include "functions/ContinuousFunctionMv.tpp"
-
-#endif // CONTINUOUSFUNCTIONMV_H

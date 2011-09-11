@@ -26,8 +26,11 @@
 
 #include "data-structures/Component.h"
 
+#include <map>
+
 /** The class GraphSegmenter implements the graph-based segmentation algorithm
-    described in [Felzenszwalb, 2004]
+    described in [Felzenszwalb, 2004]. The input graph must be an undirected
+    graph.
     \brief Graph-based segmentation algorithm
   */
 template <typename G> class GraphSegmenter {
@@ -35,7 +38,17 @@ template <typename G> class GraphSegmenter {
       @{
     */
   /// Graph type
-  typedef G Graph;
+  typedef G UndirectedGraph;
+  /// Vertex descriptor
+  typedef typename G::VertexDescriptor V;
+  /// Edge descriptor
+  typedef typename G::EdgeDescriptor E;
+  /// Constant edge iterator
+  typedef typename G::ConstEdgeIterator CstItE;
+  /// Component vertex iterator
+  typedef typename Component<V, double>::ConstVertexIterator CstItCV;
+  /// Constant vertex iterator
+  typedef typename std::map<V, size_t>::const_iterator CstItV;
   /** @}
     */
 
@@ -51,12 +64,10 @@ template <typename G> class GraphSegmenter {
     @{
     */
   /// Threshold function
-  static double getTau(const
-    Component<typename Graph::VertexDescriptor, double>& c);
+  static double getTau(const Component<V, double>& c);
   /// Returns the minimum internal difference between two components
-  static double getMInt(const
-    Component<typename Graph::VertexDescriptor, double>& c1, const
-    Component<typename Graph::VertexDescriptor, double>& c2);
+  static double getMInt(const Component<V, double>& c1, const
+    Component<V, double>& c2);
   /** @}
     */
 
@@ -73,9 +84,8 @@ public:
       @{
     */
   /// Segment the graph
-  static void segment(Graph& graph,
-    std::list<Component<typename Graph::VertexDescriptor, double> >& components,
-    double k = 100.0);
+  static void segment(G& graph, std::map<size_t, Component<V, double> >&
+    components, std::map<V, size_t>& vertices, double k = 100.0);
   /** @}
     */
 

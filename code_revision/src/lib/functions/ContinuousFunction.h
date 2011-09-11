@@ -23,6 +23,11 @@
 #ifndef CONTINUOUSFUNCTION_H
 #define CONTINUOUSFUNCTION_H
 
+#include <cstdlib>
+
+template <typename Y, typename X, size_t M = 1, size_t N = 1>
+  class ContinuousFunction;
+
 #include "functions/ContinuousFunction1v.h"
 #include "functions/ContinuousFunctionMv.h"
 

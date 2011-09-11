@@ -21,9 +21,6 @@
            distributions
   */
 
-#ifndef CONTINUOUSDISTRIBUTIONMV_H
-#define CONTINUOUSDISTRIBUTIONMV_H
-
 #include "functions/ContinuousFunction.h"
 #include "statistics/Distribution.h"
 
@@ -79,5 +76,3 @@ protected:
 };
 
 #include "statistics/ContinuousDistributionMv.tpp"
-
-#endif // CONTINUOUSDISTRIBUTIONMV_H

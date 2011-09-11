@@ -20,9 +20,6 @@
     \brief This file contains the definition of a bivariate histogram
   */
 
-#ifndef HISTOGRAM2V_H
-#define HISTOGRAM2V_H
-
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
 #include "exceptions/OutOfBoundException.h"
@@ -203,5 +200,3 @@ protected:
 };
 
 #include "statistics/Histogram2v.tpp"
-
-#endif // HISTOGRAM2V_H

@@ -23,10 +23,13 @@
 #include "segmenter/GraphSegmenter.h"
 #include "data-structures/Graph.h"
 
+#include <map>
+
 int main (int argc, char** argv) {
   Graph<size_t, size_t, size_t, double> graph;
-  std::list<Component<size_t, double> > components;
+  std::map<size_t, Component<size_t, double> > components;
+  std::map<size_t, size_t> vertices;
   GraphSegmenter<Graph<size_t, size_t, size_t, double> >::segment(graph,
-    components);
+    components, vertices);
   return 0;
 }

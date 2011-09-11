@@ -20,9 +20,6 @@
     \brief This file contains a plotting tool for univariate histograms
   */
 
-#ifndef HISTOGRAMPLOT1V_H
-#define HISTOGRAMPLOT1V_H
-
 #include "statistics/Histogram.h"
 
 #include <QtCore/QVector>
@@ -32,8 +29,6 @@
 #include <qwt-qt4/qwt_plot_grid.h>
 #include <qwt-qt4/qwt_plot_panner.h>
 #include <qwt-qt4/qwt_plot_magnifier.h>
-
-template <typename T, size_t M = 1> class HistogramPlot;
 
 /** The HistogramPlot1v class is a plotting tool for univariate histograms.
     \brief 1-v histogram plot
@@ -91,5 +86,3 @@ protected:
 };
 
 #include "visualization/HistogramPlot1v.tpp"
-
-#endif // HISTOGRAMPLOT1V_H

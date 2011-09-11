@@ -20,9 +20,6 @@
     \brief This file contains the definition of an univariate histogram
   */
 
-#ifndef HISTOGRAM1V_H
-#define HISTOGRAM1V_H
-
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
 #include "exceptions/OutOfBoundException.h"
@@ -30,8 +27,6 @@
 #include <Eigen/Core>
 
 #include <vector>
-
-template <typename T, size_t M = 1> class Histogram;
 
 /** The Histogram1v class defines univariate histograms
     \brief 1-v histogram
@@ -191,5 +186,3 @@ protected:
 };
 
 #include "statistics/Histogram1v.tpp"
-
-#endif // HISTOGRAM1V_H

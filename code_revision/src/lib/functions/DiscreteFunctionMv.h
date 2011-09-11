@@ -21,9 +21,6 @@
            to the multivariate discrete functions
   */
 
-#ifndef DISCRETEFUNCTIONMV_H
-#define DISCRETEFUNCTIONMV_H
-
 #include "functions/Function.h"
 #include "utils/SizeTSupport.h"
 #include "utils/SsizeTSupport.h"
@@ -62,5 +59,3 @@ protected:
 };
 
 #include "functions/DiscreteFunctionMv.tpp"
-
-#endif // DISCRETEFUNCTIONMV_H

@@ -21,9 +21,6 @@
            multivariate Student distribution
   */
 
-#ifndef STUDENTDISTRIBUTIONMV_H
-#define STUDENTDISTRIBUTIONMV_H
-
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
@@ -136,5 +133,3 @@ protected:
 };
 
 #include "statistics/StudentDistributionMv.tpp"
-
-#endif // STUDENTDISTRIBUTIONMV_H

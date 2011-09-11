@@ -20,9 +20,6 @@
     \brief This file contains a plotting tool for trivariate scatter plots
   */
 
-#ifndef SCATTERPLOT3V_H
-#define SCATTERPLOT3V_H
-
 #include "visualization/PointViewer3d.h"
 
 template <size_t M> class ScatterPlot;
@@ -73,5 +70,3 @@ protected:
 };
 
 #include "visualization/ScatterPlot3v.tpp"
-
-#endif // SCATTERPLOT3V_H

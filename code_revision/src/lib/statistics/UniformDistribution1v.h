@@ -21,9 +21,6 @@
            distributions
   */
 
-#ifndef UNIFORMDISTRIBUTION1V_H
-#define UNIFORMDISTRIBUTION1V_H
-
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
@@ -31,8 +28,6 @@
 #include "exceptions/BadArgumentException.h"
 #include "utils/IfThenElse.h"
 #include "utils/IsReal.h"
-
-template <typename X, size_t M = 1> class UniformDistribution;
 
 /** The UniformDistribution1v class represents an interface to the univariate
     uniform distributions.
@@ -157,5 +152,3 @@ protected:
 };
 
 #include "statistics/UniformDistribution1v.tpp"
-
-#endif // UNIFORMDISTRIBUTION1V_H

@@ -21,9 +21,6 @@
            multivariate normal distribution
   */
 
-#ifndef NORMALDISTRIBUTIONMV_H
-#define NORMALDISTRIBUTIONMV_H
-
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
@@ -127,5 +124,3 @@ protected:
 };
 
 #include "statistics/NormalDistributionMv.tpp"
-
-#endif // NORMALDISTRIBUTIONMV_H

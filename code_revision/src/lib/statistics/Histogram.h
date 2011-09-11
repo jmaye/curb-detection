@@ -23,6 +23,10 @@
 #ifndef HISTOGRAM_H
 #define HISTOGRAM_H
 
+#include <cstdlib>
+
+template <typename T, size_t M = 1> class Histogram;
+
 #include "statistics/Histogram1v.h"
 #include "statistics/Histogram2v.h"
 

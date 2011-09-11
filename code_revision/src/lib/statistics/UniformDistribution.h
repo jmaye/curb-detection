@@ -23,6 +23,10 @@
 #ifndef UNIFORMDISTRIBUTION_H
 #define UNIFORMDISTRIBUTION_H
 
+#include <cstdlib>
+
+template <typename X, size_t M = 1> class UniformDistribution;
+
 #include "statistics/UniformDistribution1v.h"
 #include "statistics/UniformDistributionMv.h"
 

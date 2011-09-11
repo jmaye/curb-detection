@@ -23,6 +23,11 @@
 #ifndef DISCRETEFUNCTION_H
 #define DISCRETEFUNCTION_H
 
+#include <cstdlib>
+
+template <typename Y, typename X, size_t M = 1, size_t N = 1>
+  class DiscreteFunction;
+
 #include "functions/DiscreteFunction1v.h"
 #include "functions/DiscreteFunctionMv.h"
 

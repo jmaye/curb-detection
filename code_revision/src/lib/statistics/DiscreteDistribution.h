@@ -23,6 +23,10 @@
 #ifndef DISCRETEDISTRIBUTION_H
 #define DISCRETEDISTRIBUTION_H
 
+#include <cstdlib>
+
+template <typename X, size_t M = 1, size_t N = 1> class DiscreteDistribution;
+
 #include "statistics/DiscreteDistribution1v.h"
 #include "statistics/DiscreteDistributionMv.h"
 

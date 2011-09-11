@@ -23,6 +23,10 @@
 #ifndef CONTINUOUSDISTRIBUTION_H
 #define CONTINUOUSDISTRIBUTION_H
 
+#include <cstdlib>
+
+template <typename X, size_t M = 1, size_t N = 1> class ContinuousDistribution;
+
 #include "statistics/ContinuousDistribution1v.h"
 #include "statistics/ContinuousDistributionMv.h"
 

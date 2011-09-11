@@ -20,9 +20,6 @@
     \brief This file contains a plotting tool for bivariate scatter plots
   */
 
-#ifndef SCATTERPLOT2V_H
-#define SCATTERPLOT2V_H
-
 #include <QtCore/QVector>
 
 #include <qwt-qt4/qwt_plot.h>
@@ -34,8 +31,6 @@
 #include <Eigen/Core>
 
 #include <vector>
-
-template <size_t M = 2> class ScatterPlot;
 
 /** The ScatterPlot2v class is a plotting tool for bivariate scatter plots.
     \brief 2-v scatter plot
@@ -94,5 +89,3 @@ protected:
 };
 
 #include "visualization/ScatterPlot2v.tpp"
-
-#endif // SCATTERPLOT2V_H

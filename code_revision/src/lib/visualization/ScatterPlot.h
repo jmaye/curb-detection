@@ -23,6 +23,10 @@
 #ifndef SCATTERPLOT_H
 #define SCATTERPLOT_H
 
+#include <cstdlib>
+
+template <size_t M = 2> class ScatterPlot;
+
 #include "visualization/ScatterPlot2v.h"
 #include "visualization/ScatterPlot3v.h"
 

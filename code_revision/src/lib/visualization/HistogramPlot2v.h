@@ -20,9 +20,6 @@
     \brief This file contains a plotting tool for bivariate histogram plots
   */
 
-#ifndef HISTOGRAMPLOT2V_H
-#define HISTOGRAMPLOT2V_H
-
 #include "statistics/Histogram.h"
 
 #include <qwtplot3d-qt4/qwt3d_surfaceplot.h>
@@ -75,5 +72,3 @@ protected:
 };
 
 #include "visualization/HistogramPlot2v.tpp"
-
-#endif // HISTOGRAMPLOT2V_H

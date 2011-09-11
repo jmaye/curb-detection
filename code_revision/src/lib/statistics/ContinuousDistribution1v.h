@@ -21,13 +21,8 @@
            distributions
   */
 
-#ifndef CONTINUOUSDISTRIBUTION1V_H
-#define CONTINUOUSDISTRIBUTION1V_H
-
 #include "functions/ContinuousFunction.h"
 #include "statistics/Distribution.h"
-
-template <typename X, size_t M = 1, size_t N = 1> class ContinuousDistribution;
 
 /** The ContinuousDistribution1v class represents an interface to the univariate
     continuous distributions.
@@ -80,5 +75,3 @@ protected:
 };
 
 #include "statistics/ContinuousDistribution1v.tpp"
-
-#endif // CONTINUOUSDISTRIBUTION1V_H
