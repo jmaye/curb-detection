@@ -16,40 +16,54 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file DEMControl.h
-    \brief This file defines a Qt control for DEM
+/** \file SegmentationControl.h
+    \brief This file defines a Qt control for segmentation.
   */
 
-#ifndef DEMCONTROL_H
-#define DEMCONTROL_H
+#ifndef SEGMENTATIONCONTROL_H
+#define SEGMENTATIONCONTROL_H
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
 #include "data-structures/Grid.h"
-#include "data-structures/PointCloud.h"
+#include "data-structures/Component.h"
 
-#include <QtCore/QString>
-#include <QtGui/QColor>
+#include <map>
 
 class Cell;
-class Ui_DEMControl;
+class Ui_SegmentationControl;
 
-/** The DEMControl class represents a Qt control for DEM.
-    \brief Qt control for DEM
+/** The SegmentationControl class represents a Qt control for segmentation.
+    \brief Qt control for segmentation
   */
-class DEMControl :
+class SegmentationControl :
   public Control,
-  public Singleton<DEMControl> {
+  public Singleton<SegmentationControl> {
 Q_OBJECT
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  DEMControl(const DEMControl& other);
+  SegmentationControl(const SegmentationControl& other);
   /// Assignment operator
-  DEMControl& operator = (const DEMControl& other);
+  SegmentationControl& operator = (const SegmentationControl& other);
+  /** @}
+    */
+
+  /** \name Private types definitions
+    @{
+    */
+  /// Color type
+  struct Color {
+    /// Red component
+    GLfloat mRedColor;
+    /// Green component
+    GLfloat mGreenColor;
+    /// Blue component
+    GLfloat mBlueColor;
+  };
   /** @}
     */
 
@@ -58,23 +72,17 @@ public:
     @{
     */
   /// Constructs control with parameter
-  DEMControl(bool showDEM = true);
+  SegmentationControl(bool showSegmentation = true);
   /// Destructor
-  ~DEMControl();
+  ~SegmentationControl();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Sets the line color
-  void setLineColor(const QColor& color);
-  /// Sets the line size
-  void setLineSize(double lineSize);
-  /// Show DEM
-  void setShowDEM(bool showDEM);
-  /// Smoothes the lines
-  void setSmoothLines(bool smoothLines);
+  /// Show segmentation
+  void setShowSegmentation(bool showSegmentation);
   /** @}
     */
 
@@ -82,8 +90,14 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Render the DEM
-  void renderDEM(double size, bool smooth);
+  /// Renders the segmentation
+  void renderSegmentation();
+  /// Sets a color randomly
+  void setColor(Color& color) const;
+  /// Sets the segmentation parameter
+  void setK(double value);
+  /// Segment DEM
+  void segment();
   /** @}
     */
 
@@ -91,13 +105,15 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_DEMControl* mUi;
-  /// Color palette
-  Palette mPalette;
+  Ui_SegmentationControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
-  /// Point cloud
-  PointCloud<double, 3> mPointCloud;
+  /// Segmented components
+  std::map<size_t, Component<size_t, double> > mComponents;
+  /// Segmentation parameter
+  double mK;
+  /// Mapping for the random colors
+  std::map<size_t, Color> mColors;
   /** @}
     */
 
@@ -105,20 +121,14 @@ protected slots:
   /** \name Qt slots
     @{
     */
-  /// Color changed
-  void colorChanged(const QString& role, const QColor& color);
-  /// Line size changed
-  void lineSizeChanged(double lineSize);
-  /// Show DEM toggled
-  void showDEMToggled(bool checked);
-  /// Smooth lines toggled
-  void smoothLinesToggled(bool checked);
-  /// Point cloud read
-  void pointCloudRead(const PointCloud<double, 3>& pointCloud);
-  /// DEM changed
-  void demChanged();
-  /// Render DEM
+  /// Renders the segmentation
   void render(GLView& view, Scene& scene);
+  /// DEM updated
+  void demUpdated(const Grid<double, Cell, 2>& dem);
+  /// Segmentation parameter changed
+  void kChanged(double value);
+  /// Show the segmentation
+  void showSegmentationToggled(bool checked);
   /** @}
     */
 
@@ -126,11 +136,9 @@ signals:
   /** \name Qt signals
     @{
     */
-  /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
   /** @}
     */
 
 };
 
-#endif // DEMCONTROL_H
+#endif // SEGMENTATIONCONTROL_H

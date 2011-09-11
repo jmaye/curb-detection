@@ -24,6 +24,7 @@
 #include "visualization/ViewControl.h"
 #include "visualization/PointCloudControl.h"
 #include "visualization/DEMControl.h"
+#include "seg-visual/SegmentationControl.h"
 
 #include <QtGui/QApplication>
 
@@ -33,11 +34,13 @@ int main (int argc, char** argv) {
   ViewControl viewControl;
   PointCloudControl pointCloudControl(true);
   DEMControl demControl(true);
+  SegmentationControl segControl(true);
   if (argc > 1)
     pointCloudControl.setLogFilename(argv[1]);
   mainWindow.addControl("View", viewControl);
   mainWindow.addControl("PointCloud", pointCloudControl);
   mainWindow.addControl("DEM", demControl);
+  mainWindow.addControl("Segmentation", segControl);
   mainWindow.show();
   return application.exec();
 }

@@ -23,8 +23,6 @@
 
 #include "ui_DEMControl.h"
 
-#include <limits>
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -167,6 +165,7 @@ void DEMControl::demChanged() {
       mDEM(point).addPoint((*it)(2));
   }
   GLView::getInstance().update();
+  demUpdated(mDEM);
 }
 
 void DEMControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
