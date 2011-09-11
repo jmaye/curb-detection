@@ -43,10 +43,10 @@ int main (int argc, char **argv) {
   dem.addPointCloud(pointCloud);
   after = Timestamp::now();
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
+  before = Timestamp::now();
   std::multiset<Edge, EdgeCompare> edgeSet;
   std::map<std::pair<uint32_t, uint32_t>, uint32_t> labelsMap;
   std::map<uint32_t, uint32_t> supportsMap;
-  before = Timestamp::now();
   ConnectivityBuilder::build(dem, edgeSet);
   GraphSegmenter::segment(dem, edgeSet, labelsMap, supportsMap, 100.0);
   after = Timestamp::now();
