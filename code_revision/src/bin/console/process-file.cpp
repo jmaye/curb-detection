@@ -55,9 +55,9 @@ int main (int argc, char** argv) {
   before = Timestamp::now();
   DEMGraph graph(dem);
   std::map<size_t, Component<size_t, double> > components;
-  std::map<size_t, size_t> vertices;
-  GraphSegmenter<DEMGraph>::segment(graph, components, vertices);
+  GraphSegmenter<DEMGraph>::segment(graph, components, graph.getVertices());
   after = Timestamp::now();
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
+  std::cout << components.size() << std::endl;
   return 0;
 }

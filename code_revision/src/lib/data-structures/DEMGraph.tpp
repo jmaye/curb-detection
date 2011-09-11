@@ -28,6 +28,9 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
       const Cell& cell =
         dem[(Grid<double, Cell, 2>::Index() << i, j).finished()];
       if (cell.getHeightEstimator().getValid()) {
+        size_t cellIdx = dem.computeLinearIndex(
+          (Grid<double, Cell, 2>::Index() << i, j).finished());
+        mVertices[cellIdx] = cellIdx;
         NormalDistribution<1> cellDist(cell.getHeightEstimator().getMean(),
           cell.getHeightEstimator().getVariance());
         if ((i + 1) < dem.getNumCells()(0)) {
@@ -37,8 +40,7 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
             NormalDistribution<1> cellDownDist(
               cellDown.getHeightEstimator().getMean(),
               cellDown.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<V, P>(dem.computeLinearIndex(
-              (Grid<double, Cell, 2>::Index() << i, j).finished()),
+            mEdges.push_back(UndirectedEdge<V, P>(cellIdx,
               dem.computeLinearIndex(
               (Grid<double, Cell, 2>::Index() << i + 1, j).finished()),
               cellDist.KLDivergence(cellDownDist) +
@@ -52,10 +54,9 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
             NormalDistribution<1> cellRightDist(
               cellRight.getHeightEstimator().getMean(),
               cellRight.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<V, P>(dem.computeLinearIndex(
-              (Grid<double, Cell, 2>::Index() << i, j).finished()),
+            mEdges.push_back(UndirectedEdge<V, P>(cellIdx,
               dem.computeLinearIndex(
-              (Grid<double, Cell, 2>::Index() << i + 1, j + 1).finished()),
+              (Grid<double, Cell, 2>::Index() << i, j + 1).finished()),
               cellDist.KLDivergence(cellRightDist) +
               cellRightDist.KLDivergence(cellDist)));
           }
@@ -167,4 +168,8 @@ DEMGraph::V DEMGraph::getTailVertex(const E& edge) const {
 
 DEMGraph::V DEMGraph::getHeadVertex(const E& edge) const {
   return findEdge(edge)->getHead();
+}
+
+DEMGraph::VertexContainer& DEMGraph::getVertices() {
+  return mVertices;
 }

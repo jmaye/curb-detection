@@ -137,6 +137,27 @@
     </widget>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="segmenterLayout">
+     <item>
+      <widget class="QLabel" name="kTextLabel">
+       <property name="text">
+        <string>k:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="kSpinBox">
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="Line" name="line_5">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -407,11 +428,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>kSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>kChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>lineSizeChanged(double)</slot>
   <slot>smoothLinesToggled(bool)</slot>
   <slot>showDEMToggled(bool)</slot>
   <slot>demChanged()</slot>
+  <slot>kChanged(double)</slot>
  </slots>
 </ui>
