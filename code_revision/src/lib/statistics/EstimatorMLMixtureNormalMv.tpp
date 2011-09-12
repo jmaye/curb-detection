@@ -210,7 +210,7 @@ addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points) {
       if (fabs(oldLogLikelihood - newLogLikelihood) < mTol)
         break;
       oldLogLikelihood = newLogLikelihood;
-      Eigen::Matrix<double, N, 1> numPoints;
+      Eigen::Matrix<double, N, 1> numPoints(K);
       for (size_t j = 0; j < K; ++j)
         numPoints(j) = mResponsibilities.col(j).sum();
       mWeights = numPoints / points.size();

@@ -180,60 +180,64 @@ void EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>::reset() {
 
 template <size_t M, size_t N>
 size_t EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>::
-  addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points) {
-  size_t numIter = 0;
+  addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+  itEnd) {
   reset();
-  size_t K = mWeights.size();
-  size_t dim = mCoefficients.cols();
-  if (points.size()) {
-    mNumPoints += points.size();
-    Eigen::Matrix<double, Eigen::Dynamic, 1> targets(points.size());
-    Eigen::Matrix<double, Eigen::Dynamic, M> designMatrix(points.size(),
-      (int)dim);
-    for (size_t i = 0; i < points.size(); ++i) {
-      targets(i) = points[i](dim - 1);
-      designMatrix(i, 0) = 1.0;
-      designMatrix.row(i).segment(1, dim - 1) = points[i].segment(0, dim - 1);
-    }
-    double oldLogLikelihood = -std::numeric_limits<double>::infinity();
-    mResponsibilities.resize(points.size(), K);
-    while (numIter != mMaxNumIter) {
-      double newLogLikelihood = 0.0;
-      for (size_t i = 0; i < points.size(); ++i) {
-        double probability = 0.0;
-        for (size_t j = 0; j < K; ++j) {
-          mResponsibilities(i, j) = mWeights(j) *
-            NormalDistribution<1>((mCoefficients.row(j) * designMatrix.row(i).
-              transpose())(0), mVariances(j))(targets(i));
-          probability += mResponsibilities(i, j);
-        }
-        newLogLikelihood += log(probability);
-        mResponsibilities.row(i) /= mResponsibilities.row(i).sum();
-      }
-      if (fabs(oldLogLikelihood - newLogLikelihood) < mTol)
-        break;
-      oldLogLikelihood = newLogLikelihood;
-      Eigen::Matrix<double, N, 1> numPoints;
-      for (size_t j = 0; j < K; ++j)
-        numPoints(j) = mResponsibilities.col(j).sum();
-      mWeights = numPoints / points.size();
-      for (size_t j = 0; j < K; ++j) {
-        Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
-          (mResponsibilities.col(j).asDiagonal() * designMatrix).qr();
-        if (numPoints(j) > dim && (size_t)qrDecomp.rank() == dim) {
-          Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;
-          qrDecomp.solve(mResponsibilities.col(j).asDiagonal() * targets,
-            &coeff);
-          mCoefficients.row(j) = coeff.transpose();
-          mVariances(j) = ((targets - designMatrix *
-            mCoefficients.row(j).transpose()).transpose() *
-            mResponsibilities.col(j).asDiagonal() * (targets - designMatrix *
-            mCoefficients.row(j).transpose()))(0) / numPoints(j);
-        }
-      }
-      numIter++;
-    }
-    mValid = true;
+  size_t numIter = 0;
+  const size_t K = mWeights.size();
+  const size_t dim = mCoefficients.cols();
+  mNumPoints = itEnd - itStart;
+  if (mNumPoints < dim)
+    return 0;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> targets(mNumPoints);
+  Eigen::Matrix<double, Eigen::Dynamic, M> designMatrix(mNumPoints, (int)dim);
+  for (ConstPointIterator it = itStart; it != itEnd; ++it) {
+    const size_t row = it - itStart;
+    targets(row) = (*it)(dim - 1);
+    designMatrix(row, 0) = 1.0;
+    designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
+  double oldLogLikelihood = -std::numeric_limits<double>::infinity();
+  mResponsibilities.resize(mNumPoints, K);
+  while (numIter != mMaxNumIter) {
+    double newLogLikelihood = 0.0;
+    for (size_t i = 0; i < mNumPoints; ++i) {
+      double probability = 0.0;
+      for (size_t j = 0; j < K; ++j) {
+        mResponsibilities(i, j) = mWeights(j) *
+          NormalDistribution<1>((mCoefficients.row(j) * designMatrix.row(i).
+            transpose())(0), mVariances(j))(targets(i));
+        probability += mResponsibilities(i, j);
+      }
+      newLogLikelihood += log(probability);
+      mResponsibilities.row(i) /= mResponsibilities.row(i).sum();
+    }
+    if (fabs(oldLogLikelihood - newLogLikelihood) < mTol)
+      break;
+    oldLogLikelihood = newLogLikelihood;
+    Eigen::Matrix<double, N, 1> numPoints(K);
+    for (size_t j = 0; j < K; ++j)
+      numPoints(j) = mResponsibilities.col(j).sum();
+    mWeights = numPoints / mNumPoints;
+    for (size_t j = 0; j < K; ++j) {
+      Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
+        (mResponsibilities.col(j).asDiagonal() * designMatrix).qr();
+      if (numPoints(j) > dim && (size_t)qrDecomp.rank() == dim) {
+        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;
+        qrDecomp.solve(mResponsibilities.col(j).asDiagonal() * targets,
+          &coeff);
+        mCoefficients.row(j) = coeff.transpose();
+        mVariances(j) = ((targets - designMatrix *
+          mCoefficients.row(j).transpose()).transpose() *
+          mResponsibilities.col(j).asDiagonal() * (targets - designMatrix *
+          mCoefficients.row(j).transpose()))(0) / numPoints(j);
+      }
+      else {
+        std::cout << "iter: " << numIter << std::endl;
+      }
+    }
+    numIter++;
+  }
+  mValid = true;
   return numIter;
 }

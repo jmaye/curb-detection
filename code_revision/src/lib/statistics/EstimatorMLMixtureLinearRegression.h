@@ -34,6 +34,18 @@ template <size_t M, size_t N>
 class EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N> :
   public virtual Serializable {
 public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef Eigen::Matrix<double, M, 1> Point;
+  /// Points container
+  typedef std::vector<Point > Container;
+  /// Constant point iterator
+  typedef typename Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -77,7 +89,8 @@ public:
   /// Sets the maximum number of iterations for EM
   void setMaxNumIter(size_t maxNumIter);
   /// Add points to the estimator / Returns number of EM iterationss
-  size_t addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points);
+  size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /// Reset the estimator
   void reset();
   /** @}

@@ -110,36 +110,39 @@ void EstimatorML<LinearRegression<M>, M>::reset() {
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points) {
+void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd) {
   Eigen::Matrix<double, Eigen::Dynamic, 1> weights =
-    Eigen::Matrix<double, Eigen::Dynamic, 1>::Ones(points.size());
-  return addPoints(points, weights);
+    Eigen::Matrix<double, Eigen::Dynamic, 1>::Ones(itEnd - itStart);
+  return addPoints(itStart, itEnd, weights);
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points, const
+void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
   reset();
-  mNumPoints = points.size();
+  mNumPoints = itEnd - itStart;
   size_t dim;
   if (mNumPoints != 0)
-    dim = points[0].size();
+    dim = itStart->size();
   else
+    return;
+  if (mNumPoints < dim)
     return;
   if ((size_t)weights.size() != mNumPoints)
     return;
   Eigen::Matrix<double, Eigen::Dynamic, 1> targets(mNumPoints);
   Eigen::Matrix<double, Eigen::Dynamic, M> designMatrix(mNumPoints, (int)dim);
-  for (size_t i = 0; i < mNumPoints; ++i) {
-    targets(i) = points[i](dim - 1);
-    designMatrix(i, 0) = 1.0;
-    designMatrix.row(i).segment(1, dim - 1) = points[i].segment(0, dim - 1);
+  for (ConstPointIterator it = itStart; it != itEnd; ++it) {
+    const size_t row = it - itStart;
+    targets(row) = (*it)(dim - 1);
+    designMatrix(row, 0) = 1.0;
+    designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
   Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
     (weights.asDiagonal() * designMatrix).qr();
-  if (mNumPoints > dim && (size_t)qrDecomp.rank() == dim) {
+  if ((size_t)qrDecomp.rank() == dim) {
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;
     qrDecomp.solve(weights.asDiagonal() * targets, &coeff);
     mCoefficients = coeff;

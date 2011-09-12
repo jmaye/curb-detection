@@ -230,7 +230,7 @@ const typename Grid<T, C, M>::Index& Grid<T, C, M>::getNumCells() const {
 }
 
 template <typename T, typename C, size_t M>
-const size_t& Grid<T, C, M>::getNumCellsTot() const {
+size_t Grid<T, C, M>::getNumCellsTot() const {
   return mNumCellsTot;
 }
 

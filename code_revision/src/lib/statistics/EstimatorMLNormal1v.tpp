@@ -98,7 +98,7 @@ void EstimatorML<NormalDistribution<1> >::reset() {
   mVariance = 0;
 }
 
-void EstimatorML<NormalDistribution<1> >::addPoint(double point) {
+void EstimatorML<NormalDistribution<1> >::addPoint(Point point) {
   mNumPoints++;
   mMean += 1.0 / mNumPoints * (point - mMean);
   mVariance += 1.0 / mNumPoints * ((point - mMean) * (point - mMean) -
@@ -109,9 +109,8 @@ void EstimatorML<NormalDistribution<1> >::addPoint(double point) {
     mValid = false;
 }
 
-void EstimatorML<NormalDistribution<1> >::addPoints(const std::vector<double>&
-  points) {
-  for (std::vector<double>::const_iterator it = points.begin();
-    it != points.end(); ++it)
+void EstimatorML<NormalDistribution<1> >::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
     addPoint(*it);
 }

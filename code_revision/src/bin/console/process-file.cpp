@@ -58,14 +58,66 @@ int main (int argc, char** argv) {
   GraphSegmenter<DEMGraph>::segment(graph, components, graph.getVertices());
   after = Timestamp::now();
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
+  before = Timestamp::now();
+  EstimatorML<LinearRegression<3>, 3> estPlane;
+  EstimatorML<LinearRegression<3>, 3>::Container points;
+  points.reserve(graph.getVertices().size());
+  std::vector<EstimatorML<LinearRegression<3>, 3>::Point> coefficients;
+  coefficients.reserve(components.size());
+  std::vector<double> variances;
+  variances.reserve(components.size());
+  std::vector<double> weights;
+  weights.reserve(components.size());
   std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
     double> >::const_iterator it;
   for (it = components.begin(); it != components.end(); ++it) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    //std::vector<PointCloud<double, 3>::Point> points();
+    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itStart =
+      points.end();
     for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
       ++itV) {
+      PointCloud<double, 3>::Point point;
+      point.segment(0, 2) = dem.getCoordinates(*itV);
+      point(2) = dem[*itV].getHeightEstimator().getMean();
+      points.push_back(point);
+    }
+    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
+      points.end();
+    estPlane.addPoints(itStart, itEnd);
+    if (estPlane.getValid()) {
+      coefficients.push_back(estPlane.getCoefficients());
+      variances.push_back(estPlane.getVariance());
+      weights.push_back(it->second.getNumVertices());
     }
   }
+  after = Timestamp::now();
+  std::cout << "Initial linear regression estimation: " << after - before
+    << " [s]" << std::endl;
+  before = Timestamp::now();
+  Eigen::Matrix<double, Eigen::Dynamic, 3> c(coefficients.size(), 3);
+  for (EstimatorML<LinearRegression<3>, 3>::ConstPointIterator it =
+    coefficients.begin(); it != coefficients.end(); ++it)
+    c.row(it - coefficients.begin()) = *it;
+  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1> > w(&weights[0],
+    weights.size());
+  w = w / w.sum();
+  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1> > v(&variances[0],
+    variances.size());
+  EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+    Eigen::Dynamic> estMixtPlane(c, v, w);
+  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
+  after = Timestamp::now();
+  std::cout << "Mixture linear regression estimation: " << after - before
+    << " [s]" << std::endl;
+  std::cout << "Initial coefficients: " << std::endl << c << std::endl;
+  std::cout << "Initial weights: " << w.transpose() << std::endl;
+  std::cout << "Initial variances: " << v.transpose() << std::endl;
+  std::cout << "Final coefficients: " << std::endl
+    << estMixtPlane.getCoefficients() << std::endl;
+  std::cout << "Final weights: " << estMixtPlane.getWeights().transpose()
+    << std::endl;
+  std::cout << "Final variances: " << estMixtPlane.getVariances().transpose()
+    << std::endl;
+  std::cout << "EM converged in: " << numIter << " [it]" << std::endl;
   return 0;
 }
