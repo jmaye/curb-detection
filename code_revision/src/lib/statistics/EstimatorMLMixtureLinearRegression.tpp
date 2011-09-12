@@ -188,7 +188,7 @@ size_t EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>::
   const size_t dim = mCoefficients.cols();
   mNumPoints = itEnd - itStart;
   if (mNumPoints < dim)
-    return 0;
+    return numIter;
   Eigen::Matrix<double, Eigen::Dynamic, 1> targets(mNumPoints);
   Eigen::Matrix<double, Eigen::Dynamic, M> designMatrix(mNumPoints, (int)dim);
   for (ConstPointIterator it = itStart; it != itEnd; ++it) {
@@ -220,20 +220,16 @@ size_t EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>::
       numPoints(j) = mResponsibilities.col(j).sum();
     mWeights = numPoints / mNumPoints;
     for (size_t j = 0; j < K; ++j) {
-      Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
+      const Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
         (mResponsibilities.col(j).asDiagonal() * designMatrix).qr();
       if (numPoints(j) > dim && (size_t)qrDecomp.rank() == dim) {
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;
-        qrDecomp.solve(mResponsibilities.col(j).asDiagonal() * targets,
-          &coeff);
+        qrDecomp.solve(mResponsibilities.col(j).asDiagonal() * targets, &coeff);
         mCoefficients.row(j) = coeff.transpose();
         mVariances(j) = ((targets - designMatrix *
           mCoefficients.row(j).transpose()).transpose() *
           mResponsibilities.col(j).asDiagonal() * (targets - designMatrix *
           mCoefficients.row(j).transpose()))(0) / numPoints(j);
-      }
-      else {
-        std::cout << "iter: " << numIter << std::endl;
       }
     }
     numIter++;

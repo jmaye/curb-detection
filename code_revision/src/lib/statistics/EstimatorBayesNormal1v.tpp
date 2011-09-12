@@ -101,11 +101,11 @@ getPostPredDist() const {
   return mPostPredDist;
 }
 
-void EstimatorBayes<NormalDistribution<1> >::addPoint(double point) {
-  double newMu = (mKappa * mMu + point) / (mKappa + 1);
-  double newKappa = mKappa + 1;
-  double newNu = mNu + 1;
-  double newSigma = mSigma + (mKappa / (mKappa + 1)) * (point - mMu) *
+void EstimatorBayes<NormalDistribution<1> >::addPoint(const Point& point) {
+  const double newMu = (mKappa * mMu + point) / (mKappa + 1);
+  const double newKappa = mKappa + 1;
+  const double newNu = mNu + 1;
+  const double newSigma = mSigma + (mKappa / (mKappa + 1)) * (point - mMu) *
     (point - mMu);
   mMu = newMu;
   mKappa = newKappa;
@@ -121,8 +121,8 @@ void EstimatorBayes<NormalDistribution<1> >::addPoint(double point) {
   mPostPredDist.setScale(mSigma * (mKappa + 1) / mKappa / mNu);
 }
 
-void EstimatorBayes<NormalDistribution<1> >::addPoints(const
-  std::vector<double>& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+void EstimatorBayes<NormalDistribution<1> >::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }

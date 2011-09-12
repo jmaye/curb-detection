@@ -34,6 +34,18 @@
 template <> class EstimatorBayes<NormalDistribution<1> > :
   public virtual Serializable {
 public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef double Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -60,9 +72,10 @@ public:
   /// Returns the posterior predictive distribution
   const StudentDistribution<1>& getPostPredDist() const;
   /// Add a point to the estimator
-  void addPoint(double point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const std::vector<double>& points);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /** @}
     */
 

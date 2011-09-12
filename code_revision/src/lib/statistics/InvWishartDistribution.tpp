@@ -111,7 +111,7 @@ void InvWishartDistribution<M>::setScale(const Eigen::Matrix<double, M, M>&
       "InvWishartDistribution<M>::setScale(): scale must be positive definite",
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
-  LogGammaFunction<double> logGammaFunction(mScale.rows());
+  const LogGammaFunction<double> logGammaFunction(mScale.rows());
   mNormalizer = mDegrees * mScale.rows() * 0.5 * log(2) - mDegrees * 0.5 *
     log(mDeterminant) + logGammaFunction(0.5 * mDegrees);
   mScale = scale;

@@ -106,19 +106,18 @@ getPostPredDist() const {
 }
 
 template <size_t M>
-void EstimatorBayes<LinearRegression<M>, M>::addPoint(const
-  Eigen::Matrix<double, M, 1>& point) {
+void EstimatorBayes<LinearRegression<M>, M>::addPoint(const Point& point) {
   Eigen::Matrix<double, M, 1> inputPoint(mMu.size());
   inputPoint(0) = 1.0;
   inputPoint.segment(1, mMu.size() - 1) = point.segment(0, mMu.size() - 1);
-  Eigen::Matrix<double, M, M> newV = (mV.inverse() + inputPoint *
+  const Eigen::Matrix<double, M, M> newV = (mV.inverse() + inputPoint *
     inputPoint.transpose()).inverse();
-  Eigen::Matrix<double, M, 1> newMu = newV * (mV.inverse() * mMu +
+  const Eigen::Matrix<double, M, 1> newMu = newV * (mV.inverse() * mMu +
     inputPoint * point(mMu.size() - 1));
-  double newNu = mNu + 1;
-  double newSigma = mSigma + (point(mMu.size() - 1) * point(mMu.size() - 1)
-    + (mMu.transpose() * mV.inverse() * mMu)(0) - (newMu.transpose() *
-    newV.inverse() * newMu)(0));
+  const double newNu = mNu + 1;
+  const double newSigma = mSigma + (point(mMu.size() - 1) *
+    point(mMu.size() - 1) + (mMu.transpose() * mV.inverse() * mMu)(0) -
+    (newMu.transpose() * newV.inverse() * newMu)(0));
   mMu = newMu;
   mV = newV;
   mNu = newNu;
@@ -135,14 +134,14 @@ void EstimatorBayes<LinearRegression<M>, M>::addPoint(const
 }
 
 template <size_t M>
-void EstimatorBayes<LinearRegression<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+void EstimatorBayes<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }
 
 template <size_t M>
-void EstimatorBayes<LinearRegression<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points, const
+void EstimatorBayes<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
 }

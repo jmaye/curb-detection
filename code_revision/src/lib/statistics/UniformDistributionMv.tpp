@@ -202,7 +202,7 @@ double UniformDistribution<X, M>::pmf(const Eigen::Matrix<X, M, 1>& value)
 
 template <typename X, size_t M>
 Eigen::Matrix<X, M, 1> UniformDistribution<X, M>::getSample() const {
-  static Randomizer<X> randomizer;
+  const static Randomizer<X> randomizer;
   Eigen::Matrix<X, M, 1> sample(mMinSupport.size());
   for (size_t i = 0; i < M; ++i)
     sample(i) = randomizer.sampleUniform(mMinSupport(i), mMaxSupport(i));

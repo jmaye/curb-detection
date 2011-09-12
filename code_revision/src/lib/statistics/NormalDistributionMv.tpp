@@ -161,7 +161,7 @@ double NormalDistribution<M>::logpdf(const Eigen::Matrix<double, M, 1>& value)
 template <size_t M>
 Eigen::Matrix<double, M, 1> NormalDistribution<M>::getSample() const {
   Eigen::Matrix<double, M, 1> sample(mMean.size());
-  static Randomizer<double> randomizer;
+  const static Randomizer<double> randomizer;
   for (size_t i = 0; i < (size_t)mMean.size(); ++i)
     sample(i) = randomizer.sampleNormal();
   return mMean + mTransformation.matrixL() * sample;

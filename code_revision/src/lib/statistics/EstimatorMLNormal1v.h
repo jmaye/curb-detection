@@ -42,6 +42,7 @@ public:
   /// Constant point iterator
   typedef Container::const_iterator ConstPointIterator;
   /** @}
+    */
 
   /** \name Constructors/destructor
     @{
@@ -66,11 +67,11 @@ public:
   /// Returns the validity state of the estimator
   bool getValid() const;
   /// Returns the estimated mean
-  Point getMean() const;
+  double getMean() const;
   /// Returns the estimated variance
-  Point getVariance() const;
+  double getVariance() const;
   /// Add a point to the estimator
-  void addPoint(Point point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
@@ -110,4 +111,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorMLNormal1v.tpp"

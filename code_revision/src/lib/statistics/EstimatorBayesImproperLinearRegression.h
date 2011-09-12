@@ -34,6 +34,18 @@
 template <size_t M> class EstimatorBayesImproper<LinearRegression<M>, M> :
   public virtual Serializable {
 public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef Eigen::Matrix<double, M, 1> Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef typename Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -70,10 +82,11 @@ public:
   /// Returns the validity state of the estimator
   bool getValid() const;
   /// Add points to the estimator
-  void addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /// Add points to the estimator with weights
-  void addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
   /// Reset the estimator
   void reset();
   /** @}

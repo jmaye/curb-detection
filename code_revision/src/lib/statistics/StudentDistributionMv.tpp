@@ -123,7 +123,7 @@ void StudentDistribution<M>::setScale(const Eigen::Matrix<double, M, M>&
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
   mInverseScale = scale.inverse();
-  LogGammaFunction<double> logGammaFunction;
+  const LogGammaFunction<double> logGammaFunction;
   mNormalizer = logGammaFunction(mDegrees * 0.5) + mLocation.size() * 0.5 *
     log(mDegrees * M_PI) + 0.5 * log(mDeterminant) - logGammaFunction(0.5 *
     (mDegrees + mLocation.size()));
@@ -144,7 +144,7 @@ void StudentDistribution<M>::setDegrees(double degrees)
       "StudentDistribution<M>::setDegrees(): degrees must be strictly positive",
       __FILE__, __LINE__);
   mDegrees = degrees;
-  LogGammaFunction<double> logGammaFunction;
+  const LogGammaFunction<double> logGammaFunction;
   mNormalizer = logGammaFunction(mDegrees * 0.5) + mLocation.size() * 0.5 *
     log(mDegrees * M_PI) + 0.5 * log(mDeterminant) - logGammaFunction(0.5 *
     (mDegrees + mLocation.size()));

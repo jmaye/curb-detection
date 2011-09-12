@@ -145,8 +145,8 @@ void EstimatorBayesImproper<NormalDistribution<M>, M>::reset() {
 }
 
 template <size_t M>
-void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoint(const
-  Eigen::Matrix<double, M, 1>& point) {
+void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoint(const Point&
+  point) {
   if (mNumPoints == 0) {
     mSampleMean = Eigen::Matrix<double, M, 1>::Zero(point.size());
     mSampleCovariance = Eigen::Matrix<double, M, M>::Zero(point.size(),
@@ -157,7 +157,8 @@ void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoint(const
   if (mNumPoints > 1)
     mSampleCovariance += 1.0 / (mNumPoints - 1) * ((point - mSampleMean) *
       (point - mSampleMean).transpose() - mSampleCovariance);
-  Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp = mSampleCovariance.qr();
+  const Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp =
+    mSampleCovariance.qr();
   if (qrDecomp.rank() == mSampleMean.size()) {
     mPostMeanDist.setDegrees(mNumPoints - mSampleMean.size());
     mPostMeanDist.setLocation(mSampleMean);
@@ -175,7 +176,7 @@ void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoint(const
 
 template <size_t M>
 void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }

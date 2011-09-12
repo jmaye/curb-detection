@@ -194,7 +194,7 @@ double UniformDistribution<X>::pmf(const X& value) const {
 
 template <typename X>
 X UniformDistribution<X>::getSample() const {
-  static Randomizer<X> randomizer;
+  const static Randomizer<X> randomizer;
   return randomizer.sampleUniform(mMinSupport, mMaxSupport);
 }
 

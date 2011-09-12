@@ -116,13 +116,13 @@ getPostPredDist() const {
 }
 
 template <size_t M>
-void EstimatorBayes<NormalDistribution<M>, M>::addPoint(const
-  Eigen::Matrix<double, M, 1>& point) {
-  Eigen::Matrix<double, M, 1> newMu = (mKappa * mMu + point) / (mKappa + 1);
-  double newKappa = mKappa + 1;
-  double newNu = mNu + 1;
-  Eigen::Matrix<double, M, M> newSigma = mSigma + (mKappa / (mKappa + 1)) *
-    (point - mMu) * (point - mMu).transpose();
+void EstimatorBayes<NormalDistribution<M>, M>::addPoint(const Point& point) {
+  const Eigen::Matrix<double, M, 1> newMu = (mKappa * mMu + point) /
+    (mKappa + 1);
+  const double newKappa = mKappa + 1;
+  const double newNu = mNu + 1;
+  const Eigen::Matrix<double, M, M> newSigma = mSigma + (mKappa / (mKappa + 1))
+    * (point - mMu) * (point - mMu).transpose();
   mMu = newMu;
   mKappa = newKappa;
   mNu = newNu;
@@ -143,7 +143,7 @@ void EstimatorBayes<NormalDistribution<M>, M>::addPoint(const
 
 template <size_t M>
 void EstimatorBayes<NormalDistribution<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }

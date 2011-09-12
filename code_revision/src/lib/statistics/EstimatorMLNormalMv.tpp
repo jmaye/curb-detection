@@ -114,8 +114,7 @@ void EstimatorML<NormalDistribution<M>, M>::reset() {
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::addPoint(const
-  Eigen::Matrix<double, M, 1>& point) {
+void EstimatorML<NormalDistribution<M>, M>::addPoint(const Point& point) {
   if (mNumPoints == 0) {
     mMean = Eigen::Matrix<double, M, 1>::Zero(point.size());
     mCovariance = Eigen::Matrix<double, M, M>::Zero(point.size(),
@@ -125,7 +124,7 @@ void EstimatorML<NormalDistribution<M>, M>::addPoint(const
   mMean += 1.0 / mNumPoints * (point - mMean);
   mCovariance += 1.0 / mNumPoints * ((point - mMean) *
     (point - mMean).transpose() - mCovariance);
-  Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp = mCovariance.qr();
+  const Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp = mCovariance.qr();
   if (qrDecomp.rank() == mMean.size())
     mValid = true;
   else
@@ -133,8 +132,8 @@ void EstimatorML<NormalDistribution<M>, M>::addPoint(const
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::addPoints(const
-  std::vector<Eigen::Matrix<double, M, 1> >& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+void EstimatorML<NormalDistribution<M>, M>::addPoints(const ConstPointIterator&
+  itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }

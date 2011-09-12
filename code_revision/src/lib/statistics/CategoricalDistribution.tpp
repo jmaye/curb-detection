@@ -181,7 +181,7 @@ double CategoricalDistribution<M>::logpmf(const typename
 
 template <size_t M>
 Eigen::Matrix<size_t, M, 1> CategoricalDistribution<M>::getSample() const {
-  static Randomizer<double, M> randomizer;
+  const static Randomizer<double, M> randomizer;
   return randomizer.sampleCategorical(mSuccessProbabilities);
 }
 

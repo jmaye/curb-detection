@@ -128,7 +128,8 @@ void EstimatorBayesImproper<NormalDistribution<1> >::reset() {
   mSampleVariance = 0;
 }
 
-void EstimatorBayesImproper<NormalDistribution<1> >::addPoint(double point) {
+void EstimatorBayesImproper<NormalDistribution<1> >::addPoint(const Point&
+  point) {
   mNumPoints++;
   mSampleMean += 1.0 / mNumPoints * (point - mSampleMean);
   if (mNumPoints > 1)
@@ -150,7 +151,7 @@ void EstimatorBayesImproper<NormalDistribution<1> >::addPoint(double point) {
 }
 
 void EstimatorBayesImproper<NormalDistribution<1> >::addPoints(const
-  std::vector<double>& points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    addPoint(*it);
 }

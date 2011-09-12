@@ -77,6 +77,8 @@ public:
   virtual double pdf(const double& value) const;
   /// Access the log-probablity density function at the given value
   double logpdf(const double& value) const;
+  /// Access the cumulative density function at the given value
+  double cdf(const double& value) const;
   /// Access a sample drawn from the distribution
   virtual double getSample() const;
   /** @}

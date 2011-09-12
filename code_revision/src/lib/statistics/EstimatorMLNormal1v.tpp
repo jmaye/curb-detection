@@ -98,7 +98,7 @@ void EstimatorML<NormalDistribution<1> >::reset() {
   mVariance = 0;
 }
 
-void EstimatorML<NormalDistribution<1> >::addPoint(Point point) {
+void EstimatorML<NormalDistribution<1> >::addPoint(const Point& point) {
   mNumPoints++;
   mMean += 1.0 / mNumPoints * (point - mMean);
   mVariance += 1.0 / mNumPoints * ((point - mMean) * (point - mMean) -

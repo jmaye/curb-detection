@@ -81,8 +81,8 @@ template <typename T, size_t M>
 T Randomizer<T, M>::getSeed() {
   static bool seeded = false;
   if (!seeded) {
-    double time = Timestamp::now();
-    T seed = (time - floor(time)) * 1e6;
+    const double time = Timestamp::now();
+    const T seed = (time - floor(time)) * 1e6;
     srandom(seed);
     seeded = true;
   }
@@ -119,7 +119,6 @@ T Randomizer<T, M>::sampleNormal(const T& mean, const T& variance) const
     s = u * u + v * v;
   }
   while (s >= 1.0 || s == 0.0);
-
   return Traits<T>::round(mean + sqrt(variance) * u * sqrt(-2.0 * log(s) / s));
 }
 
@@ -143,7 +142,7 @@ Eigen::Matrix<size_t, M, 1> Randomizer<T, M>::sampleCategorical(const
     sum += successProbabilities(i - 1);
     cumProbabilities(i) += sum;
   }
-  double u = sampleUniform();
+  const double u = sampleUniform();
   Eigen::Matrix<size_t, M, 1> sample =
     Eigen::Matrix<size_t, M, 1>::Zero(successProbabilities.size());
   for (size_t i = 1; i < (size_t)cumProbabilities.size(); ++i) {
@@ -163,7 +162,7 @@ size_t Randomizer<T, M>::samplePoisson(double mean) const
     throw BadArgumentException<double>(mean,
       "Randomizer<T, M>::samplePoisson(): mean must be strictly positive",
       __FILE__, __LINE__);
-  double l = exp(-mean);
+  const double l = exp(-mean);
   size_t k = 0;
   double p = 1.0;
   do {
@@ -217,8 +216,8 @@ double Randomizer<T, M>::sampleGamma(double shape, double invScale) const
       "Randomizer<T, M>::sampleGamma(): inverse scale must be strictly "
       "positive",
       __FILE__, __LINE__);
-  size_t integralPart = floor(shape);
-  double fractionalPart = shape - integralPart;
+  const size_t integralPart = floor(shape);
+  const double fractionalPart = shape - integralPart;
   double y = 0;
   for (size_t i = 0; i < integralPart; ++i)
     y += sampleExponential(1.0);
@@ -226,7 +225,7 @@ double Randomizer<T, M>::sampleGamma(double shape, double invScale) const
   double z = 0;
   if (fabs(fractionalPart - 0) > std::numeric_limits<double>::epsilon())
     while (true) {
-      double p = b * sampleUniform();
+      const double p = b * sampleUniform();
       if (p > 1) {
         z = -log((b - p) / fractionalPart);
         if (sampleUniform() > pow(z, fractionalPart - 1))

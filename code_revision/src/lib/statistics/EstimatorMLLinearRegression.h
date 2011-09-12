@@ -37,7 +37,7 @@ public:
   /// Point type
   typedef Eigen::Matrix<double, M, 1> Point;
   /// Points container
-  typedef std::vector<Point > Container;
+  typedef std::vector<Point> Container;
   /// Constant point iterator
   typedef typename Container::const_iterator ConstPointIterator;
   /** @}
@@ -66,7 +66,7 @@ public:
   /// Returns the validity state of the estimator
   bool getValid() const;
   /// Returns the estimated coefficients
-  const Point& getCoefficients() const;
+  const Eigen::Matrix<double, M, 1>& getCoefficients() const;
   /// Returns the estimated variance
   double getVariance() const;
   /// Add points to the estimator

@@ -140,7 +140,7 @@ void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
     designMatrix(row, 0) = 1.0;
     designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
-  Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
+  const Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
     (weights.asDiagonal() * designMatrix).qr();
   if ((size_t)qrDecomp.rank() == dim) {
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;

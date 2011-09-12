@@ -19,6 +19,9 @@
 #include "statistics/Randomizer.h"
 
 #include "functions/LogGammaFunction.h"
+#include "functions/GammaFunction.h"
+
+#include <gsl/gsl_sf_gamma.h>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -87,7 +90,7 @@ void InvGammaDistribution<T>::setShape(const T& shape)
       "InvGammaDistribution::setShape(): shape must be strictly positive",
       __FILE__, __LINE__);
   mShape = shape;
-  LogGammaFunction<T> logGammaFunction;
+  const LogGammaFunction<T> logGammaFunction;
   mNormalizer = logGammaFunction(mShape) - mShape * log(mScale);
 }
 
@@ -104,7 +107,7 @@ void InvGammaDistribution<T>::setScale(double scale)
       "InvGammaDistribution::setScale(): scale must be strictly positive",
       __FILE__, __LINE__);
   mScale = scale;
-  LogGammaFunction<T> logGammaFunction;
+  const LogGammaFunction<T> logGammaFunction;
   mNormalizer = logGammaFunction(mShape) - mShape * log(mScale);
 }
 
@@ -132,8 +135,18 @@ double InvGammaDistribution<T>::logpdf(const double& value) const {
 }
 
 template <typename T>
+double InvGammaDistribution<T>::cdf(const double& value) const {
+  if (value <= 0)
+    return 0.0;
+  else {
+    const GammaFunction<T> gammaFunction;
+    return gsl_sf_gamma_inc(mShape, mScale / value) / gammaFunction(mShape);
+  }
+}
+
+template <typename T>
 double InvGammaDistribution<T>::getSample() const {
-  static Randomizer<double> randomizer;
+  const static Randomizer<double> randomizer;
   return 1.0 / randomizer.sampleGamma(mShape, mScale);
 }
 

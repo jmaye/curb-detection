@@ -35,6 +35,18 @@
 template <size_t M> class EstimatorBayesImproper<NormalDistribution<M>, M> :
   public virtual Serializable {
 public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef Eigen::Matrix<double, M, 1> Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef typename Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -69,9 +81,10 @@ public:
   /// Returns the validity state of the estimator
   bool getValid() const;
   /// Add a point to the estimator
-  void addPoint(const Eigen::Matrix<double, M, 1>& point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const std::vector<Eigen::Matrix<double, M, 1> >& points);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /// Reset the estimator
   void reset();
   /** @}

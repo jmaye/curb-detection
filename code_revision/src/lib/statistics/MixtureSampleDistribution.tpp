@@ -53,10 +53,9 @@ template <typename D, size_t M>
 typename MixtureSampleDistribution<D, M>::VariableType
   MixtureSampleDistribution<D, M>::getSample() const {
   Eigen::Matrix<size_t, M, 1> component = this->mAssignDistribution.getSample();
-  for (size_t i = 0; i < (size_t)component.size(); ++i) {
+  for (size_t i = 0; i < (size_t)component.size(); ++i)
     if (component(i) == 1)
       return this->mCompDistributions[i].getSample();
-  }
   return this->mCompDistributions[0].getSample();
 }
 

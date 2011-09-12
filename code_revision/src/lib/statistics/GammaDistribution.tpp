@@ -19,6 +19,9 @@
 #include "statistics/Randomizer.h"
 
 #include "functions/LogGammaFunction.h"
+#include "functions/GammaFunction.h"
+
+#include <gsl/gsl_sf_gamma.h>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -128,6 +131,16 @@ double GammaDistribution<T>::pdf(const double& value) const {
 template <typename T>
 double GammaDistribution<T>::logpdf(const double& value) const {
   return (mShape - 1) * log(value) - value * mInvScale - mNormalizer;
+}
+
+template <typename T>
+double GammaDistribution<T>::cdf(const double& value) const {
+  if (value <= 0)
+    return 0.0;
+  else {
+    GammaFunction<T> gammaFunction;
+    return gsl_sf_gamma_inc(mShape, value * mInvScale) / gammaFunction(mShape);
+  }
 }
 
 template <typename T>

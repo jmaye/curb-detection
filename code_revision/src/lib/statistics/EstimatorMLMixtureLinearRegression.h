@@ -40,7 +40,7 @@ public:
   /// Point type
   typedef Eigen::Matrix<double, M, 1> Point;
   /// Points container
-  typedef std::vector<Point > Container;
+  typedef std::vector<Point> Container;
   /// Constant point iterator
   typedef typename Container::const_iterator ConstPointIterator;
   /** @}

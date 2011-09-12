@@ -34,6 +34,18 @@ template <size_t N>
 class EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N> :
   public virtual Serializable {
 public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef double Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -77,7 +89,8 @@ public:
   /// Sets the maximum number of iterations for EM
   void setMaxNumIter(size_t maxNumIter);
   /// Add points to the estimator / Returns number of EM iterationss
-  size_t addPoints(const std::vector<double>& points);
+  size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /// Reset the estimator
   void reset();
   /** @}

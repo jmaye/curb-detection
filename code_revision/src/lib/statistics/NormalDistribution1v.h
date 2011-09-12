@@ -116,4 +116,4 @@ protected:
 
 };
 
-//#include "statistics/NormalDistribution1v.tpp"
+#include "statistics/NormalDistribution1v.tpp"

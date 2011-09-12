@@ -122,7 +122,7 @@ double NormalDistribution<1>::cdf(const double& value) const {
 }
 
 double NormalDistribution<1>::getSample() const {
-  static Randomizer<double> randomizer;
+  const static Randomizer<double> randomizer;
   return randomizer.sampleNormal(mMean, mVariance);
 }
 
