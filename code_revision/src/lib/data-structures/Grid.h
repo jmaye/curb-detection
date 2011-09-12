@@ -106,7 +106,7 @@ public:
   /// Returns the number of cells in each dimension
   const Index& getNumCells() const;
   /// Returns the total number of cells
-  size_t getNumCellsTot() const;
+  const size_t& getNumCellsTot() const;
   /// Returns the minimum of the grid
   const Coordinate& getMinimum() const;
   /// Returns the maximum of the grid

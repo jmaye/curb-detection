@@ -37,6 +37,10 @@ Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
     throw BadArgumentException<Coordinate>(minimum,
       "Grid<T, C, M>::Grid(): minimum must be strictly smaller than maximum",
        __FILE__, __LINE__);
+  if ((resolution.cwise() >= maximum - minimum).any())
+    throw BadArgumentException<Coordinate>(resolution,
+      "Grid<T, C, M>::Grid(): resolution must be strictly smaller than range",
+       __FILE__, __LINE__);
   mNumCells.resize(resolution.size());
   mNumCellsTot = 1.0;
   mLinProd = Index::Ones(resolution.size());
@@ -226,7 +230,7 @@ const typename Grid<T, C, M>::Index& Grid<T, C, M>::getNumCells() const {
 }
 
 template <typename T, typename C, size_t M>
-size_t Grid<T, C, M>::getNumCellsTot() const {
+const size_t& Grid<T, C, M>::getNumCellsTot() const {
   return mNumCellsTot;
 }
 

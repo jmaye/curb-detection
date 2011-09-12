@@ -16,45 +16,45 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "utils/IndexHash.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
-  for (size_t i = 0; i < dem.getNumCells()(0); ++i)
-    for (size_t j = 0; j < dem.getNumCells()(1); ++j) {
-      const Cell& cell =
-        dem[(Grid<double, Cell, 2>::Index() << i, j).finished()];
+  const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
+      Grid<double, Cell, 2>::Index cellIdx =
+        (Grid<double, Cell, 2>::Index() << i, j).finished();
+      const Cell& cell = dem[cellIdx];
       if (cell.getHeightEstimator().getValid()) {
-        size_t cellIdx = dem.computeLinearIndex(
-          (Grid<double, Cell, 2>::Index() << i, j).finished());
-        mVertices[cellIdx] = cellIdx;
+        mVertices[cellIdx] = dem.computeLinearIndex(cellIdx);
         NormalDistribution<1> cellDist(cell.getHeightEstimator().getMean(),
           cell.getHeightEstimator().getVariance());
-        if ((i + 1) < dem.getNumCells()(0)) {
-          const Cell& cellDown =
-            dem[(Grid<double, Cell, 2>::Index() << i + 1, j).finished()];
+        if ((i + 1) < numCells(0)) {
+          Grid<double, Cell, 2>::Index cellDownIdx =
+              (Grid<double, Cell, 2>::Index() << i + 1, j).finished();
+          const Cell& cellDown = dem[cellDownIdx];
           if (cellDown.getHeightEstimator().getValid()) {
             NormalDistribution<1> cellDownDist(
               cellDown.getHeightEstimator().getMean(),
               cellDown.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<V, P>(cellIdx,
-              dem.computeLinearIndex(
-              (Grid<double, Cell, 2>::Index() << i + 1, j).finished()),
+            mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellDownIdx,
               cellDist.KLDivergence(cellDownDist) +
               cellDownDist.KLDivergence(cellDist)));
           }
         }
         if ((j + 1) < dem.getNumCells()(1)) {
-          const Cell& cellRight =
-            dem[(Grid<double, Cell, 2>::Index() << i, j + 1).finished()];
+          Grid<double, Cell, 2>::Index cellRightIdx =
+            (Grid<double, Cell, 2>::Index() << i, j + 1).finished();
+          const Cell& cellRight = dem[cellRightIdx];
           if (cellRight.getHeightEstimator().getValid()) {
             NormalDistribution<1> cellRightDist(
               cellRight.getHeightEstimator().getMean(),
               cellRight.getHeightEstimator().getVariance());
-            mEdges.push_back(UndirectedEdge<V, P>(cellIdx,
-              dem.computeLinearIndex(
-              (Grid<double, Cell, 2>::Index() << i, j + 1).finished()),
+            mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellRightIdx,
               cellDist.KLDivergence(cellRightDist) +
               cellRightDist.KLDivergence(cellDist)));
           }
@@ -160,11 +160,11 @@ const DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) const throw
     return it->getProperty();
 }
 
-DEMGraph::V DEMGraph::getTailVertex(const E& edge) const {
+const DEMGraph::V& DEMGraph::getTailVertex(const E& edge) const {
   return findEdge(edge)->getTail();
 }
 
-DEMGraph::V DEMGraph::getHeadVertex(const E& edge) const {
+const DEMGraph::V& DEMGraph::getHeadVertex(const E& edge) const {
   return findEdge(edge)->getHead();
 }
 

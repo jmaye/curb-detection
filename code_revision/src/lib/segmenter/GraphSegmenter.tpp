@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include <algorithm>
+#include <map>
 
 template <typename G>
 double GraphSegmenter<G>::mK = 100.0;
@@ -37,12 +38,16 @@ double GraphSegmenter<G>::getMInt(const Component<V, double>& c1, const
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(G& graph,
-  std::map<size_t, Component<V, double> >& components, std::map<V, size_t>&
-  vertices, double k) {
+void GraphSegmenter<G>::segment(const G& graph,
+  std::tr1::unordered_map<size_t, Component<V, double> >& components,
+  std::tr1::unordered_map<V, size_t>& vertices, double k) throw
+  (BadArgumentException<double>) {
+  if (k < 0)
+    throw BadArgumentException<double>(k,
+      "GraphSegmenter<G>::segment(): k must be positive", __FILE__, __LINE__);
   std::multimap<double, E> edges;
   for (CstItE it = graph.getEdgeBegin(); it != graph.getEdgeEnd(); ++it) {
-    E e = graph.getEdge(it);
+    const E e = graph.getEdge(it);
     edges.insert(std::pair<double, E>(graph.getEdgeProperty(e), e));
   }
   components.clear();
@@ -51,16 +56,16 @@ void GraphSegmenter<G>::segment(G& graph,
   mK = k;
   typename std::multimap<double, E>::const_iterator it;
   for (it = edges.begin(); it != edges.end(); ++it) {
-    E e = it->second;
-    V v1 = graph.getHeadVertex(e);
-    size_t c1  = vertices[v1];
-    V v2 = graph.getTailVertex(e);
-    size_t c2 = vertices[v2];
+    const E& e = it->second;
+    const V& v1 = graph.getHeadVertex(e);
+    const size_t c1  = vertices[v1];
+    const V& v2 = graph.getTailVertex(e);
+    const size_t c2 = vertices[v2];
     if (c1 != c2 && it->first <= getMInt(components[c1], components[c2])) {
       for (CstItCV itC = components[c2].getVertexBegin();
         itC != components[c2].getVertexEnd(); ++itC)
         vertices[*itC] = c1;
-      double maxInt = std::max(components[c1].getProperty(),
+      const double maxInt = std::max(components[c1].getProperty(),
         components[c2].getProperty());
       components[c1].setProperty(std::max(maxInt, it->first));
       components[c1].merge(components[c2]);

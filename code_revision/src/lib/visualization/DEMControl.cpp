@@ -29,9 +29,9 @@
 
 DEMControl::DEMControl(bool showDEM) :
   mUi(new Ui_DEMControl()),
-  mDEM(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
-    Eigen::Matrix<double, 2, 1>(4.0, 4.0),
-    Eigen::Matrix<double, 2, 1>(0.1, 0.1)) {
+  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
+    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
+    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)) {
   mUi->setupUi(this);
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
@@ -51,9 +51,9 @@ DEMControl::DEMControl(bool showDEM) :
   double maxY = mUi->rangeMaxYSpinBox->value();
   double cellSizeX = mUi->resXSpinBox->value();
   double cellSizeY = mUi->resYSpinBox->value();
-  mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
-    Eigen::Matrix<double, 2, 1>(maxX, maxY),
-    Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
+  mDEM = Grid<double, Cell, 2>(Grid<double, Cell, 2>::Coordinate(minX, minY),
+    Grid<double, Cell, 2>::Coordinate(maxX, maxY),
+    Grid<double, Cell, 2>::Coordinate(cellSizeX, cellSizeY));
 }
 
 DEMControl::~DEMControl() {
@@ -99,9 +99,10 @@ void DEMControl::renderDEM(double size, bool smooth) {
     glDisable(GL_LINE_SMOOTH);
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "DEM");
-  Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
-  for (size_t i = 0; i < mDEM.getNumCells()(0); ++i)
-    for (size_t j = 0; j < mDEM.getNumCells()(1); ++j) {
+  const Grid<double, Cell, 2>::Coordinate& resolution = mDEM.getResolution();
+  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
       Eigen::Matrix<double, 2, 1> point = 
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       const Cell& cell =

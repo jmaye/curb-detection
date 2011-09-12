@@ -25,11 +25,11 @@
 #define DEMGRAPH_H
 
 #include "data-structures/Grid.h"
-#include "data-structures/UndirectedEdge.h"
 #include "data-structures/Cell.h"
+#include "data-structures/UndirectedEdge.h"
 
 #include <vector>
-#include <map>
+#include <tr1/unordered_map>
 
 /** The class DEMGraph represents a special graph implementation for a DEM.
     \brief DEM graph
@@ -41,7 +41,7 @@ public:
     @{
     */
   /// Vertex descriptor
-  typedef size_t VertexDescriptor;
+  typedef Grid<double, Cell, 2>::Index VertexDescriptor;
   /// Vertex descriptor
   typedef VertexDescriptor V;
   /// Edge descriptor
@@ -59,7 +59,7 @@ public:
   /// Edge iterator
   typedef EdgeContainer::iterator EdgeIterator;
   /// Vertex container
-  typedef std::map<V, size_t> VertexContainer;
+  typedef std::tr1::unordered_map<V, size_t> VertexContainer;
   /** @}
     */
 
@@ -101,9 +101,9 @@ public:
   /// Returns an edge property
   const P& getEdgeProperty(const E& edge) const throw (OutOfBoundException<E>);
   /// Returns the tail vertex
-  V getTailVertex(const E& edge) const;
+  const V& getTailVertex(const E& edge) const;
   /// Returns head vertex from an edge
-  V getHeadVertex(const E& edge) const;
+  const V& getHeadVertex(const E& edge) const;
   /// Return the vertex container
   VertexContainer& getVertices();
   /** @}

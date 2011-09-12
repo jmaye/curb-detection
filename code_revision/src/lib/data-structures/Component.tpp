@@ -84,13 +84,9 @@ void Component<V, P>::insertVertex(const V& vertex) {
 }
 
 template <typename V, typename P>
-void Component<V, P>::removeVertex(const V& vertex) {
-  mVertices.remove(vertex);
-}
-
-template <typename V, typename P>
-void Component<V, P>::merge(Component<V, P>& other) {
-  mVertices.merge(other.mVertices);
+void Component<V, P>::merge(const Component<V, P>& other) {
+  mVertices.insert(getVertexEnd(), other.getVertexBegin(),
+    other.getVertexEnd());
 }
 
 template <typename V, typename P>
@@ -138,4 +134,10 @@ typename Component<V, P>::ConstVertexIterator Component<V, P>::getVertexEnd()
 template <typename V, typename P>
 typename Component<V, P>::VertexIterator Component<V, P>::getVertexEnd() {
   return mVertices.end();
+}
+
+template <typename V, typename P>
+const typename Component<V, P>::Container& Component<V, P>::getVertices()
+  const {
+  return mVertices;
 }

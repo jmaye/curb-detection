@@ -72,21 +72,20 @@ void SegmentationControl::renderSegmentation() {
   Eigen::Matrix<size_t, 2, 1> numCells = mDEM.getNumCells();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  std::map<size_t, Component<size_t, double> >::const_iterator it;
-  for (it = mComponents.begin(); it != mComponents.end(); ++it) {
-    Color color = mColors.find(it->first)->second;
-    Component<size_t, double>::ConstVertexIterator itV;
+  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
+    double> >::const_iterator it;
+  std::vector<Color>::const_iterator itC;
+  for (it = mComponents.begin(), itC = mColors.begin(); it != mComponents.end();
+    ++it, ++itC) {
+    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
     for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
       ++itV) {
-      size_t linIdx = *itV;
-      Eigen::Matrix<size_t, 2, 1> index;
-      index(0) = linIdx / numCells(1);
-      index(1) = linIdx % numCells(1);
+      Grid<double, Cell, 2>::Index index = *itV;
       Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(index);
       const Cell& cell = mDEM[index];
       double sampleMean = cell.getHeightEstimator().getMean();
       glBegin(GL_POLYGON);
-      glColor3f(color.mRedColor, color.mGreenColor, color.mBlueColor);
+      glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
         sampleMean);
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
@@ -110,13 +109,10 @@ void SegmentationControl::segment() {
   DEMGraph graph(mDEM);
   GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
     mK);
-  mColors.clear();
-  std::map<size_t, Component<size_t, double> >::const_iterator it;
-  for (it = mComponents.begin(); it != mComponents.end(); ++it) {
-    Color color;
-    setColor(color);
-    mColors[it->first] = color;
-  }
+  mColors.resize(mComponents.size());
+  for (std::vector<Color>::iterator it = mColors.begin(); it != mColors.end();
+    ++it)
+    getColor(*it);
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
 }
@@ -131,7 +127,7 @@ void SegmentationControl::kChanged(double value) {
   segment();
 }
 
-void SegmentationControl::setColor(Color& color) const {
+void SegmentationControl::getColor(Color& color) const {
   static Randomizer<double> randomizer;
   double h = randomizer.sampleUniform(0, 360);
   double s = 1.0;

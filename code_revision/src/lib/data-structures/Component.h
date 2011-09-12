@@ -17,8 +17,8 @@
  ******************************************************************************/
 
 /** \file Component.h
-    \brief This file defines the Component class, which represents a component
-           in the graph-based segmentation
+    \brief This file defines the Component class, which represents a graph
+           component.
   */
 
 #ifndef COMPONENT_H
@@ -26,11 +26,11 @@
 
 #include "base/Serializable.h"
 
-#include <list>
+#include <vector>
 
-/** The class Component represents a component in the graph-based segmentation,
-    i.e., a list of vertices, with some internal value.
-    \brief A segmented component
+/** The class Component represents a graph component, i.e., a collection of
+    vertices and some property.
+    \brief A graph component
   */
 template <typename V, typename P> class Component :
   public virtual Serializable {
@@ -43,7 +43,7 @@ public:
   /// Component property
   typedef P Property;
   /// Container type
-  typedef std::list<V> Container;
+  typedef std::vector<V> Container;
   /// Constant vertex iterator
   typedef typename Container::const_iterator ConstVertexIterator;
   /// Vertex iterator
@@ -72,10 +72,10 @@ public:
     */
   /// Insert a vertex in the component
   void insertVertex(const V& vertex);
-  /// Remove a vertex from the component
-  void removeVertex(const V& vertex);
   /// Merge components
-  void merge(Component& other);
+  void merge(const Component& other);
+  /// Returns the container
+  const Container& getVertices() const;
   /// Clears the component
   void clear();
   /// Returns the number of vertices

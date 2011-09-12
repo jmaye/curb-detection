@@ -30,7 +30,8 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Component.h"
 
-#include <map>
+#include <tr1/unordered_map>
+#include <vector>
 
 class Cell;
 class Ui_SegmentationControl;
@@ -92,8 +93,8 @@ protected:
     */
   /// Renders the segmentation
   void renderSegmentation();
-  /// Sets a color randomly
-  void setColor(Color& color) const;
+  /// Returns a random color
+  void getColor(Color& color) const;
   /// Sets the segmentation parameter
   void setK(double value);
   /// Segment DEM
@@ -109,11 +110,12 @@ protected:
   /// DEM
   Grid<double, Cell, 2> mDEM;
   /// Segmented components
-  std::map<size_t, Component<size_t, double> > mComponents;
+  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
+    double> > mComponents;
   /// Segmentation parameter
   double mK;
-  /// Mapping for the random colors
-  std::map<size_t, Color> mColors;
+  /// Vector of random colors
+  std::vector<Color> mColors;
   /** @}
     */
 
