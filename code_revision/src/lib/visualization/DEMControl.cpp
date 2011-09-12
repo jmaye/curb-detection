@@ -19,7 +19,6 @@
 #include "visualization/DEMControl.h"
 
 #include "visualization/PointCloudControl.h"
-#include "data-structures/Cell.h"
 
 #include "ui_DEMControl.h"
 

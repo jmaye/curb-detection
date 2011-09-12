@@ -82,6 +82,6 @@ protected:
 
 };
 
-#include "data-structures/Cell.tpp"
+//#include "data-structures/Cell.tpp"
 
 #endif // CELL_H

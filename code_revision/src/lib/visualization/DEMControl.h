@@ -28,12 +28,12 @@
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
 #include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
 #include "data-structures/PointCloud.h"
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
-class Cell;
 class Ui_DEMControl;
 
 /** The DEMControl class represents a Qt control for DEM.

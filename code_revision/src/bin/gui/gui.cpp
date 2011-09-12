@@ -24,7 +24,7 @@
 #include "visualization/ViewControl.h"
 #include "visualization/PointCloudControl.h"
 #include "visualization/DEMControl.h"
-#include "seg-visual/SegmentationControl.h"
+#include "visualization/SegmentationControl.h"
 
 #include <QtGui/QApplication>
 
