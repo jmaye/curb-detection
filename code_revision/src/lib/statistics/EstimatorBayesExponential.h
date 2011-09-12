@@ -16,20 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file EstimatorBayesExponential.h
+    \brief This file implements a Bayesian estimator for exponential
+           distribution with conjugate prior
   */
 
-#include "statistics/NormalDistribution.h"
-#include "base/Serializable.h"
+#include "statistics/ExponentialDistribution.h"
+#include "statistics/GammaDistribution.h"
+#include "statistics/NegativeBinomialDistribution.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The class EstimatorBayes is implemented for exponential distributions with
+    conjugate prior.
+    \brief Exponential distribution Bayesian estimator
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+template <> class EstimatorBayes<ExponentialDistribution> :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -47,36 +49,30 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  EstimatorML();
+  /// Constructs estimator with hyperparameters prior
+  EstimatorBayes(double alpha = 1.0, double beta = 1.0);
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorBayes(const EstimatorBayes<ExponentialDistribution>& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorBayes<ExponentialDistribution>& operator =
+    (const EstimatorBayes<ExponentialDistribution>& other);
   /// Destructor
-  virtual ~EstimatorML();
+  virtual ~EstimatorBayes();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Returns the number of points
-  size_t getNumPoints() const;
-  /// Returns the validity state of the estimator
-  bool getValid() const;
-  /// Returns the estimated mean
-  double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the posterior rate distribution
+  const GammaDistribution<double>& getPostRateDist() const;
+  /// Returns the posterior predictive distribution
+  const NegativeBinomialDistribution& getPostPredDist() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
-  /// Reset the estimator
-  void reset();
   /** @}
     */
 
@@ -98,17 +94,17 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated mean
-  double mMean;
-  /// Estimated variance
-  double mVariance;
-  /// Number of points in the estimator
-  size_t mNumPoints;
-  /// Valid flag
-  bool mValid;
+  /// Posterior rate distribution
+  GammaDistribution<double> mPostRateDist;
+  /// Posterior predictive distribution
+  NegativeBinomialDistribution mPostPredDist;
+  /// Hyperparameter alpha (corresponds to alpha - 1 prior observations)
+  double mAlpha;
+  /// Hyperparameter beta (corresponds to beta prior total waiting time)
+  double mBeta;
   /** @}
     */
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorBayesExponential.tpp"

@@ -16,27 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file EstimatorMLPoisson.h
+    \brief This file implements an ML estimator for Poisson distributions.
   */
 
-#include "statistics/NormalDistribution.h"
+#include "statistics/PoissonDistribution.h"
 #include "base/Serializable.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The class EstimatorML is implemented for Poisson distributions.
+    \brief Poisson distribution ML estimator
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+template <> class EstimatorML<PoissonDistribution> :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef size_t Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -50,10 +49,10 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML<PoissonDistribution>& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML<PoissonDistribution>& operator =
+    (const EstimatorML<PoissonDistribution>& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -68,8 +67,6 @@ public:
   bool getValid() const;
   /// Returns the estimated mean
   double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
@@ -100,8 +97,6 @@ protected:
     */
   /// Estimated mean
   double mMean;
-  /// Estimated variance
-  double mVariance;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
@@ -111,4 +106,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorMLPoisson.tpp"

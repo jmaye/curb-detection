@@ -16,27 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file EstimatorMLGeometric.h
+    \brief This file implements an ML estimator for geometric distributions.
   */
 
-#include "statistics/NormalDistribution.h"
+#include "statistics/GeometricDistribution.h"
 #include "base/Serializable.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The class EstimatorML is implemented for geometric distributions.
+    \brief Geometric distribution ML estimator
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+template <> class EstimatorML<GeometricDistribution> :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef size_t Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -50,10 +49,10 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML<GeometricDistribution>& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML<GeometricDistribution>& operator =
+    (const EstimatorML<GeometricDistribution>& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -66,10 +65,8 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated mean
-  double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the estimated success probability
+  double getSuccessProbability() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
@@ -98,10 +95,10 @@ protected:
   /** \name Protected members
     @{
     */
+  /// Estimated success probability
+  double mSuccessProbability;
   /// Estimated mean
   double mMean;
-  /// Estimated variance
-  double mVariance;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
@@ -111,4 +108,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorMLGeometric.tpp"

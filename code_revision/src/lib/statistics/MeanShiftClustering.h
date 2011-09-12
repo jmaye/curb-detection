@@ -16,28 +16,49 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorML.h
-    \brief This file defines the EstimatorML class, which implements
-           maximum likelihood estimators for various distributions
+/** \file MeanShiftClustering.h
+    \brief This file defines the MeanShiftClustering class, which implements a
+           mean-shift clustering algorithm
   */
 
-#ifndef ESTIMATORML_H
-#define ESTIMATORML_H
+#ifndef MEANSHIFTCLUSTERING_H
+#define MEANSHIFTCLUSTERING_H
 
-#include <cstdlib>
+#include "exceptions/BadArgumentException.h"
 
-template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
+#include <Eigen/Core>
 
-#include "statistics/EstimatorMLNormal1v.h"
-//#include "statistics/EstimatorMLNormalMv.h"
-//#include "statistics/EstimatorMLCategorical.h"
-//#include "statistics/EstimatorMLMultinomial.h"
-//#include "statistics/EstimatorMLExponential.h"
-//#include "statistics/EstimatorMLGeometric.h"
-//#include "statistics/EstimatorMLPoisson.h"
-#include "statistics/EstimatorMLLinearRegression.h"
-#include "statistics/EstimatorMLMixtureLinearRegression.h"
-#include "statistics/EstimatorMLMixtureNormal1v.h"
-//#include "statistics/EstimatorMLMixtureNormalMv.h"
+#include <vector>
 
-#endif // ESTIMATORML
+/** This class implements a mean-shift clustering algorithm.
+    \brief Mean-shift clustering algorithm
+  */
+template <typename T, size_t M> class MeanShiftClustering {
+  /** \name Private constructors
+    @{
+    */
+  /// Default constructor
+  MeanShiftClustering();
+  /** @}
+    */
+
+public:
+  /** \name Methods
+    @{
+    */
+  /// Clusters the input data points
+  static void cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
+    std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
+    std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
+    dataToCluster, double bandwidth, double tol = 1e-6, bool debug = false)
+    throw (BadArgumentException<double>, BadArgumentException<size_t>);
+  /** @}
+    */
+
+protected:
+
+};
+
+#include "statistics/MeanShiftClustering.tpp"
+
+#endif // MEANSHIFTCLUSTERING_H

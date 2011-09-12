@@ -16,20 +16,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file EstimatorMLExponential.h
+    \brief This file implements an ML estimator for exponential distributions.
   */
 
-#include "statistics/NormalDistribution.h"
+#include "statistics/ExponentialDistribution.h"
 #include "base/Serializable.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The class EstimatorML is implemented for exponential distributions.
+    \brief Exponential distribution ML estimator
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+template <> class EstimatorML<ExponentialDistribution> :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -50,10 +49,10 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML<ExponentialDistribution>& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML<ExponentialDistribution>& operator =
+    (const EstimatorML<ExponentialDistribution>& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -66,10 +65,8 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated mean
-  double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the estimated rate
+  double getRate() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
@@ -98,10 +95,10 @@ protected:
   /** \name Protected members
     @{
     */
+  /// Estimated rate
+  double mRate;
   /// Estimated mean
   double mMean;
-  /// Estimated variance
-  double mVariance;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
@@ -111,4 +108,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorMLExponential.tpp"

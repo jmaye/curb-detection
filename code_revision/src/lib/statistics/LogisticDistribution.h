@@ -16,19 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file NormalDistribution1v.h
-    \brief This file defines the univariate normal distribution
+/** \file LogisticDistribution.h
+    \brief This file defines the logistic distribution
   */
+
+#ifndef LOGISTICDISTRIBUTION_H
+#define LOGISTICDISTRIBUTION_H
 
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
 
-/** The NormalDistribution1v class represents a univariate normal distribution.
-    \brief Univariate normal distribution
+/** The LogisticDistribution class represents a logistic distribution.
+    \brief Logistic distribution
   */
-template <> class NormalDistribution<1> :
+class LogisticDistribution :
   public ContinuousDistribution<double>,
   public SampleDistribution<double>,
   public virtual Serializable {
@@ -36,38 +39,38 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs a normal distribution from the parameters
-  NormalDistribution(double mean = 0.0, double variance = 1.0);
+  /// Constructs the distribution from the parameters
+  LogisticDistribution(double location = 0.0, double scale = 1.0);
   /// Copy constructor
-  NormalDistribution(const NormalDistribution<1>& other);
+  LogisticDistribution(const LogisticDistribution& other);
   /// Assignment operator
-  NormalDistribution& operator = (const NormalDistribution<1>& other);
+  LogisticDistribution& operator = (const LogisticDistribution& other);
   /// Destructor
-  virtual ~NormalDistribution();
+  virtual ~LogisticDistribution();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Sets the mean of the distribution
-  void setMean(double mean);
+  /// Sets the location of the distribution
+  void setLocation(double scale);
+  /// Returns the location of the distribution
+  double getLocation() const;
+  /// Sets the scale of the distribution
+  void setScale(double scale) throw (BadArgumentException<double>);
+  /// Returns the scale of the distribution
+  double getScale() const;
+  /// Returns the inverse scale of the distribution
+  double getInverseScale() const;
   /// Returns the mean of the distribution
   double getMean() const;
-  /// Sets the variance of the distribution
-  void setVariance(double variance) throw (BadArgumentException<double>);
-  /// Returns the variance of the distribution
-  double getVariance() const;
-  /// Returns the precision of the distribution
-  double getPrecision() const;
-  /// Returns the standard deviation of the distribution
-  double getStandardDeviation() const;
-  /// Returns the normalizer of the distribution
-  double getNormalizer() const;
   /// Returns the median of the distribution
   double getMedian() const;
   /// Returns the mode of the distribution
   double getMode() const;
+  /// Returns the variance of the distribution
+  double getVariance() const;
   /// Access the probability density function at the given value
   virtual double pdf(const double& value) const;
   /// Access the log-probability density function at the given value
@@ -76,10 +79,6 @@ public:
   double cdf(const double& value) const;
   /// Access a sample drawn from the distribution
   virtual double getSample() const;
-  /// Returns the KL-divergence with another distribution
-  double KLDivergence(const NormalDistribution<1>& other) const;
-  /// Returns the squared Mahalanobis distance from a given value
-  double mahalanobisDistance(const double& value) const;
   /** @}
     */
 
@@ -101,19 +100,17 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Mean of the normal distribution
-  double mMean;
-  /// Variance of the normal distribution
-  double mVariance;
-  /// Precision of the normal distribution
-  double mPrecision;
-  /// Standard deviation of the normal distribution
-  double mStandardDeviation;
-  /// Normalizer of the normal distribution
-  double mNormalizer;
+  /// Location of the distribution
+  double mLocation;
+  /// Scale of the distribution
+  double mScale;
+  /// Inverse scale of the distribution
+  double mInverseScale;
   /** @}
     */
 
 };
 
-//#include "statistics/NormalDistribution1v.tpp"
+#include "statistics/LogisticDistribution.tpp"
+
+#endif // LOGISTICDISTRIBUTION_H

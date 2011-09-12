@@ -16,28 +16,50 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorML.h
-    \brief This file defines the EstimatorML class, which implements
-           maximum likelihood estimators for various distributions
+/** \file KMeansClustering.h
+    \brief This file defines the KMeansClustering class, which implements a
+           K-Means clustering algorithm
   */
 
-#ifndef ESTIMATORML_H
-#define ESTIMATORML_H
+#ifndef KMEANSCLUSTERING_H
+#define KMEANSCLUSTERING_H
 
-#include <cstdlib>
+#include "exceptions/BadArgumentException.h"
 
-template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
+#include <Eigen/Core>
 
-#include "statistics/EstimatorMLNormal1v.h"
-//#include "statistics/EstimatorMLNormalMv.h"
-//#include "statistics/EstimatorMLCategorical.h"
-//#include "statistics/EstimatorMLMultinomial.h"
-//#include "statistics/EstimatorMLExponential.h"
-//#include "statistics/EstimatorMLGeometric.h"
-//#include "statistics/EstimatorMLPoisson.h"
-#include "statistics/EstimatorMLLinearRegression.h"
-#include "statistics/EstimatorMLMixtureLinearRegression.h"
-#include "statistics/EstimatorMLMixtureNormal1v.h"
-//#include "statistics/EstimatorMLMixtureNormalMv.h"
+#include <vector>
 
-#endif // ESTIMATORML
+/** This class implements a K-means clustering algorithm based on
+    Expectation-Maximization.
+    \brief K-Means clustering algorithm
+  */
+template <typename T, size_t M> class KMeansClustering {
+  /** \name Private constructors
+    @{
+    */
+  /// Default constructor
+  KMeansClustering();
+  /** @}
+    */
+
+public:
+  /** \name Methods
+    @{
+    */
+  /// Clusters the input data points
+  static size_t cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
+    std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
+    std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
+    dataToCluster, size_t k, size_t maxIterations = 10000, double tol = 1e-6,
+    bool debug = false) throw (BadArgumentException<size_t>);
+  /** @}
+    */
+
+protected:
+
+};
+
+#include "statistics/KMeansClustering.tpp"
+
+#endif // KMEANSCLUSTERING_H

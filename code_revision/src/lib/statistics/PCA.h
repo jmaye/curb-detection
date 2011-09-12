@@ -16,28 +16,47 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorML.h
-    \brief This file defines the EstimatorML class, which implements
-           maximum likelihood estimators for various distributions
+/** \file PCA.h
+    \brief This file defines the PCA class, which implements a PCA algorithm
   */
 
-#ifndef ESTIMATORML_H
-#define ESTIMATORML_H
+#ifndef PCA_H
+#define PCA_H
 
-#include <cstdlib>
+#include "exceptions/BadArgumentException.h"
 
-template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
+#include <Eigen/Core>
 
-#include "statistics/EstimatorMLNormal1v.h"
-//#include "statistics/EstimatorMLNormalMv.h"
-//#include "statistics/EstimatorMLCategorical.h"
-//#include "statistics/EstimatorMLMultinomial.h"
-//#include "statistics/EstimatorMLExponential.h"
-//#include "statistics/EstimatorMLGeometric.h"
-//#include "statistics/EstimatorMLPoisson.h"
-#include "statistics/EstimatorMLLinearRegression.h"
-#include "statistics/EstimatorMLMixtureLinearRegression.h"
-#include "statistics/EstimatorMLMixtureNormal1v.h"
-//#include "statistics/EstimatorMLMixtureNormalMv.h"
+#include <vector>
 
-#endif // ESTIMATORML
+/** This class implements a Principal Component Analysis (PCA) algorithm.
+    \brief Principal Component Analysis (PCA)
+  */
+template <typename T, size_t D, size_t M> class PCA {
+  /** \name Private constructors
+    @{
+    */
+  /// Default constructor
+  PCA();
+  /** @}
+    */
+
+public:
+  /** \name Methods
+    @{
+    */
+  /// Analyze the input data points
+  static void analyze(const std::vector<Eigen::Matrix<T, D, 1> >& data,
+    std::vector<Eigen::Matrix<T, M, 1> >& transformedData,
+    Eigen::Matrix<T, D, 1>& eigenValues, Eigen::Matrix<T, D, D>& eigenVectors)
+    throw (BadArgumentException<size_t>);
+  /** @}
+    */
+
+protected:
+
+};
+
+#include "statistics/PCA.tpp"
+
+#endif // PCA_H

@@ -9,74 +9,74 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file PoissonDistribution.h
+    \brief This file defines the PoissonDistribution class, which represents a
+           Poisson distribution
   */
 
-#include "statistics/NormalDistribution.h"
+#ifndef POISSONDISTRIBUTION_H
+#define POISSONDISTRIBUTION_H
+
+#include "statistics/DiscreteDistribution.h"
+#include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
+#include "exceptions/BadArgumentException.h"
 
-#include <vector>
-
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The PoissonDistribution class represents a Poisson distribution, i.e., a
+    discrete distribution that models the probability of a given number of
+    events occurring in a fixed interval of time and/or space with a known
+    average rate.
+    \brief Poisson distribution
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+class PoissonDistribution :
+  public DiscreteDistribution<size_t>,
+  public SampleDistribution<size_t>,
   public virtual Serializable {
 public:
-  /** \name Types definitions
-    @{
-    */
-  /// Point type
-  typedef double Point;
-  /// Points container
-  typedef std::vector<Point> Container;
-  /// Constant point iterator
-  typedef Container::const_iterator ConstPointIterator;
-  /** @}
-    */
-
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  EstimatorML();
+  /// Constructs the distribution from the parameter
+  PoissonDistribution(double mean = 1.0);
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  PoissonDistribution(const PoissonDistribution& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  PoissonDistribution& operator = (const PoissonDistribution& other);
   /// Destructor
-  virtual ~EstimatorML();
+  virtual ~PoissonDistribution();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Returns the number of points
-  size_t getNumPoints() const;
-  /// Returns the validity state of the estimator
-  bool getValid() const;
-  /// Returns the estimated mean
+  /// Sets the event mean
+  void setMean(double mean) throw (BadArgumentException<double>);
+  /// Returns the event mean
   double getMean() const;
-  /// Returns the estimated variance
+  /// Returns the median of the distribution
+  double getMedian() const;
+  /// Returns the mode of the distribution
+  double getMode() const;
+  /// Returns the variance of the distribution
   double getVariance() const;
-  /// Add a point to the estimator
-  void addPoint(const Point& point);
-  /// Add points to the estimator
-  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
-  /// Reset the estimator
-  void reset();
+  /// Returns the probability mass function at a point
+  virtual double pmf(const size_t& value) const;
+  /// Returns the log-probability mass function at a point
+  double logpmf(const size_t& value) const;
+  /// Returns the cumulative mass function at a point
+  double cdf(const size_t& value) const;
+  /// Access a sample drawn from the distribution
+  virtual size_t getSample() const;
+  /// Returns the KL-divergence with another distribution
+  double KLDivergence(const PoissonDistribution& other) const;
   /** @}
     */
 
@@ -98,17 +98,13 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated mean
+  /// Event mean
   double mMean;
-  /// Estimated variance
-  double mVariance;
-  /// Number of points in the estimator
-  size_t mNumPoints;
-  /// Valid flag
-  bool mValid;
   /** @}
     */
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/PoissonDistribution.tpp"
+
+#endif // POISSONDISTRIBUTION_H

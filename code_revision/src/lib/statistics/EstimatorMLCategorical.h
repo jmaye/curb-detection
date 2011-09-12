@@ -16,31 +16,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLNormal1v.h
-    \brief This file implements an ML estimator for univariate normal
-           distributions.
+/** \file EstimatorMLCategorical.h
+    \brief This file implements an ML estimator for categorical distributions.
   */
 
-#include "statistics/NormalDistribution.h"
+#include "statistics/CategoricalDistribution.h"
 #include "base/Serializable.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for univariate normal distributions.
-    \brief Univariate normal distribution ML estimator
+/** The class EstimatorML is implemented for categorical distributions.
+    \brief Categorical distribution ML estimator
   */
-template <> class EstimatorML<NormalDistribution<1> > :
+template <size_t M> class EstimatorML<CategoricalDistribution<M>, M> :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef Eigen::Matrix<size_t, M, 1> Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
-  typedef Container::const_iterator ConstPointIterator;
+  typedef typename Container::const_iterator ConstPointIterator;
   /** @}
     */
 
@@ -50,10 +49,10 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML<CategoricalDistribution<M>, M>& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML<CategoricalDistribution<M>, M>& operator =
+    (const EstimatorML<CategoricalDistribution<M>, M>& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -66,10 +65,8 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated mean
-  double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the estimated success probabilities
+  const Eigen::Matrix<double, M, 1>& getSuccessProbabilities() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
@@ -98,10 +95,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated mean
-  double mMean;
-  /// Estimated variance
-  double mVariance;
+  /// Estimated success probabilities
+  Eigen::Matrix<double, M, 1> mSuccessProbabilities;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
@@ -111,4 +106,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorMLNormal1v.tpp"
+#include "statistics/EstimatorMLCategorical.tpp"
