@@ -111,6 +111,7 @@ void EstimatorML<NormalDistribution<1> >::addPoint(double point) {
 
 void EstimatorML<NormalDistribution<1> >::addPoints(const std::vector<double>&
   points) {
-  for (size_t i = 0; i < points.size(); ++i)
-    addPoint(points[i]);
+  for (std::vector<double>::const_iterator it = points.begin();
+    it != points.end(); ++it)
+    addPoint(*it);
 }

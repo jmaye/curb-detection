@@ -44,12 +44,12 @@ DEMControl::DEMControl(bool showDEM) :
   setLineSize(1.0);
   setShowDEM(showDEM);
   setSmoothLines(true);
-  double minX = mUi->rangeMinXSpinBox->value();
-  double minY = mUi->rangeMinYSpinBox->value();
-  double maxX = mUi->rangeMaxXSpinBox->value();
-  double maxY = mUi->rangeMaxYSpinBox->value();
-  double cellSizeX = mUi->resXSpinBox->value();
-  double cellSizeY = mUi->resYSpinBox->value();
+  const double minX = mUi->rangeMinXSpinBox->value();
+  const double minY = mUi->rangeMinYSpinBox->value();
+  const double maxX = mUi->rangeMaxXSpinBox->value();
+  const double maxY = mUi->rangeMaxYSpinBox->value();
+  const double cellSizeX = mUi->resXSpinBox->value();
+  const double cellSizeY = mUi->resYSpinBox->value();
   mDEM = Grid<double, Cell, 2>(Grid<double, Cell, 2>::Coordinate(minX, minY),
     Grid<double, Cell, 2>::Coordinate(maxX, maxY),
     Grid<double, Cell, 2>::Coordinate(cellSizeX, cellSizeY));
@@ -106,7 +106,7 @@ void DEMControl::renderDEM(double size, bool smooth) {
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       const Cell& cell =
         mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      double sampleMean = cell.getHeightEstimator().getMean();
+      const double& sampleMean = cell.getHeightEstimator().getMean();
       if (cell.getHeightEstimator().getValid() == false)
         continue;
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
@@ -149,12 +149,12 @@ void DEMControl::smoothLinesToggled(bool checked) {
 }
 
 void DEMControl::demChanged() {
-  double minX = mUi->rangeMinXSpinBox->value();
-  double minY = mUi->rangeMinYSpinBox->value();
-  double maxX = mUi->rangeMaxXSpinBox->value();
-  double maxY = mUi->rangeMaxYSpinBox->value();
-  double cellSizeX = mUi->resXSpinBox->value();
-  double cellSizeY = mUi->resYSpinBox->value();
+  const double minX = mUi->rangeMinXSpinBox->value();
+  const double minY = mUi->rangeMinYSpinBox->value();
+  const double maxX = mUi->rangeMaxXSpinBox->value();
+  const double maxY = mUi->rangeMaxYSpinBox->value();
+  const double cellSizeX = mUi->resXSpinBox->value();
+  const double cellSizeY = mUi->resYSpinBox->value();
   mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));

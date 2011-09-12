@@ -64,7 +64,7 @@ template <typename D, size_t M>
 void MixtureSampleDistribution<D, M>::getSamples(std::vector<VariableType>&
   samples, size_t numSamples) const {
   samples.clear();
-  samples.resize(numSamples);
+  samples.reserve(numSamples);
   for (size_t i = 0; i < numSamples; ++i)
-    samples[i] = getSample();
+    samples.push_back(getSample());
 }

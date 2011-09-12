@@ -16,27 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/******************************************************************************/
-/* Constructors and Destructor                                                */
-/******************************************************************************/
+/** \file TemplatesImplementation.h
+    \brief This file defines the templates implementations.
+  */
 
-template <typename X>
-SampleDistribution<X>::SampleDistribution() {
-}
-
-template <typename X>
-SampleDistribution<X>::~SampleDistribution() {
-}
-
-/******************************************************************************/
-/* Accessors                                                                  */
-/******************************************************************************/
-
-template <typename X>
-void SampleDistribution<X>::getSamples(std::vector<X>& samples, size_t
-  numSamples) const {
-  samples.clear();
-  samples.reserve(numSamples);
-  for (size_t i = 0; i < numSamples; ++i)
-    samples.push_back(getSample());
-}
+#include "statistics/NormalDistribution.h"
+#include "statistics/NormalDistribution1v.tpp"
+#include "statistics/EstimatorML.h"
+#include "statistics/EstimatorMLNormal1v.tpp"
+#include "data-structures/Cell.h"
+#include "data-structures/Cell.tpp"

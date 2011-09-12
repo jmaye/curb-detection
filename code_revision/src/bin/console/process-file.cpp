@@ -25,6 +25,7 @@
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
+#include "statistics/EstimatorML.h"
 #include "base/Timestamp.h"
 
 int main (int argc, char** argv) {
@@ -57,6 +58,14 @@ int main (int argc, char** argv) {
   GraphSegmenter<DEMGraph>::segment(graph, components, graph.getVertices());
   after = Timestamp::now();
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
-  std::cout << components.size() << std::endl;
+  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
+    double> >::const_iterator it;
+  for (it = components.begin(); it != components.end(); ++it) {
+    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
+    //std::vector<PointCloud<double, 3>::Point> points();
+    for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
+      ++itV) {
+    }
+  }
   return 0;
 }
