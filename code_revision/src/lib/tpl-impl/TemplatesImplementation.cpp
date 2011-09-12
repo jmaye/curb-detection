@@ -26,3 +26,5 @@
 #include "statistics/EstimatorMLNormal1v.tpp"
 #include "data-structures/Cell.h"
 #include "data-structures/Cell.tpp"
+#include "data-structures/DEMGraph.h"
+#include "data-structures/DEMGraph.tpp"

@@ -16,21 +16,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/SegmentationControl.h"
+#include "visualization/MLControl.h"
 
 #include "visualization/DEMControl.h"
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
 #include "statistics/Randomizer.h"
 
-#include "ui_SegmentationControl.h"
+#include "ui_MLControl.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-SegmentationControl::SegmentationControl(bool showSegmentation) :
-  mUi(new Ui_SegmentationControl()),
+MLControl::MLControl(bool showML) :
+  mUi(new Ui_MLControl()),
   mDEM(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
     Eigen::Matrix<double, 2, 1>(4.0, 4.0),
     Eigen::Matrix<double, 2, 1>(0.1, 0.1)) {
@@ -41,10 +41,10 @@ SegmentationControl::SegmentationControl(bool showSegmentation) :
     SIGNAL(demUpdated(const Grid<double, Cell, 2>&)), this,
     SLOT(demUpdated(const Grid<double, Cell, 2>&)));
   mK = mUi->kSpinBox->value();
-  setShowSegmentation(showSegmentation);
+  setShowML(showML);
 }
 
-SegmentationControl::~SegmentationControl() {
+MLControl::~MLControl() {
   delete mUi;
 }
 
@@ -52,13 +52,13 @@ SegmentationControl::~SegmentationControl() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void SegmentationControl::setK(double value) {
+void MLControl::setK(double value) {
   mK = value;
   mUi->kSpinBox->setValue(value);
 }
 
-void SegmentationControl::setShowSegmentation(bool showSegmentation) {
-  mUi->showSegmentationCheckBox->setChecked(showSegmentation);
+void MLControl::setShowML(bool showML) {
+  mUi->showMLCheckBox->setChecked(showML);
   GLView::getInstance().update();
 }
 
@@ -66,7 +66,7 @@ void SegmentationControl::setShowSegmentation(bool showSegmentation) {
 /* Methods                                                                    */
 /******************************************************************************/
 
-void SegmentationControl::renderSegmentation() {
+void MLControl::renderML() {
   Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
   Eigen::Matrix<size_t, 2, 1> numCells = mDEM.getNumCells();
   glPushAttrib(GL_CURRENT_BIT);
@@ -99,37 +99,36 @@ void SegmentationControl::renderSegmentation() {
   glPopAttrib();
 }
 
-void SegmentationControl::render(GLView& view, Scene& scene) {
-  if (mUi->showSegmentationCheckBox->isChecked())
-    renderSegmentation();
+void MLControl::render(GLView& view, Scene& scene) {
+  if (mUi->showMLCheckBox->isChecked())
+    renderML();
 }
 
-void SegmentationControl::segment() {
-  DEMGraph graph(mDEM);
-  GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
-    mK);
-  mColors.clear();
-  mColors.reserve(mComponents.size());
-  for (size_t i = 0; i < mComponents.size(); ++i) {
-    Color color;
-    getColor(color);
-    mColors.push_back(color);
-  }
-  mUi->showSegmentationCheckBox->setEnabled(true);
-  GLView::getInstance().update();
-}
+//void MLControl::segment() {
+//  DEMGraph graph(mDEM);
+//  GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
+//    mK);
+//  mColors.reserve(mComponents.size());
+//  for (size_t i = 0; i < mComponents.size(); ++i) {
+//    Color color;
+//    getColor(color);
+//    mColors.push_back(color);
+//  }
+//  mUi->showSegmentationCheckBox->setEnabled(true);
+//  GLView::getInstance().update();
+//}
 
-void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {
+void MLControl::demUpdated(const Grid<double, Cell, 2>& dem) {
   mDEM = dem;
-  segment();
+  //segment();
 }
 
-void SegmentationControl::kChanged(double value) {
+void MLControl::kChanged(double value) {
   setK(value);
-  segment();
+  //segment();
 }
 
-void SegmentationControl::getColor(Color& color) const {
+void MLControl::getColor(Color& color) const {
   const static Randomizer<double> randomizer;
   double h = randomizer.sampleUniform(0, 360);
   const double s = 1.0;
@@ -174,6 +173,6 @@ void SegmentationControl::getColor(Color& color) const {
   }
 }
 
-void SegmentationControl::showSegmentationToggled(bool checked) {
-  setShowSegmentation(checked);
+void MLControl::showMLToggled(bool checked) {
+  setShowML(checked);
 }

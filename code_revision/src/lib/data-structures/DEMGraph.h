@@ -27,6 +27,7 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/UndirectedEdge.h"
+#include "utils/IndexHash.h"
 
 #include <vector>
 #include <tr1/unordered_map>
@@ -136,6 +137,6 @@ protected:
 
 };
 
-#include "data-structures/DEMGraph.tpp"
+//#include "data-structures/DEMGraph.tpp"
 
 #endif // DEMGRAPH_H
