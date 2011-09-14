@@ -26,7 +26,13 @@
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
 #include "statistics/EstimatorML.h"
+#include "helpers/InitML.h"
+#include "helpers/FGTools.h"
+#include "data-structures/FactorGraph.h"
+#include "data-structures/PropertySet.h"
+#include "statistics/BeliefPropagation.h"
 #include "base/Timestamp.h"
+
 
 int main (int argc, char** argv) {
   if (argc != 2) {
@@ -53,71 +59,54 @@ int main (int argc, char** argv) {
   std::cout << "Building DEM: " << after - before << " [s]" << std::endl;
   before = Timestamp::now();
   DEMGraph graph(dem);
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> > components;
+  GraphSegmenter<DEMGraph>::Components components;
   GraphSegmenter<DEMGraph>::segment(graph, components, graph.getVertices());
   after = Timestamp::now();
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
   before = Timestamp::now();
-  EstimatorML<LinearRegression<3>, 3> estPlane;
   EstimatorML<LinearRegression<3>, 3>::Container points;
-  points.reserve(graph.getVertices().size());
-  std::vector<EstimatorML<LinearRegression<3>, 3>::Point> coefficients;
-  coefficients.reserve(components.size());
-  std::vector<double> variances;
-  variances.reserve(components.size());
-  std::vector<double> weights;
-  weights.reserve(components.size());
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> >::const_iterator it;
-  for (it = components.begin(); it != components.end(); ++it) {
-    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itStart =
-      points.end();
-    for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
-      ++itV) {
-      PointCloud<double, 3>::Point point;
-      point.segment(0, 2) = dem.getCoordinates(*itV);
-      point(2) = dem[*itV].getHeightEstimator().getMean();
-      points.push_back(point);
-    }
-    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
-      points.end();
-    estPlane.addPoints(itStart, itEnd);
-    if (estPlane.getValid()) {
-      coefficients.push_back(estPlane.getCoefficients());
-      variances.push_back(estPlane.getVariance());
-      weights.push_back(it->second.getNumVertices());
-    }
-  }
+  std::vector<DEMGraph::VertexDescriptor> pointsMapping;
+  Eigen::Matrix<double, Eigen::Dynamic, 3> c;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> v;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> w;
+  Helpers::initML(dem, graph, components, points, pointsMapping, c, v, w);
   after = Timestamp::now();
   std::cout << "Initial linear regression estimation: " << after - before
     << " [s]" << std::endl;
-  before = Timestamp::now();
-  Eigen::Matrix<double, Eigen::Dynamic, 3> c(coefficients.size(), 3);
-  for (EstimatorML<LinearRegression<3>, 3>::ConstPointIterator it =
-    coefficients.begin(); it != coefficients.end(); ++it)
-    c.row(it - coefficients.begin()) = *it;
-  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1> > w(&weights[0],
-    weights.size());
-  w = w / w.sum();
-  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1> > v(&variances[0],
-    variances.size());
+  std::cout << "Initial coefficients: " << std::endl << c << std::endl;
+  std::cout << "Initial variances: " << v.transpose() << std::endl;
+  std::cout << "Initial weights: " << w.transpose() << std::endl;
   EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtPlane(c, v, w);
   const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
   after = Timestamp::now();
   std::cout << "Mixture linear regression estimation: " << after - before
     << " [s]" << std::endl;
-  std::cout << "Initial coefficients: " << std::endl << c << std::endl;
-  std::cout << "Initial weights: " << w.transpose() << std::endl;
-  std::cout << "Initial variances: " << v.transpose() << std::endl;
   std::cout << "Final coefficients: " << std::endl
     << estMixtPlane.getCoefficients() << std::endl;
+   std::cout << "Final variances: " << estMixtPlane.getVariances().transpose()
+    << std::endl;
   std::cout << "Final weights: " << estMixtPlane.getWeights().transpose()
     << std::endl;
-  std::cout << "Final variances: " << estMixtPlane.getVariances().transpose()
-    << std::endl;
   std::cout << "EM converged in: " << numIter << " [it]" << std::endl;
+  before = Timestamp::now();
+  FactorGraph factorGraph;
+  Helpers::buildFactorGraph(dem, graph, c, v, w, factorGraph);
+  after = Timestamp::now();
+  std::cout << "Constructing factor graph: " << after - before << " [s]"
+    << std::endl;
+  std::ofstream dotFile("fg.dot");
+  factorGraph.printDot(dotFile);
+  dai::Real tol = 1e-6;
+  PropertySet opts;
+  opts.set("maxiter", (size_t)200);
+  opts.set("tol", 1e-6);
+  opts.set("verbose", (size_t)1);
+  opts.set("updates", std::string("SEQRND"));
+  opts.set("logdomain", false);
+  opts.set("inference", std::string("SUMPROD"));
+  BeliefPropagation bp(factorGraph, opts);
+  bp.init();
+  bp.run();
   return 0;
 }

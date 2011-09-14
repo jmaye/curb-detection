@@ -118,7 +118,7 @@ size_t DEMGraph::getNumEdges() const {
   return mEdges.size();
 }
 
-DEMGraph::E DEMGraph::getEdge(ConstEdgeIterator it) const throw
+DEMGraph::E DEMGraph::getEdge(const ConstEdgeIterator& it) const throw
   (OutOfBoundException<size_t>) {
   if (it >= getEdgeEnd())
     throw OutOfBoundException<size_t>(0,
@@ -168,4 +168,24 @@ const DEMGraph::V& DEMGraph::getHeadVertex(const E& edge) const {
 
 DEMGraph::VertexContainer& DEMGraph::getVertices() {
   return mVertices;
+}
+
+size_t DEMGraph::getNumVertices() const {
+  return mVertices.size();
+}
+
+DEMGraph::ConstVertexIterator DEMGraph::getVertexBegin() const {
+  return mVertices.begin();
+}
+
+DEMGraph::VertexIterator DEMGraph::getVertexBegin() {
+  return mVertices.begin();
+}
+
+DEMGraph::ConstVertexIterator DEMGraph::getVertexEnd() const {
+  return mVertices.end();
+}
+
+DEMGraph::VertexIterator DEMGraph::getVertexEnd() {
+  return mVertices.end();
 }

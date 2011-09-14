@@ -16,63 +16,35 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file MainWindow.h
-    \brief This file defines the main Qt window.
+/** \file InitML.h
+    \brief This file defines the initML function, which is a helper to generate
+           initial values for the ML algorithm.
   */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef INITML_H
+#define INITML_H
 
-#include "visualization/Control.h"
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
+#include "data-structures/Component.h"
+#include "segmenter/GraphSegmenter.h"
 
-#include <QtGui/QMainWindow>
+namespace Helpers {
 
-class Ui_MainWindow;
+/** The initML function generates initial values for the Maximum-Likelihood
+    estimation of a mixtures of linear regression models.
+*/
+static bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+  const GraphSegmenter<DEMGraph>::Components& components,
+  EstimatorML<LinearRegression<3>, 3>::Container& points,
+  std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
+  Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
 
-/** The MainWindow class represents the Qt main window.
-    \brief Qt main window
-  */
-class MainWindow :
-  public QMainWindow {
-Q_OBJECT
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  MainWindow(const MainWindow& other);
-  /// Assignment operator
-  MainWindow& operator = (const MainWindow& other);
-  /** @}
-    */
-
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Constructs control with parameter
-  MainWindow();
-  /// Destructor
-  ~MainWindow();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Adds a control to the main window
-  void addControl(const QString& title, Control& control);
-  /** @}
-    */
-
-protected:
-  /** \name Protected members
-    @{
-    */
-  /// Qt user interface
-  Ui_MainWindow* mUi;
-  /** @}
-    */
+#include "helpers/InitML.tpp"
 
 };
 
-#endif // MAINWINDOW_H
+#endif // INITML_H

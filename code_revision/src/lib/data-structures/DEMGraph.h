@@ -61,6 +61,10 @@ public:
   typedef EdgeContainer::iterator EdgeIterator;
   /// Vertex container
   typedef std::tr1::unordered_map<V, size_t> VertexContainer;
+  /// Constant vertex iterator
+  typedef VertexContainer::const_iterator ConstVertexIterator;
+  /// Vertex iterator
+  typedef VertexContainer::iterator VertexIterator;
   /** @}
     */
 
@@ -92,7 +96,7 @@ public:
   /// Returns the number of edges
   size_t getNumEdges() const;
   /// Returns an edge descriptor from an iterator
-  E getEdge(ConstEdgeIterator it) const throw (OutOfBoundException<E>);
+  E getEdge(const ConstEdgeIterator& it) const throw (OutOfBoundException<E>);
   /// Finds an edge in the graph
   EdgeIterator findEdge(const E& edge) const;
   /// Sets an edge property
@@ -107,6 +111,16 @@ public:
   const V& getHeadVertex(const E& edge) const;
   /// Return the vertex container
   VertexContainer& getVertices();
+  /// Returns iterator at start of the vertex container
+  ConstVertexIterator getVertexBegin() const;
+  /// Returns iterator at start of the vertex container
+  VertexIterator getVertexBegin();
+  /// Returns iterator at end of the vertex container
+  ConstVertexIterator getVertexEnd() const;
+  /// Returns iterator at end of the vertex container
+  VertexIterator getVertexEnd();
+  /// Returns the number of vertices
+  size_t getNumVertices() const;
   /** @}
     */
 

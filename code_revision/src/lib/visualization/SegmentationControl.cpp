@@ -19,8 +19,6 @@
 #include "visualization/SegmentationControl.h"
 
 #include "visualization/DEMControl.h"
-#include "data-structures/DEMGraph.h"
-#include "segmenter/GraphSegmenter.h"
 #include "statistics/Randomizer.h"
 
 #include "ui_SegmentationControl.h"
@@ -67,22 +65,19 @@ void SegmentationControl::setShowSegmentation(bool showSegmentation) {
 /******************************************************************************/
 
 void SegmentationControl::renderSegmentation() {
-  Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
-  Eigen::Matrix<size_t, 2, 1> numCells = mDEM.getNumCells();
+  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> >::const_iterator it;
+  GraphSegmenter<DEMGraph>::CstItComp it;
   std::vector<Color>::const_iterator itC;
   for (it = mComponents.begin(), itC = mColors.begin(); it != mComponents.end();
     ++it, ++itC) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
     for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
       ++itV) {
-      Grid<double, Cell, 2>::Index index = *itV;
-      Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(index);
-      const Cell& cell = mDEM[index];
-      const double& sampleMean = cell.getHeightEstimator().getMean();
+      const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(*itV);
+      const Cell& cell = mDEM[*itV];
+      const double sampleMean = cell.getHeightEstimator().getMean();
       glBegin(GL_POLYGON);
       glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
@@ -117,6 +112,7 @@ void SegmentationControl::segment() {
   }
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
+  segmentUpdated(mDEM, graph, mComponents);
 }
 
 void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {

@@ -36,7 +36,7 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Creates a cell
+  /// Default constructor
   Cell();
   /// Copy constructor
   Cell(const Cell& other);

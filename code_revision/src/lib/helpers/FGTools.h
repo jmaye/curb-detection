@@ -16,63 +16,29 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file MainWindow.h
-    \brief This file defines the main Qt window.
+/** \file FGTools.h
+    \brief This file defines some helpers functions to interface libDAI.
   */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef FGTOOLS_H
+#define FGTOOLS_H
 
-#include "visualization/Control.h"
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
+#include "data-structures/FactorGraph.h"
 
-#include <QtGui/QMainWindow>
+namespace Helpers {
 
-class Ui_MainWindow;
+/** The buildFactorGraph function generates a factor graph from a DEMGraph.
+*/
+static void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph);
 
-/** The MainWindow class represents the Qt main window.
-    \brief Qt main window
-  */
-class MainWindow :
-  public QMainWindow {
-Q_OBJECT
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  MainWindow(const MainWindow& other);
-  /// Assignment operator
-  MainWindow& operator = (const MainWindow& other);
-  /** @}
-    */
-
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Constructs control with parameter
-  MainWindow();
-  /// Destructor
-  ~MainWindow();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Adds a control to the main window
-  void addControl(const QString& title, Control& control);
-  /** @}
-    */
-
-protected:
-  /** \name Protected members
-    @{
-    */
-  /// Qt user interface
-  Ui_MainWindow* mUi;
-  /** @}
-    */
+#include "helpers/FGTools.tpp"
 
 };
 
-#endif // MAINWINDOW_H
+#endif // FGTOOLS_H

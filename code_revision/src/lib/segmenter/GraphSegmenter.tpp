@@ -38,10 +38,8 @@ double GraphSegmenter<G>::getMInt(const Component<V, double>& c1, const
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(const G& graph,
-  std::tr1::unordered_map<size_t, Component<V, double> >& components,
-  std::tr1::unordered_map<V, size_t>& vertices, double k) throw
-  (BadArgumentException<double>) {
+void GraphSegmenter<G>::segment(const G& graph, Components& components,
+  Vertices& vertices, double k) throw (BadArgumentException<double>) {
   if (k < 0)
     throw BadArgumentException<double>(k,
       "GraphSegmenter<G>::segment(): k must be positive", __FILE__, __LINE__);

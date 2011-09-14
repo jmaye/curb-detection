@@ -29,9 +29,10 @@
 #include "visualization/Scene.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
 #include "data-structures/Component.h"
+#include "segmenter/GraphSegmenter.h"
 
-#include <tr1/unordered_map>
 #include <vector>
 
 class Ui_MLControl;
@@ -95,8 +96,12 @@ protected:
   void renderML();
   /// Returns a random color
   void getColor(Color& color) const;
-  /// Sets the ML parameter
-  void setK(double value);
+  /// Sets the ML maximum number of iterations
+  void setMaxIter(size_t maxIter);
+  /// Sets the ML tolerance
+  void setTolerance(double tol);
+  /// Run the ML algorithm
+  void runML();
   /** @}
     */
 
@@ -107,11 +112,22 @@ protected:
   Ui_MLControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
-  /// Segmented components
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> > mComponents;
-  /// Segmentation parameter
-  double mK;
+  /// Vertices labels
+  DEMGraph::VertexContainer mVertices;
+  /// Points for ML
+  EstimatorML<LinearRegression<3>, 3>::Container mPoints;
+  /// Points mapping for displaying
+  std::vector<DEMGraph::VertexDescriptor> mPointsMapping;
+  /// Initial coefficients
+  Eigen::Matrix<double, Eigen::Dynamic, 3> mC;
+  /// Initial variances
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mV;
+  /// Initial weights
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mW;
+  /// ML maximum number of iterations
+  size_t mMaxIter;
+  /// ML tolerance
+  double mTol;
   /// Vector of random colors
   std::vector<Color> mColors;
   /** @}
@@ -123,12 +139,15 @@ protected slots:
     */
   /// Renders the segmentation
   void render(GLView& view, Scene& scene);
-  /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
-  /// Segmentation parameter changed
-  void kChanged(double value);
+  /// Maximum number of iterations changed
+  void maxIterChanged(int maxIter);
+  /// Tolerance changed
+  void tolChanged(double tol);
   /// Show the ML segmentation
   void showMLToggled(bool checked);
+  /// Segmentation updated
+  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 

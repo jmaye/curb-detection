@@ -16,31 +16,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/MainWindow.h"
+#include "statistics/LinearRegression.h"
 
-#include "ui_MainWindow.h"
-
-/******************************************************************************/
-/* Constructors and Destructor                                                */
-/******************************************************************************/
-
-MainWindow::MainWindow() :
-  mUi(new Ui_MainWindow()) {
-  mUi->setupUi(this);
-  while (mUi->toolBox->count())
-    mUi->toolBox->removeItem(0);
-}
-
-MainWindow::~MainWindow() {
-  delete mUi;
-}
+#include <vector>
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void MainWindow::addControl(const QString& title, Control& control) {
-  mUi->toolBox->addItem(&control, title);
-  if (!control.getMenu().isEmpty())
-    mUi->menuBar->addMenu(&control.getMenu())->setText(title);
+void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph) {
+  const size_t numVertices = graph.getNumVertices();
+  const size_t numEdges = graph.getNumVertices();
+  std::vector<dai::Var> vars;
+  vars.reserve(numVertices);
+  std::vector<dai::Factor> factors;
+  factors.reserve(numVertices + numEdges);
+  for (DEMGraph::ConstVertexIterator it = graph.getVertexBegin(); it !=
+    graph.getVertexEnd(); ++it) {
+    vars.push_back(dai::Var(dem.computeLinearIndex(it->first), weights.size()));
+    dai::Factor fac(*(vars.end() - 1));
+    for (size_t i = 0; i < weights.size(); ++i) {
+      Eigen::Matrix<double, 3, 1> point;
+      point(0) = 1.0;
+      point.segment(1, 2) = dem.getCoordinates(it->first);
+      const double target = dem[it->first].getHeightEstimator().getMean();
+      fac.set(i, weights(i) * LinearRegression<3>(
+        coefficients.row(i).transpose(), variances(i), point)(target));
+    }
+    factors.push_back(fac);
+  }
+  for (DEMGraph::ConstEdgeIterator it = graph.getEdgeBegin(); it !=
+    graph.getEdgeEnd(); ++it) {
+  }
+  factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
+  vars.end(), factors.size(), vars.size());
 }

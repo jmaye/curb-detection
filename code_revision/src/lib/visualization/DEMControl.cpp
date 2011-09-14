@@ -102,11 +102,11 @@ void DEMControl::renderDEM(double size, bool smooth) {
   const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
-      Eigen::Matrix<double, 2, 1> point = 
+      const Eigen::Matrix<double, 2, 1> point = 
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       const Cell& cell =
         mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double& sampleMean = cell.getHeightEstimator().getMean();
+      const double sampleMean = cell.getHeightEstimator().getMean();
       if (cell.getHeightEstimator().getValid() == false)
         continue;
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,

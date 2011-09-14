@@ -52,7 +52,7 @@ public:
   /// Constructs estimator with initial guess of the parameters
   EstimatorML(const Eigen::Matrix<double, N, M>& coefficients, const
     Eigen::Matrix<double, N, 1>& variances, const Eigen::Matrix<double, N, 1>&
-    weights, size_t maxNumIter = 100, double tol = 1e-5);
+    weights, size_t maxNumIter = 200, double tol = 1e-6);
   /// Copy constructor
   EstimatorML(const
     EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>& other);

@@ -30,8 +30,9 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/Component.h"
+#include "data-structures/DEMGraph.h"
+#include "segmenter/GraphSegmenter.h"
 
-#include <tr1/unordered_map>
 #include <vector>
 
 class Ui_SegmentationControl;
@@ -110,8 +111,7 @@ protected:
   /// DEM
   Grid<double, Cell, 2> mDEM;
   /// Segmented components
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> > mComponents;
+  GraphSegmenter<DEMGraph>::Components mComponents;
   /// Segmentation parameter
   double mK;
   /// Vector of random colors
@@ -138,6 +138,9 @@ signals:
   /** \name Qt signals
     @{
     */
+  /// Segmentation updated
+  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 

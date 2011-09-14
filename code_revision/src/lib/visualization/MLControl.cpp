@@ -18,12 +18,13 @@
 
 #include "visualization/MLControl.h"
 
-#include "visualization/DEMControl.h"
-#include "data-structures/DEMGraph.h"
-#include "segmenter/GraphSegmenter.h"
+#include "visualization/SegmentationControl.h"
 #include "statistics/Randomizer.h"
+#include "helpers/InitML.h"
 
 #include "ui_MLControl.h"
+
+#include <limits>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -31,16 +32,19 @@
 
 MLControl::MLControl(bool showML) :
   mUi(new Ui_MLControl()),
-  mDEM(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
-    Eigen::Matrix<double, 2, 1>(4.0, 4.0),
-    Eigen::Matrix<double, 2, 1>(0.1, 0.1)) {
+  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
+    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
+    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)) {
   mUi->setupUi(this);
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
-  connect(&DEMControl::getInstance(),
-    SIGNAL(demUpdated(const Grid<double, Cell, 2>&)), this,
-    SLOT(demUpdated(const Grid<double, Cell, 2>&)));
-  mK = mUi->kSpinBox->value();
+  connect(&SegmentationControl::getInstance(),
+    SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&)), this,
+    SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&)));
+  mMaxIter = mUi->maxIterSpinBox->value();
+  mTol =  mUi->tolSpinBox->value();
   setShowML(showML);
 }
 
@@ -52,9 +56,14 @@ MLControl::~MLControl() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void MLControl::setK(double value) {
-  mK = value;
-  mUi->kSpinBox->setValue(value);
+void MLControl::setMaxIter(size_t maxIter) {
+  mMaxIter = maxIter;
+  mUi->maxIterSpinBox->setValue(maxIter);
+}
+
+void MLControl::setTolerance(double tol) {
+  mTol = tol;
+  mUi->tolSpinBox->setValue(tol);
 }
 
 void MLControl::setShowML(bool showML) {
@@ -67,34 +76,26 @@ void MLControl::setShowML(bool showML) {
 /******************************************************************************/
 
 void MLControl::renderML() {
-  Eigen::Matrix<double, 2, 1> resolution = mDEM.getResolution();
-  Eigen::Matrix<size_t, 2, 1> numCells = mDEM.getNumCells();
+  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  std::tr1::unordered_map<size_t, Component<Grid<double, Cell, 2>::Index,
-    double> >::const_iterator it;
-  std::vector<Color>::const_iterator itC;
-  for (it = mComponents.begin(), itC = mColors.begin(); it != mComponents.end();
-    ++it, ++itC) {
-    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
-      ++itV) {
-      Grid<double, Cell, 2>::Index index = *itV;
-      Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(index);
-      const Cell& cell = mDEM[index];
-      const double& sampleMean = cell.getHeightEstimator().getMean();
-      glBegin(GL_POLYGON);
-      glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glEnd();
-    }
+  for (DEMGraph::ConstVertexIterator it = mVertices.begin(); it !=
+    mVertices.end(); ++it) {
+    const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(it->first);
+    const Cell& cell = mDEM[it->first];
+    const double sampleMean = cell.getHeightEstimator().getMean();
+    glBegin(GL_POLYGON);
+    glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
+      mColors[it->second].mBlueColor);
+    glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
+      sampleMean);
+    glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
+      sampleMean);
+    glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
+      sampleMean);
+    glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
+      sampleMean);
+    glEnd();
   }
   glPopAttrib();
 }
@@ -104,28 +105,55 @@ void MLControl::render(GLView& view, Scene& scene) {
     renderML();
 }
 
-//void MLControl::segment() {
-//  DEMGraph graph(mDEM);
-//  GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
-//    mK);
-//  mColors.reserve(mComponents.size());
-//  for (size_t i = 0; i < mComponents.size(); ++i) {
-//    Color color;
-//    getColor(color);
-//    mColors.push_back(color);
-//  }
-//  mUi->showSegmentationCheckBox->setEnabled(true);
-//  GLView::getInstance().update();
-//}
-
-void MLControl::demUpdated(const Grid<double, Cell, 2>& dem) {
-  mDEM = dem;
-  //segment();
+void MLControl::maxIterChanged(int maxIter) {
+  setMaxIter(maxIter);
+  runML();
 }
 
-void MLControl::kChanged(double value) {
-  setK(value);
-  //segment();
+void MLControl::tolChanged(double tol) {
+  setTolerance(tol);
+  runML();
+}
+
+void MLControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
+  graph, const GraphSegmenter<DEMGraph>::Components& components) {
+  mDEM = dem;
+  if (Helpers::initML(dem, graph, components, mPoints, mPointsMapping, mC, mV,
+    mW)) {
+    runML();
+    mColors.clear();
+    mColors.reserve(components.size());
+    for (size_t i = 0; i < components.size(); ++i) {
+      Color color;
+      getColor(color);
+      mColors.push_back(color);
+    }
+  }
+}
+
+void MLControl::runML() {
+  if (mPoints.size()) {
+    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
+    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
+      mPoints.end());
+    mUi->iterSpinBox->setValue(numIter);
+    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
+      responsibilities = estMixtPlane.getResponsibilities();
+    mVertices.clear();
+    for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
+      double max = -std::numeric_limits<double>::infinity();
+      size_t argmax = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
+        if (responsibilities(i, j) > max) {
+          max = responsibilities(i, j);
+          argmax = j;
+        }
+      mVertices[mPointsMapping[i]] = argmax;
+    }
+    mUi->showMLCheckBox->setEnabled(true);
+    GLView::getInstance().update();
+  }
 }
 
 void MLControl::getColor(Color& color) const {

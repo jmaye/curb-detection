@@ -35,6 +35,7 @@
     \brief Graph-based segmentation algorithm
   */
 template <typename G> class GraphSegmenter {
+public:
   /** \name Types definitions
       @{
     */
@@ -48,11 +49,27 @@ template <typename G> class GraphSegmenter {
   typedef typename G::ConstEdgeIterator CstItE;
   /// Component vertex iterator
   typedef typename Component<V, double>::ConstVertexIterator CstItCV;
+  /// Vertices type
+  typedef typename G::VertexContainer Vertices;
   /// Constant vertex iterator
-  typedef typename std::tr1::unordered_map<V, size_t>::const_iterator CstItV;
+  typedef typename G::ConstVertexIterator CstItV;
+  /// Components type
+  typedef std::tr1::unordered_map<size_t, Component<V, double> > Components;
+  /// Components constant iterator
+  typedef typename Components::const_iterator CstItComp;
   /** @}
     */
 
+  /** \name Methods
+      @{
+    */
+  /// Segment the graph
+  static void segment(const G& graph, Components& components, Vertices&
+    vertices, double k = 100.0) throw (BadArgumentException<double>);
+  /** @}
+    */
+
+private:
   /** \name Private constructors
     @{
     */
@@ -77,18 +94,6 @@ template <typename G> class GraphSegmenter {
     */
   /// Parameter for the algorithm
   static double mK;
-  /** @}
-    */
-
-public:
-  /** \name Methods
-      @{
-    */
-  /// Segment the graph
-  static void segment(const G& graph,
-    std::tr1::unordered_map<size_t, Component<V, double> >& components,
-    std::tr1::unordered_map<V, size_t>& vertices, double k = 100.0) throw
-    (BadArgumentException<double>);
   /** @}
     */
 

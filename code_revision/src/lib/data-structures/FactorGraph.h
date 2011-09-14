@@ -16,63 +16,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file MainWindow.h
-    \brief This file defines the main Qt window.
+/** \file FactorGraph.h
+    \brief This file defines the FactorGraph class which represents a factor
+           graph.
   */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef FACTORGRAPH_H
+#define FACTORGRAPH_H
 
-#include "visualization/Control.h"
+#include <dai/factorgraph.h>
 
-#include <QtGui/QMainWindow>
-
-class Ui_MainWindow;
-
-/** The MainWindow class represents the Qt main window.
-    \brief Qt main window
+/** \name Types definitions
+  @{
   */
-class MainWindow :
-  public QMainWindow {
-Q_OBJECT
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  MainWindow(const MainWindow& other);
-  /// Assignment operator
-  MainWindow& operator = (const MainWindow& other);
-  /** @}
-    */
+  /// Factor graph is implemented by libDAI
+typedef dai::FactorGraph FactorGraph;
+/** @}
+  */
 
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Constructs control with parameter
-  MainWindow();
-  /// Destructor
-  ~MainWindow();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Adds a control to the main window
-  void addControl(const QString& title, Control& control);
-  /** @}
-    */
-
-protected:
-  /** \name Protected members
-    @{
-    */
-  /// Qt user interface
-  Ui_MainWindow* mUi;
-  /** @}
-    */
-
-};
-
-#endif // MAINWINDOW_H
+#endif // FACTORGRAPH_H
