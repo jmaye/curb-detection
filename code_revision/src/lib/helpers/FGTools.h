@@ -35,7 +35,24 @@ namespace Helpers {
 static void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph);
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
+  DEMGraph::VertexContainer& fgMapping);
+
+/** The updateFactorGraph function updates a factor graph from a DEMGraph.
+*/
+static void updateFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
+  DEMGraph::VertexContainer& fgMapping);
+
+/** The computeFactor function computes a node factor from the graph.
+*/
+static void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
+  Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, const
+  Grid<double, Cell, 2>::Index& index, dai::Factor& factor);
 
 #include "helpers/FGTools.tpp"
 

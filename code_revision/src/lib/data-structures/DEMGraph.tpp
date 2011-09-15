@@ -62,12 +62,14 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
 }
 
 DEMGraph::DEMGraph(const DEMGraph::DEMGraph& other) :
-  mEdges(other.mEdges) {
+  mEdges(other.mEdges),
+  mVertices(other.mVertices) {
 }
 
 DEMGraph& DEMGraph::operator = (const DEMGraph& other) {
   if (this != &other) {
     mEdges = other.mEdges;
+    mVertices = other.mVertices;
   }
   return *this;
 }

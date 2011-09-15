@@ -23,7 +23,7 @@
 template <size_t M>
 LinearRegression<M>::LinearRegression(const Eigen::Matrix<double, M, 1>&
   coefficients, double variance, const Eigen::Matrix<double, M, 1>& basis) :
-  NormalDistribution<1>(mCoefficients.dot(mBasis), variance),
+  NormalDistribution<1>(coefficients.dot(basis), variance),
   mCoefficients(coefficients),
   mBasis(basis) {
 }

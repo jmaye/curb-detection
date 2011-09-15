@@ -26,6 +26,8 @@
 #include "visualization/DEMControl.h"
 #include "visualization/SegmentationControl.h"
 #include "visualization/MLControl.h"
+#include "visualization/BPControl.h"
+#include "visualization/CurbsControl.h"
 
 #include <QtGui/QApplication>
 
@@ -37,6 +39,8 @@ int main (int argc, char** argv) {
   DEMControl demControl(true);
   SegmentationControl segControl(true);
   MLControl mlControl(true);
+  BPControl bpControl(true);
+  CurbsControl curbsControl(true);
   if (argc > 1)
     pointCloudControl.setLogFilename(argv[1]);
   mainWindow.addControl("View", viewControl);
@@ -44,6 +48,8 @@ int main (int argc, char** argv) {
   mainWindow.addControl("DEM", demControl);
   mainWindow.addControl("Segmentation", segControl);
   mainWindow.addControl("ML", mlControl);
+  mainWindow.addControl("BP", bpControl);
+  mainWindow.addControl("Curbs", curbsControl);
   mainWindow.show();
   return application.exec();
 }

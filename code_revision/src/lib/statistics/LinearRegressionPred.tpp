@@ -25,9 +25,9 @@ LinearRegressionPred<M>::LinearRegressionPred(double degrees, const
   Eigen::Matrix<double, M, 1>& coefficients, const Eigen::Matrix<double, M, M>&
   coeffCovariance, double regressionVariance, const Eigen::Matrix<double, M, 1>&
   basis) :
-  StudentDistribution<1>(degrees, mCoefficients.dot(basis),
-  mRegressionVariance * (1 + (basis.transpose() * mCoeffCovariance *
-  basis)(0))),
+  StudentDistribution<1>(degrees, coefficients.dot(basis),
+    regressionVariance * (1 + (basis.transpose() * coeffCovariance *
+    basis)(0))),
   mCoefficients(coefficients),
   mCoeffCovariance(coeffCovariance),
   mRegressionVariance(regressionVariance),

@@ -91,6 +91,9 @@ public:
   /// Add points to the estimator / Returns number of EM iterationss
   size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator with weights
+  size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
   /// Reset the estimator
   void reset();
   /** @}

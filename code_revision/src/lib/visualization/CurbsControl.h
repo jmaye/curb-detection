@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file SegmentationControl.h
-    \brief This file defines a Qt control for segmentation.
+/** \file CurbsControl.h
+    \brief This file defines a Qt control for curbs
   */
 
-#ifndef SEGMENTATIONCONTROL_H
-#define SEGMENTATIONCONTROL_H
+#ifndef CURBSCONTROL_H
+#define CURBSCONTROL_H
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
@@ -29,29 +29,27 @@
 #include "visualization/Scene.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
-#include "data-structures/Component.h"
 #include "data-structures/DEMGraph.h"
-#include "segmenter/GraphSegmenter.h"
-#include "helpers/RandomColors.h"
 
-#include <vector>
+#include <QtCore/QString>
+#include <QtGui/QColor>
 
-class Ui_SegmentationControl;
+class Ui_CurbsControl;
 
-/** The SegmentationControl class represents a Qt control for segmentation.
-    \brief Qt control for segmentation
+/** The CurbsControl class represents a Qt control for curbs.
+    \brief Qt control for curbs
   */
-class SegmentationControl :
+class CurbsControl :
   public Control,
-  public Singleton<SegmentationControl> {
+  public Singleton<CurbsControl> {
 Q_OBJECT
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  SegmentationControl(const SegmentationControl& other);
+  CurbsControl(const CurbsControl& other);
   /// Assignment operator
-  SegmentationControl& operator = (const SegmentationControl& other);
+  CurbsControl& operator = (const CurbsControl& other);
   /** @}
     */
 
@@ -59,18 +57,24 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs control with parameter
-  SegmentationControl(bool showSegmentation = true);
+  /// Constructs the control with parameters
+  CurbsControl(bool showCurbs = true);
   /// Destructor
-  ~SegmentationControl();
+  ~CurbsControl();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Show segmentation
-  void setShowSegmentation(bool showSegmentation);
+  /// Sets the line color
+  void setLineColor(const QColor& color);
+  /// Sets the line size
+  void setLineSize(double lineSize);
+  /// Shows the curbs
+  void setShowCurbs(bool showCurbs);
+  /// Smoothes the lines
+  void setSmoothLines(bool smoothLines);
   /** @}
     */
 
@@ -78,12 +82,8 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Renders the segmentation
-  void renderSegmentation();
-  /// Sets the segmentation parameter
-  void setK(double value);
-  /// Segment DEM
-  void segment();
+  /// Render the curbs
+  void renderCurbs(double size, bool smooth);
   /** @}
     */
 
@@ -91,15 +91,15 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_SegmentationControl* mUi;
+  Ui_CurbsControl* mUi;
+  /// Palette
+  Palette mPalette;
   /// DEM
   Grid<double, Cell, 2> mDEM;
-  /// Segmented components
-  GraphSegmenter<DEMGraph>::Components mComponents;
-  /// Segmentation parameter
-  double mK;
-  /// Vector of random colors
-  std::vector<Helpers::Color> mColors;
+  /// Segmented vertices
+  DEMGraph::VertexContainer mVertices;
+  /// DEM graph
+  DEMGraph mGraph;
   /** @}
     */
 
@@ -107,14 +107,19 @@ protected slots:
   /** \name Qt slots
     @{
     */
-  /// Renders the segmentation
+  /// Color changed
+  void colorChanged(const QString& role, const QColor& color);
+  /// Line size changed
+  void lineSizeChanged(double lineSize);
+  /// Show curbs toggled
+  void showCurbsToggled(bool checked);
+  /// Smooth lines toggled
+  void smoothLinesToggled(bool checked);
+  /// Render the scene
   void render(GLView& view, Scene& scene);
-  /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
-  /// Segmentation parameter changed
-  void kChanged(double value);
-  /// Show the segmentation
-  void showSegmentationToggled(bool checked);
+  /// Receives a new segmentation
+  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
+    DEMGraph::VertexContainer& vertices);
   /** @}
     */
 
@@ -122,12 +127,9 @@ signals:
   /** \name Qt signals
     @{
     */
-  /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 
 };
 
-#endif // SEGMENTATIONCONTROL_H
+#endif // CURBSCONTROL_H

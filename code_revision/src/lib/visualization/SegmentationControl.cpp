@@ -19,7 +19,6 @@
 #include "visualization/SegmentationControl.h"
 
 #include "visualization/DEMControl.h"
-#include "statistics/Randomizer.h"
 
 #include "ui_SegmentationControl.h"
 
@@ -69,7 +68,7 @@ void SegmentationControl::renderSegmentation() {
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   GraphSegmenter<DEMGraph>::CstItComp it;
-  std::vector<Color>::const_iterator itC;
+  std::vector<Helpers::Color>::const_iterator itC;
   for (it = mComponents.begin(), itC = mColors.begin(); it != mComponents.end();
     ++it, ++itC) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
@@ -103,13 +102,7 @@ void SegmentationControl::segment() {
   DEMGraph graph(mDEM);
   GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
     mK);
-  mColors.clear();
-  mColors.reserve(mComponents.size());
-  for (size_t i = 0; i < mComponents.size(); ++i) {
-    Color color;
-    getColor(color);
-    mColors.push_back(color);
-  }
+  Helpers::randomColors(mColors, mComponents.size());
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
   segmentUpdated(mDEM, graph, mComponents);
@@ -123,51 +116,6 @@ void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {
 void SegmentationControl::kChanged(double value) {
   setK(value);
   segment();
-}
-
-void SegmentationControl::getColor(Color& color) const {
-  const static Randomizer<double> randomizer;
-  double h = randomizer.sampleUniform(0, 360);
-  const double s = 1.0;
-  const double v = 1.0;
-  h /= 60.0;
-  const int i = floor(h);
-  const double f =  h - i;
-  const double p = v * (1 - s);
-  const double q = v * (1 - s * f);
-  const double t = v * (1 - s * (1 - f));
-  switch (i) {
-    case 0:
-      color.mRedColor = v ;
-      color.mGreenColor = t;
-      color.mBlueColor = p;
-      break;
-    case 1:
-      color.mRedColor = q;
-      color.mGreenColor = v;
-      color.mBlueColor = p;
-      break;
-    case 2:
-      color.mRedColor = p;
-      color.mGreenColor = v;
-      color.mBlueColor = t;
-      break;
-    case 3:
-      color.mRedColor = p;
-      color.mGreenColor = q;
-      color.mBlueColor = v;
-      break;
-    case 4:
-      color.mRedColor = t;
-      color.mGreenColor = p;
-      color.mBlueColor = v;
-      break;
-    default:
-      color.mRedColor = v;
-      color.mGreenColor = p;
-      color.mBlueColor = q;
-      break;
-  }
 }
 
 void SegmentationControl::showSegmentationToggled(bool checked) {

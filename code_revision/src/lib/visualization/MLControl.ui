@@ -90,7 +90,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Show ML Segmentation</string>
+        <string>Show ML segmentation</string>
        </property>
        <property name="checked">
         <bool>true</bool>

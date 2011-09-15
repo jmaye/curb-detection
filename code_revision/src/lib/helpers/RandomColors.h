@@ -16,36 +16,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file InitML.h
-    \brief This file defines the initML function, which is a helper to generate
-           initial values for the ML algorithm.
+/** \file RandomColors.h
+    \brief This file defines the randomColors function, which is a helper to
+           generate random colors.
   */
 
-#ifndef INITML_H
-#define INITML_H
+#ifndef RANDOMCOLORS_H
+#define RANDOMCOLORS_H
 
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
-#include "data-structures/DEMGraph.h"
-#include "data-structures/Component.h"
-#include "segmenter/GraphSegmenter.h"
+#include <vector>
+#include <cstdlib>
 
 namespace Helpers {
 
-/** The initML function generates initial values for the Maximum-Likelihood
-    estimation of a mixtures of linear regression models.
-*/
-static bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-  const GraphSegmenter<DEMGraph>::Components& components,
-  EstimatorML<LinearRegression<3>, 3>::Container& points,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& pointsWeights,
-  std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
-  Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+  /** \name Types definitions
+    @{
+    */
+  /// Color type
+  struct Color {
+    /// Red component
+    GLfloat mRedColor;
+    /// Green component
+    GLfloat mGreenColor;
+    /// Blue component
+    GLfloat mBlueColor;
+  };
+  /** @}
+    */
 
-#include "helpers/InitML.tpp"
+/** The randomColors function generates random colors.
+*/
+static void randomColors(std::vector<Color>& colors, size_t num);
+
+#include "helpers/RandomColors.tpp"
 
 };
 
-#endif // INITML_H
+#endif // RANDOMCOLORS_H

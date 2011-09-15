@@ -65,11 +65,13 @@ int main (int argc, char** argv) {
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
   before = Timestamp::now();
   EstimatorML<LinearRegression<3>, 3>::Container points;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> pointsWeights;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
   Eigen::Matrix<double, Eigen::Dynamic, 3> c;
   Eigen::Matrix<double, Eigen::Dynamic, 1> v;
   Eigen::Matrix<double, Eigen::Dynamic, 1> w;
-  Helpers::initML(dem, graph, components, points, pointsMapping, c, v, w);
+  Helpers::initML(dem, graph, components, points, pointsWeights, pointsMapping,
+    c, v, w);
   after = Timestamp::now();
   std::cout << "Initial linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -78,7 +80,8 @@ int main (int argc, char** argv) {
   std::cout << "Initial weights: " << w.transpose() << std::endl;
   EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtPlane(c, v, w);
-  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
+  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end(),
+    pointsWeights);
   after = Timestamp::now();
   std::cout << "Mixture linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -91,13 +94,15 @@ int main (int argc, char** argv) {
   std::cout << "EM converged in: " << numIter << " [it]" << std::endl;
   before = Timestamp::now();
   FactorGraph factorGraph;
-  Helpers::buildFactorGraph(dem, graph, c, v, w, factorGraph);
+  DEMGraph::VertexContainer fgMapping;
+  Helpers::buildFactorGraph(dem, graph, estMixtPlane.getCoefficients(),
+    estMixtPlane.getVariances(), estMixtPlane.getWeights(), factorGraph,
+    fgMapping);
   after = Timestamp::now();
   std::cout << "Constructing factor graph: " << after - before << " [s]"
     << std::endl;
   std::ofstream dotFile("fg.dot");
   factorGraph.printDot(dotFile);
-  dai::Real tol = 1e-6;
   PropertySet opts;
   opts.set("maxiter", (size_t)200);
   opts.set("tol", 1e-6);
@@ -108,5 +113,8 @@ int main (int argc, char** argv) {
   BeliefPropagation bp(factorGraph, opts);
   bp.init();
   bp.run();
+  std::cout << bp.logZ() << std::endl;
+  std::cout << bp.beliefV(fgMapping[(Grid<double, Cell, 2>::Index() << 17, 35).finished()]) << std::endl;
+  std::cout << estMixtPlane.getResponsibilities().row(0) << std::endl;
   return 0;
 }

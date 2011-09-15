@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file SegmentationControl.h
-    \brief This file defines a Qt control for segmentation.
+/** \file BPControl.h
+    \brief This file defines a Qt control for BP segmentation.
   */
 
-#ifndef SEGMENTATIONCONTROL_H
-#define SEGMENTATIONCONTROL_H
+#ifndef BPCONTROL_H
+#define BPCONTROL_H
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
@@ -29,29 +29,29 @@
 #include "visualization/Scene.h"
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
-#include "data-structures/Component.h"
 #include "data-structures/DEMGraph.h"
+#include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
 #include "helpers/RandomColors.h"
 
 #include <vector>
 
-class Ui_SegmentationControl;
+class Ui_BPControl;
 
-/** The SegmentationControl class represents a Qt control for segmentation.
-    \brief Qt control for segmentation
+/** The BPControl class represents a Qt control for BP segmentation.
+    \brief Qt control for BP segmentation
   */
-class SegmentationControl :
+class BPControl :
   public Control,
-  public Singleton<SegmentationControl> {
+  public Singleton<BPControl> {
 Q_OBJECT
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  SegmentationControl(const SegmentationControl& other);
+  BPControl(const BPControl& other);
   /// Assignment operator
-  SegmentationControl& operator = (const SegmentationControl& other);
+  BPControl& operator = (const BPControl& other);
   /** @}
     */
 
@@ -60,17 +60,17 @@ public:
     @{
     */
   /// Constructs control with parameter
-  SegmentationControl(bool showSegmentation = true);
+  BPControl(bool showBP = true);
   /// Destructor
-  ~SegmentationControl();
+  ~BPControl();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Show segmentation
-  void setShowSegmentation(bool showSegmentation);
+  /// Show BP segmentation
+  void setShowBP(bool showBPSegmentation);
   /** @}
     */
 
@@ -78,12 +78,14 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Renders the segmentation
-  void renderSegmentation();
-  /// Sets the segmentation parameter
-  void setK(double value);
-  /// Segment DEM
-  void segment();
+  /// Renders the BP segmentation
+  void renderBP();
+  /// Sets the ML maximum number of iterations
+  void setMaxIter(size_t maxIter);
+  /// Sets the ML tolerance
+  void setTolerance(double tol);
+  /// Run the BP algorithm
+  void runBP();
   /** @}
     */
 
@@ -91,13 +93,15 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_SegmentationControl* mUi;
+  Ui_BPControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
-  /// Segmented components
-  GraphSegmenter<DEMGraph>::Components mComponents;
-  /// Segmentation parameter
-  double mK;
+  /// Vertices labels
+  DEMGraph::VertexContainer mVertices;
+  /// ML maximum number of iterations
+  size_t mMaxIter;
+  /// ML tolerance
+  double mTol;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
   /** @}
@@ -109,12 +113,17 @@ protected slots:
     */
   /// Renders the segmentation
   void render(GLView& view, Scene& scene);
-  /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
-  /// Segmentation parameter changed
-  void kChanged(double value);
-  /// Show the segmentation
-  void showSegmentationToggled(bool checked);
+  /// Maximum number of iterations changed
+  void maxIterChanged(int maxIter);
+  /// Tolerance changed
+  void tolChanged(double tol);
+  /// Show the BP segmentation
+  void showBPToggled(bool checked);
+  /// ML has been updated
+  void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
   /** @}
     */
 
@@ -122,12 +131,12 @@ signals:
   /** \name Qt signals
     @{
     */
-  /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components);
+  /// Sends a new segmentation
+  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const DEMGraph::VertexContainer& vertices);
   /** @}
     */
 
 };
 
-#endif // SEGMENTATIONCONTROL_H
+#endif // BPCONTROL_H

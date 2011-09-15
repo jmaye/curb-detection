@@ -26,12 +26,14 @@
 bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   GraphSegmenter<DEMGraph>::Components& components,
   EstimatorML<LinearRegression<3>, 3>::Container& points,
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& pointsWeights,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
   Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
   points.clear();
   pointsMapping.clear();
+  pointsMapping.reserve(graph.getNumVertices());
   points.reserve(graph.getNumVertices());
   std::vector<EstimatorML<LinearRegression<3>, 3>::Point> c;
   c.reserve(components.size());
@@ -40,13 +42,14 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   std::vector<double> w;
   w.reserve(components.size());
   EstimatorML<LinearRegression<3>, 3> estPlane;
+  pointsWeights.resize(graph.getNumVertices());
+  size_t row = 0;
   for (GraphSegmenter<DEMGraph>::CstItComp it = components.begin(); it !=
     components.end(); ++it) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
     EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itStart =
       points.end();
-    //Eigen::Matrix<double, Eigen::Dynamic, 1>
-      //weightL(it->second.getNumVertices());
+    size_t startRow = row;
     for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
       ++itV) {
       PointCloud<double, 3>::Point point;
@@ -54,12 +57,14 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
       point(2) = dem[*itV].getHeightEstimator().getMean();
       points.push_back(point);
       pointsMapping.push_back(*itV);
-      //weightL(itV - it->second.getVertexBegin()) = 1.0 /
-        //dem[*itV].getHeightEstimator().getVariance();
+      pointsWeights(row) = 1.0 / dem[*itV].getHeightEstimator().getVariance();
+      row++;
     }
     EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
       points.end();
     estPlane.addPoints(itStart, itEnd);
+//    estPlane.addPoints(itStart, itEnd, pointsWeights.segment(startRow, row -
+//      startRow));
     if (estPlane.getValid()) {
       c.push_back(estPlane.getCoefficients());
       v.push_back(estPlane.getVariance());
@@ -73,8 +78,8 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
     std::vector<EstimatorML<LinearRegression<3>, 3>::Point>::const_iterator itC;
     std::vector<double>::const_iterator itV;
     std::vector<double>::const_iterator itW;
-    for (itC = c.begin(), itV = v.begin(), itW = w.begin(); itC != c.end(); ++itC,
-      ++itV, ++itW) {
+    for (itC = c.begin(), itV = v.begin(), itW = w.begin(); itC != c.end();
+      ++itC, ++itV, ++itW) {
       const size_t row = itC - c.begin();
       coefficients.row(row) = *itC;
       variances(row) = *itV;

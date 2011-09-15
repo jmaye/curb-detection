@@ -32,6 +32,7 @@
 #include "data-structures/DEMGraph.h"
 #include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
+#include "helpers/RandomColors.h"
 
 #include <vector>
 
@@ -51,21 +52,6 @@ Q_OBJECT
   MLControl(const MLControl& other);
   /// Assignment operator
   MLControl& operator = (const MLControl& other);
-  /** @}
-    */
-
-  /** \name Private types definitions
-    @{
-    */
-  /// Color type
-  struct Color {
-    /// Red component
-    GLfloat mRedColor;
-    /// Green component
-    GLfloat mGreenColor;
-    /// Blue component
-    GLfloat mBlueColor;
-  };
   /** @}
     */
 
@@ -94,8 +80,6 @@ protected:
     */
   /// Renders the ML segmentation
   void renderML();
-  /// Returns a random color
-  void getColor(Color& color) const;
   /// Sets the ML maximum number of iterations
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
@@ -112,10 +96,14 @@ protected:
   Ui_MLControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
+  /// DEM graph
+  DEMGraph mGraph;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
   /// Points for ML
   EstimatorML<LinearRegression<3>, 3>::Container mPoints;
+  /// Points weights for ML
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mPointsWeights;
   /// Points mapping for displaying
   std::vector<DEMGraph::VertexDescriptor> mPointsMapping;
   /// Initial coefficients
@@ -129,7 +117,7 @@ protected:
   /// ML tolerance
   double mTol;
   /// Vector of random colors
-  std::vector<Color> mColors;
+  std::vector<Helpers::Color> mColors;
   /** @}
     */
 
@@ -155,6 +143,11 @@ signals:
   /** \name Qt signals
     @{
     */
+  /// ML has been updated
+  void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
   /** @}
     */
 
