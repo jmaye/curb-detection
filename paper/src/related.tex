@@ -1,10 +1,11 @@
 The problem of curb or \emph{step} detection has mainly been studied in the
 context of Intelligent Transportation Systems (ITS), covering an extensive set
 of sensing modalities and algorithms. In ITS, one might assume a typical
-environment model, where a car drives on a street and curbs are situated on the
-left and the right side of the vehicle. Therefore, most of these approaches are
-inappropriate as such for a pedestrian robot. We hence review the main ideas in
-the remainder of this Section and put our method in perspective.
+experimental setting where a car drives on a street and curbs are situated on
+the left and right side of the vehicle. Therefore, most of these approaches
+are inappropriate as such for a pedestrian robot navigating in cities. In this
+situation, curbs will indeed appear under multiple viewpoints. We hence review
+the main influential contributions to the field and relate them to our method.
 
 In~\cite{oniga10polynomial}, Oniga \emph{et al.} employ a dense stereo-vision
 system to capture a 3D point cloud, which is further transformed into a Digital
@@ -27,25 +28,26 @@ junctions or roundabouts.
 
 In~\cite{shin10drivable}, Shin \emph{et al.} use a similar setup as ours, i.e.,
 a mobile robot equipped with a laser range-finder. They however stick to a
-restricted environment model and their tilted laser provides a single laser
+restricted environment model and their tilted laser only provides a single laser
 line. Their algorithm is mostly engineered to fit their particular application
-and setup, and again does not build on sound probabilistic models.
+and setup, and again does not build on sound probabilistic model.
 
-An alternative application of steps detection is presented
+An alternative application of step detection is presented
 in~\cite{pradeep08piece}. In this paper, Pradeep \emph{et al.} aim at mobility
 aids for visually impaired people, as a complement to the white cane or the dog.
 This naturally imposes restrictions in the sensing device, in this case a
-wearable cheap stereo camera. Their curb detection algorithm is based on the
+wearable and cheap stereo camera. Their curb detection algorithm is based on the
 same motivation as ours, i.e., building a piecewise planar model of the scene.
 In their implementation, point-wise normal vectors are firstly estimated with
-Principal Component Analysis (PCA) on a local neighborhood and RANSAC for
-outlier rejection. Tensor voting is then applied for finding globally
-consistent plane normals and a final clustering step extracts the plane
-segments. Although it solves many of the above issues, this method might also
-suffer from the lack of any underlying probabilistic models.
+Principal Component Analysis on a local neighborhood and RANSAC for outlier
+rejection. Tensor voting is then applied for finding globally consistent plane
+normals and a final clustering step extracts the plane segments. Although it
+solves many of the above issues, this method might also suffer from the lack of
+any underlying probabilistic models.
 
 In~\cite{yuan05dynamic}, Yuan and Manduchi also developed an algorithm for
 visually impaired people, working with a custom sensing device called
-a "Virtual White Cane". Their method is based on a Jump-Markov Process, that is
-a system, at a given time, can evolve to a set of known possible stochastic
-models.
+a "Virtual White Cane". Their method uses a Jump-Markov Process to detect
+geometric singularities in the range measurements. Despite its statistical
+foundations, it will not generalize well to our application requirements and
+provide a plane estimation.
