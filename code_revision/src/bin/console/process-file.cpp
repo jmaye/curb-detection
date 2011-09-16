@@ -80,8 +80,7 @@ int main (int argc, char** argv) {
   std::cout << "Initial weights: " << w.transpose() << std::endl;
   EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtPlane(c, v, w);
-  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end(),
-    pointsWeights);
+  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
   after = Timestamp::now();
   std::cout << "Mixture linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -113,8 +112,5 @@ int main (int argc, char** argv) {
   BeliefPropagation bp(factorGraph, opts);
   bp.init();
   bp.run();
-  std::cout << bp.logZ() << std::endl;
-  std::cout << bp.beliefV(fgMapping[(Grid<double, Cell, 2>::Index() << 17, 35).finished()]) << std::endl;
-  std::cout << estMixtPlane.getResponsibilities().row(0) << std::endl;
   return 0;
 }

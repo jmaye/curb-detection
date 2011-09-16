@@ -16,11 +16,12 @@ interrelated perspectives: curb location in $x,y$, curb height in $z$,
 number of planes, assignment of DEM cells to planes, plane parameters, or
 computation time. Since we do not have a labeling of the curb position from
 the dataset, we evaluate the predictive accuracy of a model trained
-with one point cloud to the others. To this end, we collect 19 point clouds from
-the same position and perform cross-validation. Concretely, we iteratively
-estimate the parameter set $\{\hat{\Theta},\mathbf{\hat{L}}\}$ using one point
-cloud and evaluate the predictive error on the 18 remaining ones. The
-quantitative measure is the Root Mean Square (RMS) error of prediction:
+with one point cloud to the others in a similar fashion as~\cite{faria10fitting}.
+To this end, we collect 19 point clouds from the same position and perform
+cross-validation. Concretely, we iteratively estimate the parameter set
+$\{\hat{\Theta},\mathbf{\hat{L}}\}$ using one point cloud and evaluate the
+predictive error on the 18 remaining ones. The quantitative measure is the Root
+Mean Square (RMS) error of prediction:
 
 \begin{equation}
 \label{eqn:rmspred}
