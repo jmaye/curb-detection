@@ -1,27 +1,29 @@
-\subsection{Initial Estimates and Model Complexity}
+We have thus far delivered a formal treatment of our method to curb detection.
+This Section will be dedicated to algorithmic details and specific issues
+arising with real-world data.
 
-The number of mixture components $k$ in Equ.~\eqref{eqn:mixture} and initial
-responsibilities have to be specified for computing the regression parameter set
-$\Theta^\text{old}$ and for running the CRF framework. For this purpose, we
-adopt the graph-based algorithm from Felzenzswalb and
-Huttenlocher~\cite{felzenszwalb04efficient}. Although this method was originally
-designed for image segmentation, we can adapt it for our intent, by treating
-image regions as plane segments.
+\subsection{Model Complexity and Initial Estimates}
 
-We hence define an undirected graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$,
-with vertices $v_i\in\mathcal{V}$ to be segmented and edges $(v_i,v_j)
-\in\mathcal{E}$ connecting neighboring vertices. Each edge has a weight
-$w((v_i,v_j))$ proportional to the dissimilarity between $v_i$ and $v_j$. In our
-particular setting, a valid grid cell $\mathcal{C}_i$ is aligned with a
-vertex $v_i$ and each vertex has a 4-connected neighborhood. The goal of the
-algorithm is to find a partition of $\mathcal{V}$ into segments $\mathcal{S}_i$
-that correspond to the connected components of a graph
-$\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$, with $\mathcal{E}'\subseteq
-\mathcal{E}$. We are interested in the specific
+The statistical model in \eqref{eqn:mixture} requires an estimate of the number
+of mixture components $K$. This issue is related to model complexity or model
+selection and remains a focus of research in itself. As our algorithm should be
+be applicable to any kind of environment, a key prerequisite is to infer $K$
+from the data. To this intent, we opt for an heuristic in the form of a
+pre-segmentation. Specifically, we adopt the graph-based algorithm from
+Felzenzswalb and Huttenlocher~\cite{felzenszwalb04efficient}. Although this
+method was originally designed for image segmentation, we can adapt it for our
+purpose, by treating image regions as plane segments.
+
+The algorithm operates on the graph $\mathcal{G}=\{\mathcal{V},\mathcal{E}\}$
+defined above and augment it with edge weights $w((v_i,v_j))$ proportional to
+the dissimilarity between $v_i$ and $v_j$. The goal of the algorithm is to find
+a partition of $\mathcal{V}$ into segments $\mathcal{S}_i$ that correspond to
+the connected components of a graph $\mathcal{G}'=\{\mathcal{V},\mathcal{E}'\}$,
+with $\mathcal{E}'\subseteq\mathcal{E}$. We are interested in the specific
 partition such that vertices in a component have a high similarity and vertices
 in different components a low similarity. Therefore, edges between vertices in
 the same component should have a low weight and edges between vertices in
-different components a high weight. The weight function can be described with
+different components a high weight. The weight function can be defined by
 the symmetric Kullback-Leibler divergence between two cells, i.e.,
 $w((v_i,v_j))=D_{KL}(h_i\mid\mid h_j)+D_{KL}(h_j\mid\mid h_i)$. We thus take
 into account the full height distributions, in particular the variances. For
@@ -29,9 +31,9 @@ normal distributions, the Kullback-Leibler divergence integrates analytically to
 
 \begin{equation}
 \label{eqn:kl}
-D_{KL}(h_i\mid\mid h_j)=\frac{(\mu_{h_i}-\mu_{h_j})^2}{2\sigma_{h_j}^2}+
-\frac{1}{2}(\frac{\sigma_{h_i}^2}{\sigma_{h_j}^2}-1-\ln\frac{\sigma_{h_i}^2}
-{\sigma_{h_j}^2}).
+D_{KL}(h_i\mid\mid h_j)=\frac{(\hat{\mu}_{h_i}-\hat{\mu}_{h_j})^2}
+{2\hat{\sigma}^2_{h_j}}+\frac{1}{2}(\frac{\hat{\sigma}^2_{h_i}}
+{\hat{\sigma}^2_{h_j}}-1-\ln\frac{\hat{\sigma}^2_{h_i}}{\hat{\sigma}^2_{h_j}}).
 \end{equation}
 
 The algorithm starts with all vertices belonging to a different component. It
@@ -45,32 +47,42 @@ are merged if
 w((v_i,v_j))\leq MInt(\mathcal{S}_k, \mathcal{S}_l),
 \end{equation}
 
-
 where $MInt(\mathcal{S}_k,\mathcal{S}_l)=\min(Int(\mathcal{S}_k)+
 \tau(\mathcal{S}_k),Int(\mathcal{S}_l)+\tau(\mathcal{S}_l))$,
 $Int(\mathcal{S})=\max_{(v_i,v_j)\in\mathcal{S}} w((v_i,v_j))$, and
 $\tau(\mathcal{S})=s/|\mathcal{S}|$. Two components should be disconnected if
 the difference between them is large compared to the internal difference within
 at least one of the components. $s$ is a scale parameter that controls the
-preference for larger components. The algorithm runs in $O(n\log n)$, where
-$n=|\mathcal{E}|$.
+preference for larger components. Vertex components being segmented, an initial
+estimate $\hat{\Theta}^{(0)}$ can be computed with weighted linear regression
+for starting the EM algorithm.
 
-Although the algorithm does not convey any probabilistic interpretation in the
-resulting segmentation, we transform the hard assignment of a grid cell
-$\mathcal{C}_i$ to a component $\mathcal{S}_k$ into the following discrete
-distribution:
+This heuristic inevitably introduces a free parameter $s$ that controls the
+model complexity. Choosing a large $s$ will potentially result in
+underestimating $K$, while setting it too low in increasing the computational
+complexity. In our application, we fix it at some empirical value ($s=100$) that
+abates the two issues.
 
-\begin{equation}
-\label{eqn:label_dist}
-p(l_i=k) = \left\{
-\begin{array}{l l}
-1 & \quad \text{if $\mathcal{C}_i\in\mathcal{S}_k$}\\
-0 & \quad \text{otherwise}.
-\end{array} \right.
-\end{equation}
+\subsection{Grid Discretization and Missing Data}
 
-\subsection{Missing Data}
+The grid discretization choice is mainly influenced by the sensor
+characteristics and sought accuracy. Obviously, a large cell size introduces
+a proportional estimation error to the curb detection algorithm. On the other
+hand, depending on the sparsity of the sensor data, a finer size increases the
+number of cells with no measurement and, at the limit, results in an unconnected
+graph. Indeed, whenever a cell contains no data, it is flagged as invalid and
+not considered for the rest of the algorithm. Based on experimental data, we
+set the cell sizes to $d_x=0.1$ [m] and $d_y=0.05$ [m], and the grid dimension
+to $w=4$ [m] and $l=4$ [m].
 
 \subsection{Algorithmic Complexity}
 
-
+The algorithmic complexity depends on the aforementioned parameters ($s$, $d_x$,
+$d_y$, $w$, $l$). The graph-based segmentation runs in
+$O(|\mathcal{E}|\log|\mathcal{E}|)$, and the standard EM efficiently implemented
+in $O(M\,K)$ with $M$ the number of valid cells. The final complexity of our
+method is largely dominated by the addition of the BP pass for each E-step in
+the EM. This inference method has a run-time complexity in the order of
+$O(|\mathcal{E}|\,K^4)$. Nevertheless, under practical considerations and
+adequate parameter setting, we can achieve close to real-time performances as
+will be shown below.

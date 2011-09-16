@@ -1,5 +1,6 @@
-In this Section, we establish the preliminary notations and introduce the
-mathematical models that will be used throughout the paper.
+In this Section, starting from the measurement process, we establish a
+statistical model for curb detection and derive appropriate inference
+algorithms.
 
 \subsection{Measurement Representation}
 A nodding laser range-finder produces scan measurements $\mathbf{s}_i=[r_i,
@@ -35,15 +36,9 @@ will be subsequently termed our \emph{cell model}. We choose a conjugate
 normal inverse-gamma prior that incorporates the sensor and discretization noise
 in its hyperparameters. The resulting posterior predictive density is thus a
 Student's t-distribution. We denote the mean and variance of this density
-$\hat{\mu}_{h_i}$ and $\hat{\sigma^2}_{h_i}$ respectively. Apart from its
+$\hat{\mu}_{h_i}$ and $\hat{\sigma}^2_{h_i}$ respectively. Apart from its
 elegance, this Bayesian method can plainly reflect our noise model and remains
 robust to outliers, especially in case of few measurements.
-
-%Since undersampled cells may not be considered as a valid
-%representation of the error model, they require a special treatment. Thus,
-%whenever the number of points that fall into a cell $\mathcal{C}_i$ is larger
-%than a predefined threshold $\tau_{\mathcal{I}}$, we will call a grid cell to be
-%\emph{valid}.
 
 In the literature, the 2D grid employed in this paper is commonly designated a
 \emph{Digital Elevation Map} (DEM). We will therefore adopt the notion and
@@ -99,16 +94,16 @@ where $\Theta=\{\boldsymbol{\pi},\mathbf{W},\boldsymbol{\sigma}^2\}$ is the set
 of adaptive parameters to be estimated, $\boldsymbol{\pi}=\{\pi_k\}$ are the
 mixture weights, $\mathbf{W}=\{\mathbf{w}_k\}$ the regression coefficients,
 $\boldsymbol{\sigma}^2=\{\sigma^2_k\}$ the regression variances, and
-$\boldsymbol{\phi}(\mathbf{c}_i)=[1,\mathbf{c}_i]^\text{T}$ the explanatory
-variables or \emph{covariates}. The cell variances $\hat{\sigma^2}_{h_i}$ can
-be introduced in the parameter estimation as we shall see below.
+$\boldsymbol{\phi}(\mathbf{c}_i)=[1\;\mathbf{c}_i]^\text{T}$ the explanatory
+variables or \emph{covariates}. The cell variance $\hat{\sigma}^2_{h_i}$ can
+be introduced in the parameter estimation as we shall demonstrate below.
 
 For solving the classification task, we introduce an additional categorical
 latent variable $\mathbf{l}_i$, which has a 1-of-K representation such that
 its prior distribution is defined as $p(l_{i_k}=1)=\pi_k$. Intuitively, the
-posterior distribution $p(l_{i_k}=1\mid\hat{\mu}_{h_i})$ represents the
-probability for the cell $\mathcal{C}_i$ to belong to plane $k$ or
-\emph{responsibility} $\gamma_{ik}$.
+posterior distribution $p(l_{i_k}=1\mid\hat{\mu}_{h_i})$ or
+\emph{responsibility} $\gamma_{ik}$ represents the probability for the cell
+$\mathcal{C}_i$ to belong to plane $k$.
 
 \subsection{Parameter Estimation}
 
@@ -124,17 +119,17 @@ $\boldsymbol{\Phi}=[\boldsymbol{\phi}(\mathbf{c}_1)\dots\boldsymbol{\phi}
 $\mathbf{L}=[\mathbf{l}_1\dots\mathbf{l}_M]^\text{T}$. Due to singularities,
 there is no analytical solution to the direct maximization of the likelihood
 function $p(\hat{\boldsymbol\mu}_h\mid\Theta,\boldsymbol{\Phi})$. An
-Expectation-Maximization (EM) algorithm~\cite{dempster77maximum} is a typical
-choice in the literature for solving these kinds of problems. If, for each
-point, we were given its class assignment, i.e., we would observe a
+Expectation-Maximization (EM) algorithm~\cite{dempster77maximum} is the
+prevalent choice in the literature for solving this kind of problem. If, for
+each point, we were given its class assignment, i.e., we would observe a
 \emph{complete} data set, the maximization of the complete-data likelihood
 $p(\hat{\boldsymbol\mu}_h,\mathbf{L}\mid\Theta,\boldsymbol{\Phi})$ would be
-tractable. Although latent variables are not observed, we can compute their
+simplified. Although latent variables are not observed, we can compute their
 posterior distribution $p(\mathbf{L}\mid\Theta^\text{old},\boldsymbol{\Phi})$
-using an initial parameter estimate $\Theta^\text{old}$. In the E-step of the
-EM algorithm, the expectation of the complete-data likelihood under this
+using an initial parameter estimate $\hat{\Theta}^{(t)}$. In the E-step of
+the EM algorithm, the expectation of the complete-data likelihood under this
 posterior is firstly calculated. In the M-step, a new parameter set
-$\Theta^\text{new}$ is obtained by maximization of this likelihood.
+$\hat{\Theta}^{(t+1)}$ is obtained by maximization of this likelihood.
 The algorithm iterates between these steps until convergence of the likelihood.
 
 More specifically, in a standard EM for mixture of linear regression model, we
@@ -143,27 +138,27 @@ Bayes rule in the E-step with
 
 \begin{equation}
 \label{eqn:responsibility}
-p(l_{i_k}=1\mid\hat{\mu}_{h_i},\mathbf{c}_i,\Theta^\text{old})=\gamma_{ik}
+p(l_{i_k}=1\mid\hat{\mu}_{h_i},\mathbf{c}_i,\hat{\Theta}^{(t)})=\gamma_{ik}
 \propto\pi_k\mathcal{N}(\hat{\mu}_{h_i}\mid\mathbf{w}_k^\text{T}
 \boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k).
 \end{equation}
 
-Here, the attentive reader shall notice that we have used conditional
+Here, the attentive reader shall have noticed that we have used conditional
 independence of the $\mathbf{l_i}$ given the data, that is:
 
 \begin{equation}
 \label{eqn:factorization}
-p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\Theta^\text{old})
+p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\hat{\Theta}^{(t)})
 =\prod_{i=1}^M p(\mathbf{l}_i\mid\hat{\mu}_{h_i},\mathbf{c}_i,
-\Theta^\text{old}).
+\hat{\Theta}^{(t)}).
 \end{equation}
 
 In the M-step of the algorithm, the maximization yields the following parameter
-estimates:
+estimates $\hat{\Theta}^{(t+1)}$:
 
 \begin{equation}
 \label{eqn:coeff}
-\mathbf{w}_k = (\boldsymbol{\Phi}\mathbf{R}_k\boldsymbol{\Phi})^{-1}
+\mathbf{w}_k = (\boldsymbol{\Phi}^\text{T}\mathbf{R}_k\boldsymbol{\Phi})^{-1}
 \boldsymbol{\Phi}^\text{T}\mathbf{R}_k\hat{\boldsymbol\mu}_h,
 \end{equation}
 
@@ -189,7 +184,7 @@ component $k$ in a diagonal matrix.
 \subsection{Belief Propagation for Posterior Class Assignments}
 As we have pointed out in \eqref{eqn:factorization}, the computation of the
 joint posterior class assignment
-$p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\Theta^\text{old})$
+$p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\hat{\Theta}^{(t)})$
 can be handled independently for each $\mathbf{l_i}$ in the standard EM
 algorithm. The sought marginals $\gamma_{ik}$ are therefore straightforwardly
 calculated. However, the nature of our problem suggests that we should introduce
@@ -205,17 +200,17 @@ on the graph $\mathcal{G}$ as:
 
 \begin{eqnarray}
 \label{eqn:crf_joint}
-p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\Theta^\text{old})
+p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\hat{\Theta}^{(t)})
 \propto
 \phantom{aaaaaaaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
-\exp\bigg(\sum_{v_i\in\mathcal{V}}
-\varphi(\hat{\mu}_{h_i},\mathbf{l_i},\Theta^\text{old},\boldsymbol{\Phi})+
-\sum_{(v_i,v_j)\in\mathcal{E}}\psi(\hat{\mu}_{h_i},\hat{\mu}_{h_j},\mathbf{l_i},
-\mathbf{l_j},\Theta^\text{old})\bigg),
+\prod_{v_i\in\mathcal{V}}
+\varphi_i(\hat{\mu}_{h_i},\mathbf{l_i},\hat{\Theta}^{(t)},\boldsymbol{\Phi})
+\prod_{(v_i,v_j)\in\mathcal{E}}\psi_{ij}(\hat{\mu}_{h_i},\hat{\mu}_{h_j},
+\mathbf{l_i},\mathbf{l_j}),
 \end{eqnarray}
 
-where $\varphi(\cdot)$ and $\psi(\cdot)$ are the \emph{node potentials} and
-\emph{edge potentials} respectively. The potential functions are positively
+where $\varphi_i(\cdot)$ and $\psi_{ij}(\cdot)$ are the \emph{node potentials}
+and \emph{edge potentials} respectively. The potential functions are positively
 defined functions and the normalization is ensured by the
 \emph{partition function} $\mathbf{Z}(\boldsymbol{\Phi})$. Intuitively, a node 
 potential reflects the likelihood of $\hat{\mu}_{h_i}$ being labeled
@@ -224,47 +219,56 @@ and $\hat{\mu}_{h_j}$ being labeled $\mathbf{l_i}$ and $\mathbf{l_j}$.
 
 Given the formulation in \eqref{eqn:crf_joint}, two inference tasks are of
 interest. On the on hand, one can derive the marginals
-$p(\mathbf{l}_i\mid\hat{\mu}_{h_i},\mathbf{c}_i,\Theta^\text{old})$, and on the
+$p(\mathbf{l}_i\mid\hat{\mu}_{h_i},\mathbf{c}_i,\hat{\Theta}^{(t)})$, and on the
 other hand, one can find the Maximum A Posteriori (MAP) joint state
 $\mathbf{L}^\text{MAP}$ of the CRF. The former question is addressed with the
 sum-product algorithm, while the latter with the max-product, which give exact
 results for tree. These are two instances of Belief Propagation (BP). Even
 though our graph $\mathcal{G}$ contains loops, BP can yield approximate results
-and is in this case called \emph{loopy} BP.
+and is in this case called \emph{loopy} BP. Fig.~\ref{fig:fg} shows a portion
+of the factor graph on which the inference operates.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/dem.eps}
+\caption{Portion of the factor graph used for Belief Propagation (BP).}
+\label{fig:fg}
+\end{figure}
 
 We express the node potentials as follows:
 
 \begin{equation}
 \label{eqn:node_potential}
-\varphi(\hat{\mu}_{h_i},\mathbf{l_i},\Theta^\text{old},\boldsymbol{\Phi})=
+\varphi_i(\hat{\mu}_{h_i},\mathbf{l_i},\hat{\Theta}^{(t)},\boldsymbol{\Phi})=
 \pi_k\mathcal{N}(\hat{\mu}_{h_i}\mid\mathbf{w}_k^\text{T}
-\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k)
+\boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k).
 \end{equation}
 
-In Equ.~\eqref{eqn:node_potential}, we note that the CRF does not require a
-normalized potential. Moreover, by adding up the two variances, we have
-inherently taken into account the measurement noise introduced by both error
-models, namely the cell variance $\sigma^2_{h_i}$ and the regression variance
-$\sigma^2_{k}$.
+We note here that the CRF does not require a normalized potential. Apart from
+the normalizer, this expression is similar to \eqref{eqn:responsibility}. As
+expected, BP will hence converge to the same marginals $\gamma_{ik}$ if edge
+potentials are omitted.
 
 In analogy to the approach presented in~\cite{siegemund10curb}, we express the
 inter-node dependencies by means of two symmetric sigmoid functions. Therefore,
-we define the edge function as
+we define the edge potentials as
 
 \begin{eqnarray}
-\label{eqn:edge_function}
-g(h_i,h_j,l_i=k,l_j=l,\Theta)=\phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
+\label{eqn:edge_potential}
+\psi_{ij}(\hat{\mu}_{h_i},\hat{\mu}_{h_j},\mathbf{l_i},\mathbf{l_j})=
+\phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\\nonumber
 \left\{
 \begin{array}{l l}
 1-(1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
-\text{if $k=l$}\\
+\text{if $\mathbf{l_i}=\mathbf{l_j}$}\\
 (1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
 \text{otherwise},
 \end{array} \right.
 \end{eqnarray}
 
-where $d_{ij}=|h_i-h_j|$ is the absolute height difference between the
-neighboring cells $\mathcal{C}_i$ and $\mathcal{C}_j$. Additionally,
-$\sigma^2_{ij}=\sigma^2_i+\sigma^2_j$ represents the sum of the involved
-measurement variances. Hence, we again account for the errors in both cell
-models $\sigma^2_i$ and $\sigma^2_j$.
+where $d_{ij}=|\hat{\mu}_{h_i}-\hat{\mu}_{h_j}|$ is the absolute mean height
+difference between the neighboring cells $\mathcal{C}_i$ and $\mathcal{C}_j$.
+Additionally, $\sigma^2_{ij}=\hat{\sigma}^2_{h_i}+\hat{\sigma}^2_{h_j}$
+represents the sum of the involved measurement variances. Consequently, we
+account for the errors in both cell models $\hat{\sigma}^2_{h_i}$ and
+$\hat{\sigma}^2_{h_j}$.
