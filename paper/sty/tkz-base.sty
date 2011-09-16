@@ -1,0 +1,1031 @@
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                                                               %
+    %     tkz-base.sty         encodage : utf8                      %
+    %                                                               %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                                                               %
+    %           Créé par Alain Matthes le 07-07-2007.               %
+    %                                                               %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 15/09/2007
+%% Objet :  Outils pour la création de graphiques géométriquesss
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+% v2 modif de grid
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tkz-base}[2008/02/17 v3.14 tkz-base]
+
+\RequirePackage{etex}
+\RequirePackage{xkeyval}[2005/11/25]
+\RequirePackage{tikz}[2007/06/07]
+\RequirePackage{fp,calc,sty/tkz-arith}%\RequirePackage{ifthen}
+\RequirePackage[np,autolanguage]{numprint}
+\FPmessagesfalse%
+   
+\newcounter{cmdTKZ@tkzf@fct} 
+\newcounter{tkz@tok}% il faut modifier
+\newcounter{tkz@tempc}
+\newcounter{tkz@cnt}% ???? utile
+\newcounter{tkz@leg} 
+\newcounter{tkz@nb@gon} 
+\newlength{\tkz@tmplen}
+\newlength{\tkzmathLen}  
+\newdimen\tkz@ax
+\newdimen\tkz@ay
+\newdimen\tkz@bx
+\newdimen\tkz@by
+\newdimen\tkz@cx
+\newdimen\tkz@cy
+\newdimen\tkz@dx
+\newdimen\tkz@dy  
+
+\newdimen\tkz@Rapt
+\newdimen\tkz@Rbpt
+\newdimen\tkzpt@xa 
+\newdimen\tkzpt@ya
+\newdimen\tkz@tempdim
+\newif\if@tkz@visible%
+\@tkz@visiblefalse
+\def\tkzmathresult{}
+
+\def\nameedef#1{\expandafter\edef\csname #1\endcsname}
+\def\nameuse#1{\csname #1\endcsname}
+% % %<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+% % %             sign of #1 
+% % %<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+% % 
+% % \newdimen\tkz@dim
+% % \newcommand*{\tkz@findsign}[1]{%
+% % \tkz@dim=#1 pt\relax%
+% % \ifdim\tkz@dim<0pt\relax%
+% %   \edef\tkz@sign{0}\relax%%
+% %   \else%
+% %   \edef\tkz@sign{1}\relax%%
+% %   \fi%
+% % }%
+% 
+
+%<––––––––––––––––––––––––––––– autres tools ––––––––––––––––––––––––––––––––>   
+\newcommand*\getdecimal[1]{%
+  \expandafter\@getdecimal#1.\@nil
+}
+
+\def\@getdecimal#1.#2\@nil{%
+  \ifx\empty#2\empty
+    % Si #2 est vide, c'est qu'il n'y avait pas de point
+    % dans la chaîne initiale
+    \setcounter{tkz@tok}{0}%
+   \global\def\decpart{}%
+  \else
+    % sinon c'est la chaîne qui suit le point décimal...
+    \CountToken{#2}%
+    % ... y compris le point en trop ajouté par \getdecimal  :-)
+    \addtocounter{tkz@tok}{-1}%
+    \@@getdecimal#2\@nil
+  \fi
+}
+\def\@@getdecimal#1.\@nil{\global\def\decpart{#1}}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+% code from JCC modifi
+\newcommand\CountToken[1]{%
+ \setcounter{tkz@tok}{0}%
+  \expandafter\C@untToken#1\@nil
+%modifi ajout du expandafter
+}
+\newcommand\C@untToken{%
+  \afterassignment\C@untT@ken\let\CurrT@ken=
+}
+\newcommand\C@untT@ken{%
+ \ifx\CurrT@ken\@nil \else
+   \stepcounter{tkz@tok}%
+   \expandafter\C@untToken
+ \fi
+}
+% end code from JCC   
+\newboolean{@twopt} \setboolean{@twopt}{false} 
+\newcommand*{\twoptoff}{\ifnum \catcode`\:=13 \catcode`\:=12 \setboolean{@twopt}{true} \fi}
+\newcommand*{\twopton}{\if@twopt \catcode`\:=13 \setboolean{@twopt}{false}  \fi}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                initialisation  des styles points et lignes
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                               Setup   axe
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey [TKZ] {SUA} {gradsize}{}
+\define@cmdkey [TKZ] {SUA} {lw}{}
+\define@cmdkey [TKZ] {SUA} {tickwd}{}
+\define@cmdkey [TKZ] {SUA} {tickb}{}
+\define@cmdkey [TKZ] {SUA} {ticka}{}
+\presetkeys    [TKZ] {SUA} {gradsize = \textstyle,%
+                            lw       = 0.4pt,%
+                            tickwd   = 0.8pt,%
+                            tickb    = 2pt,%
+                            ticka    = 2pt}{}
+
+\newcommand*{\SetUpAxis}[1][]{\tkz@SetUpAxe[#1]}%
+\def\tkz@SetUpAxe[#1]{%
+\setkeys[TKZ]{SUA}{#1}% 
+\presetkeys[TKZ]{tkzX}{gradsize = \cmdTKZ@SUA@gradsize,%
+                       lw       = \cmdTKZ@SUA@lw,%
+                       tickwd   = \cmdTKZ@SUA@tickwd,%
+                       tickup   = \cmdTKZ@SUA@ticka,%
+                       tickdn   = \cmdTKZ@SUA@tickb}{}
+\presetkeys[TKZ]{tkzY}{gradsize = \cmdTKZ@SUA@gradsize,%
+                       lw       = \cmdTKZ@SUA@lw,%
+                       tickwd   = \cmdTKZ@SUA@tickwd,%
+                       tickrt   = \cmdTKZ@SUA@ticka,%
+                       ticklt   = \cmdTKZ@SUA@tickb}{}
+}   
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                               Setup   Segment todo !!!
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%  INITIALISATION
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+\gdef\xgrad{1}
+\gdef\ygrad{1}
+\gdef\tkz@xa{0}
+\gdef\tkz@xb{10}
+\gdef\tkz@ya{0}
+\gdef\tkz@yb{10}
+\define@cmdkey [TKZ] {tkzInit} {xmin}{}
+\define@cmdkey [TKZ] {tkzInit} {xmax}{}
+\define@cmdkey [TKZ] {tkzInit} {xstep}{}
+\define@cmdkey [TKZ] {tkzInit} {ymin}{}
+\define@cmdkey [TKZ] {tkzInit} {ymax}{}
+\define@cmdkey [TKZ] {tkzInit} {ystep}{}
+\define@boolkey[TKZ] {tkzInit} {NO}[true]{}% interne
+\presetkeys    [TKZ] {tkzInit} {%
+                        xmin    = 0,%
+                        xmax    = 10,%
+                        xstep   = 1,%
+                        ymin    = 0,%
+                        ymax    = 10,%
+                        ystep   = 1,%
+                        NO      = false}{}
+\newcommand*{\tkzInit}[1][]{\@tkzInit[#1]}% 
+\def\@tkzInit[#1]{%
+   \setkeys[TKZ]{tkzInit}{#1}%
+   \setcounter{cmdTKZ@tkzf@fct}{0}
+   \xdef\cmdTKZ@tkzInit@xorigine{0}
+   \xdef\cmdTKZ@tkzInit@yorigine{0}
+   \FPsgn\@xsgmin{\cmdTKZ@tkzInit@xmin}
+   \FPsgn\@xsgmax{\cmdTKZ@tkzInit@xmax}
+   \FPsgn\@ysgmin{\cmdTKZ@tkzInit@ymin}
+   \FPsgn\@ysgmax{\cmdTKZ@tkzInit@ymax}
+   \global\let\@xa\cmdTKZ@tkzInit@xmin
+   \global\let\@xb\cmdTKZ@tkzInit@xmax
+   \global\let\@ya\cmdTKZ@tkzInit@ymin
+   \global\let\@yb\cmdTKZ@tkzInit@ymax
+   \ifthenelse{%
+      \(\equal{\@xsgmin}{\@xsgmax}\) \or \(\equal{\@ysgmin}{\@ysgmax}\)}{%
+      \TKZ@tkzInit@NOtrue}{%
+      \TKZ@tkzInit@NOfalse}%
+
+   \ifTKZ@tkzInit@NO%
+   \ifthenelse{%
+      \equal{\@xsgmin}{\@xsgmax}}{%
+   \FPadd{\cmdTKZ@tkzInit@xmax}{\cmdTKZ@tkzInit@xmax}{-\cmdTKZ@tkzInit@xmin}%
+     \edef\cmdTKZ@tkzInit@xorigine{\cmdTKZ@tkzInit@xmin}
+     \edef\cmdTKZ@tkzInit@xmin{0}}%
+     {}%
+   \ifthenelse{%
+      \equal{\@ysgmin}{\@ysgmax}}{%
+    \FPadd{\cmdTKZ@tkzInit@ymax}{\cmdTKZ@tkzInit@ymax}{-\cmdTKZ@tkzInit@ymin}%
+     \edef\cmdTKZ@tkzInit@yorigine{\cmdTKZ@tkzInit@ymin}
+     \edef\cmdTKZ@tkzInit@ymin{0}}%
+     {}%
+   \fi%
+   \FPdiv{\tkz@xa}{\cmdTKZ@tkzInit@xmin}{\cmdTKZ@tkzInit@xstep}
+   \FPdiv{\tkz@xb}{\cmdTKZ@tkzInit@xmax}{\cmdTKZ@tkzInit@xstep}
+   \FPdiv{\tkz@ya}{\cmdTKZ@tkzInit@ymin}{\cmdTKZ@tkzInit@ystep}
+   \FPdiv{\tkz@yb}{\cmdTKZ@tkzInit@ymax}{\cmdTKZ@tkzInit@ystep}
+   \getdecimal{\cmdTKZ@tkzInit@xstep} % amélioration nb dec et integer
+   \global\edef\cmdTKZ@tkzInit@xdec{\thetkz@tok}
+   \getdecimal{\cmdTKZ@tkzInit@ystep}
+   \global\edef\cmdTKZ@tkzInit@ydec{\thetkz@tok}
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey [TKZ] {CLI} {space}{}
+\presetkeys    [TKZ] {CLI} {space = {}}{} 
+
+\newcommand*{\tkzClip}[1][]{\tkz@Clip[#1]}%
+\def\tkz@Clip[#1]{%
+    \setkeys [TKZ]{CLI}{#1}% 
+    \ifthenelse{\equal{\cmdTKZ@CLI@space}{}}{%   
+        \clip (\tkz@xa,\tkz@ya) rectangle (\tkz@xb,\tkz@yb);}{% 
+        \FPadd{\tkz@xxa}{\tkz@xa}{-\cmdTKZ@CLI@space}
+        \FPadd{\tkz@yya}{\tkz@ya}{-\cmdTKZ@CLI@space}
+        \FPadd{\tkz@xxb}{\tkz@xb}{\cmdTKZ@CLI@space}
+        \FPadd{\tkz@yyb}{\tkz@yb}{\cmdTKZ@CLI@space} 
+        \clip (\tkz@xxa,\tkz@yya)%
+        rectangle (\tkz@xxb,\tkz@yyb);
+}} 
+%todo add options 
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                               Setup   point
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@boolkey[TKZ] {SUP} {noname}[true]{}
+\define@boolkey[TKZ] {SUP} {nomark}[true]{}
+\define@cmdkey [TKZ] {SUP} {mark}{}
+\define@cmdkey [TKZ] {SUP} {size}{}
+\define@cmdkey [TKZ] {SUP} {color}{}
+\define@cmdkey [TKZ] {SUP} {style}{}
+\define@cmdkey [TKZ] {SUP} {pos}{} 
+\define@cmdkey [TKZ] {SUP} {posxlabel}{}
+\define@cmdkey [TKZ] {SUP} {posylabel}{}
+\define@boolkey[TKZ] {SUP} {label}[true]{}  
+\presetkeys    [TKZ] {SUP} {%
+               noname    = false,%
+               nomark    = false,% 
+               mark      = *,% 
+               size      = 1pt,%
+               color     = black,%
+               label     = false,% 
+               pos       = below right,%
+               posxlabel = 3pt,%
+               posylabel = 3pt}{} 
+\newcommand*{\SetUpPoint}[1][]{\tkz@SetUpPt[#1]}%
+\def\tkz@SetUpPt[#1]{%
+\setkeys       [TKZ]{SUP}{#1}% 
+\presetkeys    [TKZ]{pt}{%
+               mark      = \cmdTKZ@SUP@mark,% 
+               size      = \cmdTKZ@SUP@size,%
+               color     = \cmdTKZ@SUP@color,% 
+               pos       = \cmdTKZ@SUP@pos,% 
+               posxlabel = \cmdTKZ@SUP@posxlabel,%
+               posylabel = \cmdTKZ@SUP@posylabel}{}
+\ifTKZ@SUP@noname%
+    \presetkeys[TKZ]{pt}{noname = true}{}%
+\else%
+     \presetkeys[TKZ]{pt}{noname = false}{}%
+\fi}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                       tkzPoint
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\tikzstyle{StyleMark}=[]
+  
+\define@boolkey [TKZ] {pt} {noname}[true]{}
+\define@boolkey [TKZ] {pt} {nomark}[true]{}
+\define@cmdkey  [TKZ] {pt} {name}{}
+\define@cmdkey  [TKZ] {pt} {pos}{}
+\define@cmdkey  [TKZ] {pt} {posxlabel}{}
+\define@cmdkey  [TKZ] {pt} {posylabel}{}
+\define@cmdkey  [TKZ] {pt} {mark}{}
+\define@cmdkey  [TKZ] {pt} {color}{}
+\define@cmdkey  [TKZ] {pt} {namecolor}{}
+\define@cmdkey  [TKZ] {pt} {size}{}
+\define@cmdkey  [TKZ] {pt} {k}{}
+\define@boolkey [TKZ] {pt} {coord}[true]{}
+\define@boolkey [TKZ] {pt} {label}[true]{}
+\define@cmdkey  [TKZ] {pt} {xlabel}{}
+\define@cmdkey  [TKZ] {pt} {ylabel}{}
+
+\presetkeys[TKZ]{pt}{noname    = false,%
+                     nomark    = false,% 
+                     name      = {},%
+                     coord     = false,%
+                     label     = false,%
+                     color     = black,%
+                     namecolor = black,%
+                     pos       = below right,%
+                     posxlabel = 3pt,%
+                     posylabel = 3pt,% 
+                     xlabel    = {},%
+                     ylabel    = {},%
+                     size      = 1pt,%
+                     k         = 1,%
+                     mark      = *}{} 
+% \@ifnextchar(%
+% {\tkz@@ptNoStar[#1]}{}}%
+% 
+% \def\tkz@whatnode#1{\global\def\tkz@node{#1}}
+\def\tkz@drawnode#1{\path[coordinate](\ptxa,\ptya) coordinate(#1);
+\tkz@DrawPoint{#1}}
+  
+\newcommand*{\tkzPoint}{\@ifstar\tkzptStar\tkzptNoStar}
+\newcommand*{\tkzptNoStar}[1][]{\tkz@ptNoStar[#1]}% 
+
+\def\tkz@ptNoStar[#1](#2,#3)#{%  
+    \setkeys[TKZ]{pt}{#1}%
+    \FPeval\tkz@x{(#2)}
+    \FPeval\tkz@y{(#3)}
+    \FPadd{\ptxa}{\tkz@x}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\ptya}{\tkz@y}{-\cmdTKZ@tkzInit@yorigine}
+    \FPdiv{\ptxa}{\ptxa}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\ptya}{\ptya}{\cmdTKZ@tkzInit@ystep}
+    \tkz@drawnode
+}
+
+\def\tkz@node#1{\path[coordinate](\ptxa,\ptya) coordinate(#1);
+}   
+
+\newcommand*{\tkzptStar}{\tkz@ptStar}%
+
+\def\tkz@ptStar(#1,#2)#{%
+    \FPeval\tkz@x{(#1)}
+    \FPeval\tkz@y{(#2)}
+    \FPadd{\ptxa}{\tkz@x}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\ptya}{\tkz@y}{-\cmdTKZ@tkzInit@yorigine}
+    \FPdiv{\ptxa}{\ptxa}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\ptya}{\ptya}{\cmdTKZ@tkzInit@ystep}
+    \tkz@node
+}
+% dessin du point  nomark
+% 	\node [circle,fill=red,inner sep=2pt]
+\def\tkz@DrawPoint#1{%
+\draw plot[mark size    = \cmdTKZ@pt@size,%
+           mark         = \cmdTKZ@pt@mark,%
+           mark options = {color=\cmdTKZ@pt@color},
+           StyleMark] coordinates {(#1)};
+
+% traitement du label
+  \ifTKZ@pt@noname%pas de nom rien
+  \else% si name={} alors on prend le nom du node sinon name
+     \ifthenelse{\equal{\cmdTKZ@pt@name}{}}{%
+     \def\cmdTKZ@pt@name{$#1$}}{}%
+     \protected@edef\tkz@temp{%
+        \noexpand \node[\cmdTKZ@pt@pos]}\tkz@temp at (#1)%
+        {\textcolor{\cmdTKZ@pt@namecolor} {\cmdTKZ@pt@name}};%
+   \fi
+% traitement si coord 
+  \ifTKZ@pt@coord%
+     \ifthenelse{\equal{\cmdTKZ@pt@xlabel}{}}{%
+        \TKZ@pt@labelfalse}{%
+        \TKZ@pt@labeltrue}
+        % \draw[fill=white,color=white,line width=1pt]%
+        %       (#1)--(#1 |- xline);
+         \draw[color=black,line width=.8pt,dashed,>=latex',->]%
+               (#1)--(#1 |- xline)
+         \ifTKZ@pt@label node[fill      = white,%
+                              below     = \cmdTKZ@pt@posxlabel]%
+                        {\cmdTKZ@pt@xlabel}%
+          \fi;%
+     \ifthenelse{\equal{\cmdTKZ@pt@ylabel}{}}{%
+         \TKZ@pt@labelfalse}{%
+         \TKZ@pt@labeltrue}
+         % \draw[fill=white,color=white,line width=1pt]%
+         %       (#1)--(#1 -| yline);
+         \draw[color=black,line width=.8pt,dashed,>=latex',->]%
+             (#1)--(#1 -| yline)
+        \ifTKZ@pt@label node[fill    = white,%
+                             left    = \cmdTKZ@pt@posylabel]%
+                             {\cmdTKZ@pt@ylabel}%
+         \fi;% 
+% on retrace ???  ici ou après le fi
+\draw plot[
+          mark size    = \cmdTKZ@pt@size,%
+          mark         = \cmdTKZ@pt@mark,%
+          mark options = {color=\cmdTKZ@pt@color},
+          StyleMark] coordinates {(#1)};
+\fi%  end of coord
+}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                  Points   
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+\newcommand*{\tkzPoints}{\@ifstar%
+                         \tkzPointsStar%
+                         \tkzPointsNoStar}
+
+\newcommand*{\tkzPointsNoStar}[1][]{\tkz@PointsNoStar[#1]}% 
+\def\tkz@PointsNoStar[#1](#2){%
+    \setkeys[TKZ]{pt}{#1}%
+\begingroup%
+   \foreach \ptx/\pty/\name in {#2}{%
+             \tkzPoint[#1](\ptx,\pty){\name}%
+   }
+\endgroup%
+}
+  
+\newcommand*{\tkzPointsStar}{\tkz@PointsStar}%
+\def\tkz@PointsStar(#1){%
+\begingroup%
+    \foreach \ptx/\pty/\name in {#1}{%
+             \tkzPoint*(\ptx,\pty){\name}}
+\endgroup%
+}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                     Draw Point   
+% todo liste
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\newcommand*{\tkzDrawPoint}[1][]{\tkz@drawpt[#1]}%
+\def\tkz@drawpt[#1](#2){%
+  \setkeys[TKZ]{pt}{#1}%
+  \foreach \point in {#2}{%
+       \tkz@DrawPoint{\point}}
+} 
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                              SetOfPoints
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\newcommand*{\tkzSetOfPoints}[1][]{\tkz@SetOfPoints[#1]}%
+\def\tkz@SetOfPoints[#1](#2){%  
+    \setkeys[TKZ]{pt}{#1}
+    \setcounter{tkz@cnt}{1}
+    \foreach \x/\y in {#2}{%
+         \tkzPoint[#1,noname](\x,\y){tkzPt\thetkz@cnt}
+         \stepcounter{tkz@cnt}}
+}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+% macro d'affichage  % 
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\newcommand*{\tkz@showgrad}[1]{%
+\FPifint{#1}\FPtrunc\tkz@result{#1}{0}\else\FPset\tkz@result{#1}\fi%
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                 tkzX      todo améliorer les unités
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\tikzstyle{LabelXStyle}=[]
+\tikzstyle{TicksXStyle}=[]
+\tikzstyle{AxeXStyle}=[>=latex,->]
+
+\define@cmdkey [TKZ] {tkzX} {pos}{}
+\define@cmdkey [TKZ] {tkzX} {trig}{}
+\define@cmdkey [TKZ] {tkzX} {lw}{}
+\define@cmdkey [TKZ] {tkzX} {color}{}
+\define@cmdkey [TKZ] {tkzX} {label}{}
+\define@cmdkey [TKZ] {tkzX} {poslabel}{}
+\define@boolkey[TKZ] {tkzX} {noticks}[true]{} 
+\define@cmdkey [TKZ] {tkzX} {tickwd}{} 
+\define@cmdkey [TKZ] {tkzX} {tickup}{} 
+\define@cmdkey [TKZ] {tkzX} {tickdn}{}   
+\define@boolkey[TKZ] {tkzX} {nograd}[true]{}
+\define@cmdkey [TKZ] {tkzX} {gradsize}{} 
+\define@boolkey[TKZ] {tkzX} {orig}[true]{}
+\define@boolkey[TKZ] {tkzX} {unit}[true]{}
+\presetkeys    [TKZ] {tkzX} {trig     = 0,%
+                             lw       = 0.4 pt,
+                             orig     = false,%
+                             unit     = false,%
+                             noticks  = false,%
+                             nograd   = false,% 
+                             gradsize = \textstyle,%  
+                             pos      = {below = 3pt},%
+                             color    = black,%
+                             label    = $x$,%
+                             poslabel = {below = 3pt},%
+                             tickwd   = 0.8pt,%
+                             tickup   = 1pt,%
+                             tickdn   = 1pt}{}
+\newcommand*{\tkzX}[1][]{\@tkzX[#1]}%
+\def\@tkzX[#1]{%
+   \setkeys[TKZ]{tkzX}{#1}% 
+   \FPtrunc\posmax{\tkz@xb}{\cmdTKZ@tkzInit@xdec}%
+   \FPtrunc\posmin{\tkz@xa}{\cmdTKZ@tkzInit@xdec}%
+   \FPadd\tkz@xbsup{\tkz@xb}{.5}
+   \path (\tkz@xa,0)--(\tkz@xb,0) node(xline){};%
+   \protected@edef\tkz@temp{%
+   \noexpand% 
+   \draw[line width = \cmdTKZ@tkzX@lw,%
+         color      = \cmdTKZ@tkzX@color,AxeXStyle]%
+        (\tkz@xa,0)--(\tkz@xbsup,0)%
+         node[\cmdTKZ@tkzX@poslabel,LabelXStyle]}\tkz@temp%
+         {\cmdTKZ@tkzX@label};%
+   \FPtrunc\xtkzero{0.0000000}{\cmdTKZ@tkzInit@xdec}% 
+   \ifTKZ@tkzX@noticks%
+   \else% 
+    \ifnum\cmdTKZ@tkzX@trig=0%
+   \FPtrunc\posmax{\posmax}{\cmdTKZ@tkzInit@xdec}% 
+   \foreach \pos in {\posmin,...,\posmax}{%
+       \FPtrunc\tkz@pos{\pos}{\cmdTKZ@tkzInit@xdec}%
+       \protected@edef\tkz@temp{%
+          \noexpand% 
+          \draw[line width = \cmdTKZ@tkzX@tickwd,%
+                shift      = {(\pos,0)}]%
+                (0pt,\cmdTKZ@tkzX@tickup)--(0pt,-\cmdTKZ@tkzX@tickdn)%
+                node[\cmdTKZ@tkzX@pos,inner sep = 0pt]%%
+          }\tkz@temp%
+          {\FPmul{\xgrad}{\pos}{\cmdTKZ@tkzInit@xstep}%
+           \FPadd{\xgrad}{\xgrad}{\cmdTKZ@tkzInit@xorigine}%
+           \FPtrunc\xgrad{\xgrad}{\cmdTKZ@tkzInit@xdec}%
+           \ifTKZ@tkzX@orig% 
+              \ifTKZ@tkzX@nograd\else\tkz@showgrad{\xgrad}%
+                      $\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$%
+              \fi\else%
+              \ifTKZ@tkzInit@NO% 
+                  \ifthenelse{\equal{\tkz@pos}{\posmin}}%
+                   {}{\tkz@showgrad{\xgrad}%
+                      $\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$}%
+               \else%
+                   \ifthenelse{\equal{\tkz@pos}{\xtkzero}}%
+                    {\ifTKZ@tkzX@unit\tkz@showgrad{\xgrad}%
+                      $\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$\fi}%
+                    {\ifTKZ@tkzX@nograd%
+                     \else\tkz@showgrad{\xgrad}%
+                      $\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$\fi}%
+                \fi%
+           \fi%
+          };%  end of draw
+   }% end foreach
+   \else% trig affichage
+       \FPadd{\posmin}{\posmin}{0.5}%
+       \FPdiv\nbtrigticksmax{\posmax}{\FPpi}%
+       \FPdiv\nbtrigticksmin{\posmin}{\FPpi}%
+       \FPmul\nbtrigticksmax{\nbtrigticksmax}{\cmdTKZ@tkzX@trig}%
+       \FPmul\nbtrigticksmin{\nbtrigticksmin}{\cmdTKZ@tkzX@trig}%
+       \FPround\nbtrigticksmin{\nbtrigticksmin}{0}% 
+       \foreach \pos in {\nbtrigticksmin,...,\nbtrigticksmax}{%
+            \FPmul\pospi{\pos}{\FPpi}\FPdiv\pospi{\pospi}{\cmdTKZ@tkzX@trig}%
+                     \protected@edef\tkz@temp{%
+          \noexpand\draw[line width = \cmdTKZ@tkzX@tickwd,%
+                         shift      = {(\pospi,0)}]%
+                      (0pt,\cmdTKZ@tkzX@tickup)--(0pt,-\cmdTKZ@tkzX@tickup)%
+                      node[\cmdTKZ@tkzX@pos,%
+                           text height = 8pt,%
+                           inner sep   = 1pt]}\tkz@temp%
+                {\tkz@reducfrac{\pos}{\cmdTKZ@tkzX@trig}\tkz@rfrac%
+};%  end of draw
+}% end foreach                              
+\fi\fi% end ticks  
+\ifTKZ@tkzInit@NO\else\ifTKZ@tkzX@unit%
+%  on n'est à l'origine doc on peut placer l'unité 
+          \draw[line width = \cmdTKZ@tkzX@tickwd,%
+                inner sep  = 1pt] (0,0) -- (1,0)%
+                node[below=3pt]%
+                {$\cmdTKZ@tkzX@gradsize{\np{\cmdTKZ@tkzInit@xstep}}$};
+           \draw[line width = \cmdTKZ@tkzX@tickwd,%
+                 shift      = {(1,0)}]%
+                (0pt,\cmdTKZ@tkzX@tickup)--(0pt,-\cmdTKZ@tkzX@tickdn);%
+          \fi%  
+   \fi%
+}% todo macro pour l'affichage 
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                 tkzY
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\tikzstyle{LabelYStyle}=[]
+\tikzstyle{TicksYStyle}=[]
+\tikzstyle{AxeYStyle}=[>=latex,->]
+
+\define@cmdkey  [TKZ]{tkzY} {pos}{}
+\define@cmdkey  [TKZ]{tkzY} {lw}{}
+\define@cmdkey  [TKZ]{tkzY} {color}{}
+\define@cmdkey  [TKZ]{tkzY} {label}{}
+\define@cmdkey  [TKZ]{tkzY} {poslabel}{}
+\define@boolkey [TKZ]{tkzY} {noticks}[true]{}
+\define@cmdkey  [TKZ]{tkzY} {tickwd}{} 
+\define@cmdkey  [TKZ]{tkzY} {tickrt}{} 
+\define@cmdkey  [TKZ]{tkzY} {ticklt}{} 
+\define@boolkey [TKZ]{tkzY} {nograd}[true]{}
+\define@cmdkey  [TKZ]{tkzY} {gradsize}{}
+\define@boolkey [TKZ]{tkzY} {orig}[true]{}
+\define@boolkey [TKZ]{tkzY} {unit}[true]{}
+\presetkeys     [TKZ]{tkzY} {lw       = 0.4 pt,
+                             orig     = false,%
+                             unit     = false,%
+                             noticks  = false,%
+                             nograd   = false,%
+                             gradsize = \textstyle,% 
+                             pos      = {left = 3pt},%
+                             label    = $y$,%
+                             color    = black,%
+                             poslabel = {left = 3pt},%
+                             tickwd   = 0.8pt,%
+                             ticklt   = 1pt,%
+                             tickrt   = 1pt}{}
+\newcommand*{\tkzY}[1][]{\@tkzY[#1]}%
+\def\@tkzY[#1]{%
+   \setkeys[TKZ]{tkzY}{#1}% 
+   \FPtrunc\posmax{\tkz@yb}{\cmdTKZ@tkzInit@ydec}%
+   \FPtrunc\posmin{\tkz@ya}{\cmdTKZ@tkzInit@ydec}%
+   \path (0,\tkz@ya)--(0,\tkz@yb) node(yline){};%
+   \FPadd\tkz@ybsup{\tkz@yb}{.5}   
+   \protected@edef\tkz@temp{%
+   \noexpand% 
+   \draw[line width = \cmdTKZ@tkzY@lw,%
+         color      = \cmdTKZ@tkzY@color,AxeYStyle]%
+        (0,\tkz@ya)--(0,\tkz@ybsup)%
+        node[\cmdTKZ@tkzY@poslabel,LabelYStyle]}\tkz@temp%
+        {\cmdTKZ@tkzY@label};%
+   \FPtrunc\ytkzero{0.000000}{\cmdTKZ@tkzInit@ydec}%
+   \ifTKZ@tkzY@noticks%
+   \else%
+   \foreach \pos in {\posmin,...,\posmax}{%
+       \FPtrunc\tkz@pos{\pos}{\cmdTKZ@tkzInit@ydec}%
+       \protected@edef\tkz@temp{%
+       \noexpand% 
+       \draw[line width = \cmdTKZ@tkzY@tickwd,%
+            shift       = {(0,\pos)}]%
+            (\cmdTKZ@tkzY@tickrt,0pt)--(-\cmdTKZ@tkzY@ticklt,0pt)%
+            node[\cmdTKZ@tkzY@pos,inner sep = 0pt]}\tkz@temp%
+         {\FPmul{\ygrad}{\pos}{\cmdTKZ@tkzInit@ystep}%
+          \FPadd{\ygrad}{\ygrad}{\cmdTKZ@tkzInit@yorigine}
+          \FPtrunc\ygrad{\ygrad}{\cmdTKZ@tkzInit@ydec}%
+          \ifTKZ@tkzY@orig% 
+              \ifTKZ@tkzY@nograd\else\tkz@showgrad{\ygrad}%
+                         $\cmdTKZ@tkzY@gradsize{\np{\tkz@result}}$\fi%
+          \else%
+           \ifTKZ@tkzInit@NO% 
+             \ifthenelse{\equal{\tkz@pos}{\posmin}}%
+            {}{\tkz@showgrad{\ygrad}%
+                 $\cmdTKZ@tkzY@gradsize{\np{\tkz@result}}$}%
+        \else% 
+          \ifthenelse{\equal{\tkz@pos}{\ytkzero}}%
+            {\ifTKZ@tkzY@unit\tkz@showgrad{\ygrad}%
+               $\cmdTKZ@tkzY@gradsize{\np{\tkz@result}}$\fi}%
+            {\ifTKZ@tkzY@nograd%
+             \else \tkz@showgrad{\ygrad}%
+              $\cmdTKZ@tkzY@gradsize{\np{\tkz@result}}$\fi}%
+        \fi%
+    \fi%
+   };%
+  }%
+\fi%
+\ifTKZ@tkzInit@NO\else\ifTKZ@tkzY@unit%
+  \draw[line width = 1pt,%
+        inner sep  = 1pt] (0,0) -- (0,1)%
+        node[left=3pt]%
+       {$\cmdTKZ@tkzY@gradsize{\np{\cmdTKZ@tkzInit@ystep}}$};% 
+  \draw[line width = \cmdTKZ@tkzY@tickwd,%
+        shift      = {(0,1)}]%
+      (\cmdTKZ@tkzY@tickrt,0pt)--(-\cmdTKZ@tkzY@ticklt,0pt);%
+  \fi\fi%
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                grid
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey [TKZ]{tkzg} {color}{}
+\define@cmdkey [TKZ]{tkzg} {subcolor}{}
+\define@boolkey[TKZ]{tkzg} {sub}[true]{}
+\define@cmdkey [TKZ]{tkzg} {subxstep}{}
+\define@cmdkey [TKZ]{tkzg} {subystep}{}
+\define@cmdkey [TKZ]{tkzg} {lw}{} 
+\define@cmdkey [TKZ]{tkzg} {sublw}{} 
+\presetkeys    [TKZ]{tkzg} {sub      = false,%
+                            color    = darkgray,% 
+                            subcolor = lightgray,% 
+                            subxstep = 0.2,%
+                            subystep = 0.2,%
+                            lw       = .4 pt,%
+                            sublw    = .3 pt}{}
+\newcommand*{\tkzGrid}[1][]{\tkz@grid[#1]}%
+\def\tkz@grid[#1]{%
+\@ifnextchar(%
+{\tkz@@grid[#1]}
+{\tkz@@grid[#1](\@xa,\@ya)(\@xb,\@yb)}}
+\def\tkz@@grid[#1](#2,#3)(#4,#5){%
+    \setkeys[TKZ]{tkzg}{#1}% 
+    \begingroup%
+    \FPadd{\tkz@gxa}{#2}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\tkz@gxb}{#4}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\tkz@gya}{#3}{-\cmdTKZ@tkzInit@yorigine}
+    \FPadd{\tkz@gyb}{#5}{-\cmdTKZ@tkzInit@yorigine}
+    \FPdiv{\tkz@gxa}{\tkz@gxa}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\tkz@gya}{\tkz@gya}{\cmdTKZ@tkzInit@ystep}
+    \FPdiv{\tkz@gxb}{\tkz@gxb}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\tkz@gyb}{\tkz@gyb}{\cmdTKZ@tkzInit@ystep}
+    \ifTKZ@tkzg@sub%
+      \FPdiv{\@subxstep}{\cmdTKZ@tkzg@subxstep}{\cmdTKZ@tkzInit@xstep}%
+      \FPdiv{\@subystep}{\cmdTKZ@tkzg@subystep}{\cmdTKZ@tkzInit@ystep}%
+      \draw [xstep      = \@subxstep cm,%
+             ystep      = \@subystep cm,%
+             color      = \cmdTKZ@tkzg@subcolor,%
+             line width = \cmdTKZ@tkzg@sublw]%
+             (\tkz@gxa,\tkz@gya) grid (\tkz@gxb,\tkz@gyb);%
+    \fi%
+    \draw [xstep      = 1 cm,%
+           ystep      = 1 cm,%
+           color      = \cmdTKZ@tkzg@color,%
+           line width = \cmdTKZ@tkzg@lw]%
+           (\tkz@gxa,\tkz@gya) grid (\tkz@gxb,\tkz@gyb);%
+    \endgroup%
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                repère
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\tikzstyle{RepStyle}=[->,>=latex]
+
+\define@cmdkey[TKZ]{Rep}{lw}{}
+\define@cmdkey[TKZ]{Rep}{xlabel}{}
+\define@cmdkey[TKZ]{Rep}{ylabel}{}
+\define@cmdkey[TKZ]{Rep}{poslabel}{}
+\define@cmdkey[TKZ]{Rep}{xnorm}{}
+\define@cmdkey[TKZ]{Rep}{ynorm}{}
+\define@cmdkey[TKZ]{Rep}{color}{}
+\define@cmdkey[TKZ]{Rep}{colorlabel}{}
+\define@boolkey[TKZ]{Rep}{orig}[false]{}
+\define@cmdkey[TKZ]{Rep}{LO}{}
+\presetkeys[TKZ]{Rep}{%
+                 lw          = 0.8pt,%
+                 xlabel      = $\vec{\imath}$,%
+                 ylabel      = $\vec{\jmath}$,%
+                 poslabel    = 2pt,%
+                 xnorm       = 1,%
+                 ynorm       = 1,%
+                 color       = black,%
+                 colorlabel  = black,%
+                 orig        = true,%
+                 LO          = $O$}{}
+
+\newcommand*{\tkzRep}[1][]{\tkz@Rep[#1]}%
+\def\tkz@Rep[#1]{%
+  \setkeys[TKZ]{Rep}{#1}%
+  \begingroup%
+  \draw [line width=\cmdTKZ@Rep@lw,RepStyle,%
+  color=\cmdTKZ@Rep@color]%
+         (0,0) to node[left  = \cmdTKZ@Rep@poslabel,%
+                       color = \cmdTKZ@Rep@colorlabel]%
+         {\cmdTKZ@Rep@ylabel}%
+         (0,\cmdTKZ@Rep@ynorm);
+  \draw [line width=\cmdTKZ@Rep@lw,RepStyle,%
+  color=\cmdTKZ@Rep@color]%
+        (0,0) to  node[below = \cmdTKZ@Rep@poslabel,%
+                       color = \cmdTKZ@Rep@colorlabel]%
+         {\cmdTKZ@Rep@xlabel}%
+         (\cmdTKZ@Rep@xnorm,0);  
+   \ifTKZ@Rep@orig%
+     \node[below left] at (0,0) {\cmdTKZ@Rep@LO};%
+   \fi%
+   \endgroup% 
+}
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                               Setup   Segment
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+\define@cmdkey [TKZ] {SUS} {color}{}
+\define@cmdkey [TKZ] {SUS} {style}{}
+\define@cmdkey [TKZ] {SUS} {lw}{}
+\define@cmdkey [TKZ] {SUS} {symbol}{}
+\define@cmdkey [TKZ] {SUS} {colorsymbol}{}
+\define@cmdkey [TKZ] {SUS} {poslabel}{}
+\define@cmdkey [TKZ] {SUS} {colorlabel}{}
+\define@cmdkey [TKZ] {SUS} {time}{}
+\presetkeys    [TKZ] {SUS} {%
+                            color       = black,%
+                            style       = solid,%
+                            lw          = 0.4pt,%
+                            symbol      = {},%  
+                            colorsymbol = black,%
+                            colorlabel  = black,%
+                            poslabel    = 1pt,%
+                            time        = .5}{}
+\newcommand*{\SetUpSegment}[1][]{\tkz@SetUpSegment[#1]}%
+\def\tkz@SetUpSegment[#1]{%
+  \setkeys       [TKZ] {SUS} {#1}%
+  \presetkeys    [TKZ] {seg} {%
+                                color       = \cmdTKZ@SUS@color,%
+                                style       = \cmdTKZ@SUS@style,%
+                                lw          = \cmdTKZ@SUS@lw,%
+                                symbol      = \cmdTKZ@SUS@symbol,%
+                                colorsymbol = \cmdTKZ@SUS@colorsymbol,%
+                                poslabel    = \cmdTKZ@SUS@poslabel,%
+                                colorlabel  = \cmdTKZ@SUS@colorlabel}{}
+}
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                   segment  (s)
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey [TKZ] {seg} {color}{}
+\define@cmdkey [TKZ] {seg} {style}{}
+\define@cmdkey [TKZ] {seg} {lw}{}
+\define@cmdkey [TKZ] {seg} {symbol}{}
+\define@cmdkey [TKZ] {seg} {colorsymbol}{}
+\define@cmdkey [TKZ] {seg} {colorlabel}{}
+\define@cmdkey [TKZ] {seg} {poslabel}{}
+\define@cmdkey [TKZ] {seg} {label}{}
+\define@cmdkey [TKZ] {seg} {time}{} 
+
+
+\presetkeys[TKZ]{seg}{%
+                            color       = black,%
+                            style       = solid,%
+                            lw          = 0.4pt,%
+                            label       = {},%
+                            symbol      = {},%  
+                            colorsymbol = black,%
+                            colorlabel  = black,%
+                            poslabel    = 1pt,%
+                            time        = .5}{}
+\newcommand*{\tkzSegment}{\@ifstar\tkzSegmentStar\tkzSegmentNoStar}
+\newcommand*{\tkzSegmentNoStar}[1][]{\tkz@SegmentNoStar[#1]}% 
+\def\tkz@SegmentNoStar[#1](#2){% 
+    \setkeys[TKZ]{seg}{#1}% 
+    \begingroup%
+    \foreach \deb/\fin in {#2}{%
+       \ifthenelse{\equal{\cmdTKZ@seg@symbol}{}}
+       {\draw[line width = \cmdTKZ@seg@lw,%
+              color      = \cmdTKZ@seg@color,
+                           \cmdTKZ@seg@style]%
+             (\deb.center)--(\fin.center);}%
+       {\protected@edef\tkz@temp{%
+          \noexpand \draw[line width = \cmdTKZ@seg@lw,%
+                          color      = \cmdTKZ@seg@color,%
+                                       \cmdTKZ@seg@style]}\tkz@temp
+          (\deb.center) to node[pos=\cmdTKZ@seg@time,sloped]%
+            {\textcolor{\cmdTKZ@seg@colorsymbol}{\cmdTKZ@seg@symbol}}%
+          (\fin.center);}%
+      \ifthenelse{\equal{\cmdTKZ@seg@label}{}}{}{%
+    \path (\deb.center) to  node[pos=\cmdTKZ@seg@time,above=\cmdTKZ@seg@poslabel,sloped]%
+     {\textcolor{\cmdTKZ@seg@colorlabel}{\cmdTKZ@seg@label}} (\fin.center);}%
+    }%
+  \endgroup%
+} 
+
+\newcommand*{\tkzSegmentStar}[1][]{\tkz@SegmentStar[#1]}% 
+\def\tkz@SegmentStar[#1](#2,#3)(#4,#5){%
+  \setkeys[TKZ]{seg}{#1}% 
+  \begingroup%
+  \tkzPoint*(#2,#3){tkz@deb}
+  \tkzPoint*(#4,#5){tkz@fin}
+  \tkz@SegmentNoStar[#1](tkz@deb/tkz@fin)%
+  \endgroup%
+} 
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                           Mark on        segment  (s)
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\newcommand*{\tkzSegmentMark}[1][]{\@tkzSegM[#1]}%
+\def\@tkzSegM[#1](#2){% 
+    \setkeys[TKZ]{seg}{#1}% 
+    \begingroup%
+    \foreach \deb/\fin in {#2}{%
+       \ifthenelse{\equal{\cmdTKZ@seg@symbol}{}}{}%
+          {\protected@edef\tkz@temp{%
+          \noexpand \path (\deb.center) to node[sloped]}\tkz@temp%
+          {\textcolor{\cmdTKZ@seg@colorsymbol}{\cmdTKZ@seg@symbol}}%
+           (\fin.center);}%
+       \ifthenelse{\equal{\cmdTKZ@seg@label}{}}{}{%
+         \path (\deb.center) to  node[above=\cmdTKZ@seg@poslabel,sloped]%
+        {\textcolor{\cmdTKZ@seg@colorlabel}{\cmdTKZ@seg@label}} (\fin.center);}%
+   }% end foreach
+   \endgroup%
+}
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                 tkzXH
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+ \define@cmdkey [TKZ] {tkzXh} {left}{}
+ \define@cmdkey [TKZ] {tkzXh} {right}{}
+ \define@cmdkey [TKZ] {tkzXh} {posgrad}{}
+ \presetkeys    [TKZ] {tkzXh} {%
+                posgrad     = 6 pt,%
+                left        = {},%
+                right       = {}}{}
+
+\newcommand*{\tkzXH}[1][]{\tkzX@h[#1]}%
+\def\tkzX@h[#1]#2{%
+\setkeys[TKZ]{tkzXh}{#1}%
+   \begingroup%
+   \foreach \xA/\RA/\sA/\xB/\RB/\sB in {#2}{%
+       \tkzPoint*(\xA,0){deb}\tkzPoint*(\xB,0){fin}
+       \begin{scope}[segment amplitude=8pt,segment length=4pt]
+         \draw[snake=border,segment angle=60,red,thick,raise snake=-3.5pt] (deb) -- (fin);
+         \node at (deb) {\Large\textbf{\sA}};\node at (fin) {\Large\textbf{\sB}};
+         \ifthenelse{\equal{\RA}{T}}{
+         \node[below=\cmdTKZ@tkzXh@posgrad] at (deb)%
+         {\tkz@showgrad{\xA}$\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$};}{}%
+         \ifthenelse{\equal{\RB}{T}}{\node[below=\cmdTKZ@tkzXh@posgrad]%
+          at (fin)  {\tkz@showgrad{\xB}$\cmdTKZ@tkzX@gradsize{\np{\tkz@result}}$};}{}%
+         \node[below=\cmdTKZ@tkzXh@posgrad] at (\tkz@xa,0) {\cmdTKZ@tkzXh@left};%
+         \node[below=\cmdTKZ@tkzXh@posgrad] at (\tkz@xb,0) {\cmdTKZ@tkzXh@right};
+       \end{scope}
+       }%
+   \endgroup%
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                         tkzText
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+
+\define@cmdkey[TKZ]{tkzText}{color}{}
+\define@cmdkey[TKZ]{tkzText}{opacity}{}
+\define@cmdkey[TKZ]{tkzText}{bkgcolor}{}
+\define@cmdkey[TKZ]{tkzText}{style}{}
+\define@cmdkey[TKZ]{tkzText}{name}{}
+\presetkeys[TKZ]{tkzText}{color    = black,%
+                          bkgcolor = white,%
+                          opacity  = 1,%
+                          name     = {},%
+                          style    = {}}{}
+\newcommand*{\tkzText}[1][]{\tkz@Text[#1]}%
+\def\tkz@Text[#1](#2,#3)#4{%
+    \setkeys[TKZ]{tkzText}{#1}%
+    \begingroup%
+    \FPadd{\ptxa}{#2}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\ptya}{#3}{-\cmdTKZ@tkzInit@yorigine}
+    \FPdiv{\ptxa}{\ptxa}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\ptya}{\ptya}{\cmdTKZ@tkzInit@ystep}
+    \protected@edef\tkz@temp{%
+       \noexpand%
+       \node[         \cmdTKZ@tkzText@style,%
+            fill    = \cmdTKZ@tkzText@bkgcolor,%
+            opacity = \cmdTKZ@tkzText@opacity]}\tkz@temp (\cmdTKZ@tkzText@name) at (\ptxa,\ptya)%
+      {\textcolor{\cmdTKZ@tkzText@color}{#4}};%
+   \endgroup%
+}%
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                    légende
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey[TKZ]{legend}{color}{}
+\define@cmdkey[TKZ]{legend}{lw}{}
+\define@boolkey[TKZ]{legend}{line}[true]{}
+\presetkeys[TKZ]{legend}{color=white,line=false,lw=.8pt}{}
+
+\newcommand{\tkzLegend}[1][]{\tkz@Legend[#1]}%
+\def\tkz@Legend[#1](#2,#3)#4{
+    \setkeys[TKZ]{legend}{#1}% 
+    \begingroup%
+    \setcounter{tkz@leg}{0}
+    \FPadd{\ptxa}{#2}{-\cmdTKZ@tkzInit@xorigine}
+    \FPadd{\ptya}{#3}{-\cmdTKZ@tkzInit@yorigine}
+    \FPdiv{\ptxa}{\ptxa}{\cmdTKZ@tkzInit@xstep}
+    \FPdiv{\ptya}{\ptya}{\cmdTKZ@tkzInit@ystep}
+    \node[draw,%
+          fill       = \cmdTKZ@legend@color,%
+          line width = \cmdTKZ@legend@lw]%
+          at (\ptxa,\ptya) {%
+    \begin{tikzpicture}
+       \foreach \motif/\size/\col/\mtext in {#4}{%
+           \ifTKZ@legend@line
+              \draw[color=\motif,line width=1pt,\size]%
+              (0cm ,\thetkz@leg ex)--(1cm,\thetkz@leg ex)
+           \else%
+              \draw plot[mark size    = \size,%
+                         mark         = \motif,%
+                         mark options = {color=\col}]%
+               coordinates{(0 ex,\thetkz@leg ex)}%
+           \fi%
+           node[right=1ex] {\mtext};
+           \addtocounter{tkz@leg}{3}
+           }%
+    \end{tikzpicture}%
+    };% 
+  \endgroup%
+}
+
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+%                                 hline 
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>
+\define@cmdkey [TKZ] {line} {lw}{}
+\define@cmdkey [TKZ] {line} {color}{}
+\define@cmdkey [TKZ] {line} {style}{}
+\presetkeys    [TKZ] {line} {color = black,%
+                      style = {dashed},%
+                      lw    = 0.6 pt}{}
+
+\newcommand*{\tkzHLine}[1][]{\tkz@hline[#1]}%
+\def\tkz@hline[#1]#2{%
+    \setkeys[TKZ]{line}{#1}%
+    \begingroup%
+    \foreach \tkzY in {#2}{%
+       \FPeval{\tkzYy}{\tkzY}%
+       \FPadd{\ptya}{\tkzYy}{-\cmdTKZ@tkzInit@yorigine}
+       \FPdiv{\ptya}{\ptya}{\cmdTKZ@tkzInit@ystep}
+       \draw[             \cmdTKZ@line@style,%
+             line width = \cmdTKZ@line@lw,%
+             color      = \cmdTKZ@line@color]%
+        (\tkz@xa,\ptya)--(\tkz@xb,\ptya);%
+     }%
+   \endgroup%
+}
+%<--------------------------------------------------------------------------->
+%                                      vline
+%<--------------------------------------------------------------------------->
+\newcommand*{\tkzVLine}[1][]{\tkz@vline[#1]}%
+\def\tkz@vline[#1]#2{%
+    \setkeys[TKZ]{line}{#1}%
+    \begingroup%
+    \foreach \tkzX in {#2}{%
+      \FPeval\tkzXx{\tkzX}%
+      \FPadd{\ptxa}{\tkzXx}{-\cmdTKZ@tkzInit@xorigine}
+      \FPdiv{\ptxa}{\ptxa}{\cmdTKZ@tkzInit@xstep}
+      \draw[line width = \cmdTKZ@line@lw,%
+            color      = \cmdTKZ@line@color,%
+                         \cmdTKZ@line@style]%
+           (\ptxa,\tkz@ya)--(\ptxa,\tkz@yb);}
+    \endgroup%
+}
+
+%<--------------------------------------------------------------------------->
+%                    distance entre deux nodes en pt  
+%<--------------------------------------------------------------------------->
+\newcommand*{\tkzMathLength}{\tkz@MathLength}
+\let\tkzMathLength\tkzMathLength
+\def\tkz@MathLength(#1,#2){%
+\begingroup%
+\pgfpointdiff{\pgfpointanchor{#1}{center}}%
+             {\pgfpointanchor{#2}{center}}%
+\tkz@ax=\pgf@x%
+\tkz@ay=\pgf@y%
+\pgfmathveclen{\pgfmath@tonumber{\tkz@ax}}%
+              {\pgfmath@tonumber{\tkz@ay}}
+\global\edef\tkzMathLen{\pgfmathresult}
+\global\let\tkzmathLen\tkzMathLen 
+\endgroup%
+}%
+
+\newcommand*{\tkzpttocm}{\tkz@pttocm}
+\def\tkz@pttocm#1{% 
+    \pgfmathdivide@{#1/28.4528}
+     \global\let\tkzmathresult\pgfmathresult
+}%
+
+\endinput
+%<–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––>

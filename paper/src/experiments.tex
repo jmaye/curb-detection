@@ -82,28 +82,28 @@ highlight the advantages of our method.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/special.eps}
-\caption{Example of curb detection in an unfavorable situation. Our algorithm
-correctly label the planes, and thus curbs, under various viewpoints and
-experimental settings.}
+\includegraphics[width=\columnwidth]{fig/segment.eps}
+\caption{Graph-based segmentation of the DEM (colors encode assignments of
+cells to the different components). By keeping the segmentation parameter $s$
+rather low, we ensure no planes are missed, at the cost of over-segmentation.}
 \label{fig:segment}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/special.eps}
-\caption{Example of curb detection in an unfavorable situation. Our algorithm
-correctly label the planes, and thus curbs, under various viewpoints and
-experimental settings.}
+\includegraphics[width=\columnwidth]{fig/ml.eps}
+\caption{DEM cell assignments (colors) to plane components using the standard
+EM algorithm. Due to the initial over-segmentation, the algorithm is not able
+to fully smooth out the additional planes.}
 \label{fig:ml}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/special.eps}
-\caption{Example of curb detection in an unfavorable situation. Our algorithm
-correctly label the planes, and thus curbs, under various viewpoints and
-experimental settings.}
+\includegraphics[width=\columnwidth]{fig/crf-em.eps}
+\caption{DEM cell assignments (colors) using our CRF-EM implementation. The MAP
+state is displayed here. The algorithm is able to smooth out the unnecessary
+planes and provides a good estimate of the curb positions and heights.}
 \label{fig:crf-em}
 \end{figure}
 
