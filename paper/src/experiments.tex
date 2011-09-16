@@ -1,72 +1,79 @@
 In order to evaluate and validate the approach proposed in this paper, we have
-conducted experiments on simulated and real-world data. Simulated data have been
-generated from greyscale images, where each pixel corresponds to a measurement.
-Data are contaminated with Gaussian noise in all directions. Real-world data
-have been acquired with a nodding laser range-finder setup. Two different lasers
-have been mounted, namely a SICK LMS-200 and an Hockuyo UTM-30LX.
+conducted experiments on simulated and real-world data. Real-world data
+has been acquired with a static nodding Laser Range-Finder (LRF) setup. Two
+different lasers have been mounted, namely a SICK LMS-200 and an Hockuyo
+UTM-30LX. We also tested our method on a pedestrian robot equipped with a
+downward-facing SICK LMS-151 LRF that generates 3D point cloud while moving.
 
-%Before we proceed with the actual results, we clarify the detection of curb
-%points and the creation of a traversability map. In order to extract the curb
-%points from the DEM, we use the MAP solution to the labeling proposed by the
-%CRF. An edge between two neighboring cells is considered as a curb whenever they
-%are labeled differently. For the traversability map, we assign a cost to each
-%curb point, which represents the cost of traversing this edge. We compute the
-%maximal gradient of the 8-neighborhood $N_8$ as
+\subsection{Experimental Conditions and Quantitative Measures}
 
-%\begin{equation}
-%\label{8-neighborhood}
-%g_{max}=\max_{(i,j)\in N_8}|h_i-h_j|.
-%\end{equation}
+For the nodding lasers setup, we have recorded 33 3D point clouds with multiple
+viewpoints from a standard street scene. For the pedestrian robot scenario, data
+has been generated from a tour in a city center.
 
-%The traversability cost $t_{ij}$ for the edge connecting cell $i$ with cell $j$
-%is then calculated as
+A quantitative evaluation of our algorithm can be carried out under various
+inter-related perspectives: curb location in $x,y$, curb height in $z$,
+number of planes, assignment of DEM cells to planes, plane parameters, or
+computation time. Since we do not have a labeling of the curb position from
+the dataset, we evaluate the predictive accuracy of a model trained
+with one point cloud on another. To this end, we collect 19 point clouds from
+the same position and perform cross-validation. Concretely, we iteratively
+estimate the parameter set $\{\hat{\Theta},\mathbf{\hat{L}}\}$ using one point
+cloud and evaluate the predictive error on the 18 remaining. The quantitative
+measure is the Root Mean Square (RMS) error of prediction:
 
-%\begin{eqnarray}
-%\label{eqn:traversability}
-%t_{ij}(g_{max})=
-%\left\{
-%\begin{array}{l l}
-%0 & \quad \text{if $g_{max}\le c_0$}\\
-%g_{max}/c_{max} & \quad \text{if $c_0\le g_{max}\le c_{max}$}\\
-%1 & \quad \text{if $c_{max}\le g_{max}$},
-%\end{array} \right.
-%\end{eqnarray}
+\begin{equation}
+\label{eqn:rmspred}
+RMSEP=\sqrt{\frac{1}{M}\sum_{i=1}^M(\hat{\mu}_{h_i}-\mathbf{\hat{w}}_k^\text{T}
+\boldsymbol{\phi}(\mathbf{c}_i))^ 2)},
+\end{equation}
 
-%where $c_0$ is the lower boundary and $c_{max}$ the maximal step height the
-%system can traverse.
+where $M$ is the number of valid cells in the point cloud being predicted and
+$\mathbf{\hat{w}}_k$ corresponds to the trained component at the MAP state of
+the CRF at $\mathbf{c}_i$.
 
-The simulated data allow us to show the pertinence of our algorithm in
-particular settings such as a T-junction, where other approaches fail.
-Fig.~\ref{fig:t-junction} illustrates such a situation.
+In order to further analyze our model, we have sampled point clouds from known
+mixture of linear regression parameters and also evaluated in this case the RMS
+error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
+the case of synthetic data, predicted curb location and height, and assignment
+of cells to planes, can also be quantitatively evaluated. Furthermore, we can
+judge the robustness and validity of our algorithm on various situations such
+as T-junctions or inclined planes.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig/t-junction.eps}
-\caption{Simulated data of a T-junction. Our algorithm is able to recover the
-correct curb points and output an adequate traversability map.}
-\label{fig:t-junction}
-\end{figure}
+\subsection{Qualitative Evaluation}
+Before we proceed with the actual quantitative analysis, we want to give a
+glimpse on some qualitative results that demonstrate the pertinence of our
+approach.
 
-Experiments on real-world data are reported in Fig.\ref{fig:exp1}-\ref{fig:exp2}
--\ref{fig:exp3}. These demonstrate the validity of our approach.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig/exp1.eps}
-\caption{Curb detection on real-world data.}
-\label{fig:exp1}
-\end{figure}
+In Fig.~\ref{fig:europa}, our pedestrian robot navigates in a city center and
+label curbs while driving. Since the point cloud is reconstructed while the
+robot drives, curbs can only be detected behind the robot in this specific
+situation. DEM patches are labeled sequentially and we achieve on-line and
+real-time performance.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/exp2.eps}
-\caption{Curb detection on real-world data.}
-\label{fig:exp2}
+\includegraphics[width=\columnwidth]{fig/europa.eps}
+\caption{Example of curb detection from a moving pedestrian robot. Colors
+represent planes and curbs are located at their boundaries.}
+\label{fig:europa}
 \end{figure}
+
+Fig.~\ref{fig:special} depicts a situation that a pedestrian robot might often
+encounter when crossing a street. This experiment illustrates that our method
+can cope with multiple viewpoints and environment configurations. Most of the
+competitive approach would fail in this case.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/exp3.eps}
-\caption{Curb detection on real-world data.}
-\label{fig:exp3}
+\includegraphics[width=\columnwidth]{fig/special.eps}
+\caption{Example of curb detection in an unfavorable situation. Our algorithm
+correctly label the planes, and thus curbs, under various viewpoints and
+experimental settings.}
+\label{fig:special}
 \end{figure}
+
+Fig.~\ref{fig:segment}
+
+\subsection{Quantitative Evaluation and Discussion}
+
