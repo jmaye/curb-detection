@@ -12,15 +12,15 @@ viewpoints from a standard street scene. For the pedestrian robot scenario, data
 has been generated from a tour in a city center.
 
 A quantitative evaluation of our algorithm can be carried out under various
-inter-related perspectives: curb location in $x,y$, curb height in $z$,
+interrelated perspectives: curb location in $x,y$, curb height in $z$,
 number of planes, assignment of DEM cells to planes, plane parameters, or
 computation time. Since we do not have a labeling of the curb position from
 the dataset, we evaluate the predictive accuracy of a model trained
-with one point cloud on another. To this end, we collect 19 point clouds from
+with one point cloud to the others. To this end, we collect 19 point clouds from
 the same position and perform cross-validation. Concretely, we iteratively
 estimate the parameter set $\{\hat{\Theta},\mathbf{\hat{L}}\}$ using one point
-cloud and evaluate the predictive error on the 18 remaining. The quantitative
-measure is the Root Mean Square (RMS) error of prediction:
+cloud and evaluate the predictive error on the 18 remaining ones. The
+quantitative measure is the Root Mean Square (RMS) error of prediction:
 
 \begin{equation}
 \label{eqn:rmspred}
@@ -73,7 +73,57 @@ experimental settings.}
 \label{fig:special}
 \end{figure}
 
-Fig.~\ref{fig:segment}
+Fig.~\ref{fig:segment} displays the outcome of the segmentation algorithm on a
+point cloud, while Fig.~\ref{fig:ml} shows the results obtained from the
+standard EM algorithm. As a comparison, our method is applied on the same data
+and the result is depicted on Fig.~\ref{fig:crf-em}. These experiments clearly
+highlight the advantages of our method.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/special.eps}
+\caption{Example of curb detection in an unfavorable situation. Our algorithm
+correctly label the planes, and thus curbs, under various viewpoints and
+experimental settings.}
+\label{fig:segment}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/special.eps}
+\caption{Example of curb detection in an unfavorable situation. Our algorithm
+correctly label the planes, and thus curbs, under various viewpoints and
+experimental settings.}
+\label{fig:ml}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/special.eps}
+\caption{Example of curb detection in an unfavorable situation. Our algorithm
+correctly label the planes, and thus curbs, under various viewpoints and
+experimental settings.}
+\label{fig:crf-em}
+\end{figure}
 
 \subsection{Quantitative Evaluation and Discussion}
 
+\subsubsection{Real-World Data}
+
+In order to further analyze our model, we have sampled point clouds from known
+mixture of linear regression parameters and also evaluated in this case the RMS
+error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
+the case of synthetic data, predicted curb location and height, and assignment
+of cells to planes, can also be quantitatively evaluated. Furthermore, we can
+judge the robustness and validity of our algorithm on various situations such
+as T-junctions or inclined planes.
+
+\subsubsection{Synthetic Data}
+
+In order to further analyze our model, we have sampled point clouds from known
+mixture of linear regression parameters and also evaluated in this case the RMS
+error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
+the case of synthetic data, predicted curb location and height, and assignment
+of cells to planes, can also be quantitatively evaluated. Furthermore, we can
+judge the robustness and validity of our algorithm on various situations such
+as T-junctions or inclined planes.

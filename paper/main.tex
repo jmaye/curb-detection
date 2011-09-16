@@ -10,7 +10,32 @@
 \usepackage{amssymb}
 \usepackage{txfonts}
 \usepackage{tikz}
+\usepackage{sty/tkz-base}
 \usepackage[T1]{fontenc}
+
+\usetikzlibrary{shapes,decorations,shadows}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.shapes}
+\usetikzlibrary{fadings}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.text}
+\usetikzlibrary{decorations.footprints}
+\usetikzlibrary{decorations.fractals}
+\usetikzlibrary{shapes.gates.logic.IEC}
+\usetikzlibrary{shapes.gates.logic.US}
+\usetikzlibrary{fit,chains}
+\usetikzlibrary{positioning}
+\usepgflibrary{shapes}
+\usetikzlibrary{scopes}
+\usetikzlibrary{arrows}
+\usetikzlibrary{backgrounds}
+\tikzset{latent/.style={circle,fill=white,draw=black,inner sep=1pt, 
+minimum size=20pt, font=\fontsize{10}{10}\selectfont},
+obs/.style={latent,fill=gray!25},
+const/.style={rectangle, inner sep=0pt},
+factor/.style={rectangle, fill=gray!25,minimum size=15pt, inner sep=1pt,draw=black},
+>={triangle 45}}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -46,14 +71,8 @@ email: \{jerome.maye, ralf.kaestner, roland.siegwart\}@mavt.ethz.ch}
 \section{Model\label{sec:model}}
 \input{src/model.tex}
 
-%\section{Labeling with Conditional Random Field\label{sec:crf}}
-%\input{src/crf.tex}
-
 \section{Implementation Details\label{sec:implementation}}
 \input{src/implementation.tex}
-
-%\section{Planes Estimation\label{sec:plane}}
-%\input{src/plane.tex}
 
 \section{Experiments\label{sec:exp}}
 \input{src/experiments.tex}

@@ -3,6 +3,7 @@ statistical model for curb detection and derive appropriate inference
 algorithms.
 
 \subsection{Measurement Representation}
+
 A nodding laser range-finder produces scan measurements $\mathbf{s}_i=[r_i,
 \theta_i,\psi_i]^\text{T}$ that are transformed into their corresponding
 Cartesian 3D coordinates $\mathbf{p}_i=[x_i,y_i,z_i]^\text{T}$, where $r_i$ is
@@ -63,6 +64,7 @@ displayed here for the cell height values.}
 \end{figure}
 
 \subsection{Environment Model and Inference Task}
+
 We assume a piecewise planar environment, i.e., the observed scene is composed
 of a set of plane segments. Boundaries between plane segments define local
 height discontinuities that we shall henceforth term \emph{curbs}.
@@ -144,7 +146,7 @@ p(l_{i_k}=1\mid\hat{\mu}_{h_i},\mathbf{c}_i,\hat{\Theta}^{(t)})=\gamma_{ik}
 \end{equation}
 
 Here, the attentive reader shall have noticed that we have used conditional
-independence of the $\mathbf{l_i}$ given the data, that is:
+independence of the $\mathbf{l}_i$ given the data, that is:
 
 \begin{equation}
 \label{eqn:factorization}
@@ -182,10 +184,11 @@ where $\mathbf{R}_k=\text{diag}(\gamma_{ik})$ contains the responsibilities for
 component $k$ in a diagonal matrix.
 
 \subsection{Belief Propagation for Posterior Class Assignments}
+
 As we have pointed out in \eqref{eqn:factorization}, the computation of the
 joint posterior class assignment
 $p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\hat{\Theta}^{(t)})$
-can be handled independently for each $\mathbf{l_i}$ in the standard EM
+can be handled independently for each $\mathbf{l}_i$ in the standard EM
 algorithm. The sought marginals $\gamma_{ik}$ are therefore straightforwardly
 calculated. However, the nature of our problem suggests that we should introduce
 dependencies between neighboring DEM cells. Indeed, geometrically close points
@@ -195,8 +198,8 @@ edges $(v_i,v_j)\in\mathcal{E}$ connecting neighboring vertices. Each DEM cell
 $\mathcal{C}_i$ is assigned to a vertex $v_i$ having a 4-connected neighborhood.
 
 Borrowing in the literature of graphical models, we can express the joint
-posterior class assignment factorization with a Conditional Random Field (CRF)
-on the graph $\mathcal{G}$ as:
+posterior class assignment factorization with a Conditional Random Field
+(CRF)~\cite{lafferty01conditional} on the graph $\mathcal{G}$ as:
 
 \begin{eqnarray}
 \label{eqn:crf_joint}
@@ -204,9 +207,9 @@ p(\mathbf{L}\mid\hat{\boldsymbol\mu}_h,\boldsymbol{\Phi},\hat{\Theta}^{(t)})
 \propto
 \phantom{aaaaaaaaaaaaaaaaaaaaaaaaaaaa}\\ \nonumber
 \prod_{v_i\in\mathcal{V}}
-\varphi_i(\hat{\mu}_{h_i},\mathbf{l_i},\hat{\Theta}^{(t)},\boldsymbol{\Phi})
+\varphi_i(\hat{\mu}_{h_i},\mathbf{l}_i,\hat{\Theta}^{(t)},\boldsymbol{\Phi})
 \prod_{(v_i,v_j)\in\mathcal{E}}\psi_{ij}(\hat{\mu}_{h_i},\hat{\mu}_{h_j},
-\mathbf{l_i},\mathbf{l_j}),
+\mathbf{l}_i,\mathbf{l}_j),
 \end{eqnarray}
 
 where $\varphi_i(\cdot)$ and $\psi_{ij}(\cdot)$ are the \emph{node potentials}
@@ -214,8 +217,8 @@ and \emph{edge potentials} respectively. The potential functions are positively
 defined functions and the normalization is ensured by the
 \emph{partition function} $\mathbf{Z}(\boldsymbol{\Phi})$. Intuitively, a node 
 potential reflects the likelihood of $\hat{\mu}_{h_i}$ being labeled
-$\mathbf{l_i}$, and an edge potential the joint likelihood of $\hat{\mu}_{h_i}$
-and $\hat{\mu}_{h_j}$ being labeled $\mathbf{l_i}$ and $\mathbf{l_j}$.
+$\mathbf{l}_i$, and an edge potential the joint likelihood of $\hat{\mu}_{h_i}$
+and $\hat{\mu}_{h_j}$ being labeled $\mathbf{l}_i$ and $\mathbf{l}_j$.
 
 Given the formulation in \eqref{eqn:crf_joint}, two inference tasks are of
 interest. On the on hand, one can derive the marginals
@@ -225,13 +228,36 @@ $\mathbf{L}^\text{MAP}$ of the CRF. The former question is addressed with the
 sum-product algorithm, while the latter with the max-product, which give exact
 results for tree. These are two instances of Belief Propagation (BP). Even
 though our graph $\mathcal{G}$ contains loops, BP can yield approximate results
-and is in this case called \emph{loopy} BP. Fig.~\ref{fig:fg} shows a portion
-of the factor graph on which the inference operates.
+and is in this case called \emph{loopy} BP. Fig.~\ref{fig:fg} shows an excerpt
+of the factor graph~\cite{kschischang01factor} on which the inference operates.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/dem.eps}
-\caption{Portion of the factor graph used for Belief Propagation (BP).}
+\begin{tikzpicture}
+\node [matrix,matrix anchor=mid, column sep=20pt, row sep=10pt] {
+&\node (l0) [latent] {$\mathbf{l}_0$};
+&\node (l01) [factor] {$\psi_{01}$};
+&\node (l1) [latent] {$\mathbf{l}_1$};
+&\node (l12) [factor] {$\psi_{12}$};
+&\node (l2) [latent] {$\mathbf{l}_2$};
+&\node (la) [factor] {$\psi_{\dots}$};&\\
+};
+\node (l0fac) [factor, above=12pt of l0] {$\varphi_0$};
+\node (l1fac) [factor, above=12pt of l1] {$\varphi_1$};
+\node (l2fac) [factor, above=12pt of l2] {$\varphi_2$};
+\draw [-] (l0) -- (l0fac);
+\draw [-] (l1) -- (l1fac);
+\draw [-] (l2) -- (l2fac);
+\draw [-] (l0) -- (l01);
+\draw [-] (l01) -- (l1);
+\draw [-] (l1) -- (l12);
+\draw [-] (l12) -- (l2);
+\draw [-] (l2) -- (la);
+\end{tikzpicture}
+\caption{Excerpt of the factor graph used for Belief Propagation (BP). Latent
+variables ($\mathbf{l}_i$) are displayed with circles and factor nodes
+($\psi_{ij}$,$\varphi_i$) with squares. The factor graph expresses our specific
+joint factorization.}
 \label{fig:fg}
 \end{figure}
 
@@ -239,7 +265,7 @@ We express the node potentials as follows:
 
 \begin{equation}
 \label{eqn:node_potential}
-\varphi_i(\hat{\mu}_{h_i},\mathbf{l_i},\hat{\Theta}^{(t)},\boldsymbol{\Phi})=
+\varphi_i(\hat{\mu}_{h_i},\mathbf{l}_i,\hat{\Theta}^{(t)},\boldsymbol{\Phi})=
 \pi_k\mathcal{N}(\hat{\mu}_{h_i}\mid\mathbf{w}_k^\text{T}
 \boldsymbol{\phi}(\mathbf{c}_i),\sigma^2_k).
 \end{equation}
@@ -255,12 +281,12 @@ we define the edge potentials as
 
 \begin{eqnarray}
 \label{eqn:edge_potential}
-\psi_{ij}(\hat{\mu}_{h_i},\hat{\mu}_{h_j},\mathbf{l_i},\mathbf{l_j})=
+\psi_{ij}(\hat{\mu}_{h_i},\hat{\mu}_{h_j},\mathbf{l}_i,\mathbf{l}_j)=
 \phantom{aaaaaaaaaaaaaaaaaaaaaaa}\\\nonumber
 \left\{
 \begin{array}{l l}
 1-(1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
-\text{if $\mathbf{l_i}=\mathbf{l_j}$}\\
+\text{if $\mathbf{l}_i=\mathbf{l}_j$}\\
 (1+\exp(\sigma^2_{ij}-d_{ij}))^{-1} & \quad
 \text{otherwise},
 \end{array} \right.

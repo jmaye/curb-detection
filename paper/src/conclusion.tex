@@ -1,17 +1,21 @@
-In this paper, we have presented a novel approach to the curb detection problem.
-We have devised an unsupervised method that makes
-few assumptions about the environment, restricts the set of hand-tuned
-parameters, and builds on sound probabilistic reasoning from the sensing device
-to the outcome of the algorithm. In our approach, we have constructed a piecewise
-planar model of the environment and determined curbs at plane segment boundaries.
-Initially, we have sensed the environment with a nodding laser range-finder and
-projected the 3D measurements into an efficient Digital Elevation Map (DEM). Each
-cell of the DEM maintains an error model that is propagated throughout the
-entire algorithm. Plane segments are further estimated with a mixture of linear
-regressions on the DEM. Here, we propose an original formulation of the standard
-Expectation-Maximization (EM) algorithm for mixture models. Specifically, in the
-E-step, the responsibilities are computed with a Conditional Random Field (CRF),
-that smooths the assignment of DEM cells to planes of the mixture model. An
-initial graph-based segmentation of the DEM provides the first responsibilities
-and an estimate of the number of planes. We have shown promising results of the
-algorithm on simulated and real-world data.
+In this paper, we have presented a novel approach to curb detection. We have
+devised an unsupervised method that is applicable to various environment
+configuration and perspective views. We have demonstrated an application to a
+pedestrian robot and shown the robustness of our approach through a thorough
+experimental evaluation on real-world and synthetic data.
+
+From a theoretical point of view, we have anchored our method to sound
+statistical models from the measurement process to the final inference tasks.
+This results into an elegant and efficient algorithm that is solely
+parameterized by sensor characteristics. Our approach reconstructs the
+environment as a mixture of plane segments and flags curbs at their boundaries.
+For the parameter estimation, we have replaced the standard E-step of the
+Expectation-Maximization (EM) algorithm with loopy Belief Propagation (BP) and
+justified its utilization. Finally, we have tackled model selection issues with
+a graph-based segmentation heuristic.
+
+As a future work, we envision to apply a fully Bayesian treatment to our
+method and investigate the use of Hierarchical Mixture of Experts
+(HME)~\cite{bishop03bayesian}. Additionally, we want to study the feasibility of
+a recursive estimation framework. Since BP is amenable to parallelization, it
+would also be beneficial to use a GPU implementation.
