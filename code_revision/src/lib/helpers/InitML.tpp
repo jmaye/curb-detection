@@ -62,8 +62,7 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
     }
     EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
       points.end();
-    estPlane.addPoints(itStart, itEnd, pointsWeights.segment(startRow, row -
-      startRow));
+    estPlane.addPoints(itStart, itEnd);
 //    estPlane.addPoints(itStart, itEnd, pointsWeights.segment(startRow, row -
 //      startRow));
     if (estPlane.getValid()) {

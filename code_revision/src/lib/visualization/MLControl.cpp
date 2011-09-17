@@ -134,12 +134,12 @@ void MLControl::runML() {
   if (mPoints.size()) {
   EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtBPPlane(mC, mW, mW, mMaxIter, mTol);
-  const size_t numIter = estMixtBPPlane.addPoints(mPoints.begin(),
-    mPoints.end(), mFactorGraph, mFgMapping, mPointsMapping, mDEM, mGraph);
-//    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-//      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
-//    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
-//      mPoints.end());
+//  const size_t numIter = estMixtBPPlane.addPoints(mPoints.begin(),
+//    mPoints.end(), mFactorGraph, mFgMapping, mPointsMapping, mDEM, mGraph);
+    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
+    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
+      mPoints.end());
     PropertySet opts;
     opts.set("maxiter", (size_t)200);
     opts.set("tol", 1e-6);
@@ -153,7 +153,7 @@ void MLControl::runML() {
     std::vector<std::size_t> mapState = bp.findMaximum();
     mUi->iterSpinBox->setValue(numIter);
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-      responsibilities = estMixtBPPlane.getResponsibilities();
+      responsibilities = estMixtPlane.getResponsibilities();
     mVertices.clear();
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
       double max = -std::numeric_limits<double>::infinity();
@@ -163,13 +163,13 @@ void MLControl::runML() {
           max = responsibilities(i, j);
           argmax = j;
         }
-//      mVertices[mPointsMapping[i]] = argmax;
-        mVertices[mPointsMapping[i]] = mapState[mFgMapping[mPointsMapping[i]]];
+      mVertices[mPointsMapping[i]] = argmax;
+//        mVertices[mPointsMapping[i]] = mapState[mFgMapping[mPointsMapping[i]]];
     }
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
-    mlUpdated(mDEM, mGraph, estMixtBPPlane.getCoefficients(),
-      estMixtBPPlane.getVariances(), estMixtBPPlane.getWeights());
+    mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
+      estMixtPlane.getVariances(), estMixtPlane.getWeights());
   }
 }
 
