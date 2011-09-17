@@ -111,20 +111,20 @@ planes and provides a good estimate of the curb positions and heights.}
 
 \subsubsection{Real-World Data}
 
-In order to further analyze our model, we have sampled point clouds from known
-mixture of linear regression parameters and also evaluated in this case the RMS
-error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
-the case of synthetic data, predicted curb location and height, and assignment
-of cells to planes, can also be quantitatively evaluated. Furthermore, we can
-judge the robustness and validity of our algorithm on various situations such
-as T-junctions or inclined planes.
+Proceeding as mentioned above, i.e., evaluating the prediction accuracy on
+unseen data and averaging the RMSE over all the datasets, we obtain a RMSE of
+0.055 [m] for a DEM containing 1600 cells. This result shows that we are able
+to accurately estimate the model.
+
+Our algorithm takes on average 1.47 [ms] for building the DEM, 2.46 [ms] for
+segmenting it, 0.18 [ms] for estimating the initial linear regression
+parameters, and 0.6649 [s] for the combined BP-EM algorithm. These timings
+therefore allow for real-time and on-line operations on a robotic platform.
 
 \subsubsection{Synthetic Data}
 
-In order to further analyze our model, we have sampled point clouds from known
-mixture of linear regression parameters and also evaluated in this case the RMS
-error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
-the case of synthetic data, predicted curb location and height, and assignment
-of cells to planes, can also be quantitatively evaluated. Furthermore, we can
-judge the robustness and validity of our algorithm on various situations such
-as T-junctions or inclined planes.
+We have generated multiple artificial mixture of linear regression models and
+sampled 3D point clouds from them. In this experiment, we tried to create
+situations that were not present in our dataset and varied the different
+parameters to analyze the robustness of our algorithm. We have evaluated and
+validated our algorithm under the aforementioned criterion.
