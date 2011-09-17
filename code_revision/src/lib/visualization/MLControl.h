@@ -33,6 +33,7 @@
 #include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
 #include "helpers/RandomColors.h"
+#include "data-structures/FactorGraph.h"
 
 #include <vector>
 
@@ -118,6 +119,10 @@ protected:
   double mTol;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
+  ///
+  FactorGraph mFactorGraph;
+  ///
+  DEMGraph::VertexContainer mFgMapping;
   /** @}
     */
 

@@ -49,19 +49,19 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     factors.push_back(fac);
     idx++;
   }
-  for (DEMGraph::ConstEdgeIterator it = graph.getEdgeBegin(); it !=
-    graph.getEdgeEnd(); ++it) {
-    const DEMGraph::EdgeDescriptor e = graph.getEdge(it);
-    const DEMGraph::VertexDescriptor& v1 = graph.getHeadVertex(e);
-    const DEMGraph::VertexDescriptor& v2 = graph.getTailVertex(e);
-    const dai::Var& var1 = vars[fgMapping[v1]];
-    const dai::Var& var2 = vars[fgMapping[v2]];
-    const dai::VarSet varSet(var1, var2);
-    dai::Factor fac(varSet, 1e-9);
-    for (size_t i = 0; i < numLabels; ++i)
-      fac.set(i * (numLabels + 1), 1.0);
-    factors.push_back(fac);
-  }
+//  for (DEMGraph::ConstEdgeIterator it = graph.getEdgeBegin(); it !=
+//    graph.getEdgeEnd(); ++it) {
+//    const DEMGraph::EdgeDescriptor e = graph.getEdge(it);
+//    const DEMGraph::VertexDescriptor& v1 = graph.getHeadVertex(e);
+//    const DEMGraph::VertexDescriptor& v2 = graph.getTailVertex(e);
+//    const dai::Var& var1 = vars[fgMapping[v1]];
+//    const dai::Var& var2 = vars[fgMapping[v2]];
+//    const dai::VarSet varSet(var1, var2);
+//    dai::Factor fac(varSet, 1e-12);
+//    for (size_t i = 0; i < numLabels; ++i)
+//      fac.set(i * (numLabels + 1), 0.1);
+//    factors.push_back(fac);
+//  }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
   vars.end(), factors.size(), vars.size());
 }

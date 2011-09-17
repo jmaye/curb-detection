@@ -16,21 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorMLMixtureLinearRegression.h
-    \brief This file implements an ML estimator for mixture of linear
+/** \file EstimatorMLBPMixtureLinearRegression.h
+    \brief This file implements an ML-BP estimator for mixture of linear
            regression models
   */
 
+#ifndef ESTIMATORMLBP_H
+#define ESTIMATORMLBP_H
+
 #include "statistics/LinearRegression.h"
 #include "statistics/MixtureDistribution.h"
+#include "data-structures/FactorGraph.h"
 
 #include <vector>
 
-/** The class EstimatorML is implemented for mixtures of linear regressions.
-    \brief Mixture of linear regression ML estimator
+template <typename D, size_t M = 1, size_t N = 1> class EstimatorMLBP;
+
+/** The class EstimatorMLBP is implemented for mixtures of linear regressions.
+    \brief Mixture of linear regression ML estimator with BP step
   */
 template <size_t M, size_t N>
-class EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N> :
+class EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N> :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -49,18 +55,18 @@ public:
     @{
     */
   /// Constructs estimator with initial guess of the parameters
-  EstimatorML(const Eigen::Matrix<double, N, M>& coefficients, const
+  EstimatorMLBP(const Eigen::Matrix<double, N, M>& coefficients, const
     Eigen::Matrix<double, N, 1>& variances, const Eigen::Matrix<double, N, 1>&
     weights, size_t maxNumIter = 200, double tol = 1e-6);
   /// Copy constructor
-  EstimatorML(const
-    EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>& other);
+  EstimatorMLBP(const
+    EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>& other);
   /// Assignment operator
-  EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>& operator =
-    (const EstimatorML<MixtureDistribution<LinearRegression<M>, N>, M, N>&
+  EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>& operator =
+    (const EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>&
     other);
   /// Destructor
-  virtual ~EstimatorML();
+  virtual ~EstimatorMLBP();
   /** @}
     */
 
@@ -89,7 +95,9 @@ public:
   void setMaxNumIter(size_t maxNumIter);
   /// Add points to the estimator / Returns number of EM iterationss
   size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+    itEnd, FactorGraph& factorGraph, DEMGraph::VertexContainer& fgMapping,
+    std::vector<DEMGraph::VertexDescriptor>& pointsMapping, const
+    Grid<double, Cell, 2>& dem, const DEMGraph& graph);
   /// Reset the estimator
   void reset();
   /** @}
@@ -134,4 +142,6 @@ protected:
 
 };
 
-#include "statistics/EstimatorMLMixtureLinearRegression.tpp"
+#include "statistics/EstimatorMLBPMixtureLinearRegression.tpp"
+
+#endif // ESTIMATORMLBP

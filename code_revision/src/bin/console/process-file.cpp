@@ -31,8 +31,8 @@
 #include "data-structures/FactorGraph.h"
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
+#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
 #include "base/Timestamp.h"
-
 
 int main (int argc, char** argv) {
   if (argc != 2) {
@@ -80,7 +80,7 @@ int main (int argc, char** argv) {
   std::cout << "Initial weights: " << w.transpose() << std::endl;
   EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtPlane(c, v, w);
-  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
+  size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
   after = Timestamp::now();
   std::cout << "Mixture linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -112,5 +112,9 @@ int main (int argc, char** argv) {
   BeliefPropagation bp(factorGraph, opts);
   bp.init();
   bp.run();
+  EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+    Eigen::Dynamic> estMixtBPPlane(c, v, w);
+  numIter = estMixtBPPlane.addPoints(points.begin(), points.end(),
+    factorGraph, fgMapping, pointsMapping, dem, graph);
   return 0;
 }

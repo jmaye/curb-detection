@@ -19,7 +19,10 @@
 #include "visualization/MLControl.h"
 
 #include "visualization/SegmentationControl.h"
+#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
 #include "helpers/InitML.h"
+#include "helpers/FGTools.h"
+#include "statistics/BeliefPropagation.h"
 
 #include "ui_MLControl.h"
 
@@ -119,23 +122,38 @@ void MLControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const GraphSegmenter<DEMGraph>::Components& components) {
   mDEM = dem;
   mGraph = graph;
-
   if (Helpers::initML(dem, graph, components, mPoints, mPointsWeights,
     mPointsMapping, mC, mV, mW)) {
     Helpers::randomColors(mColors, components.size());
+    Helpers::buildFactorGraph(dem, graph, mC, mV, mW, mFactorGraph, mFgMapping);
     runML();
   }
 }
 
 void MLControl::runML() {
   if (mPoints.size()) {
-    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
-    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
-      mPoints.end());
+  EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+    Eigen::Dynamic> estMixtBPPlane(mC, mW, mW, mMaxIter, mTol);
+  const size_t numIter = estMixtBPPlane.addPoints(mPoints.begin(),
+    mPoints.end(), mFactorGraph, mFgMapping, mPointsMapping, mDEM, mGraph);
+//    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+//      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
+//    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
+//      mPoints.end());
+    PropertySet opts;
+    opts.set("maxiter", (size_t)200);
+    opts.set("tol", 1e-6);
+    opts.set("verbose", (size_t)1);
+    opts.set("updates", std::string("SEQRND"));
+    opts.set("logdomain", false);
+    opts.set("inference", std::string("MAXPROD"));
+    BeliefPropagation bp(mFactorGraph, opts);
+    bp.init();
+    bp.run();
+    std::vector<std::size_t> mapState = bp.findMaximum();
     mUi->iterSpinBox->setValue(numIter);
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-      responsibilities = estMixtPlane.getResponsibilities();
+      responsibilities = estMixtBPPlane.getResponsibilities();
     mVertices.clear();
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
       double max = -std::numeric_limits<double>::infinity();
@@ -145,12 +163,13 @@ void MLControl::runML() {
           max = responsibilities(i, j);
           argmax = j;
         }
-      mVertices[mPointsMapping[i]] = argmax;
+//      mVertices[mPointsMapping[i]] = argmax;
+        mVertices[mPointsMapping[i]] = mapState[mFgMapping[mPointsMapping[i]]];
     }
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
-    mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
-      estMixtPlane.getVariances(), estMixtPlane.getWeights());
+    mlUpdated(mDEM, mGraph, estMixtBPPlane.getCoefficients(),
+      estMixtBPPlane.getVariances(), estMixtBPPlane.getWeights());
   }
 }
 
