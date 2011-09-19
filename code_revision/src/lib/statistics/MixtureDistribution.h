@@ -80,8 +80,12 @@ public:
   void setAssignDistribution(const CategoricalDistribution<M>& distribution);
   /// Returns the probability density function at the given value
   virtual double pdf(const VariableType& value) const;
+  /// Returns the log-probability density function at the given value
+  double logpdf(const VariableType& value) const;
   /// Returns the probability mass function at the given value
   virtual double pmf(const VariableType& value) const;
+  /// Returns the probability mass function at the given value
+  double logpmf(const VariableType& value) const;
   /** @}
     */
 

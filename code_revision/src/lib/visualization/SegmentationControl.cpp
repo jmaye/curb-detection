@@ -76,7 +76,8 @@ void SegmentationControl::renderSegmentation() {
       ++itV) {
       const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(*itV);
       const Cell& cell = mDEM[*itV];
-      const double sampleMean = cell.getHeightEstimator().getMean();
+      const double sampleMean = cell.getHeightEstimator().getPostPredDist().
+        getMean();
       glBegin(GL_POLYGON);
       glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,

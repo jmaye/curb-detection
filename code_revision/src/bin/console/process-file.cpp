@@ -31,7 +31,6 @@
 #include "data-structures/FactorGraph.h"
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
-#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
 #include "base/Timestamp.h"
 
 int main (int argc, char** argv) {
@@ -65,13 +64,11 @@ int main (int argc, char** argv) {
   std::cout << "Segmenting DEM: " << after - before << " [s]" << std::endl;
   before = Timestamp::now();
   EstimatorML<LinearRegression<3>, 3>::Container points;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> pointsWeights;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
   Eigen::Matrix<double, Eigen::Dynamic, 3> c;
   Eigen::Matrix<double, Eigen::Dynamic, 1> v;
   Eigen::Matrix<double, Eigen::Dynamic, 1> w;
-  Helpers::initML(dem, graph, components, points, pointsWeights, pointsMapping,
-    c, v, w);
+  Helpers::initML(dem, graph, components, points, pointsMapping, c, v, w);
   after = Timestamp::now();
   std::cout << "Initial linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -80,7 +77,7 @@ int main (int argc, char** argv) {
   std::cout << "Initial weights: " << w.transpose() << std::endl;
   EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
     Eigen::Dynamic> estMixtPlane(c, v, w);
-  size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
+  const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
   after = Timestamp::now();
   std::cout << "Mixture linear regression estimation: " << after - before
     << " [s]" << std::endl;
@@ -112,9 +109,5 @@ int main (int argc, char** argv) {
   BeliefPropagation bp(factorGraph, opts);
   bp.init();
   bp.run();
-  EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-    Eigen::Dynamic> estMixtBPPlane(c, v, w);
-  numIter = estMixtBPPlane.addPoints(points.begin(), points.end(),
-    factorGraph, fgMapping, pointsMapping, dem, graph);
   return 0;
 }

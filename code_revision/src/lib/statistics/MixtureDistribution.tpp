@@ -134,6 +134,16 @@ double MixtureDistribution<D, M>::pdf(const VariableType& value) const {
 }
 
 template <typename D, size_t M>
+double MixtureDistribution<D, M>::logpdf(const VariableType& value) const {
+  return log(pdf(value));
+}
+
+template <typename D, size_t M>
 double MixtureDistribution<D, M>::pmf(const VariableType& value) const {
   return pdf(value);
+}
+
+template <typename D, size_t M>
+double MixtureDistribution<D, M>::logpmf(const VariableType& value) const {
+  return logpdf(value);
 }

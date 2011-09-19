@@ -29,16 +29,17 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
       const Cell& cell = dem[cellIdx];
       if (cell.getHeightEstimator().getValid()) {
         mVertices[cellIdx] = dem.computeLinearIndex(cellIdx);
-        NormalDistribution<1> cellDist(cell.getHeightEstimator().getMean(),
-          cell.getHeightEstimator().getVariance());
+        NormalDistribution<1> cellDist(cell.getHeightEstimator().
+          getPostPredDist().getMean(), cell.getHeightEstimator().
+          getPostPredDist().getVariance());
         if ((i + 1) < numCells(0)) {
           Grid<double, Cell, 2>::Index cellDownIdx =
               (Grid<double, Cell, 2>::Index() << i + 1, j).finished();
           const Cell& cellDown = dem[cellDownIdx];
           if (cellDown.getHeightEstimator().getValid()) {
             NormalDistribution<1> cellDownDist(
-              cellDown.getHeightEstimator().getMean(),
-              cellDown.getHeightEstimator().getVariance());
+              cellDown.getHeightEstimator().getPostPredDist().getMean(),
+              cellDown.getHeightEstimator().getPostPredDist().getVariance());
             mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellDownIdx,
               cellDist.KLDivergence(cellDownDist) +
               cellDownDist.KLDivergence(cellDist)));
@@ -50,8 +51,8 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
           const Cell& cellRight = dem[cellRightIdx];
           if (cellRight.getHeightEstimator().getValid()) {
             NormalDistribution<1> cellRightDist(
-              cellRight.getHeightEstimator().getMean(),
-              cellRight.getHeightEstimator().getVariance());
+              cellRight.getHeightEstimator().getPostPredDist().getMean(),
+              cellRight.getHeightEstimator().getPostPredDist().getVariance());
             mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellRightIdx,
               cellDist.KLDivergence(cellRightDist) +
               cellRightDist.KLDivergence(cellDist)));

@@ -89,7 +89,8 @@ void BPControl::renderBP() {
     mVertices.end(); ++it) {
     const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(it->first);
     const Cell& cell = mDEM[it->first];
-    const double sampleMean = cell.getHeightEstimator().getMean();
+    const double sampleMean = cell.getHeightEstimator().getPostPredDist().
+      getMean();
     glBegin(GL_POLYGON);
     glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
       mColors[it->second].mBlueColor);

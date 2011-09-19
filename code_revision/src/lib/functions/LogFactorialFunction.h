@@ -64,6 +64,6 @@ protected:
 
 };
 
-#include "functions/LogFactorialFunction.tpp"
+//#include "functions/LogFactorialFunction.tpp"
 
 #endif // LOGFACTORIALFUNCTION_H

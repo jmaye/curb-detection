@@ -16,28 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file ContinuousFunctionPlot2v.h
+    \brief This file contains a plotting tool for bivariate continuous
+           functions
   */
 
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
+#include "functions/ContinuousFunction.h"
+#include "visualization/FunctionPlot.h"
+#include "exceptions/BadArgumentException.h"
 
-#include "functions/DiscreteFunction.h"
+#include <qwtplot3d-qt4/qwt3d_surfaceplot.h>
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
+template <typename Y, typename X, size_t M> class ContinuousFunctionPlot;
+
+/** The ContinuousFunctionPlot1v class is a plotting tool for bivariate
+    continuous functions.
+    \brief 2-v continuous function plotting tool
   */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
+template <typename Y, typename X> class ContinuousFunctionPlot<Y, X, 2> :
+  public FunctionPlot<Y, Eigen::Matrix<X, 2, 1> >,
+  public Qwt3D::SurfacePlot {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
+  ContinuousFunctionPlot(const ContinuousFunctionPlot<Y, X, 2>& other);
   /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
+  ContinuousFunctionPlot<Y, X, 2>& operator =
+    (const ContinuousFunctionPlot<Y, X, 2>& other);
   /** @}
     */
 
@@ -45,25 +51,44 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  FactorialFunction();
+  /// Constructs plot from parameters
+  ContinuousFunctionPlot(const std::string& title, const
+    ContinuousFunction<Y, X, 2>& function, const Eigen::Matrix<X, 2, 1>&
+    minimum, const Eigen::Matrix<X, 2, 1>& maximum, const
+    Eigen::Matrix<X, 2, 1>& resolution) throw
+    (BadArgumentException<Eigen::Matrix<X, 2, 1> >);
   /// Destructor
-  virtual ~FactorialFunction();
+  virtual ~ContinuousFunctionPlot();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
+  /// Returns the plot's resolution
+  const Eigen::Matrix<X, 2, 1>& getResolution() const;
+  /** @}
+    */
+
+  /** \name Methods
+    @{
+    */
+  /// Show the plot
+  virtual void show();
   /** @}
     */
 
 protected:
+  /** \name Protected members
+    @{
+    */
+  /// Data on to be plotted
+  double** mData;
+  /// Resolution on the axis
+  Eigen::Matrix<X, 2, 1> mResolution;
+  /** @}
+    */
 
 };
 
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+#include "visualization/ContinuousFunctionPlot2v.tpp"

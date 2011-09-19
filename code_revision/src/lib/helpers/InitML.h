@@ -38,11 +38,10 @@ namespace Helpers {
 static bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
   const GraphSegmenter<DEMGraph>::Components& components,
   EstimatorML<LinearRegression<3>, 3>::Container& points,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& pointsWeights,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
   Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, bool weighted = true);
 
 #include "helpers/InitML.tpp"
 

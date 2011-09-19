@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorGraph.h
+/** \file BeliefPropagation.h
     \brief This file defines the BeliefPropagation class which implements
            (loopy) Belief Propagation (BP) on factor graphs.
   */

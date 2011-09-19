@@ -9,61 +9,44 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
-  */
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
+template <typename Y, typename X>
+FunctionPlot<Y, X>::FunctionPlot(const std::string& title, const X& minimum,
+  const X& maximum) :
+  mTitle(title),
+  mMinimum(minimum),
+  mMaximum(maximum) {
+}
 
-#include "functions/DiscreteFunction.h"
+template <typename Y, typename X>
+FunctionPlot<Y, X>::~FunctionPlot() {
+}
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
-  */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
-  /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
-  /** @}
-    */
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
 
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Default constructor
-  FactorialFunction();
-  /// Destructor
-  virtual ~FactorialFunction();
-  /** @}
-    */
+template <typename Y, typename X>
+const std::string& FunctionPlot<Y, X>::getTitle() const {
+  return mTitle;
+}
 
-  /** \name Accessors
-    @{
-    */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
-  /** @}
-    */
+template <typename Y, typename X>
+const X& FunctionPlot<Y, X>::getMinimum() const {
+  return mMinimum;
+}
 
-protected:
-
-};
-
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+template <typename Y, typename X>
+const X& FunctionPlot<Y, X>::getMaximum() const {
+  return mMaximum;
+}

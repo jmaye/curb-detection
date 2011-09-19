@@ -77,6 +77,6 @@ protected:
 
 };
 
-#include "statistics/ChiSquareDistribution.tpp"
+//#include "statistics/ChiSquareDistribution.tpp"
 
 #endif // CHISQUAREDISTRIBUTION_H

@@ -128,6 +128,6 @@ protected:
 
 };
 
-#include "functions/LogGammaFunction.tpp"
+//#include "functions/LogGammaFunction.tpp"
 
 #endif // LOGGAMMAFUNCTION_H

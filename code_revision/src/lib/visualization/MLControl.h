@@ -33,7 +33,6 @@
 #include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
 #include "helpers/RandomColors.h"
-#include "data-structures/FactorGraph.h"
 
 #include <vector>
 
@@ -85,6 +84,8 @@ protected:
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
   void setTolerance(double tol);
+  /// Sets the weighted linear regression flag
+  void setWeighted(bool checked);
   /// Run the ML algorithm
   void runML();
   /** @}
@@ -99,30 +100,18 @@ protected:
   Grid<double, Cell, 2> mDEM;
   /// DEM graph
   DEMGraph mGraph;
+  /// Segmented components
+  GraphSegmenter<DEMGraph>::Components mComponents;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
-  /// Points for ML
-  EstimatorML<LinearRegression<3>, 3>::Container mPoints;
-  /// Points weights for ML
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mPointsWeights;
-  /// Points mapping for displaying
-  std::vector<DEMGraph::VertexDescriptor> mPointsMapping;
-  /// Initial coefficients
-  Eigen::Matrix<double, Eigen::Dynamic, 3> mC;
-  /// Initial variances
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mV;
-  /// Initial weights
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mW;
   /// ML maximum number of iterations
   size_t mMaxIter;
   /// ML tolerance
   double mTol;
+  /// Weighted regression
+  bool mWeighted;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
-  ///
-  FactorGraph mFactorGraph;
-  ///
-  DEMGraph::VertexContainer mFgMapping;
   /** @}
     */
 
@@ -138,6 +127,10 @@ protected slots:
   void tolChanged(double tol);
   /// Show the ML segmentation
   void showMLToggled(bool checked);
+  /// Weighted linear regression toggled
+  void weightedToggled(bool checked);
+  /// Run button pressed
+  void runPressed();
   /// Segmentation updated
   void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const GraphSegmenter<DEMGraph>::Components& components);

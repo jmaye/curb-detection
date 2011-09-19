@@ -126,4 +126,4 @@ protected:
 
 };
 
-#include "statistics/EstimatorBayesImproperNormal1v.tpp"
+//#include "statistics/EstimatorBayesImproperNormal1v.tpp"

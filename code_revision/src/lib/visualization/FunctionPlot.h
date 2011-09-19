@@ -16,28 +16,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file FunctionPlot.h
+    \brief This file is an interface for plotting any kind of functions
   */
 
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
+#ifndef FUNCTIONPLOT_H
+#define FUNCTIONPLOT_H
 
-#include "functions/DiscreteFunction.h"
+#include <string>
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
+/** The FunctionPlot class is an interface for plotting any kind of functions.
+    \brief Function plotting interface
   */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
+template <typename Y, typename X> class FunctionPlot {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
+  FunctionPlot(const FunctionPlot<Y, X>& other);
   /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
+  FunctionPlot<Y, X>& operator = (const FunctionPlot<Y, X>& other);
   /** @}
     */
 
@@ -45,25 +43,48 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  FactorialFunction();
+  /// Constructs plot from parameters
+  FunctionPlot(const std::string& title, const X& minimum, const X& maximum);
   /// Destructor
-  virtual ~FactorialFunction();
+  virtual ~FunctionPlot();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
+  /// Returns the plot's title
+  const std::string& getTitle() const;
+  /// Returns the plot's minimum
+  const X& getMinimum() const;
+  /// Returns the plot's maximum
+  const X& getMaximum() const;
+  /** @}
+    */
+
+  /** \name Methods
+    @{
+    */
+  /// Show the plot
+  virtual void show() = 0;
   /** @}
     */
 
 protected:
+  /** \name Protected members
+    @{
+    */
+  /// Title of the graph
+  std::string mTitle;
+  /// Minimum value on the x-axis
+  X mMinimum;
+  /// Maximum value on the x-axis
+  X mMaximum;
+  /** @}
+    */
 
 };
 
-//#include "functions/FactorialFunction.tpp"
+#include "visualization/FunctionPlot.tpp"
 
-#endif // FACTORIALFUNCTION_H
+#endif // FUNCTIONPLOT_H

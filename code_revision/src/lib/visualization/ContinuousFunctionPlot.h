@@ -9,61 +9,25 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file ContinuousFunctionPlot.h
+    \brief This file is an interface to a continuous function plot
   */
 
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
+#ifndef CONTINUOUSFUNCTIONPLOT_H
+#define CONTINUOUSFUNCTIONPLOT_H
 
-#include "functions/DiscreteFunction.h"
+#include <cstdlib>
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
-  */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
-  /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
-  /** @}
-    */
+template <typename Y, typename X, size_t M = 1> class ContinuousFunctionPlot;
 
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Default constructor
-  FactorialFunction();
-  /// Destructor
-  virtual ~FactorialFunction();
-  /** @}
-    */
+#include "visualization/ContinuousFunctionPlot1v.h"
+#include "visualization/ContinuousFunctionPlot2v.h"
 
-  /** \name Accessors
-    @{
-    */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
-  /** @}
-    */
-
-protected:
-
-};
-
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+#endif // CONTINUOUSFUNCTIONPLOT_H

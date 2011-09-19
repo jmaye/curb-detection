@@ -102,10 +102,12 @@ void CurbsControl::renderCurbs(double size, bool smooth) {
     if (mVertices[v1] != mVertices[v2]) {
       const Eigen::Matrix<double, 2, 1> point1 =  mDEM.getCoordinates(v1);
       const Cell& cell1 = mDEM[v1];
-      const double sampleMean1 = cell1.getHeightEstimator().getMean();
+      const double sampleMean1 = cell1.getHeightEstimator().getPostPredDist().
+        getMean();
       const Eigen::Matrix<double, 2, 1> point2 =  mDEM.getCoordinates(v2);
       const Cell& cell2 = mDEM[v2];
-      const double sampleMean2 = cell2.getHeightEstimator().getMean();
+      const double sampleMean2 = cell2.getHeightEstimator().getPostPredDist().
+        getMean();
       Eigen::Matrix<double, 2, 1> point = point1;
       if (v1(0) > v2(0))
         point(0) -= resolution(0) / 2.0;

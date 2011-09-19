@@ -9,61 +9,29 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file Factor.h
+    \brief This file defines the Factor class which represents a factor in a
+           factor graph.
   */
 
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
+#ifndef FACTOR_H
+#define FACTOR_H
 
-#include "functions/DiscreteFunction.h"
+#include <dai/factor.h>
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
+/** \name Types definitions
+  @{
   */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
-  /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
-  /** @}
-    */
+  /// Factor graph is implemented by libDAI
+typedef dai::Factor Factor;
+/** @}
+  */
 
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Default constructor
-  FactorialFunction();
-  /// Destructor
-  virtual ~FactorialFunction();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
-  /** @}
-    */
-
-protected:
-
-};
-
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+#endif // FACTOR_H

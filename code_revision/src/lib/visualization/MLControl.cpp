@@ -19,10 +19,8 @@
 #include "visualization/MLControl.h"
 
 #include "visualization/SegmentationControl.h"
-#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
+#include "statistics/EstimatorML.h"
 #include "helpers/InitML.h"
-#include "helpers/FGTools.h"
-#include "statistics/BeliefPropagation.h"
 
 #include "ui_MLControl.h"
 
@@ -48,6 +46,7 @@ MLControl::MLControl(bool showML) :
     GraphSegmenter<DEMGraph>::Components&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
+  mWeighted = mUi->weightedCheckBox->isChecked();
   setShowML(showML);
 }
 
@@ -74,6 +73,11 @@ void MLControl::setShowML(bool showML) {
   GLView::getInstance().update();
 }
 
+void MLControl::setWeighted(bool checked) {
+  mUi->weightedCheckBox->setChecked(checked);
+  mWeighted = checked;
+}
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -86,7 +90,8 @@ void MLControl::renderML() {
     mVertices.end(); ++it) {
     const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(it->first);
     const Cell& cell = mDEM[it->first];
-    const double sampleMean = cell.getHeightEstimator().getMean();
+    const double sampleMean = cell.getHeightEstimator().getPostPredDist().
+      getMean();
     glBegin(GL_POLYGON);
     glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
       mColors[it->second].mBlueColor);
@@ -110,51 +115,37 @@ void MLControl::render(GLView& view, Scene& scene) {
 
 void MLControl::maxIterChanged(int maxIter) {
   setMaxIter(maxIter);
-  runML();
 }
 
 void MLControl::tolChanged(double tol) {
   setTolerance(tol);
-  runML();
 }
 
 void MLControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const GraphSegmenter<DEMGraph>::Components& components) {
   mDEM = dem;
   mGraph = graph;
-  if (Helpers::initML(dem, graph, components, mPoints, mPointsWeights,
-    mPointsMapping, mC, mV, mW)) {
-    Helpers::randomColors(mColors, components.size());
-    Helpers::buildFactorGraph(dem, graph, mC, mV, mW, mFactorGraph, mFgMapping);
-    runML();
-  }
+  mComponents = components;
+  Helpers::randomColors(mColors, components.size());
+  mVertices.clear();
+  mUi->runButton->setEnabled(true);
 }
 
 void MLControl::runML() {
-  if (mPoints.size()) {
-  EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-    Eigen::Dynamic> estMixtBPPlane(mC, mW, mW, mMaxIter, mTol);
-//  const size_t numIter = estMixtBPPlane.addPoints(mPoints.begin(),
-//    mPoints.end(), mFactorGraph, mFgMapping, mPointsMapping, mDEM, mGraph);
+  Eigen::Matrix<double, Eigen::Dynamic, 3> c;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> v;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> w;
+  EstimatorML<LinearRegression<3>, 3>::Container points;
+  std::vector<DEMGraph::VertexDescriptor> pointsMapping;
+  if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
+    w, mWeighted)) {
     EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-      Eigen::Dynamic> estMixtPlane(mC, mV, mW, mMaxIter, mTol);
-    const size_t numIter = estMixtPlane.addPoints(mPoints.begin(),
-      mPoints.end());
-    PropertySet opts;
-    opts.set("maxiter", (size_t)200);
-    opts.set("tol", 1e-6);
-    opts.set("verbose", (size_t)1);
-    opts.set("updates", std::string("SEQRND"));
-    opts.set("logdomain", false);
-    opts.set("inference", std::string("MAXPROD"));
-    BeliefPropagation bp(mFactorGraph, opts);
-    bp.init();
-    bp.run();
-    std::vector<std::size_t> mapState = bp.findMaximum();
+      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
+    const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
     mUi->iterSpinBox->setValue(numIter);
+    mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
       responsibilities = estMixtPlane.getResponsibilities();
-    mVertices.clear();
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
       double max = -std::numeric_limits<double>::infinity();
       size_t argmax = 0;
@@ -163,8 +154,7 @@ void MLControl::runML() {
           max = responsibilities(i, j);
           argmax = j;
         }
-      mVertices[mPointsMapping[i]] = argmax;
-//        mVertices[mPointsMapping[i]] = mapState[mFgMapping[mPointsMapping[i]]];
+      mVertices[pointsMapping[i]] = argmax;
     }
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
@@ -175,4 +165,12 @@ void MLControl::runML() {
 
 void MLControl::showMLToggled(bool checked) {
   setShowML(checked);
+}
+
+void MLControl::weightedToggled(bool checked) {
+  setWeighted(checked);
+}
+
+void MLControl::runPressed() {
+  runML();
 }

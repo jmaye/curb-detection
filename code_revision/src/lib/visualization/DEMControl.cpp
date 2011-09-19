@@ -106,7 +106,8 @@ void DEMControl::renderDEM(double size, bool smooth) {
         mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       const Cell& cell =
         mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getMean();
+      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
+        .getMean();
       if (cell.getHeightEstimator().getValid() == false)
         continue;
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,

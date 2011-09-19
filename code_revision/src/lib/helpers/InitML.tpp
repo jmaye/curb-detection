@@ -26,11 +26,10 @@
 bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   GraphSegmenter<DEMGraph>::Components& components,
   EstimatorML<LinearRegression<3>, 3>::Container& points,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& pointsWeights,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
   Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, bool weighted) {
   points.clear();
   pointsMapping.clear();
   pointsMapping.reserve(graph.getNumVertices());
@@ -42,29 +41,29 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   std::vector<double> w;
   w.reserve(components.size());
   EstimatorML<LinearRegression<3>, 3> estPlane;
-  pointsWeights.resize(graph.getNumVertices());
-  size_t row = 0;
   for (GraphSegmenter<DEMGraph>::CstItComp it = components.begin(); it !=
     components.end(); ++it) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
     EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itStart =
       points.end();
-    size_t startRow = row;
+    Eigen::Matrix<double, Eigen::Dynamic, 1>
+      precision(it->second.getNumVertices());
     for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
       ++itV) {
       PointCloud<double, 3>::Point point;
       point.segment(0, 2) = dem.getCoordinates(*itV);
-      point(2) = dem[*itV].getHeightEstimator().getMean();
+      point(2) = dem[*itV].getHeightEstimator().getPostPredDist().getMean();
       points.push_back(point);
       pointsMapping.push_back(*itV);
-      pointsWeights(row) = 1.0 / dem[*itV].getHeightEstimator().getVariance();
-      row++;
+      precision(itV - it->second.getVertexBegin()) =
+        1.0 / dem[*itV].getHeightEstimator().getPostPredDist().getVariance();
     }
     EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
       points.end();
-    estPlane.addPoints(itStart, itEnd);
-//    estPlane.addPoints(itStart, itEnd, pointsWeights.segment(startRow, row -
-//      startRow));
+    if (weighted)
+      estPlane.addPoints(itStart, itEnd, precision);
+    else
+      estPlane.addPoints(itStart, itEnd);
     if (estPlane.getValid()) {
       c.push_back(estPlane.getCoefficients());
       v.push_back(estPlane.getVariance());

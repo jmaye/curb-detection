@@ -16,28 +16,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file DiscreteFunctionPlot1v.h
+    \brief This file contains a plotting tool for univariate discrete
+           functions
   */
-
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
 
 #include "functions/DiscreteFunction.h"
+#include "visualization/FunctionPlot.h"
+#include "exceptions/BadArgumentException.h"
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
+#include <QtCore/QVector>
+
+#include <qwt-qt4/qwt_plot.h>
+#include <qwt-qt4/qwt_plot_curve.h>
+#include <qwt-qt4/qwt_plot_grid.h>
+#include <qwt-qt4/qwt_plot_panner.h>
+#include <qwt-qt4/qwt_plot_magnifier.h>
+
+/** The DiscreteFunctionPlot1v class is a plotting tool for univariate
+    discrete functions.
+    \brief 1-v discrete function plotting tool
   */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
+template <typename Y, typename X> class DiscreteFunctionPlot<Y, X, 1> :
+  public FunctionPlot<Y, X>,
+  public QwtPlot {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
+  DiscreteFunctionPlot(const DiscreteFunctionPlot<Y, X, 1>& other);
   /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
+  DiscreteFunctionPlot<Y, X, 1>& operator =
+    (const DiscreteFunctionPlot<Y, X, 1>& other);
   /** @}
     */
 
@@ -45,25 +55,42 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  FactorialFunction();
+  /// Constructs plot from parameters
+  DiscreteFunctionPlot(const std::string& title, const DiscreteFunction<Y, X>&
+    function, const X& minimum, const X& maximum)
+    throw (BadArgumentException<X>);
   /// Destructor
-  virtual ~FactorialFunction();
+  virtual ~DiscreteFunctionPlot();
   /** @}
     */
 
-  /** \name Accessors
+  /** \name Methods
     @{
     */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
+  /// Show the plot
+  virtual void show();
   /** @}
     */
 
 protected:
+  /** \name Protected members
+    @{
+    */
+  /// Curve plotted
+  QwtPlotCurve mCurve;
+  /// Grid
+  QwtPlotGrid mGrid;
+  /// Panner
+  QwtPlotPanner mPanner;
+  /// Magnifier
+  QwtPlotMagnifier mMagnifier;
+  /// Data on the x-axis
+  QVector<double> mXData;
+  /// Data on the y-axis
+  QVector<double> mYData;
+  /** @}
+    */
 
 };
 
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+#include "visualization/DiscreteFunctionPlot1v.tpp"

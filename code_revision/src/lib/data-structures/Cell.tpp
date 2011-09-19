@@ -62,6 +62,7 @@ void Cell::addPoint(double point) {
   mHeightEstimator.addPoint(point);
 }
 
-const EstimatorML<NormalDistribution<1> >& Cell::getHeightEstimator() const {
+const EstimatorBayesImproper<NormalDistribution<1> >& Cell::getHeightEstimator()
+  const {
   return mHeightEstimator;
 }

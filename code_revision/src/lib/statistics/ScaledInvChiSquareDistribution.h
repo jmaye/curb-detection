@@ -79,6 +79,6 @@ protected:
 
 };
 
-#include "statistics/ScaledInvChiSquareDistribution.tpp"
+//#include "statistics/ScaledInvChiSquareDistribution.tpp"
 
 #endif // SCALEDINVCHISQUAREDISTRIBUTION_H

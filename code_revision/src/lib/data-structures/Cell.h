@@ -24,7 +24,7 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "statistics/EstimatorML.h"
+#include "statistics/EstimatorBayesImproper.h"
 #include "base/Serializable.h"
 
 /** The class Cell represents a cell of a Digital Elevation Map (DEM).
@@ -53,7 +53,8 @@ public:
   /// Adds a point into the cell
   void addPoint(double point);
   /// Returns the height estimator
-  const EstimatorML<NormalDistribution<1> >& getHeightEstimator() const;
+  const EstimatorBayesImproper<NormalDistribution<1> >& getHeightEstimator()
+    const;
   /** @}
     */
 
@@ -76,7 +77,7 @@ protected:
     @{
     */
   /// Estimator for the height values
-  EstimatorML<NormalDistribution<1> > mHeightEstimator;
+  EstimatorBayesImproper<NormalDistribution<1> > mHeightEstimator;
   /** @}
     */
 

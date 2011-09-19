@@ -16,28 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file FactorialFunction.h
-    \brief This file defines the FactorialFunction class, which represents the
-           factorial function
+/** \file DiscreteFunctionPlot2v.h
+    \brief This file contains a plotting tool for bivariate discrete
+           functions
   */
-
-#ifndef FACTORIALFUNCTION_H
-#define FACTORIALFUNCTION_H
 
 #include "functions/DiscreteFunction.h"
+#include "visualization/FunctionPlot.h"
+#include "exceptions/BadArgumentException.h"
 
-/** The FactorialFunction class represents the factorial function.
-    \brief Factorial function
+#include <qwtplot3d-qt4/qwt3d_surfaceplot.h>
+
+template <typename Y, typename X, size_t M> class DiscreteFunctionPlot;
+
+/** The DiscreteFunctionPlot1v class is a plotting tool for bivariate
+    discrete functions.
+    \brief 2-v discrete function plotting tool
   */
-class FactorialFunction :
-  public DiscreteFunction<size_t, size_t> {
+template <typename Y, typename X> class DiscreteFunctionPlot<Y, X, 2> :
+  public FunctionPlot<Y, Eigen::Matrix<X, 2, 1> >,
+  public Qwt3D::SurfacePlot {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
+  DiscreteFunctionPlot(const DiscreteFunctionPlot<Y, X, 2>& other);
   /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
+  DiscreteFunctionPlot<Y, X, 2>& operator =
+    (const DiscreteFunctionPlot<Y, X, 2>& other);
   /** @}
     */
 
@@ -45,25 +51,33 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  FactorialFunction();
+  /// Constructs plot from parameters
+  DiscreteFunctionPlot(const std::string& title, const
+    DiscreteFunction<Y, X, 2>& function, const Eigen::Matrix<X, 2, 1>& minimum,
+    const Eigen::Matrix<X, 2, 1>& maximum)
+    throw (BadArgumentException<Eigen::Matrix<X, 2, 1> >);
   /// Destructor
-  virtual ~FactorialFunction();
+  virtual ~DiscreteFunctionPlot();
   /** @}
     */
 
-  /** \name Accessors
+  /** \name Methods
     @{
     */
-  /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
+  /// Show the plot
+  virtual void show();
   /** @}
     */
 
 protected:
+  /** \name Protected members
+    @{
+    */
+  /// Data on to be plotted
+  double** mData;
+  /** @}
+    */
 
 };
 
-//#include "functions/FactorialFunction.tpp"
-
-#endif // FACTORIALFUNCTION_H
+#include "visualization/DiscreteFunctionPlot2v.tpp"

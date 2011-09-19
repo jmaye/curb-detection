@@ -88,7 +88,8 @@ void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
   Eigen::Matrix<double, 3, 1> point;
   point(0) = 1.0;
   point.segment(1, 2) = dem.getCoordinates(index);
-  const double target = dem[index].getHeightEstimator().getMean();
+  const double target = dem[index].getHeightEstimator().getPostPredDist().
+    getMean();
   const size_t numLabels = weights.size();
   for (size_t i = 0; i < numLabels; ++i)
     factor.set(i, weights(i) * NormalDistribution<1>(

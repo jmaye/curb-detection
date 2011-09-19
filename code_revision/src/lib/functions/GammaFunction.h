@@ -126,6 +126,6 @@ protected:
 
 };
 
-#include "functions/GammaFunction.tpp"
+//#include "functions/GammaFunction.tpp"
 
 #endif // GAMMAFUNCTION_H

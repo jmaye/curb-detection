@@ -53,14 +53,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="IterTextLabel">
+     <item row="3" column="0">
+      <widget class="QLabel" name="iterTextLabel">
        <property name="text">
         <string>Iterations:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="iterSpinBox">
        <property name="readOnly">
         <bool>true</bool>
@@ -70,6 +70,60 @@
        </property>
        <property name="maximum">
         <number>1000000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="weightedCheckBox">
+       <property name="text">
+        <string>Weighted</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="llLabel">
+       <property name="text">
+        <string>Log-likelihood:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="llSpinBox">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="decimals">
+        <number>10</number>
+       </property>
+       <property name="minimum">
+        <double>-1000000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="runLayout">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="runButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Run</string>
        </property>
       </widget>
      </item>
@@ -172,10 +226,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>runButton</sender>
+   <signal>pressed()</signal>
+   <receiver>MLControl</receiver>
+   <slot>runPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>weightedCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MLControl</receiver>
+   <slot>weightedToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>103</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showMLToggled(bool)</slot>
   <slot>maxIterChanged(int)</slot>
   <slot>tolChanged(double)</slot>
+  <slot>runPressed()</slot>
+  <slot>weightedToggled(bool)</slot>
  </slots>
 </ui>

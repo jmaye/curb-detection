@@ -30,6 +30,7 @@ EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N>::EstimatorML(
   mMeans(means),
   mVariances(variances),
   mWeights(weights),
+  mLogLikelihood(0),
   mMaxNumIter(maxNumIter),
   mTol(tol),
   mNumPoints(0),
@@ -88,6 +89,7 @@ void EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N>::write(
   stream << "means: " << mMeans.transpose() << std::endl
     << "variances: " << mVariances.transpose() << std::endl
     << "weights: " << mWeights.transpose() << std::endl
+    << "log-likelihood: " << mLogLikelihood << std::endl
     << "maxNumIter: " << mMaxNumIter << std::endl
     << "tolerance: " << mTol << std::endl
     << "number of points: " << mNumPoints << std::endl
@@ -150,6 +152,12 @@ getWeights() const {
 
 template <size_t N>
 double EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N>::
+getLogLikelihood() const {
+  return mLogLikelihood;
+}
+
+template <size_t N>
+double EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N>::
 getTolerance() const {
   return mTol;
 }
@@ -175,6 +183,7 @@ setMaxNumIter(size_t maxNumIter) {
 template <size_t N>
 void EstimatorML<MixtureDistribution<NormalDistribution<1>, N>, 1, N>::reset() {
   mNumPoints = 0;
+  mLogLikelihood = 0;
   mValid = false;
 }
 
@@ -188,7 +197,7 @@ addPoints(const ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
   if (mNumPoints == 0)
     return numIter;
   mResponsibilities.resize(mNumPoints, K);
-  double oldLogLikelihood = -std::numeric_limits<double>::infinity();
+  mLogLikelihood = -std::numeric_limits<double>::infinity();
   while (numIter != mMaxNumIter) {
     double newLogLikelihood = 0;
     for (ConstPointIterator it = itStart; it != itEnd; ++it) {
@@ -202,9 +211,9 @@ addPoints(const ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
       newLogLikelihood += log(probability);
       mResponsibilities.row(row) /= mResponsibilities.row(row).sum();
     }
-    if (fabs(oldLogLikelihood - newLogLikelihood) < mTol)
+    if (fabs(mLogLikelihood - newLogLikelihood) < mTol)
       break;
-    oldLogLikelihood = newLogLikelihood;
+    mLogLikelihood = newLogLikelihood;
     Eigen::Matrix<double, N, 1> numPoints(K);
     for (size_t j = 0; j < K; ++j)
       numPoints(j) = mResponsibilities.col(j).sum();
