@@ -153,7 +153,7 @@ void MLControl::runML() {
     mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
       responsibilities = estMixtPlane.getResponsibilities();
-    double RMSEP = 0.0;
+    double residual = 0.0;
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
       double max = -std::numeric_limits<double>::infinity();
       size_t argmax = 0;
@@ -166,14 +166,26 @@ void MLControl::runML() {
       Eigen::Matrix<double, 3, 1> point;
       point(0) = 1.0;
       point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
+      double prediction = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j) {
+        prediction += (estMixtPlane.getCoefficients().row(j) * point)(0) *
+          estMixtPlane.getWeights()(j);
+      }
+      double variance = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
+        variance += ((estMixtPlane.getCoefficients().row(j) * point)(0) *
+          (estMixtPlane.getCoefficients().row(j) * point)(0) +
+          estMixtPlane.getVariances()(j)) * estMixtPlane.getWeights()(j);
+      variance -= prediction;
+      std::cout << "prediction: " << prediction << std::endl;
+      std::cout << "variance: " << variance << std::endl;
+      std::cout << "real value: " << mDEM[pointsMapping[i]].getHeightEstimator().
+        getPostPredDist().getMean() << std::endl;
       const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
-        getPostPredDist().getMean() -
-        (estMixtPlane.getCoefficients().row(argmax) * point)(0);
-      RMSEP += diff * diff;
+        getPostPredDist().getMean() - prediction;
+      residual += (diff * diff) / variance;
     }
-    RMSEP /= (size_t)responsibilities.rows();
-    RMSEP = sqrt(RMSEP);
-    mUi->rmsepSpinBox->setValue(RMSEP);
+    mUi->residualSpinBox->setValue(residual);
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
     mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
