@@ -175,7 +175,7 @@ void EstimatorBayesImproper<LinearRegression<M>, M>::addPoints(const
     dim = itStart->size();
   else
     return;
-  if (mNumPoints < dim)
+  if (mNumPoints <= dim)
     return;
   if ((size_t)weights.size() != mNumPoints)
     return;

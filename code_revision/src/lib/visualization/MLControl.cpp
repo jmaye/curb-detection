@@ -21,6 +21,7 @@
 #include "visualization/SegmentationControl.h"
 #include "statistics/EstimatorML.h"
 #include "helpers/InitML.h"
+#include "base/Timestamp.h"
 
 #include "ui_MLControl.h"
 
@@ -41,9 +42,11 @@ MLControl::MLControl(bool showML) :
     this, SLOT(render(GLView&, Scene&)));
   connect(&SegmentationControl::getInstance(),
     SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&)), this,
+    GraphSegmenter<DEMGraph>::Components&, const std::vector<Helpers::Color>&)),
+    this,
     SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&)));
+    GraphSegmenter<DEMGraph>::Components&, const
+    std::vector<Helpers::Color>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mWeighted = mUi->weightedCheckBox->isChecked();
@@ -122,16 +125,18 @@ void MLControl::tolChanged(double tol) {
 }
 
 void MLControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const GraphSegmenter<DEMGraph>::Components& components) {
+  graph, const GraphSegmenter<DEMGraph>::Components& components, const
+  std::vector<Helpers::Color>& colors) {
   mDEM = dem;
   mGraph = graph;
   mComponents = components;
-  Helpers::randomColors(mColors, components.size());
+  mColors = colors;
   mVertices.clear();
   mUi->runButton->setEnabled(true);
 }
 
 void MLControl::runML() {
+  const double before = Timestamp::now();
   Eigen::Matrix<double, Eigen::Dynamic, 3> c;
   Eigen::Matrix<double, Eigen::Dynamic, 1> v;
   Eigen::Matrix<double, Eigen::Dynamic, 1> w;
@@ -142,10 +147,13 @@ void MLControl::runML() {
     EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
       Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
     const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
+    const double after = Timestamp::now();
     mUi->iterSpinBox->setValue(numIter);
+    mUi->timeSpinBox->setValue(after - before);
     mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
       responsibilities = estMixtPlane.getResponsibilities();
+    double RMSEP = 0.0;
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
       double max = -std::numeric_limits<double>::infinity();
       size_t argmax = 0;
@@ -155,7 +163,17 @@ void MLControl::runML() {
           argmax = j;
         }
       mVertices[pointsMapping[i]] = argmax;
+      Eigen::Matrix<double, 3, 1> point;
+      point(0) = 1.0;
+      point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
+      const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
+        getPostPredDist().getMean() -
+        (estMixtPlane.getCoefficients().row(argmax) * point)(0);
+      RMSEP += diff * diff;
     }
+    RMSEP /= (size_t)responsibilities.rows();
+    RMSEP = sqrt(RMSEP);
+    mUi->rmsepSpinBox->setValue(RMSEP);
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
     mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),

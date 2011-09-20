@@ -19,6 +19,7 @@
 #include "visualization/DEMControl.h"
 
 #include "visualization/PointCloudControl.h"
+#include "base/Timestamp.h"
 
 #include "ui_DEMControl.h"
 
@@ -53,6 +54,8 @@ DEMControl::DEMControl(bool showDEM) :
   mDEM = Grid<double, Cell, 2>(Grid<double, Cell, 2>::Coordinate(minX, minY),
     Grid<double, Cell, 2>::Coordinate(maxX, maxY),
     Grid<double, Cell, 2>::Coordinate(cellSizeX, cellSizeY));
+  mUi->numCellsXSpinBox->setValue(mDEM.getNumCells()(0));
+  mUi->numCellsYSpinBox->setValue(mDEM.getNumCells()(1));
 }
 
 DEMControl::~DEMControl() {
@@ -156,15 +159,20 @@ void DEMControl::demChanged() {
   const double maxY = mUi->rangeMaxYSpinBox->value();
   const double cellSizeX = mUi->resXSpinBox->value();
   const double cellSizeY = mUi->resYSpinBox->value();
+  const double before = Timestamp::now();
   mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
+  mUi->numCellsXSpinBox->setValue(mDEM.getNumCells()(0));
+  mUi->numCellsYSpinBox->setValue(mDEM.getNumCells()(1));
   for (PointCloud<double, 3>::ConstPointIterator it =
     mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it) {
     Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
     if (mDEM.isInRange(point))
       mDEM(point).addPoint((*it)(2));
   }
+  const double after = Timestamp::now();
+  mUi->timeSpinBox->setValue(after - before);
   GLView::getInstance().update();
   demUpdated(mDEM);
 }

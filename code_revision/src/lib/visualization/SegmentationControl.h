@@ -124,7 +124,8 @@ signals:
     */
   /// Segmentation updated
   void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components);
+    const GraphSegmenter<DEMGraph>::Components& components, const
+    std::vector<Helpers::Color>& colors);
   /** @}
     */
 

@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "statistics/EstimatorML.h"
+#include "statistics/EstimatorBayesImproper.h"
 #include "data-structures/PointCloud.h"
 
 /******************************************************************************/
@@ -40,7 +40,7 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   v.reserve(components.size());
   std::vector<double> w;
   w.reserve(components.size());
-  EstimatorML<LinearRegression<3>, 3> estPlane;
+  EstimatorBayesImproper<LinearRegression<3>, 3> estPlane;
   for (GraphSegmenter<DEMGraph>::CstItComp it = components.begin(); it !=
     components.end(); ++it) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
@@ -58,15 +58,15 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
       precision(itV - it->second.getVertexBegin()) =
         1.0 / dem[*itV].getHeightEstimator().getPostPredDist().getVariance();
     }
-    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itEnd =
+    EstimatorBayesImproper<LinearRegression<3>, 3>::ConstPointIterator itEnd =
       points.end();
     if (weighted)
       estPlane.addPoints(itStart, itEnd, precision);
     else
       estPlane.addPoints(itStart, itEnd);
     if (estPlane.getValid()) {
-      c.push_back(estPlane.getCoefficients());
-      v.push_back(estPlane.getVariance());
+      c.push_back(estPlane.getPostPredDist().getCoefficients());
+      v.push_back(estPlane.getPostPredDist().getVariance());
       w.push_back(it->second.getNumVertices());
     }
   }

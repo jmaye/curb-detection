@@ -19,6 +19,7 @@
 #include "visualization/SegmentationControl.h"
 
 #include "visualization/DEMControl.h"
+#include "base/Timestamp.h"
 
 #include "ui_SegmentationControl.h"
 
@@ -100,13 +101,16 @@ void SegmentationControl::render(GLView& view, Scene& scene) {
 }
 
 void SegmentationControl::segment() {
+  const double before = Timestamp::now();
   DEMGraph graph(mDEM);
   GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
     mK);
+  const double after = Timestamp::now();
+  mUi->timeSpinBox->setValue(after - before);
   Helpers::randomColors(mColors, mComponents.size());
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
-  segmentUpdated(mDEM, graph, mComponents);
+  segmentUpdated(mDEM, graph, mComponents, mColors);
 }
 
 void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {
