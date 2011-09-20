@@ -176,11 +176,7 @@ void MLControl::runML() {
         variance += ((estMixtPlane.getCoefficients().row(j) * point)(0) *
           (estMixtPlane.getCoefficients().row(j) * point)(0) +
           estMixtPlane.getVariances()(j)) * estMixtPlane.getWeights()(j);
-      variance -= prediction;
-      std::cout << "prediction: " << prediction << std::endl;
-      std::cout << "variance: " << variance << std::endl;
-      std::cout << "real value: " << mDEM[pointsMapping[i]].getHeightEstimator().
-        getPostPredDist().getMean() << std::endl;
+      variance -= prediction * prediction;
       const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
         getPostPredDist().getMean() - prediction;
       residual += (diff * diff) / variance;
