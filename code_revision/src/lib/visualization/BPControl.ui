@@ -7,13 +7,86 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>387</height>
+    <height>545</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="algoGroupBox">
+     <property name="title">
+      <string>Algorithm</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="maxProdButton">
+        <property name="text">
+         <string>Max-Product</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="sumProdButton">
+        <property name="text">
+         <string>Sum-Product</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="updatesGroupBox">
+     <property name="title">
+      <string>Updates</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="seqrndButton">
+        <property name="text">
+         <string>Sequential random</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="seqmaxButton">
+        <property name="text">
+         <string>Sequential max-residual</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="seqfixButton">
+        <property name="text">
+         <string>Sequential fixed</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="parallButton">
+        <property name="text">
+         <string>Parallel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item>
     <layout class="QGridLayout" name="paramLayout">
      <item row="0" column="0">
@@ -53,14 +126,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="IterTextLabel">
+     <item row="8" column="0">
+      <widget class="QLabel" name="iterTextLabel">
        <property name="text">
         <string>Iterations:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="8" column="1">
       <widget class="QSpinBox" name="iterSpinBox">
        <property name="readOnly">
         <bool>true</bool>
@@ -70,6 +143,59 @@
        </property>
        <property name="maximum">
         <number>1000000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="logDomainCheckBox">
+       <property name="text">
+        <string>Log-domain</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="llLabel">
+       <property name="text">
+        <string>Log-likelihood:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QDoubleSpinBox" name="llSpinBox">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="decimals">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="timeLabel">
+       <property name="text">
+        <string>Time [s]:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QDoubleSpinBox" name="timeSpinBox">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="decimals">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -193,10 +319,146 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>runButton</sender>
+   <signal>pressed()</signal>
+   <receiver>BPControl</receiver>
+   <slot>runPressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>logDomainCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>logDomainToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>86</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>seqfixButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>seqfixToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>seqmaxButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>seqmaxToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>seqrndButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>seqrndToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>170</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>parallButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>parallToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>114</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sumProdButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>sumProdToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maxProdButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>BPControl</receiver>
+   <slot>maxProdToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>44</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showBPToggled(bool)</slot>
   <slot>maxIterChanged(int)</slot>
   <slot>tolChanged(double)</slot>
+  <slot>runPressed()</slot>
+  <slot>logDomainToggled(bool)</slot>
+  <slot>parallToggled(bool)</slot>
+  <slot>seqfixToggled(bool)</slot>
+  <slot>seqrndToggled(bool)</slot>
+  <slot>seqmaxToggled(bool)</slot>
+  <slot>maxProdToggled(bool)</slot>
+  <slot>sumProdToggled(bool)</slot>
  </slots>
 </ui>

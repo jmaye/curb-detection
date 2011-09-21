@@ -222,6 +222,6 @@ Eigen::Matrix<double, M, M> StudentDistribution<M>::getCovariance()
   const {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
-  return Eigen::Matrix<double, M, M>::Identity(mLocation.size(),
-    mLocation.size());
+  else
+    return 4 * mScale;
 }

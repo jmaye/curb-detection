@@ -30,11 +30,11 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
-#include "data-structures/Component.h"
-#include "segmenter/GraphSegmenter.h"
+#include "data-structures/FactorGraph.h"
 #include "helpers/RandomColors.h"
 
 #include <vector>
+#include <string>
 
 class Ui_BPControl;
 
@@ -84,6 +84,20 @@ protected:
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
   void setTolerance(double tol);
+  /// Sets the log-domain inference
+  void setLogDomain(bool checked);
+  /// Sets parallel updates
+  void setParallUpdates(bool checked);
+  /// Sets fixed sequential updates
+  void setSeqFixUpdates(bool checked);
+  /// Sets random sequential updates
+  void setSeqRndUpdates(bool checked);
+  /// Sets max-residual sequential updates
+  void setSeqMaxUpdates(bool checked);
+  /// Sets MAXPROD
+  void setMaxProd(bool checked);
+  /// Sets SUMPROD
+  void setSumProd(bool checked);
   /// Run the BP algorithm
   void runBP();
   /** @}
@@ -96,12 +110,24 @@ protected:
   Ui_BPControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
+  /// DEM graph
+  DEMGraph mGraph;
+  /// Factor graph
+  FactorGraph mFactorGraph;
+  /// Factor graph mapping
+  DEMGraph::VertexContainer mFgMapping;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
   /// ML maximum number of iterations
   size_t mMaxIter;
   /// ML tolerance
   double mTol;
+  /// Log-domain inference
+  bool mLogDomain;
+  /// Algo
+  std::string mAlgo;
+  /// Updates types
+  std::string mUpdates;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
   /** @}
@@ -117,25 +143,34 @@ protected slots:
   void maxIterChanged(int maxIter);
   /// Tolerance changed
   void tolChanged(double tol);
+  /// Log-domain toggled
+  void logDomainToggled(bool checked);
+  /// Parallel updates toggled
+  void parallToggled(bool checked);
+  /// Fixed sequential updates toggled
+  void seqfixToggled(bool checked);
+  /// Random sequential updates toggled
+  void seqrndToggled(bool checked);
+  /// Max-residual sequential updates toggled
+  void seqmaxToggled(bool checked);
+  /// MAXPROD toggled
+  void maxProdToggled(bool checked);
+  /// SUMPROD toggled
+  void sumProdToggled(bool checked);
   /// Show the BP segmentation
   void showBPToggled(bool checked);
+  /// Run button pressed
+  void runPressed();
   /// ML has been updated
   void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
+    const std::vector<Helpers::Color>& colors);
   /** @}
     */
 
 signals:
-  /** \name Qt signals
-    @{
-    */
-  /// Sends a new segmentation
-  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-    graph, const DEMGraph::VertexContainer& vertices);
-  /** @}
-    */
 
 };
 

@@ -146,7 +146,8 @@ signals:
   void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
+    const std::vector<Helpers::Color>& colors);
   /** @}
     */
 

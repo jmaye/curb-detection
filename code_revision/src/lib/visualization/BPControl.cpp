@@ -20,9 +20,9 @@
 
 #include "visualization/MLControl.h"
 #include "helpers/FGTools.h"
-#include "data-structures/FactorGraph.h"
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
+#include "base/Timestamp.h"
 
 #include "ui_BPControl.h"
 
@@ -36,7 +36,8 @@ BPControl::BPControl(bool showBP) :
   mUi(new Ui_BPControl()),
   mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
     Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)) {
+    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)),
+  mGraph(mDEM) {
   mUi->setupUi(this);
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
@@ -44,13 +45,28 @@ BPControl::BPControl(bool showBP) :
     SIGNAL(mlUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>&,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&)), this,
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
+    const std::vector<Helpers::Color>&)), this,
     SLOT(mlUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>&,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&)));
+    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
+    const std::vector<Helpers::Color>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
+  mLogDomain = mUi->logDomainCheckBox->isChecked();
+  if (mUi->parallButton->isChecked())
+    setParallUpdates(true);
+  if (mUi->seqfixButton->isChecked())
+    setSeqFixUpdates(true);
+  if (mUi->seqrndButton->isChecked())
+    setSeqRndUpdates(true);
+  if (mUi->seqmaxButton->isChecked())
+    setSeqMaxUpdates(true);
+  if (mUi->maxProdButton->isChecked())
+    setMaxProd(true);
+  if (mUi->sumProdButton->isChecked())
+    setSumProd(true);
   setShowBP(showBP);
 }
 
@@ -75,6 +91,47 @@ void BPControl::setTolerance(double tol) {
 void BPControl::setShowBP(bool showBP) {
   mUi->showBPCheckBox->setChecked(showBP);
   GLView::getInstance().update();
+}
+
+void BPControl::setLogDomain(bool checked) {
+  mUi->logDomainCheckBox->setChecked(checked);
+  mLogDomain = checked;
+}
+
+void BPControl::setParallUpdates(bool checked) {
+  mUi->parallButton->setChecked(checked);
+  if (checked)
+    mUpdates = std::string("PARALL");
+}
+
+void BPControl::setSeqFixUpdates(bool checked) {
+  mUi->seqfixButton->setChecked(checked);
+  if (checked)
+    mUpdates = std::string("SEQFIX");
+}
+
+void BPControl::setSeqRndUpdates(bool checked) {
+  mUi->seqrndButton->setChecked(checked);
+  if (checked)
+    mUpdates = std::string("SEQRND");
+}
+
+void BPControl::setSeqMaxUpdates(bool checked) {
+  mUi->seqmaxButton->setChecked(checked);
+  if (checked)
+    mUpdates = std::string("SEQMAX");
+}
+
+void BPControl::setMaxProd(bool checked) {
+  mUi->maxProdButton->setChecked(checked);
+  if (checked)
+    mAlgo = std::string("MAXPROD");
+}
+
+void BPControl::setSumProd(bool checked) {
+  mUi->sumProdButton->setChecked(checked);
+  if (checked)
+    mAlgo = std::string("SUMPROD");
 }
 
 /******************************************************************************/
@@ -114,47 +171,99 @@ void BPControl::render(GLView& view, Scene& scene) {
 
 void BPControl::maxIterChanged(int maxIter) {
   setMaxIter(maxIter);
-  runBP();
 }
 
 void BPControl::tolChanged(double tol) {
   setTolerance(tol);
-  runBP();
 }
 
 void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
+  const std::vector<Helpers::Color>& colors) {
   mDEM = dem;
-  FactorGraph factorGraph;
-  DEMGraph::VertexContainer fgMapping;
+  mGraph = graph;
   Helpers::buildFactorGraph(dem, graph, coefficients, variances, weights,
-    factorGraph, fgMapping);
-  PropertySet opts;
-  opts.set("maxiter", (size_t)200);
-  opts.set("tol", 1e-6);
-  opts.set("verbose", (size_t)0);
-  opts.set("updates", std::string("SEQRND"));
-  opts.set("logdomain", false);
-  opts.set("inference", std::string("MAXPROD"));
-  BeliefPropagation bp(factorGraph, opts);
-  bp.init();
-  bp.run();
-  std::vector<size_t> mapState = bp.findMaximum();
+    mFactorGraph, mFgMapping);
+  mColors = colors;
   mVertices.clear();
-  for (DEMGraph::ConstVertexIterator it = graph.getVertexBegin(); it !=
-    graph.getVertexEnd(); ++it)
-    mVertices[it->first] = mapState[fgMapping[it->first]];
-  Helpers::randomColors(mColors, factorGraph.var(0).states());
-  mUi->showBPCheckBox->setEnabled(true);
-  GLView::getInstance().update();
-  bpUpdated(dem, graph, mVertices);
+  mUi->runButton->setEnabled(true);
 }
 
 void BPControl::runBP() {
+  const double before = Timestamp::now();
+  PropertySet opts;
+  opts.set("maxiter", (size_t)mMaxIter);
+  opts.set("tol", mTol);
+  opts.set("verbose", (size_t)0);
+  opts.set("updates", mUpdates);
+  opts.set("logdomain", mLogDomain);
+  opts.set("inference", mAlgo);
+  BeliefPropagation bp(mFactorGraph, opts);
+  bp.init();
+  bp.run();
+  const double after = Timestamp::now();
+  mUi->iterSpinBox->setValue(bp.Iterations());
+  mUi->llSpinBox->setValue(bp.logZ());
+  mUi->timeSpinBox->setValue(after - before);
+  std::vector<size_t> mapState;
+  mapState.reserve(mFactorGraph.nrVars());
+  if (mAlgo.compare("MAXPROD") == 0)
+    mapState = bp.findMaximum();
+  else {
+    for (size_t i = 0; i < mFactorGraph.nrVars(); ++i) {
+      const dai::Factor factor = bp.beliefV(i);
+      double max = -std::numeric_limits<double>::infinity();
+      size_t argmax = 0;
+      for (size_t j = 0; j < factor.nrStates(); ++j)
+        if (factor[j] > max) {
+          max = factor[j];
+          argmax = j;
+        }
+      mapState.push_back(argmax);
+    }
+  }
+  mVertices.clear();
+  for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
+    mGraph.getVertexEnd(); ++it)
+    mVertices[it->first] = mapState[mFgMapping[it->first]];
+  mUi->showBPCheckBox->setEnabled(true);
+  GLView::getInstance().update();
 }
 
 void BPControl::showBPToggled(bool checked) {
   setShowBP(checked);
+}
+
+void BPControl::logDomainToggled(bool checked) {
+  setLogDomain(checked);
+}
+
+void BPControl::parallToggled(bool checked) {
+  setParallUpdates(checked);
+}
+
+void BPControl::seqfixToggled(bool checked) {
+  setSeqFixUpdates(checked);
+}
+
+void BPControl::seqrndToggled(bool checked) {
+  setSeqRndUpdates(checked);
+}
+
+void BPControl::seqmaxToggled(bool checked) {
+  setSeqMaxUpdates(checked);
+}
+
+void BPControl::maxProdToggled(bool checked) {
+  setMaxProd(checked);
+}
+
+void BPControl::sumProdToggled(bool checked) {
+  setSumProd(checked);
+}
+
+void BPControl::runPressed() {
+  runBP();
 }

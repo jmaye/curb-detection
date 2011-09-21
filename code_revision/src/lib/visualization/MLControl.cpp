@@ -185,7 +185,7 @@ void MLControl::runML() {
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
     mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
-      estMixtPlane.getVariances(), estMixtPlane.getWeights());
+      estMixtPlane.getVariances(), estMixtPlane.getWeights(), mColors);
   }
 }
 
