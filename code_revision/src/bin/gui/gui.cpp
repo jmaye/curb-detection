@@ -27,6 +27,7 @@
 #include "visualization/SegmentationControl.h"
 #include "visualization/MLControl.h"
 #include "visualization/BPControl.h"
+#include "visualization/MLBPControl.h"
 //#include "visualization/CurbsControl.h"
 
 #include <QtGui/QApplication>
@@ -40,6 +41,7 @@ int main (int argc, char** argv) {
   SegmentationControl segControl(true);
   MLControl mlControl(true);
   BPControl bpControl(true);
+  MLBPControl mlbpControl(true);
 //  CurbsControl curbsControl(true);
   if (argc > 1)
     pointCloudControl.setLogFilename(argv[1]);
@@ -49,6 +51,7 @@ int main (int argc, char** argv) {
   mainWindow.addControl("Segmentation", segControl);
   mainWindow.addControl("ML", mlControl);
   mainWindow.addControl("BP", bpControl);
+  mainWindow.addControl("MLBP", mlbpControl);
 //  mainWindow.addControl("Curbs", curbsControl);
   mainWindow.show();
   return application.exec();

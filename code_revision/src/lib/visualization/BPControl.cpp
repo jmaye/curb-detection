@@ -19,6 +19,7 @@
 #include "visualization/BPControl.h"
 
 #include "visualization/MLControl.h"
+#include "visualization/PointCloudControl.h"
 #include "helpers/FGTools.h"
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
@@ -52,6 +53,9 @@ BPControl::BPControl(bool showBP) :
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
     const std::vector<Helpers::Color>&)));
+  connect(&PointCloudControl::getInstance(),
+    SIGNAL(pointCloudRead(const PointCloud<double, 3>&)), this,
+    SLOT(pointCloudRead(const PointCloud<double, 3>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mLogDomain = mUi->logDomainCheckBox->isChecked();
@@ -266,4 +270,9 @@ void BPControl::sumProdToggled(bool checked) {
 
 void BPControl::runPressed() {
   runBP();
+}
+
+void BPControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
+  mVertices.clear();
+  mUi->runButton->setEnabled(false);
 }

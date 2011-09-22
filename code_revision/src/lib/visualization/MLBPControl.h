@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file BPControl.h
-    \brief This file defines a Qt control for BP segmentation.
+/** \file MLBPControl.h
+    \brief This file defines a Qt control for ML segmentation.
   */
 
-#ifndef BPCONTROL_H
-#define BPCONTROL_H
+#ifndef MLBPCONTROL_H
+#define MLBPCONTROL_H
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
@@ -30,29 +30,28 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
-#include "data-structures/FactorGraph.h"
-#include "data-structures/PointCloud.h"
+#include "data-structures/Component.h"
+#include "segmenter/GraphSegmenter.h"
 #include "helpers/RandomColors.h"
 
 #include <vector>
-#include <string>
 
-class Ui_BPControl;
+class Ui_MLBPControl;
 
-/** The BPControl class represents a Qt control for BP segmentation.
-    \brief Qt control for BP segmentation
+/** The MLBPControl class represents a Qt control for ML-BP segmentation.
+    \brief Qt control for ML-BP segmentation
   */
-class BPControl :
+class MLBPControl :
   public Control,
-  public Singleton<BPControl> {
+  public Singleton<MLBPControl> {
 Q_OBJECT
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  BPControl(const BPControl& other);
+  MLBPControl(const MLBPControl& other);
   /// Assignment operator
-  BPControl& operator = (const BPControl& other);
+  MLBPControl& operator = (const MLBPControl& other);
   /** @}
     */
 
@@ -61,17 +60,17 @@ public:
     @{
     */
   /// Constructs control with parameter
-  BPControl(bool showBP = true);
+  MLBPControl(bool showML = true);
   /// Destructor
-  ~BPControl();
+  ~MLBPControl();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Show BP segmentation
-  void setShowBP(bool showBPSegmentation);
+  /// Show ML segmentation
+  void setShowML(bool showMLSegmentation);
   /** @}
     */
 
@@ -79,28 +78,16 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Renders the BP segmentation
-  void renderBP();
+  /// Renders the ML segmentation
+  void renderML();
   /// Sets the ML maximum number of iterations
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
   void setTolerance(double tol);
-  /// Sets the log-domain inference
-  void setLogDomain(bool checked);
-  /// Sets parallel updates
-  void setParallUpdates(bool checked);
-  /// Sets fixed sequential updates
-  void setSeqFixUpdates(bool checked);
-  /// Sets random sequential updates
-  void setSeqRndUpdates(bool checked);
-  /// Sets max-residual sequential updates
-  void setSeqMaxUpdates(bool checked);
-  /// Sets MAXPROD
-  void setMaxProd(bool checked);
-  /// Sets SUMPROD
-  void setSumProd(bool checked);
-  /// Run the BP algorithm
-  void runBP();
+  /// Sets the weighted linear regression flag
+  void setWeighted(bool checked);
+  /// Run the ML algorithm
+  void runML();
   /** @}
     */
 
@@ -108,27 +95,21 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_BPControl* mUi;
+  Ui_MLBPControl* mUi;
   /// DEM
   Grid<double, Cell, 2> mDEM;
   /// DEM graph
   DEMGraph mGraph;
-  /// Factor graph
-  FactorGraph mFactorGraph;
-  /// Factor graph mapping
-  DEMGraph::VertexContainer mFgMapping;
+  /// Segmented components
+  GraphSegmenter<DEMGraph>::Components mComponents;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
   /// ML maximum number of iterations
   size_t mMaxIter;
   /// ML tolerance
   double mTol;
-  /// Log-domain inference
-  bool mLogDomain;
-  /// Algo
-  std::string mAlgo;
-  /// Updates types
-  std::string mUpdates;
+  /// Weighted regression
+  bool mWeighted;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
   /** @}
@@ -144,36 +125,32 @@ protected slots:
   void maxIterChanged(int maxIter);
   /// Tolerance changed
   void tolChanged(double tol);
-  /// Log-domain toggled
-  void logDomainToggled(bool checked);
-  /// Parallel updates toggled
-  void parallToggled(bool checked);
-  /// Fixed sequential updates toggled
-  void seqfixToggled(bool checked);
-  /// Random sequential updates toggled
-  void seqrndToggled(bool checked);
-  /// Max-residual sequential updates toggled
-  void seqmaxToggled(bool checked);
-  /// MAXPROD toggled
-  void maxProdToggled(bool checked);
-  /// SUMPROD toggled
-  void sumProdToggled(bool checked);
-  /// Show the BP segmentation
-  void showBPToggled(bool checked);
+  /// Show the ML segmentation
+  void showMLToggled(bool checked);
+  /// Weighted linear regression toggled
+  void weightedToggled(bool checked);
   /// Run button pressed
   void runPressed();
+  /// Segmentation updated
+  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components, const
+    std::vector<Helpers::Color>& colors);
+  /** @}
+    */
+
+signals:
+  /** \name Qt signals
+    @{
+    */
   /// ML has been updated
   void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
     const std::vector<Helpers::Color>& colors);
-  void pointCloudRead(const PointCloud<double, 3>& pointCloud);
   /** @}
     */
 
-signals:
-
 };
 
-#endif // BPCONTROL_H
+#endif // MLBPCONTROL_H
