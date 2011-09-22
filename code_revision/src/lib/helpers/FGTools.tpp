@@ -57,9 +57,9 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const dai::Var& var1 = vars[fgMapping[v1]];
     const dai::Var& var2 = vars[fgMapping[v2]];
     const dai::VarSet varSet(var1, var2);
-    dai::Factor fac(varSet, exp(-10));
+    dai::Factor fac(varSet, exp(0));
     for (size_t i = 0; i < numLabels; ++i)
-      fac.set(i * (numLabels + 1), exp(10));
+      fac.set(i * (numLabels + 1), exp(15.0 / (1.0 + graph.getEdgeProperty(e))));
     factors.push_back(fac);
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
