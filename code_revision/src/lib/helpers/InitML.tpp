@@ -16,7 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "statistics/EstimatorBayesImproper.h"
 #include "data-structures/PointCloud.h"
 
 /******************************************************************************/
@@ -25,7 +24,7 @@
 
 bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   GraphSegmenter<DEMGraph>::Components& components,
-  EstimatorML<LinearRegression<3>, 3>::Container& points,
+  EstimatorBayesImproper<LinearRegression<3>, 3>::Container& points,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
   Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
@@ -34,7 +33,7 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   pointsMapping.clear();
   pointsMapping.reserve(graph.getNumVertices());
   points.reserve(graph.getNumVertices());
-  std::vector<EstimatorML<LinearRegression<3>, 3>::Point> c;
+  std::vector<EstimatorBayesImproper<LinearRegression<3>, 3>::Point> c;
   c.reserve(components.size());
   std::vector<double> v;
   v.reserve(components.size());
@@ -44,7 +43,7 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   for (GraphSegmenter<DEMGraph>::CstItComp it = components.begin(); it !=
     components.end(); ++it) {
     Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    EstimatorML<LinearRegression<3>, 3>::ConstPointIterator itStart =
+    EstimatorBayesImproper<LinearRegression<3>, 3>::ConstPointIterator itStart =
       points.end();
     Eigen::Matrix<double, Eigen::Dynamic, 1>
       precision(it->second.getNumVertices());
@@ -74,7 +73,8 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
     coefficients.resize(c.size(), 3);
     variances.resize(v.size());
     weights.resize(w.size());
-    std::vector<EstimatorML<LinearRegression<3>, 3>::Point>::const_iterator itC;
+    std::vector<EstimatorBayesImproper<LinearRegression<3>, 3>::Point>::
+      const_iterator itC;
     std::vector<double>::const_iterator itV;
     std::vector<double>::const_iterator itW;
     for (itC = c.begin(), itV = v.begin(), itW = w.begin(); itC != c.end();

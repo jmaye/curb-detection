@@ -185,12 +185,12 @@
    <item>
     <layout class="QGridLayout" name="showLayout">
      <item row="0" column="0">
-      <widget class="QCheckBox" name="showMLCheckBox">
+      <widget class="QCheckBox" name="showMLBPCheckBox">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Show ML segmentation</string>
+        <string>Show ML-BP segmentation</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -225,10 +225,10 @@
  <resources/>
  <connections>
   <connection>
-   <sender>showMLCheckBox</sender>
+   <sender>showMLBPCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>MLBPControl</receiver>
-   <slot>showMLToggled(bool)</slot>
+   <slot>showMLBPToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>199</x>
@@ -306,7 +306,7 @@
   </connection>
  </connections>
  <slots>
-  <slot>showMLToggled(bool)</slot>
+  <slot>showMLBPToggled(bool)</slot>
   <slot>maxIterChanged(int)</slot>
   <slot>tolChanged(double)</slot>
   <slot>runPressed()</slot>

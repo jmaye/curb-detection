@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file MLBPControl.h
-    \brief This file defines a Qt control for ML segmentation.
+    \brief This file defines a Qt control for ML-BP segmentation.
   */
 
 #ifndef MLBPCONTROL_H
@@ -60,7 +60,7 @@ public:
     @{
     */
   /// Constructs control with parameter
-  MLBPControl(bool showML = true);
+  MLBPControl(bool showMLBP = true);
   /// Destructor
   ~MLBPControl();
   /** @}
@@ -69,8 +69,8 @@ public:
   /** \name Accessors
     @{
     */
-  /// Show ML segmentation
-  void setShowML(bool showMLSegmentation);
+  /// Show ML-BP segmentation
+  void setShowMLBP(bool showMLBPSegmentation);
   /** @}
     */
 
@@ -78,16 +78,16 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Renders the ML segmentation
-  void renderML();
+  /// Renders the ML-BP segmentation
+  void renderMLBP();
   /// Sets the ML maximum number of iterations
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
   void setTolerance(double tol);
   /// Sets the weighted linear regression flag
   void setWeighted(bool checked);
-  /// Run the ML algorithm
-  void runML();
+  /// Run the ML-BP algorithm
+  void runMLBP();
   /** @}
     */
 
@@ -125,8 +125,8 @@ protected slots:
   void maxIterChanged(int maxIter);
   /// Tolerance changed
   void tolChanged(double tol);
-  /// Show the ML segmentation
-  void showMLToggled(bool checked);
+  /// Show the ML-BP segmentation
+  void showMLBPToggled(bool checked);
   /// Weighted linear regression toggled
   void weightedToggled(bool checked);
   /// Run button pressed
@@ -142,8 +142,8 @@ signals:
   /** \name Qt signals
     @{
     */
-  /// ML has been updated
-  void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+  /// ML-BP has been updated
+  void mlbpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,

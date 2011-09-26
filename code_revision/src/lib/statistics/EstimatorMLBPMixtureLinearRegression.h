@@ -21,13 +21,18 @@
            regression models
   */
 
-#ifndef EstimatorMLBP_H
-#define EstimatorMLBP_H
+#ifndef ESTIMATORMLBP_H
+#define ESTIMATORMLBP_H
 
 #include "statistics/LinearRegression.h"
 #include "statistics/MixtureDistribution.h"
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
 
 #include <vector>
+
+template <typename D, size_t M = 1, size_t N = 1> class EstimatorMLBP;
 
 /** The class EstimatorMLBP is implemented for mixtures of linear regressions.
     \brief Mixture of linear regression ML estimator with BP
@@ -94,7 +99,8 @@ public:
   void setMaxNumIter(size_t maxNumIter);
   /// Add points to the estimator / Returns number of EM iterationss
   size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+    itEnd, const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const std::vector<DEMGraph::VertexDescriptor>& pointsMapping);
   /// Reset the estimator
   void reset();
   /** @}
@@ -130,7 +136,7 @@ protected:
   double mLogLikelihood;
   /// Maximum number of iterations for EM
   size_t mMaxNumIter;
-  /// Tolerance for the determinant
+  /// Tolerance for the convergence
   double mTol;
   /// Number of points in the estimator
   size_t mNumPoints;
@@ -143,4 +149,4 @@ protected:
 
 #include "statistics/EstimatorMLBPMixtureLinearRegression.tpp"
 
-#endif // EstimatorMLBP_H
+#endif // ESTIMATORMLBP_H

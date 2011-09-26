@@ -29,6 +29,7 @@
 #include "data-structures/DEMGraph.h"
 #include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
+#include "statistics/EstimatorBayesImproper.h"
 
 namespace Helpers {
 
@@ -37,7 +38,7 @@ namespace Helpers {
 */
 static bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
   const GraphSegmenter<DEMGraph>::Components& components,
-  EstimatorML<LinearRegression<3>, 3>::Container& points,
+  EstimatorBayesImproper<LinearRegression<3>, 3>::Container& points,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
   Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,

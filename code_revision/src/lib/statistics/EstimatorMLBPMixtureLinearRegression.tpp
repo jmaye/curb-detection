@@ -16,6 +16,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "helpers/FGTools.h"
+#include "data-structures/FactorGraph.h"
+#include "data-structures/PropertySet.h"
+#include "statistics/BeliefPropagation.h"
+
 #include <Eigen/QR>
 
 #include <limits>
@@ -192,7 +197,8 @@ void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::reset() {
 template <size_t M, size_t N>
 size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
   addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-  itEnd) {
+  itEnd, const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
+  std::vector<DEMGraph::VertexDescriptor>& pointsMapping) {
   reset();
   size_t numIter = 0;
   const size_t K = mWeights.size();
@@ -210,18 +216,26 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
   }
   mLogLikelihood = -std::numeric_limits<double>::infinity();
   mResponsibilities.resize(mNumPoints, K);
+  FactorGraph factorGraph;
+  DEMGraph::VertexContainer fgMapping;
+  Helpers::buildFactorGraph(dem, graph, mCoefficients, mVariances, mWeights,
+    factorGraph, fgMapping);
   while (numIter != mMaxNumIter) {
-    double newLogLikelihood = 0.0;
+    PropertySet opts;
+    opts.set("maxiter", (size_t)200);
+    opts.set("tol", 1e-6);
+    opts.set("verbose", (size_t)0);
+    opts.set("updates", std::string("SEQRND"));
+    opts.set("logdomain", false);
+    opts.set("inference", std::string("SUMPROD"));
+    BeliefPropagation bp(factorGraph, opts);
+    bp.init();
+    bp.run();
+    double newLogLikelihood = bp.logZ();
     for (size_t i = 0; i < mNumPoints; ++i) {
-      double probability = 0.0;
-      for (size_t j = 0; j < K; ++j) {
-        mResponsibilities(i, j) = mWeights(j) *
-          NormalDistribution<1>((mCoefficients.row(j) * designMatrix.row(i).
-            transpose())(0), mVariances(j))(targets(i));
-        probability += mResponsibilities(i, j);
-      }
-      newLogLikelihood += log(probability);
-      mResponsibilities.row(i) /= mResponsibilities.row(i).sum();
+      const dai::Factor& factor = bp.beliefV(fgMapping[pointsMapping[i]]);
+      for (size_t j = 0; j < (size_t)mResponsibilities.cols(); ++j)
+        mResponsibilities(i, j) = factor[j];
     }
     if (fabs(mLogLikelihood - newLogLikelihood) < mTol)
       break;
@@ -243,6 +257,8 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
           mCoefficients.row(j).transpose()))(0) / numPoints(j);
       }
     }
+    Helpers::updateFactorGraph(dem, graph, mCoefficients, mVariances, mWeights,
+      factorGraph, fgMapping);
     numIter++;
   }
   mValid = true;

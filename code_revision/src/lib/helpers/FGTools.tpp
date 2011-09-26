@@ -19,7 +19,6 @@
 #include "statistics/NormalDistribution.h"
 
 #include <vector>
-#include <map>
 
 /******************************************************************************/
 /* Methods                                                                    */
@@ -57,8 +56,16 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const dai::Var& var1 = vars[fgMapping[v1]];
     const dai::Var& var2 = vars[fgMapping[v2]];
     const dai::VarSet varSet(var1, var2);
+    const double heightDiff = fabs(dem[v1].getHeightEstimator().
+      getPostPredDist().getMean() - dem[v2].getHeightEstimator().
+      getPostPredDist().getMean());
+    const double varSum = dem[v1].getHeightEstimator().getPostPredDist().
+      getVariance() + dem[v2].getHeightEstimator().getPostPredDist().
+      getVariance();
     dai::Factor fac(varSet, exp(0));
     for (size_t i = 0; i < numLabels; ++i)
+      //fac.set(i * (numLabels + 1), NormalDistribution<1>(0, varSum)
+        //(heightDiff));
       fac.set(i * (numLabels + 1), exp(15.0 / (1.0 + graph.getEdgeProperty(e))));
     factors.push_back(fac);
   }

@@ -127,7 +127,7 @@ protected:
   double mLogLikelihood;
   /// Maximum number of iterations for EM
   size_t mMaxNumIter;
-  /// Tolerance for the determinant
+  /// Tolerance for the convergence
   double mTol;
   /// Number of points in the estimator
   size_t mNumPoints;

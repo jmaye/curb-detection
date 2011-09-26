@@ -19,8 +19,8 @@
 #include "visualization/MLBPControl.h"
 
 #include "visualization/SegmentationControl.h"
-//#include "statistics/EstimatorML.h"
-//#include "helpers/InitML.h"
+#include "helpers/InitML.h"
+#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
 #include "base/Timestamp.h"
 
 #include "ui_MLBPControl.h"
@@ -31,7 +31,7 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-MLBPControl::MLBPControl(bool showML) :
+MLBPControl::MLBPControl(bool showMLBP) :
   mUi(new Ui_MLBPControl()),
   mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
     Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
@@ -50,7 +50,7 @@ MLBPControl::MLBPControl(bool showML) :
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mWeighted = mUi->weightedCheckBox->isChecked();
-  setShowML(showML);
+  setShowMLBP(showMLBP);
 }
 
 MLBPControl::~MLBPControl() {
@@ -71,8 +71,8 @@ void MLBPControl::setTolerance(double tol) {
   mUi->tolSpinBox->setValue(tol);
 }
 
-void MLBPControl::setShowML(bool showML) {
-  mUi->showMLCheckBox->setChecked(showML);
+void MLBPControl::setShowMLBP(bool showMLBP) {
+  mUi->showMLBPCheckBox->setChecked(showMLBP);
   GLView::getInstance().update();
 }
 
@@ -85,7 +85,7 @@ void MLBPControl::setWeighted(bool checked) {
 /* Methods                                                                    */
 /******************************************************************************/
 
-void MLBPControl::renderML() {
+void MLBPControl::renderMLBP() {
   const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -112,8 +112,8 @@ void MLBPControl::renderML() {
 }
 
 void MLBPControl::render(GLView& view, Scene& scene) {
-  if (mUi->showMLCheckBox->isChecked())
-    renderML();
+  if (mUi->showMLBPCheckBox->isChecked())
+    renderMLBP();
 }
 
 void MLBPControl::maxIterChanged(int maxIter) {
@@ -135,62 +135,63 @@ void MLBPControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const
   mUi->runButton->setEnabled(true);
 }
 
-void MLBPControl::runML() {
-//  const double before = Timestamp::now();
-//  Eigen::Matrix<double, Eigen::Dynamic, 3> c;
-//  Eigen::Matrix<double, Eigen::Dynamic, 1> v;
-//  Eigen::Matrix<double, Eigen::Dynamic, 1> w;
-//  EstimatorML<LinearRegression<3>, 3>::Container points;
-//  std::vector<DEMGraph::VertexDescriptor> pointsMapping;
-//  if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
-//    w, mWeighted)) {
-//    EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-//      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
-//    const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
-//    const double after = Timestamp::now();
-//    mUi->iterSpinBox->setValue(numIter);
-//    mUi->timeSpinBox->setValue(after - before);
-//    mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
-//    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-//      responsibilities = estMixtPlane.getResponsibilities();
-//    double residual = 0.0;
-//    for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
-//      double max = -std::numeric_limits<double>::infinity();
-//      size_t argmax = 0;
-//      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-//        if (responsibilities(i, j) > max) {
-//          max = responsibilities(i, j);
-//          argmax = j;
-//        }
-//      mVertices[pointsMapping[i]] = argmax;
-//      Eigen::Matrix<double, 3, 1> point;
-//      point(0) = 1.0;
-//      point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
-//      double prediction = 0;
-//      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j) {
-//        prediction += (estMixtPlane.getCoefficients().row(j) * point)(0) *
-//          estMixtPlane.getWeights()(j);
-//      }
-//      double variance = 0;
-//      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-//        variance += ((estMixtPlane.getCoefficients().row(j) * point)(0) *
-//          (estMixtPlane.getCoefficients().row(j) * point)(0) +
-//          estMixtPlane.getVariances()(j)) * estMixtPlane.getWeights()(j);
-//      variance -= prediction * prediction;
-//      const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
-//        getPostPredDist().getMean() - prediction;
-//      residual += (diff * diff) / variance;
-//    }
-//    mUi->residualSpinBox->setValue(residual);
-//    mUi->showMLCheckBox->setEnabled(true);
-//    GLView::getInstance().update();
+void MLBPControl::runMLBP() {
+  const double before = Timestamp::now();
+  Eigen::Matrix<double, Eigen::Dynamic, 3> c;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> v;
+  Eigen::Matrix<double, Eigen::Dynamic, 1> w;
+  EstimatorBayesImproper<LinearRegression<3>, 3>::Container points;
+  std::vector<DEMGraph::VertexDescriptor> pointsMapping;
+  if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
+    w, mWeighted)) {
+    EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
+    const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end(),
+      mDEM, mGraph, pointsMapping);
+    const double after = Timestamp::now();
+    mUi->iterSpinBox->setValue(numIter);
+    mUi->timeSpinBox->setValue(after - before);
+    mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
+      responsibilities = estMixtPlane.getResponsibilities();
+    double residual = 0.0;
+    for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
+      double max = -std::numeric_limits<double>::infinity();
+      size_t argmax = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
+        if (responsibilities(i, j) > max) {
+          max = responsibilities(i, j);
+          argmax = j;
+        }
+      mVertices[pointsMapping[i]] = argmax;
+      Eigen::Matrix<double, 3, 1> point;
+      point(0) = 1.0;
+      point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
+      double prediction = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j) {
+        prediction += (estMixtPlane.getCoefficients().row(j) * point)(0) *
+          estMixtPlane.getWeights()(j);
+      }
+      double variance = 0;
+      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
+        variance += ((estMixtPlane.getCoefficients().row(j) * point)(0) *
+          (estMixtPlane.getCoefficients().row(j) * point)(0) +
+          estMixtPlane.getVariances()(j)) * estMixtPlane.getWeights()(j);
+      variance -= prediction * prediction;
+      const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
+        getPostPredDist().getMean() - prediction;
+      residual += (diff * diff) / variance;
+    }
+    mUi->residualSpinBox->setValue(residual);
+    mUi->showMLBPCheckBox->setEnabled(true);
+    GLView::getInstance().update();
 //    mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
 //      estMixtPlane.getVariances(), estMixtPlane.getWeights(), mColors);
-//  }
+  }
 }
 
-void MLBPControl::showMLToggled(bool checked) {
-  setShowML(checked);
+void MLBPControl::showMLBPToggled(bool checked) {
+  setShowMLBP(checked);
 }
 
 void MLBPControl::weightedToggled(bool checked) {
@@ -198,5 +199,5 @@ void MLBPControl::weightedToggled(bool checked) {
 }
 
 void MLBPControl::runPressed() {
-  runML();
+  runMLBP();
 }
