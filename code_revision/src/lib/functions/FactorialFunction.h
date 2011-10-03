@@ -35,9 +35,9 @@ class FactorialFunction :
     @{
     */
   /// Copy constructor
-  FactorialFunction(const FactorialFunction& other);
+  inline FactorialFunction(const FactorialFunction& other);
   /// Assignment operator
-  FactorialFunction& operator = (const FactorialFunction& other);
+  inline FactorialFunction& operator = (const FactorialFunction& other);
   /** @}
     */
 
@@ -46,9 +46,9 @@ public:
     @{
     */
   /// Default constructor
-  FactorialFunction();
+  inline FactorialFunction();
   /// Destructor
-  virtual ~FactorialFunction();
+  inline virtual ~FactorialFunction();
   /** @}
     */
 
@@ -56,7 +56,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const;
+  inline virtual size_t getValue(const size_t& argument) const;
   /** @}
     */
 
@@ -64,6 +64,6 @@ protected:
 
 };
 
-//#include "functions/FactorialFunction.tpp"
+#include "functions/FactorialFunction.tpp"
 
 #endif // FACTORIALFUNCTION_H

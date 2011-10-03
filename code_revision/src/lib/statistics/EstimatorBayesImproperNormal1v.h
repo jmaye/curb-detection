@@ -50,15 +50,15 @@ public:
     @{
     */
   /// Default constructor
-  EstimatorBayesImproper();
+  inline EstimatorBayesImproper();
   /// Copy constructor
-  EstimatorBayesImproper(const EstimatorBayesImproper<NormalDistribution<1> >&
-    other);
+  inline EstimatorBayesImproper(const
+    EstimatorBayesImproper<NormalDistribution<1> >& other);
   /// Assignment operator
-  EstimatorBayesImproper<NormalDistribution<1> >& operator =
+  inline EstimatorBayesImproper<NormalDistribution<1> >& operator =
     (const EstimatorBayesImproper<NormalDistribution<1> >& other);
   /// Destructor
-  virtual ~EstimatorBayesImproper();
+  inline virtual ~EstimatorBayesImproper();
   /** @}
     */
 
@@ -66,26 +66,26 @@ public:
     @{
     */
   /// Returns the posterior marginal mean distribution
-  const StudentDistribution<1>& getPostMeanDist() const;
+  inline const StudentDistribution<1>& getPostMeanDist() const;
   /// Returns the posterior marginal variance distribution
-  const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
+  inline const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
   /// Returns the posterior predictive distribution
-  const StudentDistribution<1>& getPostPredDist() const;
+  inline const StudentDistribution<1>& getPostPredDist() const;
   /// Returns the sample mean
-  double getSampleMean() const;
+  inline double getSampleMean() const;
   /// Returns the sample variance
-  double getSampleVariance() const;
+  inline double getSampleVariance() const;
   /// Returns the number of points
-  size_t getNumPoints() const;
+  inline size_t getNumPoints() const;
   /// Returns the validity state of the estimator
-  bool getValid() const;
+  inline bool getValid() const;
   /// Add a point to the estimator
-  void addPoint(const Point& point);
+  inline void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
   /// Reset the estimator
-  void reset();
+  inline void reset();
   /** @}
     */
 
@@ -94,13 +94,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -126,4 +126,4 @@ protected:
 
 };
 
-//#include "statistics/EstimatorBayesImproperNormal1v.tpp"
+#include "statistics/EstimatorBayesImproperNormal1v.tpp"

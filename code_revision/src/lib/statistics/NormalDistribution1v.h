@@ -37,13 +37,13 @@ public:
     @{
     */
   /// Constructs a normal distribution from the parameters
-  NormalDistribution(double mean = 0.0, double variance = 1.0);
+  inline NormalDistribution(double mean = 0.0, double variance = 1.0);
   /// Copy constructor
-  NormalDistribution(const NormalDistribution<1>& other);
+  inline NormalDistribution(const NormalDistribution<1>& other);
   /// Assignment operator
-  NormalDistribution& operator = (const NormalDistribution<1>& other);
+  inline NormalDistribution& operator = (const NormalDistribution<1>& other);
   /// Destructor
-  virtual ~NormalDistribution();
+  inline virtual ~NormalDistribution();
   /** @}
     */
 
@@ -51,35 +51,35 @@ public:
     @{
     */
   /// Sets the mean of the distribution
-  void setMean(double mean);
+  inline void setMean(double mean);
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline double getMean() const;
   /// Sets the variance of the distribution
-  void setVariance(double variance) throw (BadArgumentException<double>);
+  inline void setVariance(double variance) throw (BadArgumentException<double>);
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
   /// Returns the precision of the distribution
-  double getPrecision() const;
+  inline double getPrecision() const;
   /// Returns the standard deviation of the distribution
-  double getStandardDeviation() const;
+  inline double getStandardDeviation() const;
   /// Returns the normalizer of the distribution
-  double getNormalizer() const;
+  inline double getNormalizer() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  inline double getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Access the probability density function at the given value
-  virtual double pdf(const double& value) const;
+  inline virtual double pdf(const double& value) const;
   /// Access the log-probability density function at the given value
-  double logpdf(const double& value) const;
+  inline double logpdf(const double& value) const;
   /// Access the cumulative density function at the given value
-  double cdf(const double& value) const;
+  inline double cdf(const double& value) const;
   /// Access a sample drawn from the distribution
-  virtual double getSample() const;
+  inline virtual double getSample() const;
   /// Returns the KL-divergence with another distribution
-  double KLDivergence(const NormalDistribution<1>& other) const;
+  inline double KLDivergence(const NormalDistribution<1>& other) const;
   /// Returns the squared Mahalanobis distance from a given value
-  double mahalanobisDistance(const double& value) const;
+  inline double mahalanobisDistance(const double& value) const;
   /** @}
     */
 
@@ -88,13 +88,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -116,4 +116,4 @@ protected:
 
 };
 
-//#include "statistics/NormalDistribution1v.tpp"
+#include "statistics/NormalDistribution1v.tpp"

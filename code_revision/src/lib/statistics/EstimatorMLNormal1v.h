@@ -48,14 +48,14 @@ public:
     @{
     */
   /// Default constructor
-  EstimatorML();
+  inline EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  inline EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
+  inline EstimatorML<NormalDistribution<1> >& operator =
     (const EstimatorML<NormalDistribution<1> >& other);
   /// Destructor
-  virtual ~EstimatorML();
+  inline virtual ~EstimatorML();
   /** @}
     */
 
@@ -63,20 +63,20 @@ public:
     @{
     */
   /// Returns the number of points
-  size_t getNumPoints() const;
+  inline size_t getNumPoints() const;
   /// Returns the validity state of the estimator
-  bool getValid() const;
+  inline bool getValid() const;
   /// Returns the estimated mean
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the estimated variance
-  double getVariance() const;
+  inline double getVariance() const;
   /// Add a point to the estimator
-  void addPoint(const Point& point);
+  inline void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
   /// Reset the estimator
-  void reset();
+  inline void reset();
   /** @}
     */
 
@@ -85,13 +85,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

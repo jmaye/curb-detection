@@ -38,14 +38,14 @@ public:
     @{
     */
   /// Constructs the distribution from the parameters
-  StudentDistribution(double degrees = 1.0, double location = 0.0, double
+  inline StudentDistribution(double degrees = 1.0, double location = 0.0, double
     scale = 1.0);
   /// Copy constructor
-  StudentDistribution(const StudentDistribution<1>& other);
+  inline StudentDistribution(const StudentDistribution<1>& other);
   /// Assignment operator
-  StudentDistribution& operator = (const StudentDistribution<1>& other);
+  inline StudentDistribution& operator = (const StudentDistribution<1>& other);
   /// Destructor
-  virtual ~StudentDistribution();
+  inline virtual ~StudentDistribution();
   /** @}
     */
 
@@ -53,39 +53,39 @@ public:
     @{
     */
   /// Sets the location of the distribution
-  void setLocation(double scale);
+  inline void setLocation(double scale);
   /// Returns the location of the distribution
-  double getLocation() const;
+  inline double getLocation() const;
   /// Sets the scale of the distribution
-  void setScale(double scale) throw (BadArgumentException<double>);
+  inline void setScale(double scale) throw (BadArgumentException<double>);
   /// Returns the scale of the distribution
-  double getScale() const;
+  inline double getScale() const;
   /// Sets the degrees of freedom of the distribution
-  void setDegrees(double degrees) throw (BadArgumentException<double>);
+  inline void setDegrees(double degrees) throw (BadArgumentException<double>);
   /// Returns the degrees of freedom of the distribution
-  double getDegrees() const;
+  inline double getDegrees() const;
   /// Returns the inverse scale of the distribution
-  double getInverseScale() const;
+  inline double getInverseScale() const;
   /// Returns the normalizer of the distribution
-  double getNormalizer() const;
+  inline double getNormalizer() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  inline double getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
   /// Access the probability density function at the given value
-  virtual double pdf(const double& value) const;
+  inline virtual double pdf(const double& value) const;
   /// Access the log-probability density function at the given value
-  double logpdf(const double& value) const;
+  inline double logpdf(const double& value) const;
   /// Access the cumulative density function at the given value
-  double cdf(const double& value) const;
+  inline double cdf(const double& value) const;
   /// Access a sample drawn from the distribution
-  virtual double getSample() const;
+  inline virtual double getSample() const;
   /// Returns the squared Mahalanobis distance from a given value
-  double mahalanobisDistance(const double& value) const;
+  inline double mahalanobisDistance(const double& value) const;
   /** @}
     */
 
@@ -94,13 +94,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -122,4 +122,4 @@ protected:
 
 };
 
-//#include "statistics/StudentDistribution1v.tpp"
+#include "statistics/StudentDistribution1v.tpp"

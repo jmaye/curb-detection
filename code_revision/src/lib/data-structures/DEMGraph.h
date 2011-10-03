@@ -72,13 +72,13 @@ public:
     @{
     */
   /// Constructs the graph from the DEM
-  DEMGraph(const Grid<double, Cell, 2>& dem);
+  inline DEMGraph(const Grid<double, Cell, 2>& dem);
   /// Copy constructor
-  DEMGraph(const DEMGraph& other);
+  inline DEMGraph(const DEMGraph& other);
   /// Assignment operator
-  DEMGraph& operator = (const DEMGraph& other);
+  inline DEMGraph& operator = (const DEMGraph& other);
   /// Destructor
-  virtual ~DEMGraph();
+  inline virtual ~DEMGraph();
   /** @}
     */
 
@@ -86,41 +86,43 @@ public:
       @{
     */
   /// Returns iterator at start of the edge container
-  ConstEdgeIterator getEdgeBegin() const;
+  inline ConstEdgeIterator getEdgeBegin() const;
   /// Returns iterator at start of the edge container
-  EdgeIterator getEdgeBegin();
+  inline EdgeIterator getEdgeBegin();
   /// Returns iterator at end of the edge container
-  ConstEdgeIterator getEdgeEnd() const;
+  inline ConstEdgeIterator getEdgeEnd() const;
   /// Returns iterator at end of the edge container
-  EdgeIterator getEdgeEnd();
+  inline EdgeIterator getEdgeEnd();
   /// Returns the number of edges
-  size_t getNumEdges() const;
+  inline size_t getNumEdges() const;
   /// Returns an edge descriptor from an iterator
-  E getEdge(const ConstEdgeIterator& it) const throw (OutOfBoundException<E>);
+  inline E getEdge(const ConstEdgeIterator& it) const
+    throw (OutOfBoundException<E>);
   /// Finds an edge in the graph
-  EdgeIterator findEdge(const E& edge) const;
+  inline EdgeIterator findEdge(const E& edge) const;
   /// Sets an edge property
-  void setEdgeProperty(const E& edge, const P& property);
+  inline void setEdgeProperty(const E& edge, const P& property);
   /// Returns an edge property
-  P& getEdgeProperty(const E& edge) throw (OutOfBoundException<E>);
+  inline P& getEdgeProperty(const E& edge) throw (OutOfBoundException<E>);
   /// Returns an edge property
-  const P& getEdgeProperty(const E& edge) const throw (OutOfBoundException<E>);
+  inline const P& getEdgeProperty(const E& edge) const
+    throw (OutOfBoundException<E>);
   /// Returns the tail vertex
-  const V& getTailVertex(const E& edge) const;
+  inline const V& getTailVertex(const E& edge) const;
   /// Returns head vertex from an edge
-  const V& getHeadVertex(const E& edge) const;
+  inline const V& getHeadVertex(const E& edge) const;
   /// Return the vertex container
-  VertexContainer& getVertices();
+  inline VertexContainer& getVertices();
   /// Returns iterator at start of the vertex container
-  ConstVertexIterator getVertexBegin() const;
+  inline ConstVertexIterator getVertexBegin() const;
   /// Returns iterator at start of the vertex container
-  VertexIterator getVertexBegin();
+  inline VertexIterator getVertexBegin();
   /// Returns iterator at end of the vertex container
-  ConstVertexIterator getVertexEnd() const;
+  inline ConstVertexIterator getVertexEnd() const;
   /// Returns iterator at end of the vertex container
-  VertexIterator getVertexEnd();
+  inline VertexIterator getVertexEnd();
   /// Returns the number of vertices
-  size_t getNumVertices() const;
+  inline size_t getNumVertices() const;
   /** @}
     */
 
@@ -129,13 +131,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -151,6 +153,6 @@ protected:
 
 };
 
-//#include "data-structures/DEMGraph.tpp"
+#include "data-structures/DEMGraph.tpp"
 
 #endif // DEMGRAPH_H

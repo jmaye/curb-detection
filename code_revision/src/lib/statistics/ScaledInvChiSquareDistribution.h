@@ -37,14 +37,15 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  ScaledInvChiSquareDistribution(size_t degrees = 1, double scale = 1.0);
+  inline ScaledInvChiSquareDistribution(size_t degrees = 1, double scale = 1.0);
   /// Copy constructor
-  ScaledInvChiSquareDistribution(const ScaledInvChiSquareDistribution& other);
+  inline ScaledInvChiSquareDistribution(const ScaledInvChiSquareDistribution&
+    other);
   /// Assignment operator
-  ScaledInvChiSquareDistribution& operator = (const
+  inline ScaledInvChiSquareDistribution& operator = (const
     ScaledInvChiSquareDistribution& other);
   /// Destructor
-  virtual ~ScaledInvChiSquareDistribution();
+  inline virtual ~ScaledInvChiSquareDistribution();
   /** @}
     */
 
@@ -52,13 +53,13 @@ public:
     @{
     */
   /// Sets the scale of the distribution
-  void setScale(double scale);
+  inline void setScale(double scale);
   /// Returns the scale of the distribution
-  double getScale() const;
+  inline double getScale() const;
   /// Sets the degrees of freedom of the distribution
-  void setDegrees(size_t degrees);
+  inline void setDegrees(size_t degrees);
   /// Returns the degrees of freedom of the distribution
-  size_t getDegrees() const;
+  inline size_t getDegrees() const;
   /** @}
     */
 
@@ -67,18 +68,18 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
 };
 
-//#include "statistics/ScaledInvChiSquareDistribution.tpp"
+#include "statistics/ScaledInvChiSquareDistribution.tpp"
 
 #endif // SCALEDINVCHISQUAREDISTRIBUTION_H

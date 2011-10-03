@@ -98,9 +98,9 @@ template <> class LogGammaFunction<size_t> :
     @{
     */
   /// Copy constructor
-  LogGammaFunction(const LogGammaFunction& other);
+  inline LogGammaFunction(const LogGammaFunction& other);
   /// Assignment operator
-  LogGammaFunction& operator = (const LogGammaFunction& other);
+  inline LogGammaFunction& operator = (const LogGammaFunction& other);
   /** @}
     */
 
@@ -109,9 +109,9 @@ public:
     @{
     */
   /// Default constructor
-  LogGammaFunction();
+  inline LogGammaFunction();
   /// Destructor
-  virtual ~LogGammaFunction();
+  inline virtual ~LogGammaFunction();
   /** @}
     */
 
@@ -119,7 +119,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const size_t& argument) const
+  inline virtual double getValue(const size_t& argument) const
     throw (BadArgumentException<size_t>);
   /** @}
     */
@@ -128,6 +128,6 @@ protected:
 
 };
 
-//#include "functions/LogGammaFunction.tpp"
+#include "functions/LogGammaFunction.tpp"
 
 #endif // LOGGAMMAFUNCTION_H

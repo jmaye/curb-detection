@@ -96,9 +96,9 @@ template <> class GammaFunction<size_t> :
     @{
     */
   /// Copy constructor
-  GammaFunction(const GammaFunction& other);
+  inline GammaFunction(const GammaFunction& other);
   /// Assignment operator
-  GammaFunction& operator = (const GammaFunction& other);
+  inline GammaFunction& operator = (const GammaFunction& other);
   /** @}
     */
 
@@ -107,9 +107,9 @@ public:
     @{
     */
   /// Default constructor
-  GammaFunction();
+  inline GammaFunction();
   /// Destructor
-  virtual ~GammaFunction();
+  inline virtual ~GammaFunction();
   /** @}
     */
 
@@ -117,7 +117,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual size_t getValue(const size_t& argument) const
+  inline virtual size_t getValue(const size_t& argument) const
     throw (BadArgumentException<size_t>);
   /** @}
     */
@@ -126,6 +126,6 @@ protected:
 
 };
 
-//#include "functions/GammaFunction.tpp"
+#include "functions/GammaFunction.tpp"
 
 #endif // GAMMAFUNCTION_H

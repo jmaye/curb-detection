@@ -35,9 +35,9 @@ class LogFactorialFunction :
     @{
     */
   /// Copy constructor
-  LogFactorialFunction(const LogFactorialFunction& other);
+  inline LogFactorialFunction(const LogFactorialFunction& other);
   /// Assignment operator
-  LogFactorialFunction& operator = (const LogFactorialFunction& other);
+  inline LogFactorialFunction& operator = (const LogFactorialFunction& other);
   /** @}
     */
 
@@ -46,9 +46,9 @@ public:
     @{
     */
   /// Default constructor
-  LogFactorialFunction();
+  inline LogFactorialFunction();
   /// Destructor
-  virtual ~LogFactorialFunction();
+  inline virtual ~LogFactorialFunction();
   /** @}
     */
 
@@ -56,7 +56,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const size_t& argument) const;
+  inline virtual double getValue(const size_t& argument) const;
   /** @}
     */
 
@@ -64,6 +64,6 @@ protected:
 
 };
 
-//#include "functions/LogFactorialFunction.tpp"
+#include "functions/LogFactorialFunction.tpp"
 
 #endif // LOGFACTORIALFUNCTION_H

@@ -37,13 +37,13 @@ public:
     @{
     */
   /// Default constructor
-  Cell();
+  inline Cell();
   /// Copy constructor
-  Cell(const Cell& other);
+  inline Cell(const Cell& other);
   /// Assignment operator
-  Cell& operator = (const Cell& other);
+  inline Cell& operator = (const Cell& other);
   /// Destructor
-  virtual ~Cell();
+  inline virtual ~Cell();
   /** @}
     */
 
@@ -51,10 +51,10 @@ public:
       @{
     */
   /// Adds a point into the cell
-  void addPoint(double point);
+  inline void addPoint(double point);
   /// Returns the height estimator
-  const EstimatorBayesImproper<NormalDistribution<1> >& getHeightEstimator()
-    const;
+  inline const EstimatorBayesImproper<NormalDistribution<1> >&
+    getHeightEstimator() const;
   /** @}
     */
 
@@ -63,13 +63,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -83,6 +83,6 @@ protected:
 
 };
 
-//#include "data-structures/Cell.tpp"
+#include "data-structures/Cell.tpp"
 
 #endif // CELL_H

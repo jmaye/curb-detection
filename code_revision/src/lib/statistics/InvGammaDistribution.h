@@ -110,6 +110,6 @@ protected:
 
 };
 
-//#include "statistics/InvGammaDistribution.tpp"
+#include "statistics/InvGammaDistribution.tpp"
 
 #endif // INVGAMMADISTRIBUTION_H

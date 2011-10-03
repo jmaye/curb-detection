@@ -38,13 +38,13 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  ChiSquareDistribution(size_t degrees = 1);
+  inline ChiSquareDistribution(size_t degrees = 1);
   /// Copy constructor
-  ChiSquareDistribution(const ChiSquareDistribution& other);
+  inline ChiSquareDistribution(const ChiSquareDistribution& other);
   /// Assignment operator
-  ChiSquareDistribution& operator = (const ChiSquareDistribution& other);
+  inline ChiSquareDistribution& operator = (const ChiSquareDistribution& other);
   /// Destructor
-  virtual ~ChiSquareDistribution();
+  inline virtual ~ChiSquareDistribution();
   /** @}
     */
 
@@ -52,11 +52,11 @@ public:
     @{
     */
   /// Sets the degrees of freedom of the distribution
-  void setDegrees(size_t degrees);
+  inline void setDegrees(size_t degrees);
   /// Returns the degrees of freedom of the distribution
-  size_t getDegrees() const;
+  inline size_t getDegrees() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  inline double getMedian() const;
   /** @}
     */
 
@@ -65,18 +65,18 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
 };
 
-//#include "statistics/ChiSquareDistribution.tpp"
+#include "statistics/ChiSquareDistribution.tpp"
 
 #endif // CHISQUAREDISTRIBUTION_H
