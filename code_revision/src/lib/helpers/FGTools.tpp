@@ -66,7 +66,9 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     for (size_t i = 0; i < numLabels; ++i)
       //fac.set(i * (numLabels + 1), NormalDistribution<1>(0, varSum)
         //(heightDiff));
-      fac.set(i * (numLabels + 1), exp(15.0 / (1.0 + graph.getEdgeProperty(e))));
+      //fac.set(i * (numLabels + 1), exp(15.0 / (1.0 + graph.getEdgeProperty(e))));
+      //fac.set(i * (numLabels + 1), exp(5.0));
+      fac.set(i * (numLabels + 1), exp(2.0));
     factors.push_back(fac);
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),

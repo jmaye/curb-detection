@@ -15,11 +15,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QGridLayout" name="paramLayout">
+    <layout class="QGridLayout" name="paramMLLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="maxIterTextLabel">
        <property name="text">
-        <string>Maximum iterations:</string>
+        <string>Maximum iterations (EM):</string>
        </property>
       </widget>
      </item>
@@ -36,7 +36,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="tolTextlabel">
        <property name="text">
-        <string>Tolerance:</string>
+        <string>Tolerance (EM):</string>
        </property>
       </widget>
      </item>
@@ -149,6 +149,54 @@
        </property>
        <property name="maximum">
         <double>10000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="paramBPLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="maxIterBPLabel">
+       <property name="text">
+        <string>Maximum iterations (BP):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="maxIterBPSpinBox">
+       <property name="maximum">
+        <number>1000000</number>
+       </property>
+       <property name="value">
+        <number>200</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="tolBPLabel">
+       <property name="text">
+        <string>Tolerance (BP):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="tolBPSpinBox">
+       <property name="decimals">
+        <number>10</number>
+       </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000001000000000</double>
        </property>
       </widget>
      </item>
@@ -304,6 +352,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>maxIterBPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MLBPControl</receiver>
+   <slot>maxIterBPChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>241</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tolBPSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MLBPControl</receiver>
+   <slot>tolBPChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>274</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showMLBPToggled(bool)</slot>
@@ -311,5 +391,7 @@
   <slot>tolChanged(double)</slot>
   <slot>runPressed()</slot>
   <slot>weightedToggled(bool)</slot>
+  <slot>maxIterBPChanged(int)</slot>
+  <slot>tolBPChanged(double)</slot>
  </slots>
 </ui>

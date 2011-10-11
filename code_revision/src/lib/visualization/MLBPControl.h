@@ -84,6 +84,10 @@ protected:
   void setMaxIter(size_t maxIter);
   /// Sets the ML tolerance
   void setTolerance(double tol);
+  /// Sets the BP maximum number of iterations
+  void setMaxIterBP(size_t maxIter);
+  /// Sets the BP tolerance
+  void setToleranceBP(double tol);
   /// Sets the weighted linear regression flag
   void setWeighted(bool checked);
   /// Run the ML-BP algorithm
@@ -108,6 +112,10 @@ protected:
   size_t mMaxIter;
   /// ML tolerance
   double mTol;
+  /// BP maximum number of iterations
+  size_t mMaxIterBP;
+  /// BP tolerance
+  double mTolBP;
   /// Weighted regression
   bool mWeighted;
   /// Vector of random colors
@@ -125,6 +133,10 @@ protected slots:
   void maxIterChanged(int maxIter);
   /// Tolerance changed
   void tolChanged(double tol);
+  /// Maximum number of iterations changed (BP)
+  void maxIterBPChanged(int maxIter);
+  /// Tolerance changed (BP)
+  void tolBPChanged(double tol);
   /// Show the ML-BP segmentation
   void showMLBPToggled(bool checked);
   /// Weighted linear regression toggled

@@ -33,13 +33,16 @@ template <size_t M, size_t N>
 EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::EstimatorMLBP(
   const Eigen::Matrix<double, N, M>& coefficients,
   const Eigen::Matrix<double, N, 1>& variances,
-  const Eigen::Matrix<double, N, 1>& weights, size_t maxNumIter, double tol) :
+  const Eigen::Matrix<double, N, 1>& weights, size_t maxNumIterEM, double
+  tolEM, size_t maxNumIterBP, double tolBP) :
   mCoefficients(coefficients),
   mVariances(variances),
   mWeights(weights),
   mLogLikelihood(0),
-  mMaxNumIter(maxNumIter),
-  mTol(tol),
+  mMaxNumIterEM(maxNumIterEM),
+  mTolEM(tolEM),
+  mMaxNumIterBP(maxNumIterBP),
+  mTolBP(tolBP),
   mNumPoints(0),
   mValid(false) {
 }
@@ -52,8 +55,10 @@ EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>& other) :
   mVariances(other.mVariances),
   mResponsibilities(other.mResponsibilities),
   mWeights(other.mWeights),
-  mMaxNumIter(other.mMaxNumIter),
-  mTol(other.mTol),
+  mMaxNumIterEM(other.mMaxNumIterEM),
+  mTolEM(other.mTolEM),
+  mMaxNumIterBP(other.mMaxNumIterBP),
+  mTolBP(other.mTolBP),
   mNumPoints(other.mNumPoints),
   mValid(other.mValid) {
 }
@@ -68,8 +73,10 @@ EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>&
     mVariances = other.mVariances;
     mResponsibilities = other.mResponsibilities;
     mWeights = other.mWeights;
-    mMaxNumIter = other.mMaxNumIter;
-    mTol = other.mTol;
+    mMaxNumIterEM = other.mMaxNumIterEM;
+    mTolEM = other.mTolEM;
+    mMaxNumIterBP = other.mMaxNumIterBP;
+    mTolBP = other.mTolBP;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -97,8 +104,10 @@ void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::write(
     << "variances: " << mVariances.transpose() << std::endl
     << "weights: " << mWeights.transpose() << std::endl
     << "log-likelihood: " << mLogLikelihood << std::endl
-    << "maxNumIter: " << mMaxNumIter << std::endl
-    << "tolerance: " << mTol << std::endl
+    << "max num iter EM: " << mMaxNumIterEM << std::endl
+    << "tolerance EM: " << mTolEM << std::endl
+    << "max num iter BP: " << mMaxNumIterBP << std::endl
+    << "tolerance BP: " << mTolBP << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
@@ -165,26 +174,64 @@ getLogLikelihood() const {
 
 template <size_t M, size_t N>
 double EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
-getTolerance() const {
-  return mTol;
+getToleranceEM() const {
+  return mTolEM;
 }
 
 template <size_t M, size_t N>
 void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
-  setTolerance(double tol) {
-  mTol = tol;
+  setToleranceEM(double tol) {
+  mTolEM = tol;
 }
 
 template <size_t M, size_t N>
 size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
-  getMaxNumIter() const {
-  return mMaxNumIter;
+  getMaxNumIterEM() const {
+  return mMaxNumIterEM;
 }
 
 template <size_t M, size_t N>
 void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
-  setMaxNumIter(size_t maxNumIter) {
-  mMaxNumIter = maxNumIter;
+  setMaxNumIterEM(size_t maxNumIter) {
+  mMaxNumIterEM = maxNumIter;
+}
+
+template <size_t M, size_t N>
+double EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
+getToleranceBP() const {
+  return mTolBP;
+}
+
+template <size_t M, size_t N>
+void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
+  setToleranceBP(double tol) {
+  mTolBP = tol;
+}
+
+template <size_t M, size_t N>
+size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
+  getMaxNumIterBP() const {
+  return mMaxNumIterBP;
+}
+
+template <size_t M, size_t N>
+void EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
+  setMaxNumIterBP(size_t maxNumIter) {
+  mMaxNumIterBP = maxNumIter;
+}
+
+template <size_t M, size_t N>
+const std::vector<size_t>&
+EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::getMAPState()
+  const {
+  return mMapState;
+}
+
+template <size_t M, size_t N>
+const DEMGraph::VertexContainer&
+EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::getFgMapping()
+const {
+  return mFgMapping;
 }
 
 template <size_t M, size_t N>
@@ -217,15 +264,14 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
   mLogLikelihood = -std::numeric_limits<double>::infinity();
   mResponsibilities.resize(mNumPoints, K);
   FactorGraph factorGraph;
-  DEMGraph::VertexContainer fgMapping;
   Helpers::buildFactorGraph(dem, graph, mCoefficients, mVariances, mWeights,
-    factorGraph, fgMapping);
-  while (numIter != mMaxNumIter) {
+    factorGraph, mFgMapping);
+  while (numIter != mMaxNumIterEM) {
     PropertySet opts;
-    opts.set("maxiter", (size_t)200);
-    opts.set("tol", 1e-6);
+    opts.set("maxiter", (size_t)mMaxNumIterBP);
+    opts.set("tol", mTolBP);
     opts.set("verbose", (size_t)0);
-    opts.set("updates", std::string("SEQRND"));
+    opts.set("updates", std::string("SEQFIX"));
     opts.set("logdomain", false);
     opts.set("inference", std::string("SUMPROD"));
     BeliefPropagation bp(factorGraph, opts);
@@ -233,11 +279,11 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
     bp.run();
     double newLogLikelihood = bp.logZ();
     for (size_t i = 0; i < mNumPoints; ++i) {
-      const dai::Factor& factor = bp.beliefV(fgMapping[pointsMapping[i]]);
+      const dai::Factor& factor = bp.beliefV(mFgMapping[pointsMapping[i]]);
       for (size_t j = 0; j < (size_t)mResponsibilities.cols(); ++j)
         mResponsibilities(i, j) = factor[j];
     }
-    if (fabs(mLogLikelihood - newLogLikelihood) < mTol)
+    if (fabs(mLogLikelihood - newLogLikelihood) < mTolEM)
       break;
     mLogLikelihood = newLogLikelihood;
     Eigen::Matrix<double, N, 1> numPoints(K);
@@ -258,9 +304,20 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
       }
     }
     Helpers::updateFactorGraph(dem, graph, mCoefficients, mVariances, mWeights,
-      factorGraph, fgMapping);
+      factorGraph, mFgMapping);
     numIter++;
   }
+  PropertySet opts;
+  opts.set("maxiter", (size_t)mMaxNumIterBP);
+  opts.set("tol", mTolBP);
+  opts.set("verbose", (size_t)0);
+  opts.set("updates", std::string("SEQRND"));
+  opts.set("logdomain", false);
+  opts.set("inference", std::string("MAXPROD"));
+  BeliefPropagation bp(factorGraph, opts);
+  bp.init();
+  bp.run();
+  mMapState = bp.findMaximum();
   mValid = true;
   return numIter;
 }

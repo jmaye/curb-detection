@@ -59,7 +59,8 @@ public:
   /// Constructs estimator with initial guess of the parameters
   EstimatorMLBP(const Eigen::Matrix<double, N, M>& coefficients, const
     Eigen::Matrix<double, N, 1>& variances, const Eigen::Matrix<double, N, 1>&
-    weights, size_t maxNumIter = 200, double tol = 1e-6);
+    weights, size_t maxNumIterEM = 200, double tolEM = 1e-6, size_t
+    maxNumIterBP = 200, double tolBP = 1e-6);
   /// Copy constructor
   EstimatorMLBP(const
     EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>& other);
@@ -90,13 +91,25 @@ public:
   /// Returns the log-likelihood of the data
   double getLogLikelihood() const;
   /// Returns the tolerance of the estimator
-  double getTolerance() const;
+  double getToleranceEM() const;
   /// Sets the tolerance of the estimator
-  void setTolerance(double tol);
+  void setToleranceEM(double tol);
   /// Returns the maximum number of iterations for EM
-  size_t getMaxNumIter() const;
+  size_t getMaxNumIterEM() const;
   /// Sets the maximum number of iterations for EM
-  void setMaxNumIter(size_t maxNumIter);
+  void setMaxNumIterEM(size_t maxNumIter);
+  /// Returns the tolerance of BP
+  double getToleranceBP() const;
+  /// Sets the tolerance of BP
+  void setToleranceBP(double tol);
+  /// Returns the maximum number of iterations for BP
+  size_t getMaxNumIterBP() const;
+  /// Sets the maximum number of iterations for BP
+  void setMaxNumIterBP(size_t maxNumIter);
+  /// Returns the MAP state
+  const std::vector<size_t>& getMAPState() const;
+  /// Returns the Factor graph mapping
+  const DEMGraph::VertexContainer& getFgMapping() const;
   /// Add points to the estimator / Returns number of EM iterationss
   size_t addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd, const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
@@ -135,13 +148,21 @@ protected:
   /// Log-likelihood of the data
   double mLogLikelihood;
   /// Maximum number of iterations for EM
-  size_t mMaxNumIter;
-  /// Tolerance for the convergence
-  double mTol;
+  size_t mMaxNumIterEM;
+  /// Tolerance for the EM convergence
+  double mTolEM;
+  /// Maximum number of iterations for BP
+  size_t mMaxNumIterBP;
+  /// Tolerance for the BP convergence
+  double mTolBP;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
   bool mValid;
+  /// FG mapping
+  DEMGraph::VertexContainer mFgMapping;
+  /// MAP state
+  std::vector<size_t> mMapState;
   /** @}
     */
 

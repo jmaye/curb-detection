@@ -49,6 +49,8 @@ MLBPControl::MLBPControl(bool showMLBP) :
     std::vector<Helpers::Color>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
+  mMaxIterBP = mUi->maxIterBPSpinBox->value();
+  mTolBP =  mUi->tolBPSpinBox->value();
   mWeighted = mUi->weightedCheckBox->isChecked();
   setShowMLBP(showMLBP);
 }
@@ -79,6 +81,16 @@ void MLBPControl::setShowMLBP(bool showMLBP) {
 void MLBPControl::setWeighted(bool checked) {
   mUi->weightedCheckBox->setChecked(checked);
   mWeighted = checked;
+}
+
+void MLBPControl::setMaxIterBP(size_t maxIter) {
+  mMaxIterBP = maxIter;
+  mUi->maxIterBPSpinBox->setValue(maxIter);
+}
+
+void MLBPControl::setToleranceBP(double tol) {
+  mTolBP = tol;
+  mUi->tolBPSpinBox->setValue(tol);
 }
 
 /******************************************************************************/
@@ -124,6 +136,14 @@ void MLBPControl::tolChanged(double tol) {
   setTolerance(tol);
 }
 
+void MLBPControl::maxIterBPChanged(int maxIter) {
+  setMaxIterBP(maxIter);
+}
+
+void MLBPControl::tolBPChanged(double tol) {
+  setToleranceBP(tol);
+}
+
 void MLBPControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const
   DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components, const
   std::vector<Helpers::Color>& colors) {
@@ -145,25 +165,23 @@ void MLBPControl::runMLBP() {
   if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
     w, mWeighted)) {
     EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
+      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol, mMaxIterBP, mTolBP);
     const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end(),
       mDEM, mGraph, pointsMapping);
     const double after = Timestamp::now();
     mUi->iterSpinBox->setValue(numIter);
     mUi->timeSpinBox->setValue(after - before);
     mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+    mVertices.clear();
+    DEMGraph::VertexContainer fgMapping = estMixtPlane.getFgMapping();
+    std::vector<size_t> mapState = estMixtPlane.getMAPState();
+    for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
+      mGraph.getVertexEnd(); ++it)
+      mVertices[it->first] = mapState[fgMapping[it->first]];
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
       responsibilities = estMixtPlane.getResponsibilities();
     double residual = 0.0;
     for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
-      double max = -std::numeric_limits<double>::infinity();
-      size_t argmax = 0;
-      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-        if (responsibilities(i, j) > max) {
-          max = responsibilities(i, j);
-          argmax = j;
-        }
-      mVertices[pointsMapping[i]] = argmax;
       Eigen::Matrix<double, 3, 1> point;
       point(0) = 1.0;
       point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
