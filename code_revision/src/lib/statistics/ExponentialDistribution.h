@@ -44,13 +44,14 @@ public:
     @{
     */
   /// Constructs distribution from parameter
-  ExponentialDistribution(double rate = 1.0);
+  inline ExponentialDistribution(double rate = 1.0);
   /// Copy constructor
-  ExponentialDistribution(const ExponentialDistribution& other);
+  inline ExponentialDistribution(const ExponentialDistribution& other);
   /// Assignment operator
-  ExponentialDistribution& operator = (const ExponentialDistribution& other);
+  inline ExponentialDistribution& operator = (const ExponentialDistribution&
+    other);
   /// Destructor
-  virtual ~ExponentialDistribution();
+  inline virtual ~ExponentialDistribution();
   /** @}
     */
 
@@ -58,27 +59,27 @@ public:
     @{
     */
   /// Sets the event rate
-  void setRate(double rate) throw (BadArgumentException<double>);
+  inline void setRate(double rate) throw (BadArgumentException<double>);
   /// Returns the event rate
-  double getRate() const;
+  inline double getRate() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  inline double getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
   /// Access the probablity density function at the given value
-  virtual double pdf(const double& value) const;
+  inline virtual double pdf(const double& value) const;
   /// Access the log-probablity density function at the given value
-  double logpdf(const double& value) const;
+  inline double logpdf(const double& value) const;
   /// Access the cumulative density function at the given value
-  double cdf(const double& value) const;
+  inline double cdf(const double& value) const;
   /// Access a sample drawn from the distribution
-  virtual double getSample() const;
+  inline virtual double getSample() const;
   /// Returns the KL-divergence with another distribution
-  double KLDivergence(const ExponentialDistribution& other) const;
+  inline double KLDivergence(const ExponentialDistribution& other) const;
   /** @}
     */
 
@@ -87,13 +88,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

@@ -44,13 +44,13 @@ public:
     @{
     */
   /// Constructs the distribution from the parameter
-  PoissonDistribution(double mean = 1.0);
+  inline PoissonDistribution(double mean = 1.0);
   /// Copy constructor
-  PoissonDistribution(const PoissonDistribution& other);
+  inline PoissonDistribution(const PoissonDistribution& other);
   /// Assignment operator
-  PoissonDistribution& operator = (const PoissonDistribution& other);
+  inline PoissonDistribution& operator = (const PoissonDistribution& other);
   /// Destructor
-  virtual ~PoissonDistribution();
+  inline virtual ~PoissonDistribution();
   /** @}
     */
 
@@ -58,25 +58,25 @@ public:
     @{
     */
   /// Sets the event mean
-  void setMean(double mean) throw (BadArgumentException<double>);
+  inline void setMean(double mean) throw (BadArgumentException<double>);
   /// Returns the event mean
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  inline double getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
   /// Returns the probability mass function at a point
-  virtual double pmf(const size_t& value) const;
+  inline virtual double pmf(const size_t& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const size_t& value) const;
+  inline double logpmf(const size_t& value) const;
   /// Returns the cumulative mass function at a point
-  double cdf(const size_t& value) const;
+  inline double cdf(const size_t& value) const;
   /// Access a sample drawn from the distribution
-  virtual size_t getSample() const;
+  inline virtual size_t getSample() const;
   /// Returns the KL-divergence with another distribution
-  double KLDivergence(const PoissonDistribution& other) const;
+  inline double KLDivergence(const PoissonDistribution& other) const;
   /** @}
     */
 
@@ -85,13 +85,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

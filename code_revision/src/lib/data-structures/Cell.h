@@ -52,7 +52,7 @@ public:
     */
   /// Adds a point into the cell
   inline void addPoint(double point);
-  /// Returns the height estimator
+  /// Returns the improper height estimator
   inline const EstimatorBayesImproper<NormalDistribution<1> >&
     getHeightEstimator() const;
   /** @}
@@ -76,7 +76,7 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimator for the height values
+  /// Improper Bayesian estimator for the height values
   EstimatorBayesImproper<NormalDistribution<1> > mHeightEstimator;
   /** @}
     */

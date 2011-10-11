@@ -50,15 +50,15 @@ public:
     @{
     */
   /// Constructs estimator with hyperparameters prior
-  EstimatorBayes(double mu = 0.0, double kappa = 1.0, double nu = 1.0, double
-    sigma = 1.0);
+  inline EstimatorBayes(double mu = 0.0, double kappa = 1.0, double nu = 1.0,
+    double sigma = 1.0);
   /// Copy constructor
-  EstimatorBayes(const EstimatorBayes<NormalDistribution<1> >& other);
+  inline EstimatorBayes(const EstimatorBayes<NormalDistribution<1> >& other);
   /// Assignment operator
-  EstimatorBayes<NormalDistribution<1> >& operator =
+  inline EstimatorBayes<NormalDistribution<1> >& operator =
     (const EstimatorBayes<NormalDistribution<1> >& other);
   /// Destructor
-  virtual ~EstimatorBayes();
+  inline virtual ~EstimatorBayes();
   /** @}
     */
 
@@ -66,16 +66,16 @@ public:
     @{
     */
   /// Returns the posterior marginal mean distribution
-  const StudentDistribution<1>& getPostMeanDist() const;
+  inline const StudentDistribution<1>& getPostMeanDist() const;
   /// Returns the posterior marginal variance distribution
-  const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
+  inline const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
   /// Returns the posterior predictive distribution
-  const StudentDistribution<1>& getPostPredDist() const;
+  inline const StudentDistribution<1>& getPostPredDist() const;
   /// Add a point to the estimator
-  void addPoint(const Point& point);
+  inline void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
   /** @}
     */
 
@@ -84,13 +84,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

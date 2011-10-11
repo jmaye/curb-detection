@@ -45,7 +45,7 @@ void Cell::read(std::istream& stream) {
 }
 
 void Cell::write(std::ostream& stream) const {
-  stream << "height estimator: " << std::endl;
+  stream << "height estimator: " << mHeightEstimator << std::endl;
 }
 
 void Cell::read(std::ifstream& stream) {

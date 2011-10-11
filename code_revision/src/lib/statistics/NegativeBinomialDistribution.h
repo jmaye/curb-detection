@@ -39,15 +39,16 @@ public:
     @{
     */
   /// Constructs the distribution from the parameter
-  NegativeBinomialDistribution(size_t numTrials = 1, double
+  inline NegativeBinomialDistribution(size_t numTrials = 1, double
     successProbability = 0.5);
   /// Copy constructor
-  NegativeBinomialDistribution(const NegativeBinomialDistribution& other);
+  inline NegativeBinomialDistribution(const NegativeBinomialDistribution&
+    other);
   /// Assignment operator
-  NegativeBinomialDistribution& operator =
+  inline NegativeBinomialDistribution& operator =
     (const NegativeBinomialDistribution& other);
   /// Destructor
-  virtual ~NegativeBinomialDistribution();
+  inline virtual ~NegativeBinomialDistribution();
   /** @}
     */
 
@@ -55,17 +56,17 @@ public:
     @{
     */
   /// Sets the success probability
-  void setSuccessProbability(double successProbability);
+  inline void setSuccessProbability(double successProbability);
   /// Returns the success probability
-  double getSuccessProbability() const;
+  inline double getSuccessProbability() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<size_t, 2, 1> getSample() const;
+  inline virtual Eigen::Matrix<size_t, 2, 1> getSample() const;
   /** @}
     */
 
@@ -74,13 +75,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

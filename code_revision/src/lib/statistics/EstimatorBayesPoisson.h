@@ -50,14 +50,14 @@ public:
     @{
     */
   /// Constructs estimator with hyperparameters prior
-  EstimatorBayes(double alpha = 1.0, double beta = 1.0);
+  inline EstimatorBayes(double alpha = 1.0, double beta = 1.0);
   /// Copy constructor
-  EstimatorBayes(const EstimatorBayes<PoissonDistribution>& other);
+  inline EstimatorBayes(const EstimatorBayes<PoissonDistribution>& other);
   /// Assignment operator
-  EstimatorBayes<PoissonDistribution>& operator =
+  inline EstimatorBayes<PoissonDistribution>& operator =
     (const EstimatorBayes<PoissonDistribution>& other);
   /// Destructor
-  virtual ~EstimatorBayes();
+  inline virtual ~EstimatorBayes();
   /** @}
     */
 
@@ -65,14 +65,14 @@ public:
     @{
     */
   /// Returns the posterior mean distribution
-  const GammaDistribution<double>& getPostMeanDist() const;
+  inline const GammaDistribution<double>& getPostMeanDist() const;
   /// Returns the posterior predictive distribution
-  const NegativeBinomialDistribution& getPostPredDist() const;
+  inline const NegativeBinomialDistribution& getPostPredDist() const;
   /// Add a point to the estimator
-  void addPoint(const Point& point);
+  inline void addPoint(const Point& point);
   /// Add points to the estimator
-  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd);
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
   /** @}
     */
 
@@ -81,13 +81,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
