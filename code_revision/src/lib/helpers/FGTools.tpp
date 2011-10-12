@@ -48,6 +48,7 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     factors.push_back(fac);
     idx++;
   }
+  double avgStd = 0;
   for (DEMGraph::ConstEdgeIterator it = graph.getEdgeBegin(); it !=
     graph.getEdgeEnd(); ++it) {
     const DEMGraph::EdgeDescriptor e = graph.getEdge(it);
@@ -62,17 +63,14 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const double varSum = dem[v1].getHeightEstimator().getPostPredDist().
       getVariance() + dem[v2].getHeightEstimator().getPostPredDist().
       getVariance();
-    dai::Factor fac(varSet, exp(0));
+    avgStd += sqrt(varSum);
+    dai::Factor fac(varSet, exp(10 * heightDiff));
     for (size_t i = 0; i < numLabels; ++i)
-      //fac.set(i * (numLabels + 1), NormalDistribution<1>(0, varSum)
-        //(heightDiff));
-      //fac.set(i * (numLabels + 1), exp(15.0 / (1.0 + graph.getEdgeProperty(e))));
-      //fac.set(i * (numLabels + 1), exp(5.0));
-      fac.set(i * (numLabels + 1), exp(2.0));
+      fac.set(i * (numLabels + 1), exp(-10.0 * heightDiff));
     factors.push_back(fac);
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
-  vars.end(), factors.size(), vars.size());
+    vars.end(), factors.size(), vars.size());
 }
 
 void updateFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,

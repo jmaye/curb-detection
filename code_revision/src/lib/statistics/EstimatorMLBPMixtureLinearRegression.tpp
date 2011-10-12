@@ -271,7 +271,7 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
     opts.set("maxiter", (size_t)mMaxNumIterBP);
     opts.set("tol", mTolBP);
     opts.set("verbose", (size_t)0);
-    opts.set("updates", std::string("SEQFIX"));
+    opts.set("updates", std::string("SEQRND"));
     opts.set("logdomain", false);
     opts.set("inference", std::string("SUMPROD"));
     BeliefPropagation bp(factorGraph, opts);
