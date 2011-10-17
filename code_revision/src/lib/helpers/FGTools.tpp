@@ -48,7 +48,6 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     factors.push_back(fac);
     idx++;
   }
-  double avgStd = 0;
   for (DEMGraph::ConstEdgeIterator it = graph.getEdgeBegin(); it !=
     graph.getEdgeEnd(); ++it) {
     const DEMGraph::EdgeDescriptor e = graph.getEdge(it);
@@ -60,13 +59,12 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const double heightDiff = fabs(dem[v1].getHeightEstimator().
       getPostPredDist().getMean() - dem[v2].getHeightEstimator().
       getPostPredDist().getMean());
-    const double varSum = dem[v1].getHeightEstimator().getPostPredDist().
+    const double varSum = sqrt(dem[v1].getHeightEstimator().getPostPredDist().
       getVariance() + dem[v2].getHeightEstimator().getPostPredDist().
-      getVariance();
-    avgStd += sqrt(varSum);
-    dai::Factor fac(varSet, exp(10 * heightDiff));
+      getVariance());
+    dai::Factor fac(varSet, (1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum))));
     for (size_t i = 0; i < numLabels; ++i)
-      fac.set(i * (numLabels + 1), exp(-10.0 * heightDiff));
+      fac.set(i * (numLabels + 1), 1.0 - 1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum)));
     factors.push_back(fac);
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
@@ -83,7 +81,6 @@ void updateFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
     const Grid<double, Cell, 2>::Index& index = it->first;
     dai::Factor fac(factorGraph.var(fgMapping[index]));
     computeNodeFactor(dem, coefficients, variances, weights, index, fac);
-    fac.normalize();
     factorGraph.setFactor(fgMapping[index], fac);
   }
 }
@@ -101,5 +98,5 @@ void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
   const size_t numLabels = weights.size();
   for (size_t i = 0; i < numLabels; ++i)
     factor.set(i, weights(i) * NormalDistribution<1>(
-      coefficients.row(i).transpose().dot(point), variances(i))(target));
+      coefficients.row(i).transpose().dot(point), 2 * variances(i))(target));
 }
