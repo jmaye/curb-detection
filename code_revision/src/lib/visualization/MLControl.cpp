@@ -166,21 +166,14 @@ void MLControl::runML() {
       Eigen::Matrix<double, 3, 1> point;
       point(0) = 1.0;
       point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
-      double prediction = 0;
-      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j) {
-        prediction += (estMixtPlane.getCoefficients().row(j) * point)(0) *
-          estMixtPlane.getWeights()(j);
-      }
-      double variance = 0;
-      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-        variance += ((estMixtPlane.getCoefficients().row(j) * point)(0) *
-          (estMixtPlane.getCoefficients().row(j) * point)(0) +
-          estMixtPlane.getVariances()(j)) * estMixtPlane.getWeights()(j);
-      variance -= prediction * prediction;
-      const double diff = mDEM[pointsMapping[i]].getHeightEstimator().
-        getPostPredDist().getMean() - prediction;
-      residual += (diff * diff) / variance;
+      double prediction =
+        (estMixtPlane.getCoefficients().row(mVertices[pointsMapping[i]]) *
+        point)(0);
+      residual += fabs(prediction -
+        mDEM[pointsMapping[i]].getHeightEstimator().
+        getPostPredDist().getMean());
     }
+    residual /= (size_t)responsibilities.rows();
     mUi->residualSpinBox->setValue(residual);
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
