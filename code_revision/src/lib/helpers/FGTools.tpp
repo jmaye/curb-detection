@@ -62,9 +62,13 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const double varSum = sqrt(dem[v1].getHeightEstimator().getPostPredDist().
       getVariance() + dem[v2].getHeightEstimator().getPostPredDist().
       getVariance());
-    dai::Factor fac(varSet, (1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum))));
+//    dai::Factor fac(varSet, (1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum))));
+//    for (size_t i = 0; i < numLabels; ++i)
+//      fac.set(i * (numLabels + 1), 1.0 - 1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum)));
+    dai::Factor fac(varSet, exp(-0.001 * -log(graph.getEdgeProperty(e))));
     for (size_t i = 0; i < numLabels; ++i)
-      fac.set(i * (numLabels + 1), 1.0 - 1.0 / (1.0 + exp(-heightDiff + 0.5 * varSum)));
+      //fac.set(i * (numLabels + 1), exp(-log(graph.getEdgeProperty(e))));
+      fac.set(i * (numLabels + 1), exp(-0.001 * -log(1.0 / graph.getEdgeProperty(e))));
     factors.push_back(fac);
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
@@ -98,5 +102,5 @@ void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
   const size_t numLabels = weights.size();
   for (size_t i = 0; i < numLabels; ++i)
     factor.set(i, weights(i) * NormalDistribution<1>(
-      coefficients.row(i).transpose().dot(point), 2 * variances(i))(target));
+      coefficients.row(i).transpose().dot(point), variances(i))(target));
 }

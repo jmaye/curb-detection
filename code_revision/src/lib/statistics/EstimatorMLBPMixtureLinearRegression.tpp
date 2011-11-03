@@ -272,7 +272,7 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
     opts.set("tol", mTolBP);
     opts.set("verbose", (size_t)0);
     opts.set("updates", std::string("SEQRND"));
-    opts.set("logdomain", false);
+    opts.set("logdomain", true);
     opts.set("inference", std::string("SUMPROD"));
     BeliefPropagation bp(factorGraph, opts);
     bp.init();
@@ -312,7 +312,7 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
   opts.set("tol", mTolBP);
   opts.set("verbose", (size_t)0);
   opts.set("updates", std::string("SEQRND"));
-  opts.set("logdomain", false);
+  opts.set("logdomain", true);
   opts.set("inference", std::string("MAXPROD"));
   BeliefPropagation bp(factorGraph, opts);
   bp.init();

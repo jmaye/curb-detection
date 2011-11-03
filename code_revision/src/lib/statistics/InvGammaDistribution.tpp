@@ -154,7 +154,7 @@ template <typename T>
 double InvGammaDistribution<T>::getMean() const {
   if (mShape > 1)
     return mScale / (mShape - 1);
-  return 0;
+  return mScale;
 }
 
 template <typename T>
@@ -166,5 +166,5 @@ template <typename T>
 double InvGammaDistribution<T>::getVariance() const {
   if (mShape > 2)
     return (mScale * mScale) / ((mShape - 1) * (mShape - 1) * (mShape - 2));
-  return 0;
+  return (mScale * mScale);
 }
