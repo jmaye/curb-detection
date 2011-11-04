@@ -152,6 +152,8 @@ void MLControl::runML() {
     mUi->iterSpinBox->setValue(numIter);
     mUi->timeSpinBox->setValue(after - before);
     mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+    std::cout << estMixtPlane.getCoefficients() << std::endl;
+    std::cout << estMixtPlane.getVariances() << std::endl;
     const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
       responsibilities = estMixtPlane.getResponsibilities();
     double residual = 0.0;

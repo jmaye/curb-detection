@@ -172,6 +172,8 @@ void MLBPControl::runMLBP() {
     mUi->iterSpinBox->setValue(numIter);
     mUi->timeSpinBox->setValue(after - before);
     mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+    std::cout << estMixtPlane.getCoefficients() << std::endl;
+    std::cout << estMixtPlane.getVariances() << std::endl;
     mVertices.clear();
     DEMGraph::VertexContainer fgMapping = estMixtPlane.getFgMapping();
     const std::vector<size_t>& mapState = estMixtPlane.getMAPState();
