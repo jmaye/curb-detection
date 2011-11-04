@@ -60,7 +60,7 @@ public:
   /// Edge iterator
   typedef EdgeContainer::iterator EdgeIterator;
   /// Vertex container
-  typedef std::tr1::unordered_map<V, size_t> VertexContainer;
+  typedef std::tr1::unordered_map<V, size_t, IndexHash> VertexContainer;
   /// Constant vertex iterator
   typedef VertexContainer::const_iterator ConstVertexIterator;
   /// Vertex iterator

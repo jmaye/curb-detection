@@ -22,6 +22,7 @@
 #include "statistics/EstimatorML.h"
 #include "helpers/InitML.h"
 #include "base/Timestamp.h"
+#include "utils/IndexHash.h"
 
 #include "ui_MLControl.h"
 
@@ -131,7 +132,7 @@ void MLControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   mGraph = graph;
   mComponents = components;
   mColors = colors;
-  mVertices.clear();
+  mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
 }
 

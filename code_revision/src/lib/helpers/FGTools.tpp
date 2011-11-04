@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include "statistics/NormalDistribution.h"
+#include "utils/IndexHash.h"
 
 #include <vector>
 
@@ -36,7 +37,7 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
   vars.reserve(numVertices);
   std::vector<dai::Factor> factors;
   factors.reserve(numVertices + numEdges);
-  fgMapping.clear();
+  fgMapping = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   size_t idx = 0;
   for (DEMGraph::ConstVertexIterator it = graph.getVertexBegin(); it !=
     graph.getVertexEnd(); ++it) {

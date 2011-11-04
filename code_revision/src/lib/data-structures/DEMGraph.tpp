@@ -22,6 +22,7 @@
 
 DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
   const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
+  mVertices = VertexContainer(10, IndexHash(numCells(1)));
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
       Grid<double, Cell, 2>::Index cellIdx =

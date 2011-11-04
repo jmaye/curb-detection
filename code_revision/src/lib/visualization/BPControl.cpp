@@ -24,6 +24,7 @@
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
 #include "base/Timestamp.h"
+#include "utils/IndexHash.h"
 
 #include "ui_BPControl.h"
 
@@ -191,7 +192,7 @@ void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   Helpers::buildFactorGraph(dem, graph, coefficients, variances, weights,
     mFactorGraph, mFgMapping);
   mColors = colors;
-  mVertices.clear();
+  mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
 }
 

@@ -23,23 +23,24 @@
 #ifndef INDEXHASH_H
 #define INDEXHASH_H
 
-#include <tr1/unordered_map>
 #include <utils/SizeTSupport.h>
 
-namespace std {
-
-namespace tr1 {
-
-/// Definition of the index type we want to hash
-typedef Eigen::Matrix<size_t, 2, 1> Index;
-
-/// Hash function for the index type
-template<> inline size_t hash<Index>::operator()(Index value) const {
-  return value(0) * 40 + value(1);
+/** The IndexHash structure defines the hash function for 2d indices
+    \brief Hash function for 2d indices
+  */
+struct IndexHash {
+  /// Type of the index
+  typedef Eigen::Matrix<size_t, 2, 1> Index;
+  /// Number of columns
+  size_t mNumCols;
+  /// Constructor with parameters
+  IndexHash(size_t numCols = 40) :
+    mNumCols(numCols) {
+  };
+  /// Hash function
+  size_t operator() (const Index& value) const {
+    return value(0) * mNumCols + value(1);
+  }
 };
-
-}
-
-}
 
 #endif // INDEXHASH_H

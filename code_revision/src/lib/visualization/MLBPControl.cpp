@@ -151,7 +151,7 @@ void MLBPControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const
   mGraph = graph;
   mComponents = components;
   mColors = colors;
-  mVertices.clear();
+  mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
 }
 
