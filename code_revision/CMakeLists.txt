@@ -4,8 +4,8 @@ include(ReMake)
 
 remake_project(
   curb-detection
-  VERSION 0.1
-  RELEASE alpha
+  VERSION 1.0
+  RELEASE beta
   SUMMARY "A C++ based library for curb detection"
   AUTHOR "Jerome Maye"
   CONTACT "jerome.maye@mavt.ethz.ch"
@@ -26,4 +26,10 @@ remake_pack_deb(
 remake_doc(
   html
   latex
+)
+
+remake_pack_deb(
+  COMPONENT doc
+  DESCRIPTION "Documentation"
+  curb-detection
 )

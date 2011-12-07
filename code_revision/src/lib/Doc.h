@@ -22,8 +22,8 @@
 
 /** \mainpage Reference manual for curb-detection - A free/open source C++ library for curb detection in 3D point clouds
     \author Jerome Maye <jerome.maye@gmail.com>
-    \version 0.1.100
-    \date June 22, 2011
+    \version 0.1.129
+    \date December7, 2011
   */
 
 /** \page license License
