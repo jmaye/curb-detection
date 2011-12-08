@@ -139,6 +139,10 @@ protected:
   std::vector<double> mProjection;
   /// Model view
   std::vector<double> mModelview;
+  /// Stored width
+  int mWidth;
+  /// Stored height
+  int mHeight;
   /** @}
     */
 

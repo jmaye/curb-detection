@@ -257,7 +257,7 @@ void ViewControl::dumpFrame(const QString& format, int frame, size_t width,
     QString filename;
     QPixmap pixmap;
     filename.sprintf(format.toAscii().constData(), frame);
-    pixmap = GLView::getInstance().renderPixmap(width, height);
+    pixmap = GLView::getInstance().renderPixmap(width, height, true);
     QFileInfo fileInfo(dir, filename);
     if (pixmap.save(fileInfo.absoluteFilePath()))
       mUi->frameSpinBox->setValue(frame + 1);

@@ -193,6 +193,8 @@ void GLView::initializeGL() {
 void GLView::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
   mCamera.setup(*this, width, height);
+  mWidth = width;
+  mHeight = height;
 }
 
 void GLView::paintGL() {
@@ -200,7 +202,7 @@ void GLView::paintGL() {
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  mCamera.setup(*this, width(), height());
+  mCamera.setup(*this, mWidth, mHeight);
   mScene.setup(*this);
   glGetIntegerv(GL_VIEWPORT, &mViewport[0]);
   glGetDoublev(GL_PROJECTION_MATRIX, &mProjection[0]);
