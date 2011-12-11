@@ -156,3 +156,36 @@ const typename PointCloud<X, M>::Container& PointCloud<X, M>::getPoints()
   const {
   return mPoints;
 }
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+template <typename X, size_t M>
+bool PointCloud<X, M>::writeBinary(std::ostream& stream) const {
+  const size_t numPoints = mPoints.size();
+  stream.write((const char*)&numPoints, sizeof(numPoints));
+  for (ConstPointIterator it = getPointBegin(); it != getPointEnd(); ++it) {
+    for (size_t i = 0; i < M; ++i) {
+      X value = (*it)(i);
+      stream.write((const char*)&value, sizeof(value));
+    }
+  }
+  return true;
+}
+
+template <typename X, size_t M>
+bool PointCloud<X, M>::readBinary(std::istream& stream) {
+  size_t numPoints;
+  stream.read((char*)&numPoints, sizeof(numPoints));
+  for (size_t i = 0; i < numPoints; ++i) {
+    Point point;
+    for (size_t j = 0; j < M; ++j) {
+      X value;
+      stream.read((char*)&value, sizeof(value));
+      point(j) = value;
+    }
+    mPoints.push_back(point);
+  }
+  return true;
+}

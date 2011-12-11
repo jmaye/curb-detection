@@ -97,6 +97,16 @@ public:
   /** @}
     */
 
+  /** \name Methods
+      @{
+    */
+  /// Writes into a output stream
+  bool writeBinary(std::ostream& stream) const;
+  /// Reads from an input stream
+  bool readBinary(std::istream& stream);
+  /** @}
+    */
+
 protected:
   /** \name Stream methods
     @{
