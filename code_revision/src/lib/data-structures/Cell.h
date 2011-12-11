@@ -58,6 +58,14 @@ public:
   /** @}
     */
 
+  /** \name Methodds
+      @{
+    */
+  /// Reset the cell
+  inline void reset();
+  /** @}
+    */
+
 protected:
   /** \name Stream methods
     @{

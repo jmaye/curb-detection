@@ -248,3 +248,9 @@ template <typename T, typename C, size_t M>
 const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getResolution() const {
   return mResolution;
 }
+
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::reset() {
+  for (CellIterator it = getCellBegin(); it != getCellEnd(); ++it)
+    it->reset();
+}

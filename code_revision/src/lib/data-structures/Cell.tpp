@@ -66,3 +66,11 @@ const EstimatorBayesImproper<NormalDistribution<1> >& Cell::getHeightEstimator()
   const {
   return mHeightEstimator;
 }
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+void Cell::reset() {
+  mHeightEstimator.reset();
+}

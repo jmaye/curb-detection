@@ -115,6 +115,8 @@ public:
   const Coordinate& getResolution() const;
   /// Computes linear index
   size_t computeLinearIndex(const Index& idx) const;
+  /// Reset the grid
+  void reset();
   /** @}
     */
 
