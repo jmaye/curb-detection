@@ -175,5 +175,5 @@ double StudentDistribution<1>::getVariance() const {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
   else
-    return 4.0 * mScale;
+    return 3 * mScale;
 }
