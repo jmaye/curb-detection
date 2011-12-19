@@ -29,8 +29,7 @@ UndirectedEdge<V, P>::UndirectedEdge(const V& head, const V& tail, const P&
 }
 
 template <typename V, typename P>
-UndirectedEdge<V, P>::UndirectedEdge(const UndirectedEdge<V, P>::UndirectedEdge&
-  other) :
+UndirectedEdge<V, P>::UndirectedEdge(const UndirectedEdge& other) :
   mHead(other.mHead),
   mTail(other.mTail),
   mProperty(other.mProperty) {

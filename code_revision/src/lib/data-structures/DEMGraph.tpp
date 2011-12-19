@@ -63,7 +63,7 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
     }
 }
 
-DEMGraph::DEMGraph(const DEMGraph::DEMGraph& other) :
+DEMGraph::DEMGraph(const DEMGraph& other) :
   mEdges(other.mEdges),
   mVertices(other.mVertices) {
 }

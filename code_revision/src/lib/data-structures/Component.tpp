@@ -32,7 +32,7 @@ Component<V, P>::Component(const P& property) :
 }
 
 template <typename V, typename P>
-Component<V, P>::Component(const Component<V, P>::Component& other) :
+Component<V, P>::Component(const Component& other) :
   mVertices(other.mVertices),
   mProperty(other.mProperty) {
 }
