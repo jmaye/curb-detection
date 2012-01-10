@@ -48,14 +48,14 @@ public:
     @{
     */
   /// Default constructor
-  inline EstimatorML();
+  EstimatorML();
   /// Copy constructor
-  inline EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
   /// Assignment operator
-  inline EstimatorML<NormalDistribution<1> >& operator =
+  EstimatorML<NormalDistribution<1> >& operator =
     (const EstimatorML<NormalDistribution<1> >& other);
   /// Destructor
-  inline virtual ~EstimatorML();
+  virtual ~EstimatorML();
   /** @}
     */
 
@@ -63,20 +63,20 @@ public:
     @{
     */
   /// Returns the number of points
-  inline size_t getNumPoints() const;
+  size_t getNumPoints() const;
   /// Returns the validity state of the estimator
-  inline bool getValid() const;
+  bool getValid() const;
   /// Returns the estimated mean
-  inline double getMean() const;
+  double getMean() const;
   /// Returns the estimated variance
-  inline double getVariance() const;
+  double getVariance() const;
   /// Add a point to the estimator
-  inline void addPoint(const Point& point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
-  inline void addPoints(const ConstPointIterator& itStart, const
-    ConstPointIterator& itEnd);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
   /// Reset the estimator
-  inline void reset();
+  void reset();
   /** @}
     */
 
@@ -85,13 +85,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -106,6 +106,10 @@ protected:
   size_t mNumPoints;
   /// Valid flag
   bool mValid;
+  /// Sum of the values
+  double mValuesSum;
+  /// Squared sum of the values
+  double mSquaredValuesSum;
   /** @}
     */
 

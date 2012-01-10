@@ -121,6 +121,10 @@ protected:
   size_t mNumPoints;
   /// Valid flag
   bool mValid;
+  /// Sum of the values
+  double mValuesSum;
+  /// Squared sum of the values
+  double mSquaredValuesSum;
   /** @}
     */
 

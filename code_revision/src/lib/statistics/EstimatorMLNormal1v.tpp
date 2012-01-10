@@ -21,10 +21,10 @@
 /******************************************************************************/
 
 EstimatorML<NormalDistribution<1> >::EstimatorML() :
-  mMean(0),
-  mVariance(0),
   mNumPoints(0),
-  mValid(false) {
+  mValid(false),
+  mValuesSum(0),
+  mSquaredValuesSum(0) {
 }
 
 EstimatorML<NormalDistribution<1> >::EstimatorML(const
@@ -32,7 +32,9 @@ EstimatorML<NormalDistribution<1> >::EstimatorML(const
   mMean(other.mMean),
   mVariance(other.mVariance),
   mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+  mValid(other.mValid),
+  mValuesSum(other.mValuesSum),
+  mSquaredValuesSum(other.mSquaredValuesSum) {
 }
 
 EstimatorML<NormalDistribution<1> >&
@@ -43,6 +45,8 @@ EstimatorML<NormalDistribution<1> >&
     mVariance = other.mVariance;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
+    mValuesSum = other.mValuesSum;
+    mSquaredValuesSum = other.mSquaredValuesSum;
   }
   return *this;
 }
@@ -94,15 +98,17 @@ double EstimatorML<NormalDistribution<1> >::getVariance() const {
 void EstimatorML<NormalDistribution<1> >::reset() {
   mNumPoints = 0;
   mValid = false;
-  mMean = 0;
-  mVariance = 0;
+  mValuesSum = 0;
+  mSquaredValuesSum = 0;
 }
 
 void EstimatorML<NormalDistribution<1> >::addPoint(const Point& point) {
   mNumPoints++;
-  mMean += 1.0 / mNumPoints * (point - mMean);
-  mVariance += 1.0 / mNumPoints * ((point - mMean) * (point - mMean) -
-    mVariance);
+  mValuesSum += point;
+  mSquaredValuesSum += point * point;
+  mMean = 1.0 / mNumPoints * mValuesSum;
+  mVariance = 1.0 / mNumPoints * mSquaredValuesSum -
+    2.0 / mNumPoints * mMean * mValuesSum + mMean * mMean;
   if (mVariance != 0.0)
     mValid = true;
   else

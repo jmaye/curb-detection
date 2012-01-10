@@ -34,7 +34,9 @@ EstimatorML<NormalDistribution<M>, M>::EstimatorML(const
   mMean(other.mMean),
   mCovariance(other.mCovariance),
   mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+  mValid(other.mValid),
+  mValuesSum(other.mValuesSum),
+  mSquaredValuesSum(other.mSquaredValuesSum) {
 }
 
 template <size_t M>
@@ -46,6 +48,8 @@ EstimatorML<NormalDistribution<M>, M>&
     mCovariance = other.mCovariance;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
+    mValuesSum = other.mValuesSum;
+    mSquaredValuesSum = other.mSquaredValuesSum;
   }
   return *this;
 }
@@ -109,21 +113,26 @@ template <size_t M>
 void EstimatorML<NormalDistribution<M>, M>::reset() {
   mNumPoints = 0;
   mValid = false;
-  mMean = Eigen::Matrix<double, M, 1>::Zero();
-  mCovariance = Eigen::Matrix<double, M, M>::Zero();
 }
 
 template <size_t M>
 void EstimatorML<NormalDistribution<M>, M>::addPoint(const Point& point) {
   if (mNumPoints == 0) {
-    mMean = Eigen::Matrix<double, M, 1>::Zero(point.size());
-    mCovariance = Eigen::Matrix<double, M, M>::Zero(point.size(),
+    mValuesSum = Eigen::Matrix<double, M, 1>::Zero(point.size());
+    mSquaredValuesSum = Eigen::Matrix<double, M, M>::Zero(point.size(),
       point.size());
   }
   mNumPoints++;
-  mMean += 1.0 / mNumPoints * (point - mMean);
-  mCovariance += 1.0 / mNumPoints * ((point - mMean) *
-    (point - mMean).transpose() - mCovariance);
+  mValuesSum += point;
+  mSquaredValuesSum += point * point.transpose();
+  mMean = 1.0 / mNumPoints * mValuesSum;
+  mCovariance = 1.0 / mNumPoints * mSquaredValuesSum -
+    2.0 / mNumPoints  * mMean * mValuesSum.transpose()  +
+    mMean * mMean.transpose();
+  const size_t dim = point.size();
+  for (size_t i = 0; i < dim; ++i)
+    for (size_t j = i + 1; j < dim; ++j)
+    mCovariance(i, j) = mCovariance(j, i);
   const Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp = mCovariance.qr();
   if (qrDecomp.rank() == mMean.size())
     mValid = true;

@@ -122,6 +122,10 @@ protected:
   size_t mNumPoints;
   /// Valid flag
   bool mValid;
+  /// Sum of the values
+  Eigen::Matrix<double, M, 1> mValuesSum;
+  /// Squared sum of the values
+  Eigen::Matrix<double, M, M> mSquaredValuesSum;
   /** @}
     */
 

@@ -37,7 +37,9 @@ EstimatorBayesImproper<NormalDistribution<M>, M>::EstimatorBayesImproper(const
   mSampleMean(other.mSampleMean),
   mSampleCovariance(other.mSampleCovariance),
   mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+  mValid(other.mValid),
+  mValuesSum(other.mValuesSum),
+  mSquaredValuesSum(other.mSquaredValuesSum){
 }
 
 template <size_t M>
@@ -52,6 +54,8 @@ EstimatorBayesImproper<NormalDistribution<M>, M>&
     mSampleCovariance = other.mSampleCovariance;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
+    mValuesSum = other.mValuesSum;
+    mSquaredValuesSum = other.mSquaredValuesSum;
   }
   return *this;
 }
@@ -148,15 +152,25 @@ template <size_t M>
 void EstimatorBayesImproper<NormalDistribution<M>, M>::addPoint(const Point&
   point) {
   if (mNumPoints == 0) {
-    mSampleMean = Eigen::Matrix<double, M, 1>::Zero(point.size());
+    mValuesSum = Eigen::Matrix<double, M, 1>::Zero(point.size());
+    mSquaredValuesSum = Eigen::Matrix<double, M, M>::Zero(point.size(),
+      point.size());
     mSampleCovariance = Eigen::Matrix<double, M, M>::Zero(point.size(),
       point.size());
   }
   mNumPoints++;
-  mSampleMean += 1.0 / mNumPoints * (point - mSampleMean);
-  if (mNumPoints > 1)
-    mSampleCovariance += 1.0 / (mNumPoints - 1) * ((point - mSampleMean) *
-      (point - mSampleMean).transpose() - mSampleCovariance);
+  mValuesSum += point;
+  mSquaredValuesSum += point * point.transpose();
+  mSampleMean = 1.0 / mNumPoints * mValuesSum;
+  if (mNumPoints > 1) {
+    mSampleCovariance = 1.0 / (mNumPoints - 1) * (mSquaredValuesSum -
+    2.0 * mSampleMean * mValuesSum.transpose() +
+    mNumPoints * mSampleMean * mSampleMean.transpose());
+    const size_t dim = point.size();
+    for (size_t i = 0; i < dim; ++i)
+      for (size_t j = i + 1; j < dim; ++j)
+      mSampleCovariance(i, j) = mSampleCovariance(j, i);
+  }
   const Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp =
     mSampleCovariance.qr();
   if (qrDecomp.rank() == mSampleMean.size()) {

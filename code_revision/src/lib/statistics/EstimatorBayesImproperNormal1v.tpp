@@ -21,10 +21,11 @@
 /******************************************************************************/
 
 EstimatorBayesImproper<NormalDistribution<1> >::EstimatorBayesImproper() :
-  mSampleMean(0),
   mSampleVariance(0),
   mNumPoints(0),
-  mValid(false) {
+  mValid(false),
+  mValuesSum(0),
+  mSquaredValuesSum(0) {
 }
 
 EstimatorBayesImproper<NormalDistribution<1> >::EstimatorBayesImproper(const
@@ -35,7 +36,9 @@ EstimatorBayesImproper<NormalDistribution<1> >::EstimatorBayesImproper(const
   mSampleMean(other.mSampleMean),
   mSampleVariance(other.mSampleVariance),
   mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+  mValid(other.mValid),
+  mValuesSum(other.mValuesSum),
+  mSquaredValuesSum(other.mSquaredValuesSum) {
 }
 
 EstimatorBayesImproper<NormalDistribution<1> >&
@@ -49,6 +52,8 @@ EstimatorBayesImproper<NormalDistribution<1> >&
     mSampleVariance = other.mSampleVariance;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
+    mValuesSum = other.mValuesSum;
+    mSquaredValuesSum = other.mSquaredValuesSum;
   }
   return *this;
 }
@@ -124,18 +129,22 @@ bool EstimatorBayesImproper<NormalDistribution<1> >::getValid() const {
 void EstimatorBayesImproper<NormalDistribution<1> >::reset() {
   mNumPoints = 0;
   mValid = false;
-  mSampleMean = 0;
+  mValuesSum = 0;
+  mSquaredValuesSum = 0;
   mSampleVariance = 0;
 }
 
 void EstimatorBayesImproper<NormalDistribution<1> >::addPoint(const Point&
   point) {
   mNumPoints++;
-  mSampleMean += 1.0 / mNumPoints * (point - mSampleMean);
-  if (mNumPoints > 1)
-    mSampleVariance += 1.0 / (mNumPoints - 1) * ((point - mSampleMean) *
-      (point - mSampleMean) - mSampleVariance);
-  if (mSampleVariance != 0.0) {
+  mValuesSum += point;
+  mSquaredValuesSum += point * point;
+  mSampleMean = 1.0 / mNumPoints * mValuesSum;
+  if (mNumPoints > 1) {
+    mSampleVariance = 1.0 / (mNumPoints - 1) * (mSquaredValuesSum -
+    2.0 * mSampleMean * mValuesSum + mNumPoints * mSampleMean * mSampleMean);
+  }
+  if (mSampleVariance > 0) {
     mPostMeanDist.setDegrees(mNumPoints - 1);
     mPostMeanDist.setLocation(mSampleMean);
     mPostMeanDist.setScale(mSampleVariance / mNumPoints);
