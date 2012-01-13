@@ -303,7 +303,7 @@ size_t EstimatorMLBP<MixtureDistribution<LinearRegression<M>, N>, M, N>::
           mCoefficients.row(j).transpose()))(0) / numPoints(j);
       }
     }
-    Helpers::updateFactorGraph(dem, graph, mCoefficients, mVariances, mWeights,
+    Helpers::updateNodeFactors(dem, graph, mCoefficients, mVariances, mWeights,
       factorGraph, mFgMapping);
     numIter++;
   }

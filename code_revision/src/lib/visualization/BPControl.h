@@ -83,6 +83,8 @@ protected:
   void renderBP();
   /// Sets the ML maximum number of iterations
   void setMaxIter(size_t maxIter);
+  /// Sets the interaction strength
+  void setStrength(double strength);
   /// Sets the ML tolerance
   void setTolerance(double tol);
   /// Sets the log-domain inference
@@ -131,6 +133,14 @@ protected:
   std::string mUpdates;
   /// Vector of random colors
   std::vector<Helpers::Color> mColors;
+  /// Regression coefficients
+  Eigen::Matrix<double, Eigen::Dynamic, 3> mCoefficients;
+  /// Regression variances
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mVariances;
+  /// Regression weights
+  Eigen::Matrix<double, Eigen::Dynamic, 1> mWeights;
+  /// Edge strength
+  double mStrength;
   /** @}
     */
 
@@ -142,6 +152,8 @@ protected slots:
   void render(GLView& view, Scene& scene);
   /// Maximum number of iterations changed
   void maxIterChanged(int maxIter);
+  /// Interaction strength changed
+  void strengthChanged(double strength);
   /// Tolerance changed
   void tolChanged(double tol);
   /// Log-domain toggled

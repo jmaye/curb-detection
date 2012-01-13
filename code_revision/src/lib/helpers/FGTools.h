@@ -36,11 +36,11 @@ static void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
-  DEMGraph::VertexContainer& fgMapping);
+  DEMGraph::VertexContainer& fgMapping, double strength = 10.0);
 
-/** The updateFactorGraph function updates a factor graph from a DEMGraph.
+/** The updateNodeFactors function updates factor graph nodes factors.
 */
-static void updateFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+static void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,

@@ -60,6 +60,7 @@ BPControl::BPControl(bool showBP) :
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mLogDomain = mUi->logDomainCheckBox->isChecked();
+  mStrength = mUi->strengthSpinBox->value();
   if (mUi->parallButton->isChecked())
     setParallUpdates(true);
   if (mUi->seqfixButton->isChecked())
@@ -86,6 +87,13 @@ BPControl::~BPControl() {
 void BPControl::setMaxIter(size_t maxIter) {
   mMaxIter = maxIter;
   mUi->maxIterSpinBox->setValue(maxIter);
+}
+
+void BPControl::setStrength(double strength) {
+  mStrength = strength;
+  mUi->strengthSpinBox->setValue(strength);
+  Helpers::buildFactorGraph(mDEM, mGraph, mCoefficients, mVariances, mWeights,
+    mFactorGraph, mFgMapping, mStrength);
 }
 
 void BPControl::setTolerance(double tol) {
@@ -178,6 +186,10 @@ void BPControl::maxIterChanged(int maxIter) {
   setMaxIter(maxIter);
 }
 
+void BPControl::strengthChanged(double strength) {
+  setStrength(strength);
+}
+
 void BPControl::tolChanged(double tol) {
   setTolerance(tol);
 }
@@ -189,11 +201,15 @@ void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   const std::vector<Helpers::Color>& colors) {
   mDEM = dem;
   mGraph = graph;
+  mCoefficients = coefficients;
+  mVariances = variances;
+  mWeights = weights;
   Helpers::buildFactorGraph(dem, graph, coefficients, variances, weights,
-    mFactorGraph, mFgMapping);
+    mFactorGraph, mFgMapping, mStrength);
   mColors = colors;
   mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
+  mUi->strengthSpinBox->setEnabled(true);
 }
 
 void BPControl::runBP() {

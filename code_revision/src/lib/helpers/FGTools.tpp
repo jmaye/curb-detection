@@ -29,7 +29,7 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
-  DEMGraph::VertexContainer& fgMapping) {
+  DEMGraph::VertexContainer& fgMapping, double strength) {
   const size_t numVertices = graph.getNumVertices();
   const size_t numEdges = graph.getNumVertices();
   const size_t numLabels = weights.size();
@@ -56,13 +56,13 @@ void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const DEMGraph::VertexDescriptor& v2 = graph.getTailVertex(e);
     const dai::Var& var1 = vars[fgMapping[v1]];
     const dai::Var& var2 = vars[fgMapping[v2]];
-    factors.push_back(createFactorPotts(var1, var2, 10.0));
+    factors.push_back(createFactorPotts(var1, var2, strength));
   }
   factorGraph = FactorGraph(factors.begin(), factors.end(), vars.begin(),
     vars.end(), factors.size(), vars.size());
 }
 
-void updateFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
   const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
   const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
   Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,

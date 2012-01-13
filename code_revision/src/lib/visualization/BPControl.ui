@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>545</height>
+    <height>578</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,6 +196,26 @@
        </property>
        <property name="maximum">
         <double>1000000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="strengthLabel">
+       <property name="text">
+        <string>Strength:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="strengthSpinBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>10.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -447,6 +467,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>strengthSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>BPControl</receiver>
+   <slot>strengthChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
+     <y>352</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showBPToggled(bool)</slot>
@@ -460,5 +496,6 @@
   <slot>seqmaxToggled(bool)</slot>
   <slot>maxProdToggled(bool)</slot>
   <slot>sumProdToggled(bool)</slot>
+  <slot>strengthChanged(double)</slot>
  </slots>
 </ui>
