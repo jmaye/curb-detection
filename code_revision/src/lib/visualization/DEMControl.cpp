@@ -174,7 +174,7 @@ void DEMControl::demChanged() {
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
   GLView::getInstance().update();
-  demUpdated(mDEM);
+  emit demUpdated(mDEM);
 }
 
 void DEMControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {

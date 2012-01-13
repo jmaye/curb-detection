@@ -164,38 +164,52 @@ void MLBPControl::runMLBP() {
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
   if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
     w, mWeighted)) {
-    EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-      Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol, mMaxIterBP, mTolBP);
-    const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end(),
-      mDEM, mGraph, pointsMapping);
-    const double after = Timestamp::now();
-    mUi->iterSpinBox->setValue(numIter);
-    mUi->timeSpinBox->setValue(after - before);
-    mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
-    std::cout << estMixtPlane.getCoefficients() << std::endl;
-    std::cout << estMixtPlane.getVariances() << std::endl;
-    mVertices.clear();
-    DEMGraph::VertexContainer fgMapping = estMixtPlane.getFgMapping();
-    const std::vector<size_t>& mapState = estMixtPlane.getMAPState();
-    for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
-      mGraph.getVertexEnd(); ++it)
-      mVertices[it->first] = mapState[fgMapping[it->first]];
-    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-      responsibilities = estMixtPlane.getResponsibilities();
-    double residual = 0.0;
-    for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
-      Eigen::Matrix<double, 3, 1> point;
-      point(0) = 1.0;
-      point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
-      double prediction =
-        (estMixtPlane.getCoefficients().row(mVertices[pointsMapping[i]]) *
-        point)(0);
-      residual += fabs(prediction -
-        mDEM[pointsMapping[i]].getHeightEstimator().
-        getPostPredDist().getMean());
+    if (c.rows() > 1) {
+      EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
+        Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol, mMaxIterBP,
+        mTolBP);
+      const size_t numIter = estMixtPlane.addPoints(points.begin(),
+        points.end(), mDEM, mGraph, pointsMapping);
+      const double after = Timestamp::now();
+      mUi->iterSpinBox->setValue(numIter);
+      mUi->timeSpinBox->setValue(after - before);
+      mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+      std::cout << estMixtPlane.getCoefficients() << std::endl;
+      std::cout << estMixtPlane.getVariances() << std::endl;
+      mVertices.clear();
+      DEMGraph::VertexContainer fgMapping = estMixtPlane.getFgMapping();
+      const std::vector<size_t>& mapState = estMixtPlane.getMAPState();
+      for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
+        mGraph.getVertexEnd(); ++it)
+        mVertices[it->first] = mapState[fgMapping[it->first]];
+      const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
+        responsibilities = estMixtPlane.getResponsibilities();
+      double residual = 0.0;
+      for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
+        Eigen::Matrix<double, 3, 1> point;
+        point(0) = 1.0;
+        point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
+        double prediction =
+          (estMixtPlane.getCoefficients().row(mVertices[pointsMapping[i]]) *
+          point)(0);
+        residual += fabs(prediction -
+          mDEM[pointsMapping[i]].getHeightEstimator().
+          getPostPredDist().getMean());
+      }
+      residual /= (size_t)responsibilities.rows();
+      mUi->residualSpinBox->setValue(residual);
     }
-    residual /= (size_t)responsibilities.rows();
-    mUi->residualSpinBox->setValue(residual);
+    else {
+      mUi->iterSpinBox->setValue(0);
+      mUi->timeSpinBox->setValue(0);
+      mUi->llSpinBox->setValue(0);
+      std::cout << c << std::endl;
+      std::cout << v << std::endl;
+      mVertices.clear();
+      for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
+        mGraph.getVertexEnd(); ++it)
+        mVertices[it->first] = 0;
+    }
     mUi->showMLBPCheckBox->setEnabled(true);
     GLView::getInstance().update();
 //    mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),

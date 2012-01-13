@@ -110,7 +110,7 @@ void SegmentationControl::segment() {
   Helpers::randomColors(mColors, mComponents.size());
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
-  segmentUpdated(mDEM, graph, mComponents, mColors);
+  emit segmentUpdated(mDEM, graph, mComponents, mColors);
 }
 
 void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {

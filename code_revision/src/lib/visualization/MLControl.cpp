@@ -180,7 +180,7 @@ void MLControl::runML() {
     mUi->residualSpinBox->setValue(residual);
     mUi->showMLCheckBox->setEnabled(true);
     GLView::getInstance().update();
-    mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
+    emit mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
       estMixtPlane.getVariances(), estMixtPlane.getWeights(), mColors);
   }
 }

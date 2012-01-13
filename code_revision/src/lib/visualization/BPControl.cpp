@@ -197,37 +197,44 @@ void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
 }
 
 void BPControl::runBP() {
-  const double before = Timestamp::now();
-  PropertySet opts;
-  opts.set("maxiter", (size_t)mMaxIter);
-  opts.set("tol", mTol);
-  opts.set("verbose", (size_t)0);
-  opts.set("updates", mUpdates);
-  opts.set("logdomain", mLogDomain);
-  opts.set("inference", mAlgo);
-  BeliefPropagation bp(mFactorGraph, opts);
-  bp.init();
-  bp.run();
-  const double after = Timestamp::now();
-  mUi->iterSpinBox->setValue(bp.Iterations());
-  mUi->llSpinBox->setValue(bp.logZ());
-  mUi->timeSpinBox->setValue(after - before);
   std::vector<size_t> mapState;
   mapState.reserve(mFactorGraph.nrVars());
-  if (mAlgo.compare("MAXPROD") == 0)
-    mapState = bp.findMaximum();
-  else {
-    for (size_t i = 0; i < mFactorGraph.nrVars(); ++i) {
-      const dai::Factor factor = bp.beliefV(i);
-      double max = -std::numeric_limits<double>::infinity();
-      size_t argmax = 0;
-      for (size_t j = 0; j < factor.nrStates(); ++j)
-        if (factor[j] > max) {
-          max = factor[j];
-          argmax = j;
-        }
-      mapState.push_back(argmax);
+  if (mFactorGraph.factors()[0].nrStates() > 1) {
+    const double before = Timestamp::now();
+    PropertySet opts;
+    opts.set("maxiter", (size_t)mMaxIter);
+    opts.set("tol", mTol);
+    opts.set("verbose", (size_t)0);
+    opts.set("updates", mUpdates);
+    opts.set("logdomain", mLogDomain);
+    opts.set("inference", mAlgo);
+    BeliefPropagation bp(mFactorGraph, opts);
+    bp.init();
+    bp.run();
+    const double after = Timestamp::now();
+    mUi->iterSpinBox->setValue(bp.Iterations());
+    mUi->llSpinBox->setValue(bp.logZ());
+    mUi->timeSpinBox->setValue(after - before);
+    if (mAlgo.compare("MAXPROD") == 0)
+      mapState = bp.findMaximum();
+    else {
+      for (size_t i = 0; i < mFactorGraph.nrVars(); ++i) {
+        const dai::Factor factor = bp.beliefV(i);
+        double max = -std::numeric_limits<double>::infinity();
+        size_t argmax = 0;
+        for (size_t j = 0; j < factor.nrStates(); ++j)
+          if (factor[j] > max) {
+            max = factor[j];
+            argmax = j;
+          }
+        mapState.push_back(argmax);
+      }
     }
+  }
+  else {
+    mUi->timeSpinBox->setValue(0.0);
+    for (size_t i = 0; i < mFactorGraph.nrVars(); ++i)
+      mapState.push_back(0);
   }
   mVertices.clear();
   for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
