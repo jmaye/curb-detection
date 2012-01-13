@@ -258,6 +258,7 @@ void BPControl::runBP() {
     mVertices[it->first] = mapState[mFgMapping[it->first]];
   mUi->showBPCheckBox->setEnabled(true);
   GLView::getInstance().update();
+  emit bpUpdated(mDEM, mGraph, mVertices);
 }
 
 void BPControl::showBPToggled(bool checked) {

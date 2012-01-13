@@ -185,6 +185,9 @@ protected slots:
     */
 
 signals:
+  /// New segmentation done
+  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
+    DEMGraph::VertexContainer& vertices);
 
 };
 
