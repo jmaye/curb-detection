@@ -16,26 +16,68 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file process-file.cpp
-    \brief This file is a testing binary for processing a log file.
+/** \file Evaluator.h
+    \brief This file defines the Evaluator class, which performs all the
+           computations to detect planes, curbs, and sidewalks.
   */
 
-#include "base/Timestamp.h"
-#include "tools/Processor.h"
+#ifndef EVALUATOR_H
+#define EVALUATOR_H
 
-int main (int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <log-file>" << std::endl;
-    return 1;
-  }
-  std::ifstream logFile(argv[1]);
-  PointCloud<> pointCloud;
-  logFile >> pointCloud;
-  Processor processor;
-  double before = Timestamp::now();
-  processor.processPointCloud(pointCloud);
-  double after = Timestamp::now();
-  std::cout << "Point cloud processed: " << after - before << " [s]"
-    << std::endl;
-  return 0;
-}
+#include "base/Serializable.h"
+
+#include <vector>
+
+/** The class Evaluator performs all the computations to detect planes, curbs,
+    and sidewalks from a 3D point cloud input.
+    \brief Evaluator for curb detection
+  */
+class Evaluator :
+  public virtual Serializable {
+public:
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Default constructor
+  Evaluator();
+  /// Copy constructor
+  Evaluator(const Evaluator& other);
+  /// Assignment operator
+  Evaluator& operator = (const Evaluator& other);
+  /// Destructor
+  virtual ~Evaluator();
+  /** @}
+    */
+
+  /** \name Accessors
+      @{
+    */
+  /** @}
+    */
+
+protected:
+  /** \name Stream methods
+    @{
+    */
+  /// Reads from standard input
+  virtual void read(std::istream& stream);
+  /// Writes to standard output
+  virtual void write(std::ostream& stream) const;
+  /// Reads from a file
+  virtual void read(std::ifstream& stream);
+  /// Writes to a file
+  virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected members
+      @{
+    */
+  /** @}
+    */
+
+};
+
+#include "tools/Evaluator.tpp"
+
+#endif // EVALUATOR_H

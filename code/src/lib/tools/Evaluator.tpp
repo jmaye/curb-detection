@@ -16,26 +16,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file process-file.cpp
-    \brief This file is a testing binary for processing a log file.
-  */
+/******************************************************************************/
+/* Constructors and Destructor                                                */
+/******************************************************************************/
 
-#include "base/Timestamp.h"
-#include "tools/Processor.h"
-
-int main (int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <log-file>" << std::endl;
-    return 1;
-  }
-  std::ifstream logFile(argv[1]);
-  PointCloud<> pointCloud;
-  logFile >> pointCloud;
-  Processor processor;
-  double before = Timestamp::now();
-  processor.processPointCloud(pointCloud);
-  double after = Timestamp::now();
-  std::cout << "Point cloud processed: " << after - before << " [s]"
-    << std::endl;
-  return 0;
+Evaluator::Evaluator() {
 }
+
+Evaluator::Evaluator(const Evaluator& other) {
+}
+
+Evaluator& Evaluator::operator = (const Evaluator& other) {
+  if (this != &other) {
+  }
+  return *this;
+}
+
+Evaluator::~Evaluator() {
+}
+
+/******************************************************************************/
+/* Stream operations                                                          */
+/******************************************************************************/
+
+void Evaluator::read(std::istream& stream) {
+}
+
+void Evaluator::write(std::ostream& stream) const {
+}
+
+void Evaluator::read(std::ifstream& stream) {
+}
+
+void Evaluator::write(std::ofstream& stream) const {
+}
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
