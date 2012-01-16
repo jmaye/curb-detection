@@ -113,7 +113,7 @@
      <item row="0" column="1">
       <widget class="QLineEdit" name="logEdit">
        <property name="text">
-        <string>/home/jmaye/ETHZ/svn/curb-detection/code/data</string>
+        <string>/home/jmaye/ETHZ/svn/curb-detection/data</string>
        </property>
       </widget>
      </item>
