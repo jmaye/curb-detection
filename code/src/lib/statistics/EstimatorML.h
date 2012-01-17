@@ -40,4 +40,4 @@ template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
 #include "statistics/EstimatorMLMixtureNormal1v.h"
 #include "statistics/EstimatorMLMixtureNormalMv.h"
 
-#endif // ESTIMATORML
+#endif // ESTIMATORML_H

@@ -32,4 +32,4 @@ template <typename D, size_t M = 1, size_t N = 1> class EstimatorBayesImproper;
 #include "statistics/EstimatorBayesImproperNormalMv.h"
 #include "statistics/EstimatorBayesImproperLinearRegression.h"
 
-#endif // ESTIMATORBAYESIMPROPER
+#endif // ESTIMATORBAYESIMPROPER_H
