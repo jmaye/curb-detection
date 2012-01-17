@@ -22,10 +22,11 @@
 
 #include "base/Timestamp.h"
 #include "tools/Processor.h"
+#include "tools/Evaluator.h"
 
 int main (int argc, char** argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <log-file>" << std::endl;
+  if (argc != 3) {
+    std::cerr << "Usage: " << argv[0] << " <log-file> <gt-file>" << std::endl;
     return 1;
   }
   std::ifstream logFile(argv[1]);
@@ -37,5 +38,10 @@ int main (int argc, char** argv) {
   double after = Timestamp::now();
   std::cout << "Point cloud processed: " << after - before << " [s]"
     << std::endl;
+  std::ifstream gtFile(argv[2]);
+  Evaluator evaluator;
+  gtFile >> evaluator;
+  evaluator.evaluate(processor.getDEM(), processor.getDEMGraph(),
+    processor.getVerticesLabels());
   return 0;
 }

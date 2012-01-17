@@ -16,6 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include <sstream>
+
+#include <QVector>
+#include <QPoint>
+#include <QPolygon>
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -33,6 +39,9 @@ Evaluator& Evaluator::operator = (const Evaluator& other) {
 }
 
 Evaluator::~Evaluator() {
+  for (std::vector<const QRegion*>::iterator it = mClusters.begin();
+      it != mClusters.end(); ++it)
+    delete *it;
 }
 
 /******************************************************************************/
@@ -45,7 +54,24 @@ void Evaluator::read(std::istream& stream) {
 void Evaluator::write(std::ostream& stream) const {
 }
 
-void Evaluator::read(std::ifstream& stream) {
+void Evaluator::read(std::ifstream& stream) throw (IOException) {
+  if (stream.is_open() == false)
+    throw IOException("Evaluator::read(): could not open file");
+  QVector<QPoint> polygon;
+  while (stream.eof() == false) {
+    std::string line;
+    getline(stream, line);
+    if (line.size()) {
+      std::stringstream lineStream(line);
+      double x, y;
+      lineStream >> x >> y;
+      polygon.push_back(QPoint(x, y));
+    }
+    else {
+      mClusters.push_back(new QRegion(QPolygon(polygon)));
+      polygon.clear();
+    }
+  }
 }
 
 void Evaluator::write(std::ofstream& stream) const {
@@ -54,3 +80,26 @@ void Evaluator::write(std::ofstream& stream) const {
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
+    demgraph, const DEMGraph::VertexContainer& verticesLabels) const {
+  std::ofstream labels("labels.log");
+  for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
+      verticesLabels.end(); ++it) {
+    const Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
+    const size_t label = it->second;
+    std::cout << "Inferred label: " << label << " ";
+    labels << label << " ";
+    for (std::vector<const QRegion*>::const_iterator it = mClusters.begin();
+        it != mClusters.end(); ++it)
+      if ((*it)->contains(QPoint(point(0), point(1)))) {
+        labels << it - mClusters.begin() << std::endl;
+        std::cout << "Ground truth label: " << it - mClusters.begin() <<
+          std::endl;
+       }
+  }
+}

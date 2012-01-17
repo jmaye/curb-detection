@@ -17,19 +17,22 @@
  ******************************************************************************/
 
 /** \file Evaluator.h
-    \brief This file defines the Evaluator class, which performs all the
-           computations to detect planes, curbs, and sidewalks.
+    \brief This file defines the Evaluator class, which performs the evaluation
+           of the curb detection algorithm from a ground truth file.
   */
 
 #ifndef EVALUATOR_H
 #define EVALUATOR_H
 
-#include "base/Serializable.h"
-
 #include <vector>
 
-/** The class Evaluator performs all the computations to detect planes, curbs,
-    and sidewalks from a 3D point cloud input.
+#include <QRegion>
+
+#include "base/Serializable.h"
+#include "exceptions/IOException.h"
+
+/** The class Evaluator performs the evaluation of the curb detection algorithm
+    from a ground truth file.
     \brief Evaluator for curb detection
   */
 class Evaluator :
@@ -55,6 +58,15 @@ public:
   /** @}
     */
 
+  /** \name Methods
+      @{
+    */
+  /// Evaluate the labeling against the ground truth
+  void evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
+    const DEMGraph::VertexContainer& verticesLabels) const;
+  /** @}
+    */
+
 protected:
   /** \name Stream methods
     @{
@@ -64,7 +76,7 @@ protected:
   /// Writes to standard output
   virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream) throw (IOException);
   /// Writes to a file
   virtual void write(std::ofstream& stream) const;
   /** @}
@@ -73,6 +85,7 @@ protected:
   /** \name Protected members
       @{
     */
+  std::vector<const QRegion*> mClusters;
   /** @}
     */
 
