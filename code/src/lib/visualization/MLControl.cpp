@@ -141,7 +141,7 @@ void MLControl::runML() {
   Eigen::Matrix<double, Eigen::Dynamic, 3> c;
   Eigen::Matrix<double, Eigen::Dynamic, 1> v;
   Eigen::Matrix<double, Eigen::Dynamic, 1> w;
-  EstimatorML<LinearRegression<3>, 3>::Container points;
+  EstimatorBayesImproper<LinearRegression<3>, 3>::Container points;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
   if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
     w, mWeighted)) {
