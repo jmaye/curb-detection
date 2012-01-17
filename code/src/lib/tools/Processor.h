@@ -28,10 +28,8 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/PointCloud.h"
-#include "data-structures/Component.h"
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
-#include "data-structures/FactorGraph.h"
 
 /** The class Processor performs all the computations to detect planes, curbs,
     and sidewalks from a 3D point cloud input.
@@ -64,6 +62,60 @@ public:
   /** \name Accessors
       @{
     */
+  /// Returns the DEM minimum coordinates
+  const Grid<double, Cell, 2>::Coordinate& getMinDEM() const;
+  /// Sets the DEM minimum coordinates
+  void setMinDEM(const Grid<double, Cell, 2>::Coordinate& minDEM);
+  /// Returns the DEM maximum coordinates
+  const Grid<double, Cell, 2>::Coordinate& getMaxDEM() const;
+  /// Sets the DEM maximum coordinates
+  void setMaxDEM(const Grid<double, Cell, 2>::Coordinate& maxDEM);
+  /// Returns the DEM cell size
+  const Grid<double, Cell, 2>::Coordinate& getDEMCellSize() const;
+  /// Sets the DEM cell size
+  void setDEMCellSize(const Grid<double, Cell, 2>::Coordinate& demCellSize);
+  /// Returns the segmentation parameter
+  double getSegmentationParam() const;
+  /// Sets the segmentation parameter
+  void setSegmentationParam(double k);
+  /// Returns the ML maximum number of iterations
+  size_t getMLMaxIter() const;
+  /// Sets the ML maximum number of iterations
+  void setMLMaxIter(size_t maxMLIter);
+  /// Returns the ML tolerance
+  double getMLTol() const;
+  /// Sets the ML tolerance
+  void setMLTol(double mlTol);
+  /// Returns the weighted regression flag
+  bool getWeightedRegressionFlag() const;
+  /// Sets the weighted regression flag
+  void setWeightedRegressionFlag(bool weighted);
+  /// Returns the BP maximum number of iterations
+  size_t getBPMaxIter() const;
+  /// Sets the BP maximum number of iterations
+  void setBPMaxIter(size_t maxBPIter);
+  /// Returns the BP tolerance
+  double getBPTol() const;
+  /// Sets the BP tolerance
+  void setBPTol(double bpTol);
+  /// Returns the log-domain inference flag
+  bool getLogDomainFlag() const;
+  /// Sets the log-domain inference flag
+  void setLogDomainFlag(bool logDomain);
+  /// Returns the DEM
+  const Grid<double, Cell, 2>& getDEM() const;
+  /// Returns the DEM graph
+  const DEMGraph& getDEMGraph() const;
+  /// Returns the labeling
+  const DEMGraph::VertexContainer& getVerticesLabels() const;
+  /// Returns regression coefficients
+  const Eigen::Matrix<double, Eigen::Dynamic, 3>& getCoefficients() const;
+  /// Returns regression variances
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& getVariances() const;
+  /// Returns the regression weights
+  const Eigen::Matrix<double, Eigen::Dynamic, 1>& getWeights() const;
+  /// Returns the valid flag of the processor
+  bool getValid() const;
   /** @}
     */
 
@@ -118,13 +170,16 @@ protected:
   /// DEM graph
   DEMGraph mGraph;
   /// Vertices labels
-  DEMGraph::VertexContainer mVertices;
+  DEMGraph::VertexContainer mVerticesLabels;
   /// Regression coefficients
   Eigen::Matrix<double, Eigen::Dynamic, 3> mCoefficients;
   /// Regression variances
   Eigen::Matrix<double, Eigen::Dynamic, 1> mVariances;
   /// Regression weights
   Eigen::Matrix<double, Eigen::Dynamic, 1> mWeights;
+
+  /// One point cloud has been processed and we have valid results
+  bool mValid;
   /** @}
     */
 

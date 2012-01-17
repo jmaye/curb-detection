@@ -173,6 +173,44 @@ void DEMControl::demChanged() {
   }
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
+
+  double mean = 0;
+  double variance = 0;
+  size_t count = 0;
+  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
+      const Eigen::Matrix<double, 2, 1> point = 
+        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+      const Cell& cell =
+        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
+        .getMean();
+      const double sampleVariance = cell.getHeightEstimator().getPostPredDist()
+        .getVariance();
+      if (cell.getHeightEstimator().getValid()) {
+        mean += sampleMean;
+        variance += sampleVariance;
+        count++;
+      }
+    }
+  mean /= count;
+  variance /= count;
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
+      const Eigen::Matrix<double, 2, 1> point = 
+        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+      Cell& cell =
+        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
+        .getMean();
+      if (cell.getHeightEstimator().getValid()) {
+        if (NormalDistribution<1>(mean, variance)(sampleMean) == 0) {
+          cell.reset();
+        }
+      }
+    }
+
   GLView::getInstance().update();
   emit demUpdated(mDEM);
 }
