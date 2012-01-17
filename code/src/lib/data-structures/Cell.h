@@ -58,7 +58,7 @@ public:
   /** @}
     */
 
-  /** \name Methodds
+  /** \name Methods
       @{
     */
   /// Reset the cell
