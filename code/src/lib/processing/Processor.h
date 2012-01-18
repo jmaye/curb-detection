@@ -185,6 +185,4 @@ protected:
 
 };
 
-#include "tools/Processor.tpp"
-
 #endif // PROCESSOR_H

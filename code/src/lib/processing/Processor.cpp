@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "processing/Processor.h"
+
 #include "helpers/InitML.h"
 #include "helpers/FGTools.h"
 #include "data-structures/PropertySet.h"

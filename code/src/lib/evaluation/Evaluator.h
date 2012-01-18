@@ -30,6 +30,9 @@
 
 #include "base/Serializable.h"
 #include "exceptions/IOException.h"
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
 
 /** The class Evaluator performs the evaluation of the curb detection algorithm
     from a ground truth file.
@@ -90,7 +93,5 @@ protected:
     */
 
 };
-
-#include "tools/Evaluator.tpp"
 
 #endif // EVALUATOR_H

@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "evaluation/Evaluator.h"
+
 #include <sstream>
 
 #include <QVector>
@@ -87,17 +89,16 @@ void Evaluator::write(std::ofstream& stream) const {
 
 void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
     demgraph, const DEMGraph::VertexContainer& verticesLabels) const {
-  std::ofstream labels("labels.log");
   for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
       verticesLabels.end(); ++it) {
     const Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
     const size_t label = it->second;
     std::cout << "Inferred label: " << label << " ";
-    labels << label << " ";
+    //labels << label << " ";
     for (std::vector<const QRegion*>::const_iterator it = mClusters.begin();
         it != mClusters.end(); ++it)
       if ((*it)->contains(QPoint(point(0), point(1)))) {
-        labels << it - mClusters.begin() << std::endl;
+        //labels << it - mClusters.begin() << std::endl;
         std::cout << "Ground truth label: " << it - mClusters.begin() <<
           std::endl;
        }
