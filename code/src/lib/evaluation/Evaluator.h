@@ -88,7 +88,8 @@ protected:
   /** \name Protected members
       @{
     */
-  std::vector<const QRegion*> mClusters;
+  /// Ground truth classes
+  std::vector<const QRegion*> mClasses;
   /** @}
     */
 

@@ -19,6 +19,8 @@
 #include "evaluation/Evaluator.h"
 
 #include <sstream>
+#include <set>
+#include <map>
 
 #include <QVector>
 #include <QPoint>
@@ -41,8 +43,8 @@ Evaluator& Evaluator::operator = (const Evaluator& other) {
 }
 
 Evaluator::~Evaluator() {
-  for (std::vector<const QRegion*>::iterator it = mClusters.begin();
-      it != mClusters.end(); ++it)
+  for (std::vector<const QRegion*>::iterator it = mClasses.begin();
+      it != mClasses.end(); ++it)
     delete *it;
 }
 
@@ -70,7 +72,7 @@ void Evaluator::read(std::ifstream& stream) throw (IOException) {
       polygon.push_back(QPoint(x, y));
     }
     else {
-      mClusters.push_back(new QRegion(QPolygon(polygon)));
+      mClasses.push_back(new QRegion(QPolygon(polygon)));
       polygon.clear();
     }
   }
@@ -89,18 +91,70 @@ void Evaluator::write(std::ofstream& stream) const {
 
 void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
     demgraph, const DEMGraph::VertexContainer& verticesLabels) const {
+  std::set<size_t> labelSet;
+  std::map<size_t, size_t> labelMap;
+  size_t labelPool = 0;
   for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
       verticesLabels.end(); ++it) {
+    if (labelSet.count(it->second) == 0) {
+      labelMap[it->second] = labelPool;
+      labelPool++;
+      labelSet.insert(it->second);
+    }
+  }
+  DEMGraph::VertexContainer verticesLabelsMap;
+  for (DEMGraph::ConstVertexIterator it = demgraph.getVertexBegin(); it !=
+      demgraph.getVertexEnd(); ++it)
+    verticesLabelsMap[it->first] =
+      labelMap[verticesLabels.find(it->first)->second];
+  const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
+  std::set<size_t> classSet;
+  std::map<size_t, size_t> classMap;
+  size_t classPool = 0;
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
+      const Eigen::Matrix<double, 2, 1> point = 
+        dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+      for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
+          it != mClasses.end(); ++it)
+        if ((*it)->contains(QPoint(point(0), point(1)))) {
+          if (classSet.count(it - mClasses.begin()) == 0) {
+            classMap[it - mClasses.begin()] = classPool;
+            classPool++;
+            classSet.insert(it - mClasses.begin());
+          }
+        }
+    }
+  Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> contingencyTable =
+    Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(classSet.size(),
+    labelSet.size());
+  for (DEMGraph::ConstVertexIterator it = verticesLabelsMap.begin(); it !=
+      verticesLabelsMap.end(); ++it) {
     const Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
     const size_t label = it->second;
-    std::cout << "Inferred label: " << label << " ";
-    //labels << label << " ";
-    for (std::vector<const QRegion*>::const_iterator it = mClusters.begin();
-        it != mClusters.end(); ++it)
-      if ((*it)->contains(QPoint(point(0), point(1)))) {
-        //labels << it - mClusters.begin() << std::endl;
-        std::cout << "Ground truth label: " << it - mClusters.begin() <<
-          std::endl;
-       }
+    for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
+        it != mClasses.end(); ++it)
+      if ((*it)->contains(QPoint(point(0), point(1))))
+        contingencyTable(classMap[it - mClasses.begin()], label)++;
   }
+  std::cout << contingencyTable << std::endl;
+  double condEntropy = 0;
+  for (size_t i = 0; i < labelSet.size(); ++i) {
+    const size_t columnSum = contingencyTable.col(i).sum();
+    for (size_t j = 0; j < classSet.size(); ++j)
+      if (contingencyTable(j, i))
+        condEntropy += (double)contingencyTable(j, i) / verticesLabels.size() *
+          log((double)contingencyTable(j, i) / columnSum);
+  }
+  condEntropy *= -1.0;
+  double entropy = 0.0;
+  for (size_t i = 0; i < classSet.size(); ++i) {
+    const size_t rowSum = contingencyTable.row(i).sum();
+    entropy += (double)rowSum / classSet.size() *
+      log((double)rowSum / classSet.size());
+  }
+  entropy *= -1.0;
+  std::cout << condEntropy << std::endl;
+  std::cout << entropy << std::endl;
+  std::cout << std::scientific << "homogeneity: " << (1.0 - (condEntropy / entropy)) << std::endl;
 }
