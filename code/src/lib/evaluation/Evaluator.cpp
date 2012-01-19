@@ -95,13 +95,12 @@ void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   std::map<size_t, size_t> labelMap;
   size_t labelPool = 0;
   for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
-      verticesLabels.end(); ++it) {
+      verticesLabels.end(); ++it)
     if (labelSet.count(it->second) == 0) {
       labelMap[it->second] = labelPool;
       labelPool++;
       labelSet.insert(it->second);
     }
-  }
   DEMGraph::VertexContainer verticesLabelsMap;
   for (DEMGraph::ConstVertexIterator it = demgraph.getVertexBegin(); it !=
       demgraph.getVertexEnd(); ++it)
@@ -117,13 +116,12 @@ void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
         dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
           it != mClasses.end(); ++it)
-        if ((*it)->contains(QPoint(point(0), point(1)))) {
+        if ((*it)->contains(QPoint(point(0), point(1))))
           if (classSet.count(it - mClasses.begin()) == 0) {
             classMap[it - mClasses.begin()] = classPool;
             classPool++;
             classSet.insert(it - mClasses.begin());
           }
-        }
     }
   Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> contingencyTable =
     Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(classSet.size(),
@@ -150,11 +148,36 @@ void Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   double entropy = 0.0;
   for (size_t i = 0; i < classSet.size(); ++i) {
     const size_t rowSum = contingencyTable.row(i).sum();
-    entropy += (double)rowSum / classSet.size() *
-      log((double)rowSum / classSet.size());
+    entropy += (double)rowSum / verticesLabels.size() *
+      log((double)rowSum / verticesLabels.size());
   }
   entropy *= -1.0;
   std::cout << condEntropy << std::endl;
   std::cout << entropy << std::endl;
-  std::cout << std::scientific << "homogeneity: " << (1.0 - (condEntropy / entropy)) << std::endl;
+  double homogeneity = 1.0 - (condEntropy / entropy);
+  std::cout << std::fixed << "homogeneity: " << homogeneity << std::endl;
+  condEntropy = 0.0;
+  for (size_t i = 0; i < classSet.size(); ++i) {
+    const size_t rowSum = contingencyTable.row(i).sum();
+    for (size_t j = 0; j < labelSet.size(); ++j)
+      if (contingencyTable(i, j))
+        condEntropy += (double)contingencyTable(i, j) / verticesLabels.size() *
+          log((double)contingencyTable(i, j) / rowSum);
+  }
+  condEntropy *= -1.0;
+  entropy = 0.0;
+  for (size_t i = 0; i < labelSet.size(); ++i) {
+    const size_t columnSum = contingencyTable.col(i).sum();
+    entropy += (double)columnSum / verticesLabels.size() *
+      log((double)columnSum / verticesLabels.size());
+  }
+  entropy *= -1.0;
+  std::cout << condEntropy << std::endl;
+  std::cout << entropy << std::endl;
+  double completeness = 1.0 - (condEntropy / entropy);
+  std::cout << std::fixed << "completeness: " << completeness << std::endl;
+  double beta = 1.0;
+  double vmeasure = (1.0 + beta) * homogeneity * completeness /
+    (beta * homogeneity + completeness);
+  std::cout << "v-measure: " << vmeasure << std::endl;
 }
