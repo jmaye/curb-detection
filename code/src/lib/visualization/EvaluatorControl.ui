@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EvaluatorControl</class>
+ <widget class="QWidget" name="EvaluatorControl">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>387</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QGridLayout" name="showLayout">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="showGroundTruthCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Show ground truth</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+  <action name="testAction">
+   <property name="text">
+    <string>Test</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>showGroundTruthCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>EvaluatorControl</receiver>
+   <slot>showGroundTruthToggled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>showGroundTruthToggled(bool)</slot>
+ </slots>
+</ui>

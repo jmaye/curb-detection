@@ -19,6 +19,7 @@
 #include "visualization/CurbsControl.h"
 
 #include "visualization/BPControl.h"
+#include "visualization/SegmentationControl.h"
 
 #include "ui_CurbsControl.h"
 
@@ -43,6 +44,13 @@ CurbsControl::CurbsControl(bool showCurbs) :
     const DEMGraph::VertexContainer&)), this,
     SLOT(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)));
+  connect(&SegmentationControl::getInstance(),
+    SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&, const std::vector<Helpers::Color>&)),
+    this,
+    SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&, const
+    std::vector<Helpers::Color>&)));
   setLineColor(Qt::red);
   setLineSize(1.0);
   setShowCurbs(showCurbs);
@@ -155,5 +163,12 @@ void CurbsControl::bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
   mGraph = graph;
   mVertices = vertices;
   mUi->showCurbsCheckBox->setEnabled(true);
+  GLView::getInstance().update();
+}
+
+void CurbsControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const
+  DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components, const
+  std::vector<Helpers::Color>& colors) {
+  mVertices.clear();
   GLView::getInstance().update();
 }

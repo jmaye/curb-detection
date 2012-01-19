@@ -16,40 +16,42 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file PointCloudControl.h
-    \brief This file defines a Qt control for point clouds
+/** \file EvaluatorControl.h
+    \brief This file defines a Qt control for the evaluation
   */
 
-#ifndef POINTCLOUDCONTROL_H
-#define POINTCLOUDCONTROL_H
+#ifndef EVALUATORCONTROL_H
+#define EVALUATORCONTROL_H
 
+#include <string>
+#include <vector>
+
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/PointCloud.h"
+#include "helpers/RandomColors.h"
+#include "data-structures/DEMGraph.h"
+#include "evaluation/Evaluator.h"
 
-#include <QtCore/QString>
-#include <QtGui/QColor>
+class Ui_EvaluatorControl;
 
-#include <string>
-
-class Ui_PointCloudControl;
-
-/** The PointCloudControl class represents a Qt control for point clouds.
-    \brief Qt control for point clouds
+/** The EvaluatorControl class represents a Qt control for evaluation.
+    \brief Qt control for evaluation
   */
-class PointCloudControl :
+class EvaluatorControl :
   public Control,
-  public Singleton<PointCloudControl> {
+  public Singleton<EvaluatorControl> {
 Q_OBJECT
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  PointCloudControl(const PointCloudControl& other);
+  EvaluatorControl(const EvaluatorControl& other);
   /// Assignment operator
-  PointCloudControl& operator = (const PointCloudControl& other);
+  EvaluatorControl& operator = (const EvaluatorControl& other);
   /** @}
     */
 
@@ -58,25 +60,17 @@ public:
     @{
     */
   /// Constructs the control with parameters
-  PointCloudControl(bool showPoints = true);
+  EvaluatorControl(bool showGroundTruth = true);
   /// Destructor
-  ~PointCloudControl();
+  ~EvaluatorControl();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Sets the points color
-  void setPointColor(const QColor& color);
-  /// Sets the points size
-  void setPointSize(double size);
-  /// Shows the points
-  void setShowPoints(bool showPoints);
-  /// Smoothes the points
-  void setSmoothPoints(bool smoothPoints);
-  /// Sets the log file to read the point cloud from
-  void setLogFilename(const QString& filename);
+  /// Shows the ground truth
+  void setShowGroundTruth(bool showGroundTruth);
   /** @}
     */
 
@@ -84,8 +78,10 @@ protected:
   /** \name Protected methods
     @{
     */
-  /// Render the points
-  void renderPoints(double size, bool smooth);
+  /// Render the ground truth
+  void renderGroundTruth();
+  /// Label the DEM
+  void labelDEM();
   /** @}
     */
 
@@ -93,11 +89,17 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_PointCloudControl* mUi;
-  /// Palette
-  Palette mPalette;
-  /// Point cloud
-  PointCloud<double, 3> mPointCloud;
+  Ui_EvaluatorControl* mUi;
+  /// DEM
+  Grid<double, Cell, 2> mDEM;
+  /// Vertices labels
+  DEMGraph::VertexContainer mVertices;
+  /// Vector of random colors
+  std::vector<Helpers::Color> mColors;
+  /// Evaluator of the solution
+  Evaluator mEvaluator;
+  /// Ground truth filename
+  std::string mGTFilename;
   /** @}
     */
 
@@ -105,32 +107,17 @@ protected slots:
   /** \name Qt slots
     @{
     */
-  /// Log file browse clicked
-  void logBrowseClicked();
-  /// Color changed
-  void colorChanged(const QString& role, const QColor& color);
-  /// Point size changed
-  void pointSizeChanged(double pointSize);
-  /// Show points toggled
-  void showPointsToggled(bool checked);
-  /// Smooth points toggled
-  void smoothPointsToggled(bool checked);
+  /// Show ground truth toggled
+  void showGroundTruthToggled(bool checked);
   /// Render the scene
   void render(GLView& view, Scene& scene);
-  /** @}
-    */
-
-signals:
-  /** \name Qt signals
-    @{
-    */
-  /// New point cloud read
-  void pointCloudRead(const PointCloud<double, 3>& pointCloud);
   /// New point cloud read with filename
   void pointCloudRead(const std::string& filename);
+  /// DEM updated
+  void demUpdated(const Grid<double, Cell, 2>& dem);
   /** @}
     */
 
 };
 
-#endif // POINTCLOUDCONTROL_H
+#endif // EVALUATORCONTROL_H

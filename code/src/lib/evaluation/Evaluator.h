@@ -58,6 +58,10 @@ public:
   /** \name Accessors
       @{
     */
+  /// Returns the number of classes in the ground truth
+  size_t getNumClasses() const;
+  /// Clears the ground truth classes
+  void clear();
   /** @}
     */
 
@@ -65,8 +69,10 @@ public:
       @{
     */
   /// Evaluate the labeling against the ground truth
-  void evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
+  double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
     const DEMGraph::VertexContainer& verticesLabels) const;
+  /// Returns the label of a point in the ground truth
+  size_t getLabel(const Eigen::Matrix<double, 2, 1>& point) const;
   /** @}
     */
 
@@ -82,6 +88,16 @@ protected:
   virtual void read(std::ifstream& stream) throw (IOException);
   /// Writes to a file
   virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected methods
+    @{
+    */
+  /// Compute the V-Measure
+  double computeVMeasure(const
+    Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>& contingencyTable,
+    double beta) const;
   /** @}
     */
 

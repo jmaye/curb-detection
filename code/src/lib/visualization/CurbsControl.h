@@ -30,6 +30,8 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
+#include "segmenter/GraphSegmenter.h"
+#include "helpers/RandomColors.h"
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
@@ -120,6 +122,10 @@ protected slots:
   /// Receives a new segmentation
   void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
     DEMGraph::VertexContainer& vertices);
+  /// Segmentation updated
+  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components, const
+    std::vector<Helpers::Color>& colors);
   /** @}
     */
 

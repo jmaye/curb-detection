@@ -19,12 +19,12 @@
 #include "visualization/BPControl.h"
 
 #include "visualization/MLControl.h"
-#include "visualization/PointCloudControl.h"
 #include "helpers/FGTools.h"
 #include "data-structures/PropertySet.h"
 #include "statistics/BeliefPropagation.h"
 #include "base/Timestamp.h"
 #include "utils/IndexHash.h"
+#include "visualization/SegmentationControl.h"
 
 #include "ui_BPControl.h"
 
@@ -54,9 +54,13 @@ BPControl::BPControl(bool showBP) :
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
     const std::vector<Helpers::Color>&)));
-  connect(&PointCloudControl::getInstance(),
-    SIGNAL(pointCloudRead(const PointCloud<double, 3>&)), this,
-    SLOT(pointCloudRead(const PointCloud<double, 3>&)));
+  connect(&SegmentationControl::getInstance(),
+    SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&, const std::vector<Helpers::Color>&)),
+    this,
+    SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
+    GraphSegmenter<DEMGraph>::Components&, const
+    std::vector<Helpers::Color>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mLogDomain = mUi->logDomainCheckBox->isChecked();
@@ -297,7 +301,10 @@ void BPControl::runPressed() {
   runBP();
 }
 
-void BPControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
+void BPControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
+  graph, const GraphSegmenter<DEMGraph>::Components& components, const
+  std::vector<Helpers::Color>& colors) {
   mVertices.clear();
   mUi->runButton->setEnabled(false);
+  GLView::getInstance().update();
 }

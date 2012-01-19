@@ -79,6 +79,7 @@ void PointCloudControl::setLogFilename(const QString& filename) {
     mUi->showPointsCheckBox->setEnabled(true);
     GLView::getInstance().update();
     emit pointCloudRead(mPointCloud);
+    emit pointCloudRead(filename.toStdString());
   }
 }
 

@@ -29,6 +29,7 @@
 #include "visualization/BPControl.h"
 #include "visualization/MLBPControl.h"
 #include "visualization/CurbsControl.h"
+#include "visualization/EvaluatorControl.h"
 
 #include <QtGui/QApplication>
 
@@ -43,6 +44,7 @@ int main (int argc, char** argv) {
   BPControl bpControl(true);
   MLBPControl mlbpControl(true);
   CurbsControl curbsControl(true);
+  EvaluatorControl evaluatorControl(false);
   if (argc > 1)
     pointCloudControl.setLogFilename(argv[1]);
   mainWindow.addControl("View", viewControl);
@@ -53,6 +55,7 @@ int main (int argc, char** argv) {
   mainWindow.addControl("BP", bpControl);
   mainWindow.addControl("MLBP", mlbpControl);
   mainWindow.addControl("Curbs", curbsControl);
+  mainWindow.addControl("Evaluation", evaluatorControl);
   mainWindow.show();
   return application.exec();
 }

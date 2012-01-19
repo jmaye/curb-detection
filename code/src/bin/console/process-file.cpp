@@ -39,11 +39,11 @@ int main (int argc, char** argv) {
   double after = Timestamp::now();
   std::cout << "Point cloud processed: " << after - before << " [s]"
     << std::endl;
-  std::cout << processor.getCoefficients() << std::endl;
   std::ifstream gtFile(argv[2]);
   Evaluator evaluator;
   gtFile >> evaluator;
-  evaluator.evaluate(processor.getDEM(), processor.getDEMGraph(),
-    processor.getVerticesLabels());
+  double vMeasure = evaluator.evaluate(processor.getDEM(),
+    processor.getDEMGraph(), processor.getVerticesLabels());
+  std::cout << "V-Measure = " << vMeasure << std::endl;
   return 0;
 }

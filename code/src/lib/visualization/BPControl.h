@@ -31,8 +31,8 @@
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
 #include "data-structures/FactorGraph.h"
-#include "data-structures/PointCloud.h"
 #include "helpers/RandomColors.h"
+#include "segmenter/GraphSegmenter.h"
 
 #include <vector>
 #include <string>
@@ -180,7 +180,10 @@ protected slots:
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
     const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
     const std::vector<Helpers::Color>& colors);
-  void pointCloudRead(const PointCloud<double, 3>& pointCloud);
+  /// Segmentation updated
+  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components, const
+    std::vector<Helpers::Color>& colors);
   /** @}
     */
 
