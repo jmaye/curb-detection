@@ -110,6 +110,8 @@ double Evaluator::computeVMeasure(const
   }
   entropy *= -1.0;
   double homogeneity = 1.0 - (condEntropy / entropy);
+  if (contingencyTable.rows() == 1)
+    homogeneity = 1.0;
   condEntropy = 0.0;
   for (size_t i = 0; i < contingencyTable.rows(); ++i) {
     const size_t rowSum = contingencyTable.row(i).sum();
@@ -127,6 +129,8 @@ double Evaluator::computeVMeasure(const
   }
   entropy *= -1.0;
   double completeness = 1.0 - (condEntropy / entropy);
+  if (contingencyTable.cols() == 1)
+    completeness = 1.0;
   return (1.0 + beta) * homogeneity * completeness /
     (beta * homogeneity + completeness);
 }
@@ -154,6 +158,10 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   size_t classPool = 0;
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
+      const Cell& cell =
+        dem[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      if (cell.getHeightEstimator().getValid() == false)
+        continue;
       const Eigen::Matrix<double, 2, 1> point = 
         dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();

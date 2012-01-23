@@ -20,14 +20,16 @@
     \brief This file is a testing binary for processing a log file.
   */
 
+#include <string>
+
 #include "base/Timestamp.h"
 #include "processing/Processor.h"
 #include "data-structures/PointCloud.h"
 #include "evaluation/Evaluator.h"
 
 int main (int argc, char** argv) {
-  if (argc != 3) {
-    std::cerr << "Usage: " << argv[0] << " <log-file> <gt-file>" << std::endl;
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <log-file>" << std::endl;
     return 1;
   }
   std::ifstream logFile(argv[1]);
@@ -39,7 +41,18 @@ int main (int argc, char** argv) {
   double after = Timestamp::now();
   std::cout << "Point cloud processed: " << after - before << " [s]"
     << std::endl;
-  std::ifstream gtFile(argv[2]);
+  std::string logFilename(argv[1]);
+  size_t pos = logFilename.find(".csv");
+  if (pos == 0)
+    pos = logFilename.find(".log");
+  std::string gtFilename;
+  if (pos) {
+    gtFilename = logFilename.substr(0, logFilename.size() - 4);
+    gtFilename.append(".gt");
+  }
+  else
+    return 1;
+  std::ifstream gtFile(gtFilename.c_str());
   Evaluator evaluator;
   gtFile >> evaluator;
   double vMeasure = evaluator.evaluate(processor.getDEM(),
