@@ -55,7 +55,7 @@ int main (int argc, char** argv) {
   std::ifstream gtFile(gtFilename.c_str());
   Evaluator evaluator;
   gtFile >> evaluator;
-  double vMeasure = evaluator.evaluate(processor.getDEM(),
+  const double vMeasure = evaluator.evaluate(processor.getDEM(),
     processor.getDEMGraph(), processor.getVerticesLabels());
   std::cout << "V-Measure = " << vMeasure << std::endl;
   return 0;

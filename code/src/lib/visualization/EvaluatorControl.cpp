@@ -22,6 +22,7 @@
 
 #include "visualization/DEMControl.h"
 #include "visualization/PointCloudControl.h"
+#include "visualization/BPControl.h"
 #include "exceptions/IOException.h"
 
 /******************************************************************************/
@@ -42,6 +43,11 @@ EvaluatorControl::EvaluatorControl(bool showGroundTruth) :
   connect(&PointCloudControl::getInstance(),
     SIGNAL(pointCloudRead(const std::string&)), this,
     SLOT(pointCloudRead(const std::string&)));
+  connect(&BPControl::getInstance(),
+    SIGNAL(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    const DEMGraph::VertexContainer&)), this,
+    SLOT(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    const DEMGraph::VertexContainer&)));
   setShowGroundTruth(showGroundTruth);
 }
 
@@ -138,4 +144,10 @@ void EvaluatorControl::pointCloudRead(const std::string& filename) {
 void EvaluatorControl::demUpdated(const Grid<double, Cell, 2>& dem) {
   mDEM = dem;
   labelDEM();
+}
+
+void EvaluatorControl::bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const DEMGraph::VertexContainer& vertices) {
+  const double vMeasure = mEvaluator.evaluate(dem, graph, vertices);
+  mUi->vMeasureSpinBox->setValue(vMeasure);
 }

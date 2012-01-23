@@ -115,6 +115,9 @@ protected slots:
   void pointCloudRead(const std::string& filename);
   /// DEM updated
   void demUpdated(const Grid<double, Cell, 2>& dem);
+  /// New segmentation done
+  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
+    DEMGraph::VertexContainer& vertices);
   /** @}
     */
 
