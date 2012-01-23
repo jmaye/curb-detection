@@ -99,7 +99,6 @@ void EvaluatorControl::render(GLView& view, Scene& scene) {
 
 void EvaluatorControl::labelDEM() {
   mVertices.clear();
-  mEvaluator.clear();
   std::ifstream gtFile(mGTFilename.c_str());
   try {
     gtFile >> mEvaluator;

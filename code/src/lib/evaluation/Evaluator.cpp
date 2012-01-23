@@ -68,7 +68,7 @@ void Evaluator::read(std::ifstream& stream) throw (IOException) {
     getline(stream, line);
     if (line.size()) {
       std::stringstream lineStream(line);
-      double x, y;
+      int x, y;
       lineStream >> x >> y;
       polygon.push_back(QPoint(x, y));
     }
@@ -158,7 +158,7 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
         dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
       for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
           it != mClasses.end(); ++it)
-        if ((*it)->contains(QPoint(point(0), point(1))))
+        if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
           if (classSet.count(it - mClasses.begin()) == 0) {
             classMap[it - mClasses.begin()] = classPool;
             classPool++;
@@ -174,7 +174,7 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
     const size_t label = it->second;
     for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
         it != mClasses.end(); ++it)
-      if ((*it)->contains(QPoint(point(0), point(1))))
+      if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
         contingencyTable(classMap[it - mClasses.begin()], label)++;
   }
   return computeVMeasure(contingencyTable, 1.0);
@@ -194,7 +194,7 @@ void Evaluator::clear() {
 size_t Evaluator::getLabel(const Eigen::Matrix<double, 2, 1>& point) const {
   for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
       it != mClasses.end(); ++it)
-    if ((*it)->contains(QPoint(point(0), point(1))))
+    if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
       return it - mClasses.begin();
   return 0;
 }
