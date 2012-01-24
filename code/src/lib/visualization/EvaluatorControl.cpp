@@ -146,8 +146,8 @@ void EvaluatorControl::demUpdated(const Grid<double, Cell, 2>& dem) {
   labelDEM();
 }
 
-void EvaluatorControl::bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-    graph, const DEMGraph::VertexContainer& vertices) {
+void EvaluatorControl::bpUpdated(const Grid<double, Cell, 2>& dem, const
+    DEMGraph& graph, const DEMGraph::VertexContainer& vertices) {
   const double vMeasure = mEvaluator.evaluate(dem, graph, vertices);
   mUi->vMeasureSpinBox->setValue(vMeasure);
   mUi->vMeasureSpinBox->setEnabled(true);
