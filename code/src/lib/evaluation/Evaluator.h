@@ -71,6 +71,10 @@ public:
   /// Evaluate the labeling against the ground truth
   double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
     const DEMGraph::VertexContainer& verticesLabels) const;
+  /// Evaluate the labeling against the ground truth (apply transform)
+  double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
+    const DEMGraph::VertexContainer& verticesLabels, double x, double y,
+    double yaw) const;
   /// Returns the label of a point in the ground truth
   size_t getLabel(const Eigen::Matrix<double, 2, 1>& point) const;
   /** @}

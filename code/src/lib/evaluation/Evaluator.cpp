@@ -188,6 +188,60 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   return computeVMeasure(contingencyTable, 1.0);
 }
 
+double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
+    demgraph, const DEMGraph::VertexContainer& verticesLabels, double x, double
+    y, double yaw) const {
+  std::set<size_t> labelSet;
+  std::map<size_t, size_t> labelMap;
+  size_t labelPool = 0;
+  for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
+      verticesLabels.end(); ++it)
+    if (labelSet.count(it->second) == 0) {
+      labelMap[it->second] = labelPool;
+      labelPool++;
+      labelSet.insert(it->second);
+    }
+  DEMGraph::VertexContainer verticesLabelsMap;
+  for (DEMGraph::ConstVertexIterator it = demgraph.getVertexBegin(); it !=
+      demgraph.getVertexEnd(); ++it)
+    verticesLabelsMap[it->first] =
+      labelMap[verticesLabels.find(it->first)->second];
+  const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
+  std::set<size_t> classSet;
+  std::map<size_t, size_t> classMap;
+  size_t classPool = 0;
+  for (size_t i = 0; i < numCells(0); ++i)
+    for (size_t j = 0; j < numCells(1); ++j) {
+      const Cell& cell =
+        dem[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      if (cell.getHeightEstimator().getValid() == false)
+        continue;
+      const Eigen::Matrix<double, 2, 1> point = 
+        dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+      for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
+          it != mClasses.end(); ++it)
+        if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
+          if (classSet.count(it - mClasses.begin()) == 0) {
+            classMap[it - mClasses.begin()] = classPool;
+            classPool++;
+            classSet.insert(it - mClasses.begin());
+          }
+    }
+  Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> contingencyTable =
+    Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(classSet.size(),
+    labelSet.size());
+  for (DEMGraph::ConstVertexIterator it = verticesLabelsMap.begin(); it !=
+      verticesLabelsMap.end(); ++it) {
+    const Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
+    const size_t label = it->second;
+    for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
+        it != mClasses.end(); ++it)
+      if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
+        contingencyTable(classMap[it - mClasses.begin()], label)++;
+  }
+  return computeVMeasure(contingencyTable, 1.0);
+}
+
 size_t Evaluator::getNumClasses() const {
   return mClasses.size();
 }
