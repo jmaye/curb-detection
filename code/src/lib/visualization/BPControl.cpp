@@ -217,6 +217,7 @@ void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
 }
 
 void BPControl::runBP() {
+  mVertices.clear();
   std::vector<size_t> mapState;
   mapState.reserve(mFactorGraph.nrVars());
   if (mFactorGraph.factors()[0].nrStates() > 1) {
@@ -230,7 +231,12 @@ void BPControl::runBP() {
     opts.set("inference", mAlgo);
     BeliefPropagation bp(mFactorGraph, opts);
     bp.init();
-    bp.run();
+    try {
+      bp.run();
+    }
+    catch (dai::Exception& e) {
+      return;
+    }
     const double after = Timestamp::now();
     mUi->iterSpinBox->setValue(bp.Iterations());
     mUi->llSpinBox->setValue(bp.logZ());
@@ -256,7 +262,6 @@ void BPControl::runBP() {
     for (size_t i = 0; i < mFactorGraph.nrVars(); ++i)
       mapState.push_back(0);
   }
-  mVertices.clear();
   for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
     mGraph.getVertexEnd(); ++it)
     mVertices[it->first] = mapState[mFgMapping[it->first]];
