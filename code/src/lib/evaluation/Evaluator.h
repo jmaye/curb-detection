@@ -77,6 +77,9 @@ public:
     double yaw);
   /// Returns the label of a point in the ground truth
   size_t getLabel(const Eigen::Matrix<double, 2, 1>& point) const;
+  /// Returns the label of a point in the ground truth
+  size_t getLabel(Eigen::Matrix<double, 2, 1>& point, double x, double y,
+    double yaw);
   /** @}
     */
 
