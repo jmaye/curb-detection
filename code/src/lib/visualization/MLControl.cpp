@@ -143,45 +143,48 @@ void MLControl::runML() {
   Eigen::Matrix<double, Eigen::Dynamic, 1> w;
   EstimatorBayesImproper<LinearRegression<3>, 3>::Container points;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
+  mVertices.clear();
   if (Helpers::initML(mDEM, mGraph, mComponents, points, pointsMapping, c, v,
     w, mWeighted)) {
     EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
       Eigen::Dynamic> estMixtPlane(c, v, w, mMaxIter, mTol);
     const size_t numIter = estMixtPlane.addPoints(points.begin(), points.end());
-    const double after = Timestamp::now();
-    mUi->iterSpinBox->setValue(numIter);
-    mUi->timeSpinBox->setValue(after - before);
-    mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
-    std::cout << estMixtPlane.getCoefficients() << std::endl;
-    std::cout << estMixtPlane.getVariances() << std::endl;
-    const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-      responsibilities = estMixtPlane.getResponsibilities();
-    double residual = 0.0;
-    for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
-      double max = -std::numeric_limits<double>::infinity();
-      size_t argmax = 0;
-      for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-        if (responsibilities(i, j) > max) {
-          max = responsibilities(i, j);
-          argmax = j;
-        }
-      mVertices[pointsMapping[i]] = argmax;
-      Eigen::Matrix<double, 3, 1> point;
-      point(0) = 1.0;
-      point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
-      double prediction =
-        (estMixtPlane.getCoefficients().row(mVertices[pointsMapping[i]]) *
-        point)(0);
-      residual += fabs(prediction -
-        mDEM[pointsMapping[i]].getHeightEstimator().
-        getPostPredDist().getMean());
+    if (estMixtPlane.getValid()) {
+      const double after = Timestamp::now();
+      mUi->iterSpinBox->setValue(numIter);
+      mUi->timeSpinBox->setValue(after - before);
+      mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
+      std::cout << estMixtPlane.getCoefficients() << std::endl;
+      std::cout << estMixtPlane.getVariances() << std::endl;
+      const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
+        responsibilities = estMixtPlane.getResponsibilities();
+      double residual = 0.0;
+      for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
+        double max = -std::numeric_limits<double>::infinity();
+        size_t argmax = 0;
+        for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
+          if (responsibilities(i, j) > max) {
+            max = responsibilities(i, j);
+            argmax = j;
+          }
+        mVertices[pointsMapping[i]] = argmax;
+        Eigen::Matrix<double, 3, 1> point;
+        point(0) = 1.0;
+        point.segment(1, 2) = mDEM.getCoordinates(pointsMapping[i]);
+        double prediction =
+          (estMixtPlane.getCoefficients().row(mVertices[pointsMapping[i]]) *
+          point)(0);
+        residual += fabs(prediction -
+          mDEM[pointsMapping[i]].getHeightEstimator().
+          getPostPredDist().getMean());
+      }
+      residual /= (size_t)responsibilities.rows();
+      mUi->residualSpinBox->setValue(residual);
+      mUi->showMLCheckBox->setEnabled(true);
+      GLView::getInstance().update();
+      emit mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
+        estMixtPlane.getVariances(), estMixtPlane.getWeights(), mColors);
     }
-    residual /= (size_t)responsibilities.rows();
-    mUi->residualSpinBox->setValue(residual);
-    mUi->showMLCheckBox->setEnabled(true);
-    GLView::getInstance().update();
-    emit mlUpdated(mDEM, mGraph, estMixtPlane.getCoefficients(),
-      estMixtPlane.getVariances(), estMixtPlane.getWeights(), mColors);
   }
 }
 
