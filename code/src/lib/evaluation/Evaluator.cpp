@@ -266,10 +266,13 @@ size_t Evaluator::getLabel(const Eigen::Matrix<double, 2, 1>& point) const {
 
 size_t Evaluator::getLabel(Eigen::Matrix<double, 2, 1>& point, double x,
   double y, double yaw) {
+  Eigen::Matrix<double, 2, 1>& pointCopy = point;
   mTransformation.setTransformation(x, y, yaw);
-  mTransformation.transform(point, point);
-  //setTransformation(x, y, 0, 0, 0, yaw);
-  //transform(point, point);
+  mTransformation.transform(pointCopy, pointCopy);
+  std::cout << pointCopy << std::endl;
+  setTransformation(x, y, 0, 0, 0, yaw);
+  transform(point, point);
+  std::cout << point << std::endl;
   for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
       it != mClasses.end(); ++it)
     if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
