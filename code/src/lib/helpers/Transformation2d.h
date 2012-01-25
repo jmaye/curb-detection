@@ -67,6 +67,8 @@ public:
   /// Transform a point
   void transform(const Eigen::Matrix<T, 2, 1>& src, Eigen::Matrix<T, 2, 1>&
     dest) const;
+  /// Transform a point using operator
+  Eigen::Matrix<T, 2, 1> operator () (const Eigen::Matrix<T, 2, 1>& src) const;
   /** @}
     */
 
@@ -90,6 +92,10 @@ protected:
     */
   /// Transformation matrix
   Eigen::Matrix<double, 3, 3> mTransformationMatrix;
+  /// Rotation matrix
+  Eigen::Matrix<double, 3, 3> mRotationMatrix;
+  /// Translation matrix
+  Eigen::Matrix<double, 3, 3> mTranslationMatrix;
   /** @}
     */
 

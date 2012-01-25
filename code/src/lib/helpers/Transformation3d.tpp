@@ -94,26 +94,48 @@ void Transformation<T, 3>::setTransformation(T x, T y, T z, T roll, T pitch,
   double cosPitch = cos(pitch);
   double sinYaw = sin(yaw);
   double cosYaw = cos(yaw);
-  mTransformationMatrix(0, 0) = cosYaw * cosPitch;
-  mTransformationMatrix(0, 1) = cosYaw * sinPitch * sinRoll - sinYaw * cosRoll;
-  mTransformationMatrix(0, 2) = cosYaw * sinPitch * cosRoll + sinYaw * sinRoll;
-  mTransformationMatrix(0, 3) = x;
-  mTransformationMatrix(1, 0) = sinYaw * cosPitch;
-  mTransformationMatrix(1, 1) = sinYaw * sinPitch * sinRoll + cosYaw * cosRoll;
-  mTransformationMatrix(1, 2) = sinYaw * sinPitch * cosRoll - cosYaw * sinRoll;
-  mTransformationMatrix(1, 3) = y;
-  mTransformationMatrix(2, 0) = -sinPitch;
-  mTransformationMatrix(2, 1) = cosPitch * sinRoll;
-  mTransformationMatrix(2, 2) = cosPitch * cosRoll;
-  mTransformationMatrix(2, 3) = z;
-  mTransformationMatrix(3, 0) = 0;
-  mTransformationMatrix(3, 1) = 0;
-  mTransformationMatrix(3, 2) = 0;
-  mTransformationMatrix(3, 3) = 1;
+  mRotationMatrix(0, 0) = cosYaw * cosPitch;
+  mRotationMatrix(0, 1) = cosYaw * sinPitch * sinRoll - sinYaw * cosRoll;
+  mRotationMatrix(0, 2) = cosYaw * sinPitch * cosRoll + sinYaw * sinRoll;
+  mRotationMatrix(0, 3) = 0;
+  mRotationMatrix(1, 0) = sinYaw * cosPitch;
+  mRotationMatrix(1, 1) = sinYaw * sinPitch * sinRoll + cosYaw * cosRoll;
+  mRotationMatrix(1, 2) = sinYaw * sinPitch * cosRoll - cosYaw * sinRoll;
+  mRotationMatrix(1, 3) = 0;
+  mRotationMatrix(2, 0) = -sinPitch;
+  mRotationMatrix(2, 1) = cosPitch * sinRoll;
+  mRotationMatrix(2, 2) = cosPitch * cosRoll;
+  mRotationMatrix(2, 3) = 0;
+  mRotationMatrix(3, 0) = 0;
+  mRotationMatrix(3, 1) = 0;
+  mRotationMatrix(3, 2) = 0;
+  mRotationMatrix(3, 3) = 1;
+  mTranslationMatrix(0, 0) = 1;
+  mTranslationMatrix(0, 1) = 0;
+  mTranslationMatrix(0, 2) = 0;
+  mTranslationMatrix(0, 3) = x;
+  mTranslationMatrix(1, 0) = 0;
+  mTranslationMatrix(1, 1) = 1;
+  mTranslationMatrix(1, 2) = 0;
+  mTranslationMatrix(1, 3) = y;
+  mTranslationMatrix(2, 0) = 0;
+  mTranslationMatrix(2, 1) = 0;
+  mTranslationMatrix(2, 2) = 1;
+  mTranslationMatrix(2, 3) = z;
+  mTranslationMatrix(3, 0) = 0;
+  mTranslationMatrix(3, 1) = 0;
+  mTranslationMatrix(3, 2) = 0;
+  mTranslationMatrix(3, 3) = 1;
+  mTransformationMatrix = mTranslationMatrix * mRotationMatrix;
 }
 
 template <typename T>
 void Transformation<T, 3>::inverse() {
+  mRotationMatrix.transposeInPlace();
+  mTranslationMatrix(0, 3) = -mTranslationMatrix(0, 3);
+  mTranslationMatrix(1, 3) = -mTranslationMatrix(1, 3);
+  mTranslationMatrix(2, 3) = -mTranslationMatrix(2, 3);
+  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
 }
 
 /******************************************************************************/
@@ -125,4 +147,11 @@ void Transformation<T, 3>::transform(const Eigen::Matrix<T, 3, 1>& src,
     Eigen::Matrix<T, 3, 1>& dest) const {
   Eigen::Matrix<T, 4, 1> point(src(0), src(1), src(2), T(1));
   dest = (mTransformationMatrix * point).start(3);
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> Transformation<T, 3>::operator () (const
+    Eigen::Matrix<T, 3, 1>& src) const {
+  Eigen::Matrix<T, 4, 1> point(src(0), src(1), src(2), T(1));
+  return (mTransformationMatrix * point).start(3);
 }

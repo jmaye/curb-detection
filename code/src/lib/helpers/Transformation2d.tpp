@@ -91,19 +91,33 @@ template <typename T>
 void Transformation<T, 2>::setTransformation(T x, T y, T yaw) {
   double cosYaw = cos(yaw);
   double sinYaw = sin(yaw);
-  mTransformationMatrix(0, 0) = cosYaw;
-  mTransformationMatrix(0, 1) = -sinYaw;
-  mTransformationMatrix(0, 2) = x;
-  mTransformationMatrix(1, 0) = sinYaw;
-  mTransformationMatrix(1, 1) = cosYaw;
-  mTransformationMatrix(1, 2) = y;
-  mTransformationMatrix(2, 0) = 0;
-  mTransformationMatrix(2, 1) = 0;
-  mTransformationMatrix(2, 2) = 1;
+  mRotationMatrix(0, 0) = cosYaw;
+  mRotationMatrix(0, 1) = -sinYaw;
+  mRotationMatrix(0, 2) = 0;
+  mRotationMatrix(1, 0) = sinYaw;
+  mRotationMatrix(1, 1) = cosYaw;
+  mRotationMatrix(1, 2) = 0;
+  mRotationMatrix(2, 0) = 0;
+  mRotationMatrix(2, 1) = 0;
+  mRotationMatrix(2, 2) = 1;
+  mTranslationMatrix(0, 0) = 1;
+  mTranslationMatrix(0, 1) = 0;
+  mTranslationMatrix(0, 2) = x;
+  mTranslationMatrix(1, 0) = 0;
+  mTranslationMatrix(1, 1) = 1;
+  mTranslationMatrix(1, 2) = y;
+  mTranslationMatrix(2, 0) = 0;
+  mTranslationMatrix(2, 1) = 0;
+  mTranslationMatrix(2, 2) = 1;
+  mTransformationMatrix = mTranslationMatrix * mRotationMatrix;
 }
 
 template <typename T>
 void Transformation<T, 2>::inverse() {
+  mRotationMatrix.transposeInPlace();
+  mTranslationMatrix(0, 2) = -mTranslationMatrix(0, 2);
+  mTranslationMatrix(1, 2) = -mTranslationMatrix(1, 2);
+  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
 }
 
 /******************************************************************************/
@@ -115,4 +129,11 @@ void Transformation<T, 2>::transform(const Eigen::Matrix<T, 2, 1>& src,
     Eigen::Matrix<T, 2, 1>& dest) const {
   Eigen::Matrix<T, 3, 1> point(src(0), src(1), T(1));
   dest = (mTransformationMatrix * point).start(2);
+}
+
+template <typename T>
+Eigen::Matrix<T, 2, 1> Transformation<T, 2>::operator () (const
+    Eigen::Matrix<T, 2, 1>& src) const {
+  Eigen::Matrix<T, 3, 1> point(src(0), src(1), T(1));
+  return (mTransformationMatrix * point).start(2);
 }
