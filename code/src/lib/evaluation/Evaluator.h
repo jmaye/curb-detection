@@ -33,6 +33,7 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
+#include "helpers/Transformation.h"
 
 /** The class Evaluator performs the evaluation of the curb detection algorithm
     from a ground truth file.
@@ -121,6 +122,8 @@ protected:
   std::vector<const QRegion*> mClasses;
   /// Transformation matrix for evaluation
   Eigen::Matrix<double, 4, 4> mTransformationMatrix;
+  /// Transformation
+  Transformation<double, 2> mTransformation;
   /** @}
     */
 
