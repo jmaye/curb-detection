@@ -40,6 +40,7 @@ size_t BinomialFunction::getValue(const Eigen::Matrix<size_t, 2, 1>& argument)
       factorial(argument(0) - argument(1)));
   else
     throw BadArgumentException<Eigen::Matrix<size_t, 2, 1> >(argument,
-      "BinomialFunction::getValue(): argument(0) must be larger than argument(1)",
+      "BinomialFunction::getValue(): "
+      "argument(0) must be larger than argument(1)",
       __FILE__, __LINE__);
 }

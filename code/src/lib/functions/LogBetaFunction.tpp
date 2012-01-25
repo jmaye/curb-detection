@@ -41,7 +41,7 @@ double LogBetaFunction<X, M>::getValue(const Eigen::Matrix<X, M, 1>& argument)
   X sum = X(0);
   X logSumGamma = X(0);
 
-  for (size_t i = 0; i < (size_t)argument.size(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(argument.size()); ++i) {
     sum += argument(i);
     logSumGamma += logGamma(argument(i));
   }

@@ -94,16 +94,16 @@ double Evaluator::computeVMeasure(const
   Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>& contingencyTable,
   double beta) const {
   double condEntropy = 0;
-  for (size_t i = 0; i < contingencyTable.cols(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(contingencyTable.cols()); ++i) {
     const size_t columnSum = contingencyTable.col(i).sum();
-    for (size_t j = 0; j < contingencyTable.rows(); ++j)
+    for (size_t j = 0; j < static_cast<size_t>(contingencyTable.rows()); ++j)
       if (contingencyTable(j, i))
         condEntropy += (double)contingencyTable(j, i) / contingencyTable.sum() *
           log((double)contingencyTable(j, i) / columnSum);
   }
   condEntropy *= -1.0;
   double entropy = 0.0;
-  for (size_t i = 0; i < contingencyTable.rows(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(contingencyTable.rows()); ++i) {
     const size_t rowSum = contingencyTable.row(i).sum();
     entropy += (double)rowSum / contingencyTable.sum() *
       log((double)rowSum / contingencyTable.sum());
@@ -113,16 +113,16 @@ double Evaluator::computeVMeasure(const
   if (contingencyTable.rows() == 1)
     homogeneity = 1.0;
   condEntropy = 0.0;
-  for (size_t i = 0; i < contingencyTable.rows(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(contingencyTable.rows()); ++i) {
     const size_t rowSum = contingencyTable.row(i).sum();
-    for (size_t j = 0; j < contingencyTable.cols(); ++j)
+    for (size_t j = 0; j < static_cast<size_t>(contingencyTable.cols()); ++j)
       if (contingencyTable(i, j))
         condEntropy += (double)contingencyTable(i, j) / contingencyTable.sum() *
           log((double)contingencyTable(i, j) / rowSum);
   }
   condEntropy *= -1.0;
   entropy = 0.0;
-  for (size_t i = 0; i < contingencyTable.cols(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(contingencyTable.cols()); ++i) {
     const size_t columnSum = contingencyTable.col(i).sum();
     entropy += (double)columnSum / contingencyTable.sum() *
       log((double)columnSum / contingencyTable.sum());

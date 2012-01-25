@@ -44,12 +44,12 @@ Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
   mNumCells.resize(resolution.size());
   mNumCellsTot = 1.0;
   mLinProd = Index::Ones(resolution.size());
-  for (size_t i = 0; i < (size_t)minimum.size(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(minimum.size()); ++i) {
     mNumCells(i) = ceil((maximum(i) - minimum(i)) / resolution(i));
     mNumCellsTot *= mNumCells(i);
   }
-  for (size_t i = 0; i < (size_t)minimum.size(); ++i)
-    for (size_t j = i + 1; j < (size_t)minimum.size(); ++j)
+  for (size_t i = 0; i < static_cast<size_t>(minimum.size()); ++i)
+    for (size_t j = i + 1; j < static_cast<size_t>(minimum.size()); ++j)
       mLinProd(i) *= mNumCells(j);
   mCells.resize(mNumCellsTot);
 }
@@ -143,7 +143,7 @@ const typename Grid<T, C, M>::Container& Grid<T, C, M>::getCells() const {
 template <typename T, typename C, size_t M>
 size_t Grid<T, C, M>::computeLinearIndex(const Index& idx) const {
   size_t linIdx = 0;
-  for (size_t i = 0; i < (size_t)idx.size(); ++i)
+  for (size_t i = 0; i < static_cast<size_t>(idx.size()); ++i)
     linIdx += mLinProd(i) * idx(i);
   return linIdx;
 }
@@ -182,7 +182,7 @@ typename Grid<T, C, M>::Index Grid<T, C, M>::getIndex(const Coordinate& point)
     throw OutOfBoundException<Coordinate>(point,
       "Grid<T, C, M>::operator (): point out of range", __FILE__, __LINE__);
   Index idx(point.size());
-  for (size_t i = 0; i < (size_t)point.size(); ++i)
+  for (size_t i = 0; i < static_cast<size_t>(point.size()); ++i)
     if (point(i) == mMaximum(i))
       idx(i) = mNumCells(i) - 1;
     else
@@ -208,7 +208,7 @@ typename Grid<T, C, M>::Coordinate Grid<T, C, M>::getCoordinates(const Index&
       "Grid<T, C, M>::getCoordinates(): index out of range",
       __FILE__, __LINE__);
   Coordinate point(idx.size());
-  for (size_t i = 0; i < (size_t)idx.size(); ++i)
+  for (size_t i = 0; i < static_cast<size_t>(idx.size()); ++i)
     point[i] = mMinimum(i) + (idx(i) + 0.5) * mResolution(i);
   return point;
 }

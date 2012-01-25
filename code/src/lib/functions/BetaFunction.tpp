@@ -41,10 +41,10 @@ double BetaFunction<X, M>::getValue(const Eigen::Matrix<X, M, 1>& argument)
   X sum = X(0);
   X productGamma = X(1);
 
-  for (size_t i = 0; i < (size_t)argument.size(); ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(argument.size()); ++i) {
     sum += argument(i);
     productGamma *= gamma(argument(i));
   }
 
-  return (double)productGamma / gamma(sum);
+  return static_cast<double>(productGamma) / gamma(sum);
 }
