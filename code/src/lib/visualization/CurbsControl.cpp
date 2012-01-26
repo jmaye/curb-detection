@@ -90,7 +90,6 @@ void CurbsControl::setSmoothLines(bool smoothLines) {
 
 void CurbsControl::renderCurbs(double size, bool smooth) {
   glPushAttrib(GL_CURRENT_BIT);
-  glPushAttrib(GL_CURRENT_BIT);
   if (size > 1.0)
     glLineWidth(size);
   else
