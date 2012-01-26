@@ -237,7 +237,7 @@ void Processor::processPointCloud(const PointCloud<double, 3>& pointCloud) {
   for (PointCloud<double, 3>::ConstPointIterator it =
       pointCloud.getPointBegin();
       it != pointCloud.getPointEnd(); ++it) {
-    Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
+    const Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
     if (mDEM.isInRange(point))
       mDEM(point).addPoint((*it)(2));
   }

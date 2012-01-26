@@ -167,7 +167,7 @@ void DEMControl::demChanged() {
   mUi->numCellsYSpinBox->setValue(mDEM.getNumCells()(1));
   for (PointCloud<double, 3>::ConstPointIterator it =
     mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it) {
-    Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
+    const Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
     if (mDEM.isInRange(point))
       mDEM(point).addPoint((*it)(2));
   }
