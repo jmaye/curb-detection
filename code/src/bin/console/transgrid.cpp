@@ -24,11 +24,11 @@
 
 int main (int argc, char** argv) {
   TransGrid<double, size_t, 2> transGrid(
-    Grid<double, size_t, 2>::Coordinate(0.0, 0.0),
-    Grid<double, size_t, 2>::Coordinate(4.0, 4.0),
-    Grid<double, size_t, 2>::Coordinate(0.1, 0.1), 0, 0, 0);
+    Grid<double, size_t, 2>::Coordinate(-1.4, -2.0),
+    Grid<double, size_t, 2>::Coordinate(0.6, 2.0),
+    Grid<double, size_t, 2>::Coordinate(0.1, 0.1), -60.1073, 52.4747, 1.46489);
   std::cout << transGrid << std::endl;
-  const Grid<double, size_t, 2>::Coordinate point(1.0, 1.0);
+  const Grid<double, size_t, 2>::Coordinate point(-58.25, 51.1);
   if (transGrid.isInRange(point))
     transGrid(point)++;
   return 0;

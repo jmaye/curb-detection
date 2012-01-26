@@ -99,19 +99,18 @@ template <typename T, typename C>
 typename Grid<T, C, 2>::Index TransGrid<T, C, 2>::getIndex(const typename
     Grid<T, C, 2>::Coordinate& point) const throw (OutOfBoundException<typename
     Grid<T, C, 2>::Coordinate>) {
-    return Grid<T, C, 2>::getIndex(mInvTransformation(point));
-}
-
-template <typename T, typename C>
-const C& TransGrid<T, C, 2>::operator () (const typename
-    Grid<T, C, 2>::Coordinate& point) const {
-  return Grid<T, C, 2>::operator()(mInvTransformation(point));
-}
-
-template <typename T, typename C>
-C& TransGrid<T, C, 2>::operator () (const typename Grid<T, C, 2>::Coordinate&
-    point) {
-  return Grid<T, C, 2>::operator()(mInvTransformation(point));
+  typename Grid<T, C, 2>::Coordinate pointTrans(mInvTransformation(point));
+  if (!Grid<T, C, 2>::isInRange(pointTrans))
+    throw OutOfBoundException<typename Grid<T, C, 2>::Coordinate>(pointTrans,
+      "TransGrid<T, C, 2>::getIndex(): point out of range", __FILE__, __LINE__);
+  typename Grid<T, C, 2>::Index idx(pointTrans.size());
+  for (size_t i = 0; i < static_cast<size_t>(pointTrans.size()); ++i)
+    if (pointTrans(i) == Grid<T, C, 2>::mMaximum(i))
+      idx(i) = Grid<T, C, 2>::mNumCells(i) - 1;
+    else
+      idx(i) = (pointTrans(i) - Grid<T, C, 2>::mMinimum(i)) /
+        Grid<T, C, 2>::mResolution(i);
+  return idx;
 }
 
 template <typename T, typename C>

@@ -57,11 +57,6 @@ public:
   virtual typename Grid<T, C, 2>::Index getIndex(const typename
     Grid<T, C, 2>::Coordinate& point) const throw (OutOfBoundException<typename
     Grid<T, C, 2>::Coordinate>);
-  /// Returns a cell using (coordinate) operator
-  virtual const C& operator () (const typename Grid<T, C, 2>::Coordinate& point)
-    const;
-  /// Returns a cell using (coordinate) operator
-  virtual C& operator () (const typename Grid<T, C, 2>::Coordinate& point);
   /// Returns the coordinates of the center of a cell using index
   virtual typename Grid<T, C, 2>::Coordinate getCoordinates(const typename
     Grid<T, C, 2>::Index& idx) const throw
