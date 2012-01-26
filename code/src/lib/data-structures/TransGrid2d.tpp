@@ -50,7 +50,7 @@ template <typename T, typename C>
 TransGrid<T, C, 2>& TransGrid<T, C, 2>::operator = (const TransGrid<T, C, 2>&
     other) {
   if (this != &other) {
-    this->Grid<T, C, 2>::operator=(other);
+    Grid<T, C, 2>::operator=(other);
     mTransformation = other.mTransformation;
     mInvTransformation = other.mInvTransformation;
   }
@@ -105,13 +105,13 @@ typename Grid<T, C, 2>::Index TransGrid<T, C, 2>::getIndex(const typename
 template <typename T, typename C>
 const C& TransGrid<T, C, 2>::operator () (const typename
     Grid<T, C, 2>::Coordinate& point) const {
-  return this->Grid<T, C, 2>::operator()(mInvTransformation(point));
+  return Grid<T, C, 2>::operator()(mInvTransformation(point));
 }
 
 template <typename T, typename C>
 C& TransGrid<T, C, 2>::operator () (const typename Grid<T, C, 2>::Coordinate&
     point) {
-  return this->Grid<T, C, 2>::operator()(mInvTransformation(point));
+  return Grid<T, C, 2>::operator()(mInvTransformation(point));
 }
 
 template <typename T, typename C>

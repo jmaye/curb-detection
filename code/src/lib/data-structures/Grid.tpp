@@ -180,7 +180,7 @@ typename Grid<T, C, M>::Index Grid<T, C, M>::getIndex(const Coordinate& point)
   const throw (OutOfBoundException<Coordinate>) {
   if (!isInRange(point))
     throw OutOfBoundException<Coordinate>(point,
-      "Grid<T, C, M>::operator (): point out of range", __FILE__, __LINE__);
+      "Grid<T, C, M>::getIndex: point out of range", __FILE__, __LINE__);
   Index idx(point.size());
   for (size_t i = 0; i < static_cast<size_t>(point.size()); ++i)
     if (point(i) == mMaximum(i))
