@@ -28,5 +28,8 @@ int main (int argc, char** argv) {
     Grid<double, size_t, 2>::Coordinate(4.0, 4.0),
     Grid<double, size_t, 2>::Coordinate(0.1, 0.1), 0, 0, 0);
   std::cout << transGrid << std::endl;
+  const Grid<double, size_t, 2>::Coordinate point(1.0, 1.0);
+  if (transGrid.isInRange(point))
+    transGrid(point)++;
   return 0;
 }

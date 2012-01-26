@@ -160,7 +160,7 @@ typename Grid<T, C, 2>::Coordinate TransGrid<T, C, 2>::getLLCoordinates(const
 template <typename T, typename C>
 bool TransGrid<T, C, 2>::isInRange(const typename Grid<T, C, 2>::Coordinate&
     point) const {
-  return isInRange(mInvTransformation(point));
+  return Grid<T, C, 2>::isInRange(mInvTransformation(point));
 }
 
 template <typename T, typename C>
