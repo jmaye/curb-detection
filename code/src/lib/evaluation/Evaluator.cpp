@@ -188,63 +188,6 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   return computeVMeasure(contingencyTable, 1.0);
 }
 
-double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
-    demgraph, const DEMGraph::VertexContainer& verticesLabels, double x, double
-    y, double yaw) {
-  std::set<size_t> labelSet;
-  std::map<size_t, size_t> labelMap;
-  size_t labelPool = 0;
-  for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
-      verticesLabels.end(); ++it)
-    if (labelSet.count(it->second) == 0) {
-      labelMap[it->second] = labelPool;
-      labelPool++;
-      labelSet.insert(it->second);
-    }
-  DEMGraph::VertexContainer verticesLabelsMap;
-  for (DEMGraph::ConstVertexIterator it = demgraph.getVertexBegin(); it !=
-      demgraph.getVertexEnd(); ++it)
-    verticesLabelsMap[it->first] =
-      labelMap[verticesLabels.find(it->first)->second];
-  const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
-  std::set<size_t> classSet;
-  std::map<size_t, size_t> classMap;
-  size_t classPool = 0;
-  setTransformation(x, y, 0, 0, 0, yaw);
-  for (size_t i = 0; i < numCells(0); ++i)
-    for (size_t j = 0; j < numCells(1); ++j) {
-      const Cell& cell =
-        dem[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      if (cell.getHeightEstimator().getValid() == false)
-        continue;
-      Eigen::Matrix<double, 2, 1> point = 
-        dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      transform(point, point);
-      for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-          it != mClasses.end(); ++it)
-        if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
-          if (classSet.count(it - mClasses.begin()) == 0) {
-            classMap[it - mClasses.begin()] = classPool;
-            classPool++;
-            classSet.insert(it - mClasses.begin());
-          }
-    }
-  Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> contingencyTable =
-    Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(classSet.size(),
-    labelSet.size());
-  for (DEMGraph::ConstVertexIterator it = verticesLabelsMap.begin(); it !=
-      verticesLabelsMap.end(); ++it) {
-    Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
-    transform(point, point);
-    const size_t label = it->second;
-    for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-        it != mClasses.end(); ++it)
-      if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
-        contingencyTable(classMap[it - mClasses.begin()], label)++;
-  }
-  return computeVMeasure(contingencyTable, 1.0);
-}
-
 size_t Evaluator::getNumClasses() const {
   return mClasses.size();
 }
@@ -262,51 +205,4 @@ size_t Evaluator::getLabel(const Eigen::Matrix<double, 2, 1>& point) const {
     if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
       return it - mClasses.begin();
   return 0;
-}
-
-size_t Evaluator::getLabel(Eigen::Matrix<double, 2, 1>& point, double x,
-  double y, double yaw) {
-  Eigen::Matrix<double, 2, 1>& pointCopy = point;
-  mTransformation.setTransformation(x, y, yaw);
-  mTransformation.transform(pointCopy, pointCopy);
-  setTransformation(x, y, 0, 0, 0, yaw);
-  transform(point, point);
-  for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-      it != mClasses.end(); ++it)
-    if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
-      return it - mClasses.begin();
-  return 0;
-}
-
-void Evaluator::setTransformation(double x, double y, double z, double roll,
-    double pitch, double yaw) {
-  double A = cos(yaw), B = sin(yaw), C = cos(pitch), D = sin(pitch),
-    E = cos(roll), F = sin(roll), DE = D * E, DF = D * F;
-  mTransformationMatrix(0, 0) = A * C;
-  mTransformationMatrix(0, 1) = A * DF - B * E;
-  mTransformationMatrix(0, 2) = B * F + A * DE;
-  mTransformationMatrix(0, 3) = x;
-  mTransformationMatrix(1, 0) = B * C;
-  mTransformationMatrix(1, 1) = A * E + B * DF;
-  mTransformationMatrix(1, 2) = B * DE - A * F;
-  mTransformationMatrix(1, 3) = y;
-  mTransformationMatrix(2, 0) = -D;
-  mTransformationMatrix(2, 1) = C * F;
-  mTransformationMatrix(2 ,2) = C * E;
-  mTransformationMatrix(2, 3) = z;
-  mTransformationMatrix(3, 0) = 0;
-  mTransformationMatrix(3, 1) = 0;
-  mTransformationMatrix(3, 2) = 0;
-  mTransformationMatrix(3, 3) = 1;
-}
-
-void Evaluator::transform(const Eigen::Matrix<double, 2, 1>& src,
-    Eigen::Matrix<double, 2, 1>& dest) const {
-  double pX = src(0), pY = src(1), pZ = 0;
-  dest(0) = mTransformationMatrix(0, 0) * pX + mTransformationMatrix(0, 1) * pY
-    + mTransformationMatrix(0, 2) * pZ + mTransformationMatrix(0, 3);
-  dest(1) = mTransformationMatrix(1, 0) * pX + mTransformationMatrix(1, 1) * pY
-    + mTransformationMatrix(1, 2) * pZ + mTransformationMatrix(1, 3);
-  //dest(2) = mTransformationMatrix(2, 0) * pX + mTransformationMatrix(2, 1) * pY
-    //+ mTransformationMatrix(2, 2) * pZ + mTransformationMatrix(2, 3);
 }

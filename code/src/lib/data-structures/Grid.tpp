@@ -111,6 +111,14 @@ template <typename T, typename C, size_t M>
 void Grid<T, C, M>::write(std::ofstream& stream) const {
 }
 
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::writeBinary(std::ostream& stream) const {
+}
+
+template <typename T, typename C, size_t M>
+void Grid<T, C, M>::readBinary(std::istream& stream) {
+}
+
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
@@ -138,14 +146,6 @@ typename Grid<T, C, M>::CellIterator Grid<T, C, M>::getCellEnd() {
 template <typename T, typename C, size_t M>
 const typename Grid<T, C, M>::Container& Grid<T, C, M>::getCells() const {
   return mCells;
-}
-
-template <typename T, typename C, size_t M>
-size_t Grid<T, C, M>::computeLinearIndex(const Index& idx) const {
-  size_t linIdx = 0;
-  for (size_t i = 0; i < static_cast<size_t>(idx.size()); ++i)
-    linIdx += mLinProd(i) * idx(i);
-  return linIdx;
 }
 
 template <typename T, typename C, size_t M>
@@ -247,6 +247,18 @@ const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getMaximum() const {
 template <typename T, typename C, size_t M>
 const typename Grid<T, C, M>::Coordinate& Grid<T, C, M>::getResolution() const {
   return mResolution;
+}
+
+/******************************************************************************/
+/* Methods                                                                    */
+/******************************************************************************/
+
+template <typename T, typename C, size_t M>
+size_t Grid<T, C, M>::computeLinearIndex(const Index& idx) const {
+  size_t linIdx = 0;
+  for (size_t i = 0; i < static_cast<size_t>(idx.size()); ++i)
+    linIdx += mLinProd(i) * idx(i);
+  return linIdx;
 }
 
 template <typename T, typename C, size_t M>

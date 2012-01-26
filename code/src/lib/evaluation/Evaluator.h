@@ -33,7 +33,6 @@
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
-#include "helpers/Transformation.h"
 
 /** The class Evaluator performs the evaluation of the curb detection algorithm
     from a ground truth file.
@@ -72,15 +71,8 @@ public:
   /// Evaluate the labeling against the ground truth
   double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
     const DEMGraph::VertexContainer& verticesLabels) const;
-  /// Evaluate the labeling against the ground truth (apply transform)
-  double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
-    const DEMGraph::VertexContainer& verticesLabels, double x, double y,
-    double yaw);
   /// Returns the label of a point in the ground truth
   size_t getLabel(const Eigen::Matrix<double, 2, 1>& point) const;
-  /// Returns the label of a point in the ground truth
-  size_t getLabel(Eigen::Matrix<double, 2, 1>& point, double x, double y,
-    double yaw);
   /** @}
     */
 
@@ -106,12 +98,6 @@ protected:
   double computeVMeasure(const
     Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>& contingencyTable,
     double beta) const;
-  /// Set the transformation
-  void setTransformation(double x, double y, double z, double roll, double
-    pitch, double yaw);
-  /// Transform a point
-  void transform(const Eigen::Matrix<double, 2, 1>& src,
-    Eigen::Matrix<double, 2, 1>& dest) const;
   /** @}
     */
 
@@ -120,10 +106,6 @@ protected:
     */
   /// Ground truth classes
   std::vector<const QRegion*> mClasses;
-  /// Transformation matrix for evaluation
-  Eigen::Matrix<double, 4, 4> mTransformationMatrix;
-  /// Transformation
-  Transformation<double, 2> mTransformation;
   /** @}
     */
 

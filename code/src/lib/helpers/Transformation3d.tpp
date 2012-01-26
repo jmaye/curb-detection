@@ -31,8 +31,15 @@ Transformation<T, 3>::Transformation(const Eigen::Matrix<double, 4, 4>&
 }
 
 template <typename T>
+Transformation<T, 3>::Transformation(T x, T y, T z, T roll, T pitch, T yaw) {
+  setTransformation(x, y, z, roll, pitch, yaw);
+}
+
+template <typename T>
 Transformation<T, 3>::Transformation(const Transformation<T, 3>& other) :
-    mTransformationMatrix(other.mTransformationMatrix) {
+    mTransformationMatrix(other.mTransformationMatrix),
+    mRotationMatrix(other.mRotationMatrix),
+    mTranslationMatrix(other.mTranslationMatrix) {
 }
 
 template <typename T>
@@ -40,6 +47,8 @@ Transformation<T, 3>& Transformation<T, 3>::operator = (const
     Transformation<T, 3>& other) {
   if (this != &other) {
     mTransformationMatrix = other.mTransformationMatrix;
+    mRotationMatrix = other.mRotationMatrix;
+    mTranslationMatrix = other.mTranslationMatrix;
   }
   return *this;
 }
@@ -130,17 +139,23 @@ void Transformation<T, 3>::setTransformation(T x, T y, T z, T roll, T pitch,
 }
 
 template <typename T>
-void Transformation<T, 3>::inverse() {
-  mRotationMatrix.transposeInPlace();
-  mTranslationMatrix(0, 3) = -mTranslationMatrix(0, 3);
-  mTranslationMatrix(1, 3) = -mTranslationMatrix(1, 3);
-  mTranslationMatrix(2, 3) = -mTranslationMatrix(2, 3);
-  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
+Transformation<T, 3> Transformation<T, 3>::getInverse() const {
+  return Transformation<T, 3>(*this).inverse();
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
+
+template <typename T>
+const Transformation<T, 3>& Transformation<T, 3>::inverse() {
+  mRotationMatrix.transposeInPlace();
+  mTranslationMatrix(0, 3) = -mTranslationMatrix(0, 3);
+  mTranslationMatrix(1, 3) = -mTranslationMatrix(1, 3);
+  mTranslationMatrix(2, 3) = -mTranslationMatrix(2, 3);
+  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
+  return *this;
+}
 
 template <typename T>
 void Transformation<T, 3>::transform(const Eigen::Matrix<T, 3, 1>& src,

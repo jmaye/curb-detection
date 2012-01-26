@@ -103,9 +103,9 @@ public:
       @{
     */
   /// Writes into a output stream
-  bool writeBinary(std::ostream& stream) const;
+  void writeBinary(std::ostream& stream) const;
   /// Reads from an input stream
-  bool readBinary(std::istream& stream);
+  void readBinary(std::istream& stream);
   /** @}
     */
 

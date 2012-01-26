@@ -33,8 +33,15 @@ Transformation<T, 2>::Transformation(const Eigen::Matrix<double, 3, 3>&
 }
 
 template <typename T>
+Transformation<T, 2>::Transformation(T x, T y, T yaw) {
+  setTransformation(x, y, yaw);
+}
+
+template <typename T>
 Transformation<T, 2>::Transformation(const Transformation<T, 2>& other) :
-    mTransformationMatrix(other.mTransformationMatrix) {
+    mTransformationMatrix(other.mTransformationMatrix),
+    mRotationMatrix(other.mRotationMatrix),
+    mTranslationMatrix(other.mTranslationMatrix) {
 }
 
 template <typename T>
@@ -42,6 +49,8 @@ Transformation<T, 2>& Transformation<T, 2>::operator = (const
     Transformation<T, 2>& other) {
   if (this != &other) {
     mTransformationMatrix = other.mTransformationMatrix;
+    mRotationMatrix = other.mRotationMatrix;
+    mTranslationMatrix = other.mTranslationMatrix;
   }
   return *this;
 }
@@ -113,11 +122,8 @@ void Transformation<T, 2>::setTransformation(T x, T y, T yaw) {
 }
 
 template <typename T>
-void Transformation<T, 2>::inverse() {
-  mRotationMatrix.transposeInPlace();
-  mTranslationMatrix(0, 2) = -mTranslationMatrix(0, 2);
-  mTranslationMatrix(1, 2) = -mTranslationMatrix(1, 2);
-  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
+Transformation<T, 2> Transformation<T, 2>::getInverse() const {
+  return Transformation<T, 2>(*this).inverse();
 }
 
 /******************************************************************************/
@@ -136,4 +142,13 @@ Eigen::Matrix<T, 2, 1> Transformation<T, 2>::operator () (const
     Eigen::Matrix<T, 2, 1>& src) const {
   Eigen::Matrix<T, 3, 1> point(src(0), src(1), T(1));
   return (mTransformationMatrix * point).start(2);
+}
+
+template <typename T>
+const Transformation<T, 2>& Transformation<T, 2>::inverse() {
+  mRotationMatrix.transposeInPlace();
+  mTranslationMatrix(0, 2) = -mTranslationMatrix(0, 2);
+  mTranslationMatrix(1, 2) = -mTranslationMatrix(1, 2);
+  mTransformationMatrix = mRotationMatrix * mTranslationMatrix;
+  return *this;
 }

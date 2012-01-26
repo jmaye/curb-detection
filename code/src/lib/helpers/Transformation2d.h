@@ -37,6 +37,8 @@ public:
   Transformation();
   /// Constructs from a given transformation matrix
   Transformation(const Eigen::Matrix<double, 3, 3>& transformationMatrix);
+  /// Constructs from rotation and translation
+  Transformation(T x, T y, T yaw);
   /// Copy constructor
   Transformation(const Transformation<T, 2>& other);
   /// Assignment operator
@@ -56,14 +58,16 @@ public:
   const Eigen::Matrix<double, 3, 3>& getTransformationMatrix();
   /// Sets the transformation from translation and rotation
   void setTransformation(T x, T y, T yaw);
-  /// Inverse the transformation
-  void inverse();
+  /// Returns the inverse transformation
+  Transformation getInverse() const;
   /** @}
     */
 
   /** \name Methods
     @{
     */
+  /// Inverse the transformation
+  const Transformation& inverse();
   /// Transform a point
   void transform(const Eigen::Matrix<T, 2, 1>& src, Eigen::Matrix<T, 2, 1>&
     dest) const;

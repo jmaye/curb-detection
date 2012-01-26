@@ -90,17 +90,17 @@ public:
   /// Returns a cell using [index] operator
   C& operator [] (const Index& idx);
   /// Returns the index of a cell using coordinates
-  Index getIndex(const Coordinate& point) const throw
+  virtual Index getIndex(const Coordinate& point) const throw
     (OutOfBoundException<Coordinate>);
   /// Returns a cell using (coordinate) operator
-  const C& operator () (const Coordinate& point) const;
+  virtual const C& operator () (const Coordinate& point) const;
   /// Returns a cell using (coordinate) operator
-  C& operator () (const Coordinate& point);
+  virtual C& operator () (const Coordinate& point);
   /// Returns the coordinates of a cell using index
-  Coordinate getCoordinates(const Index& idx) const throw
+  virtual Coordinate getCoordinates(const Index& idx) const throw
     (OutOfBoundException<Index>);
   /// Check if the grid contains the point
-  bool isInRange(const Coordinate& point) const;
+  virtual bool isInRange(const Coordinate& point) const;
   /// Check if an index is valid
   bool isValidIndex(const Index& idx) const;
   /// Returns the number of cells in each dimension
@@ -113,10 +113,26 @@ public:
   const Coordinate& getMaximum() const;
   /// Returns the resolution of the grid
   const Coordinate& getResolution() const;
+  /** @}
+    */
+
+  /** \name Methods
+      @{
+    */
   /// Computes linear index
   size_t computeLinearIndex(const Index& idx) const;
   /// Reset the grid
   void reset();
+  /** @}
+    */
+
+  /** \name Stream methods
+    @{
+    */
+  /// Stream the grid into binary format
+  virtual void writeBinary(std::ostream& stream) const;
+  /// Reads the grid from a binary format
+  virtual void readBinary(std::istream& stream);
   /** @}
     */
 
