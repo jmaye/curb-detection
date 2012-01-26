@@ -84,6 +84,8 @@ public:
   const Transformation<double, 2>& getTransformation() const;
   /// Sets the transformation
   void setTransformation(const Transformation<double, 2>& transformation);
+  /// Sets the transformation with rotation and translation
+  void setTransformation(double x, double y, double yaw);
   /** @}
     */
 
