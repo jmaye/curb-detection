@@ -172,9 +172,11 @@ template <typename T, typename C>
 void TransGrid<T, C, 2>::setTransformation(const Transformation<double, 2>&
     transformation) {
   mTransformation = transformation;
+  mInvTransformation = mTransformation.getInverse();
 }
 
 template <typename T, typename C>
 void TransGrid<T, C, 2>::setTransformation(double x, double y, double yaw) {
   mTransformation.setTransformation(x, y, yaw);
+  mInvTransformation = mTransformation.getInverse();
 }
