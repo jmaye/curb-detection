@@ -79,7 +79,7 @@ void SegmentationControl::renderSegmentation() {
       const Cell& cell = mDEM[*itV];
       const double sampleMean = cell.getHeightEstimator().getPostPredDist().
         getMean();
-      glBegin(GL_POLYGON);
+      glBegin(GL_QUADS);
       glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
       glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
         sampleMean);

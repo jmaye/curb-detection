@@ -165,7 +165,7 @@ void BPControl::renderBP() {
     const Cell& cell = mDEM[it->first];
     const double sampleMean = cell.getHeightEstimator().getPostPredDist().
       getMean();
-    glBegin(GL_POLYGON);
+    glBegin(GL_QUADS);
     glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
       mColors[it->second].mBlueColor);
     glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,

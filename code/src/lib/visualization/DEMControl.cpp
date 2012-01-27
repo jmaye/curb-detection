@@ -99,7 +99,8 @@ void DEMControl::renderDEM(double size, bool smooth) {
     glEnable(GL_LINE_SMOOTH);
   else
     glDisable(GL_LINE_SMOOTH);
-  glBegin(GL_LINES);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glBegin(GL_QUADS);
   GLView::getInstance().setColor(mPalette, "DEM");
   const Grid<double, Cell, 2>::Coordinate& resolution = mDEM.getResolution();
   const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
@@ -120,14 +121,6 @@ void DEMControl::renderDEM(double size, bool smooth) {
       glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
         sampleMean);
       glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
         sampleMean);
     }
   glEnd();

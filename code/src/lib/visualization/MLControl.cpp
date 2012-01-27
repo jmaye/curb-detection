@@ -96,7 +96,7 @@ void MLControl::renderML() {
     const Cell& cell = mDEM[it->first];
     const double sampleMean = cell.getHeightEstimator().getPostPredDist().
       getMean();
-    glBegin(GL_POLYGON);
+    glBegin(GL_QUADS);
     glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
       mColors[it->second].mBlueColor);
     glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
@@ -156,6 +156,7 @@ void MLControl::runML() {
       mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
       std::cout << estMixtPlane.getCoefficients() << std::endl;
       std::cout << estMixtPlane.getVariances() << std::endl;
+      std::cout << estMixtPlane.getWeights() << std::endl;
       const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
         responsibilities = estMixtPlane.getResponsibilities();
       double residual = 0.0;
