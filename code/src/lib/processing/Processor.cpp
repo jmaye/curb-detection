@@ -307,7 +307,7 @@ void Processor::processPointCloud(const PointCloud<double, 3>& pointCloud) {
         PropertySet opts;
         opts.set("maxiter", mMaxBPIter);
         opts.set("tol", mBPTol);
-        opts.set("verbose", 0);
+        opts.set("verbose", (size_t)0);
         opts.set("updates", std::string("SEQRND"));
         opts.set("logdomain", mLogDomain);
         opts.set("inference", std::string("MAXPROD"));

@@ -12,13 +12,22 @@ Morsel, a 3D mobile robot simulator developed in our lab.
 For the nodding lasers setup, we have recorded 33 3D point clouds with multiple
 viewpoints from a standard street scene. For the pedestrian robot scenario, data
 has been generated from a tour in a city center and from a drive in our
-3D simulator.
+3D simulator using a city-like environment (Fig.\ref{fig:morsel}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/special.eps}
+\caption{Example of curb detection in an unfavorable situation. Our algorithm
+correctly label the planes, and thus curbs, under various viewpoints and
+experimental settings.}
+\label{fig:morsel}
+\end{figure}
 
 A quantitative evaluation of our algorithm can be carried out under various
 interrelated perspectives: curb location in $x,y$, curb height in $z$,
 number of planes, assignment of DEM cells to planes, plane parameters, or
 computation time. Since we do not have ground truth information for the plane
-parameters, we evaluateed the predictive accuracy of a model trained
+parameters, we evaluated the predictive accuracy of a model trained
 with one point cloud to the others in a similar fashion as~\cite{faria10fitting}.
 To this end, we collected 19 point clouds from the same position and performed
 cross-validation. Concretely, we iteratively estimate the parameter set
@@ -51,7 +60,7 @@ error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
 the case of synthetic data, predicted curb location and height, and assignment
 of cells to planes, can also be quantitatively evaluated. Furthermore, we can
 judge the robustness and validity of our algorithm on various situations such
-as T-junctions, inclined planes, or lowered curbs.
+as T junctions, inclined planes, or lowered curbs.
 
 \subsection{Qualitative Evaluation}
 Before we proceed with the actual quantitative analysis, we want to give a
@@ -59,7 +68,7 @@ glimpse on some qualitative results that demonstrate the pertinence of our
 approach.
 
 In Fig.~\ref{fig:europa}, our pedestrian robot navigates in a city center and
-label curbs while driving. Since the point cloud is reconstructed while the
+labels curbs while driving. Since the point cloud is reconstructed while the
 robot drives, curbs can only be detected behind the robot in this specific
 situation. DEM patches are labeled sequentially and we achieve on-line and
 real-time performance.
@@ -73,9 +82,11 @@ represent planes and curbs are located at their boundaries.}
 \end{figure}
 
 Fig.~\ref{fig:special} depicts a situation that a pedestrian robot might often
-encounter when crossing a street. This experiment illustrates that our method
-can cope with multiple viewpoints and environment configurations. Most of the
-competitive approach would fail in this case.
+encounter when crossing a street. Using sampled data, we demonstrate in
+Fig.~\ref{fig:complex} the output of our algorithm in a complex environment
+containing a T junction, inclined planes, and lowered curbs. These experiments
+illustrate that our method can cope with multiple viewpoints and environment
+configurations. Most of the competitive approaches would fail in that cases.
 
 \begin{figure}[t]
 \centering
@@ -86,10 +97,19 @@ experimental settings.}
 \label{fig:special}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/ml.eps}
+\caption{DEM cell assignments (colors) to plane components using the standard
+EM algorithm. Due to the initial over-segmentation, the algorithm is not able
+to fully smooth out the additional planes.}
+\label{fig:complex}
+\end{figure}
+
 Fig.~\ref{fig:segment} displays the outcome of the segmentation algorithm on a
 point cloud, while Fig.~\ref{fig:ml} shows the results obtained from the
 standard EM algorithm. As a comparison, our method is applied on the same data
-and the result is depicted on Fig.~\ref{fig:crf-em}. These experiments clearly
+and the result is depicted in Fig.~\ref{fig:crf-em}. These experiments clearly
 highlight the advantages of our method.
 
 \begin{figure}[t]
@@ -125,19 +145,28 @@ planes and provides a good estimate of the curb positions and heights.}
 
 Proceeding as mentioned above, i.e., evaluating the prediction accuracy on
 unseen data and averaging the RMSE over all the datasets, we obtain a RMSE of
-0.055 [m] for a DEM containing 1600 cells. This result shows that we are able
-to accurately estimate the model.
+0.05 [m] for a DEM containing 1600 cells. This result shows that we are able
+to accurately estimate the plane parameters.
 
-Our algorithm takes, on a standard dual-core laptop, on average 1.47 [ms] for
-building the DEM, 2.46 [ms] for segmenting it, 0.18 [ms] for estimating the
-initial linear regression parameters, and 0.6649 [s] for the combined BP-EM
-algorithm. These timings therefore allow for real-time and on-line operations on
-a robotic platform.
+Under the same experimental conditions, the quality of the plane segmentation
+has been quantitatively evaluated on all the datasets and we obtained a
+V-Measure of 0.96 on average with a standard deviation of 0.03. We have noticed
+here that the badly classified cells are mostly due to grid discretization
+or subjective ground truth.
+
+Our algorithm takes, on a standard dual-core laptop, on average 0.21 [s] with
+a standard deviation of 0.17. As expected, most of the computation time is spent
+on the BP-EM part. These timings therefore allow for real-time and on-line
+operations on a robotic platform.
 
 \subsubsection{Synthetic Data}
 
-We have generated multiple artificial mixture of linear regression models and
-sampled 3D point clouds from them. In this experiment, we tried to create
+For the first experiment, we have driven our pedestrian robot in our 3D mobile
+robot simulator and have evaluated the segmentation quality of our algorithm. We
+obtained a V-Measure of 0.9 on average.
+
+In a second experiment, we have generated multiple artificial mixture of linear
+regression models and sampled 3D point clouds from them. We tried to create
 situations that were not present in our dataset and varied the different
 parameters to analyze the robustness of our algorithm. We have evaluated and
-validated our algorithm under the aforementioned criterion.
+validated our algorithm under the aforementioned criteria.

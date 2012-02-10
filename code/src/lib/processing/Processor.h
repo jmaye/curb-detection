@@ -47,7 +47,7 @@ public:
     const Grid<double, Cell, 2>::Coordinate& maxDEM =
     Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
     const Grid<double, Cell, 2>::Coordinate& demCellSize =
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1), double k = 100.0,
+    Grid<double, Cell, 2>::Coordinate(0.1, 0.1), double k = 300.0,
     size_t maxMLIter = 200, double mlTol = 1e-6, bool weighted = false,
     size_t maxBPIter = 200, double bpTol = 1e-6, bool logDomain = false);
   /// Copy constructor
