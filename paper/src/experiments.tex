@@ -18,9 +18,9 @@ A quantitative evaluation of our algorithm can be carried out under various
 interrelated perspectives: curb location in $x,y$, curb height in $z$,
 number of planes, assignment of DEM cells to planes, plane parameters, or
 computation time. Since we do not have ground truth information for the plane
-parameters, we evaluate the predictive accuracy of a model trained
+parameters, we evaluateed the predictive accuracy of a model trained
 with one point cloud to the others in a similar fashion as~\cite{faria10fitting}.
-To this end, we collect 19 point clouds from the same position and perform
+To this end, we collected 19 point clouds from the same position and performed
 cross-validation. Concretely, we iteratively estimate the parameter set
 $\{\hat{\Theta},\mathbf{\hat{L}}\}$ using one point cloud and evaluate the
 predictive error on the 18 remaining ones. The quantitative measure is the Root
@@ -39,13 +39,14 @@ Mean Square (RMS) error of prediction.
 To analyze the quality of the segmentation, we manually labeled the point clouds
 in regions corresponding to plane segments. While accurate ground truth is
 available from the simulator, real data labeling might suffer from slight
-subjective errors. Since ground truth and inferred labels might differ in an
+subjective errors. Since ground truth and inferred labels can differ in an
 unsupervised clustering framework, we have used the
 V-Measure~\cite{rosenberg07vmeasure} as a quantitative measure. This conditional
-entropy-based figure combines homogeneity and completeness criteria.
+entropy-based figure ranging from 0 (bad) to 1 (good) combines homogeneity and
+completeness criteria, and copes with labels mismatches.
 
 In order to further analyze our model, we have sampled point clouds from known
-mixture of linear regression parameters and also evaluated in this case the RMS
+mixture of linear regressions and also evaluated in this case the RMS
 error of the predicted parameters $\hat{\Theta}$ against their ground truth. In
 the case of synthetic data, predicted curb location and height, and assignment
 of cells to planes, can also be quantitatively evaluated. Furthermore, we can
