@@ -8,10 +8,10 @@ plane segment boundaries. Initially, we sense the environment with a nodding
 laser range-finder and project the 3D measurements into an efficient Digital
 Elevation Map (DEM). Each cell of the DEM maintains an error model that is
 propagated throughout the entire algorithm. Plane segments are further estimated
-with a mixture of linear regression model on the DEM. Here, we propose an
+with a mixture of linear regression models on the DEM. Here, we propose an
 original formulation of the standard Expectation-Maximization (EM) algorithm for
 mixture models. Specifically, in the E-step, responsibilities are computed with
-a Conditional Random Field that introduces dependencies between the covariates
-of the mixture model. A graph-based segmentation of the DEM provides an estimate
-of the number of planes and initial parameters for the EM. We show promising
-results of the algorithm on simulated and real-world data.
+a Conditional Random Field (CRF) that introduces dependencies between the
+covariates of the mixture model. A graph-based segmentation of the DEM provides
+an estimate of the number of planes and initial parameters for the EM. We show
+promising results of the algorithm on simulated and real-world data.

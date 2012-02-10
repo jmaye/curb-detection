@@ -21,30 +21,30 @@ boundaries. Initially, we sense the environment with a nodding laser
 range-finder and project the 3D measurements into an efficient Digital Elevation
 Map (DEM). Each cell of the DEM maintains an error model that is propagated
 throughout the entire algorithm. Plane segments are further estimated with a
-mixture of linear regression model. Here, we propose an original formulation of
+mixture of linear regression models. Here, we propose an original formulation of
 the standard Expectation-Maximization (EM) algorithm for mixture models.
 Specifically, in the E-step, the responsibilities are computed with a
 Conditional Random Field (CRF) that introduces dependencies between the
 covariates of the mixture model. A graph-based segmentation of the DEM provides
 an estimate of the number of planes and initial parameters for the EM.
-Sequential and fast estimations of DEM patches in the surrounding of the sensor
+Sequential and fast estimation of DEM patches in the surrounding of the sensor
 while the robot drives ensure on-line operation. Fig.~\ref{fig:intro} shows a
-typical output of our algorithm with the curb points reprojected on the original
-data.
+typical output of our algorithm.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig/intro-curb.eps}
 \caption{Exemplary output of our curb detection algorithm (best viewed in
 color). Plane segments are reconstructed from a DEM patch and curbs flagged at
-their boundaries. Colors encode cells assignments to the planes.}
+their boundaries. Colors encode cells assignments to the planes.\vspace{-1.5mm}}
 \label{fig:intro}
 \end{figure}
 
 Clearly, the main contribution of the paper is its strict probabilistic
 interpretation from the sensing process to the final plane estimation and
-segmentation. Moreover, our method is view-independent and requires no
-particular prior knowledge about the environment. The set of free parameters
+segmentation. We are thus able to elegantly incorporate and reflect the
+induced measurement noise. Moreover, our method is view-independent and requires
+no particular prior knowledge about the environment. The set of free parameters
 is solely related to the sensor characteristics and involves no hand-tuning.
 Finally, a direct implementation of the algorithm from the paper should be
 straightforward.

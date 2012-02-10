@@ -20,7 +20,7 @@ detection and limit the number of hand-tuned parameters.
 
 Closer to our approach, Siegemund \emph{et al.}~\cite{siegemund10curb} proposed
 a promising method that extracts curbs from dense stereo-vision data. We
-actually take inspiration on their ideas and solve their major drawbacks. In
+actually take inspiration from their ideas and solve their major drawbacks. In
 this paper, as mentioned above, they assume a strict environment model and they
 lack a unified probabilistic model. Moreover, their curb models can only
 represent a limited set of curbs. For instance, they cannot model T
@@ -51,3 +51,9 @@ a "Virtual White Cane". Their method uses a Jump-Markov Process to detect
 geometric singularities in the range measurements. Despite its statistical
 foundations, it will not satisfy our application requirements and
 provide a proper plane estimation.
+
+In comparison to other works on segmentation of 3D range data such
+as~\cite{anguelov05discriminative}, our method is fully unsupervised and thus
+does not require any training data. Furthermore, the dimensionality of our
+model adapts to the data and, in addition to a labeling of 3D point clouds, we
+estimate a full generative model.

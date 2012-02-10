@@ -1,4 +1,4 @@
-In this Section, starting from the measurement process, we establish a
+In this section, starting from the measurement process, we establish a
 statistical model for curb detection and derive appropriate inference
 algorithms.
 
@@ -32,7 +32,7 @@ estimated. To this end, we collect the set of points $\mathcal{I}_i=\{z_j\mid
 purely Bayesian approach~\cite{gelman03bayesian}. This involves setting a joint
 prior $p(\mu_{h_i},\sigma^2_{h_i})$ over the parameters, computing the
 posterior $p(\mu_{h_i},\sigma^2_{h_i}\mid\mathcal{I}_i)$, and ultimately
-formulating a posterior predictive density $p(\mu_{h_i}\mid\mathcal{I}_i)$ that
+formulating a posterior predictive density $p(\hat{h_i}\mid\mathcal{I}_i)$ that
 will be subsequently termed our \emph{cell model}. We choose a conjugate
 normal inverse-gamma prior that incorporates the sensor and discretization noise
 in its hyperparameters. The resulting posterior predictive density is thus a
@@ -50,25 +50,29 @@ It is furthermore convenient for defining Regions of Interest (ROI) in
 $\mathcal{P}$ and for facilitating further computations. Finally, it provides
 constant-time lookup to the cells, either addressed by their geometrical
 coordinates or row-column indices. We shall discuss later on the issue of
-cell discretization. Fig.~\ref{fig:dem} displays an example of a DEM from a 3D
-point cloud.
+cell discretization.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig/dem.eps}
-\caption{A 3D point cloud (gray) is represented as a Digital Elevation Map (DEM)
-(blue), i.e., a projection of the points into 2D grid cells using Bayesian
-inference. The means $\hat{\mu}_{h_i}$ of the posterior predictive distributions
-are displayed here for the cell height values.}
-\label{fig:dem}
-\end{figure}
+%Fig.~\ref{fig:dem} displays an example of a DEM from a 3D point cloud.
+
+%\begin{figure}[t]
+%\centering
+%\includegraphics[width=\columnwidth]{fig/dem.eps}
+%\caption{A 3D point cloud (gray) is represented as a Digital Elevation Map (DEM)
+%(blue), i.e., a projection of the points into 2D grid cells using Bayesian
+%inference. The means $\hat{\mu}_{h_i}$ of the posterior predictive distributions
+%are displayed here for the cell height values.}
+%\label{fig:dem}
+%\end{figure}
 
 \subsection{Environment Model and Inference Task}
 
 We assume a piecewise planar environment, i.e., the observed scene is composed
 of a set of plane segments. Boundaries between plane segments define local
 height discontinuities that we shall henceforth term \emph{curbs}.
-Fig.~\ref{fig:model} depicts a typical environment model.
+Fig.~\ref{fig:model} depicts a typical environment model. We shall remind here
+that our algorithm is not restricted to this typical configuration. Indeed, it
+can properly cope with any plane inclinations or lowered curbs for wheelchairs
+or bikes.
 
 \begin{figure}[t]
 \centering
@@ -83,7 +87,7 @@ those plane segments, and on the other hand, to determining the assignment of
 the DEM cells to these latter. To this end, we model the environment with a
 conditional mixture model, namely a \emph{mixture of linear regression} model.
 According to the discussions in~\cite{bishop06pattern}, we may thus state the
-following generative process for the mean height values:
+following generative process for the predictive mean height value:
 
 \begin{equation}
 \label{eqn:mixture}
@@ -127,7 +131,7 @@ each point, we were given its class assignment, i.e., we would observe a
 \emph{complete} data set, the maximization of the complete-data likelihood
 $p(\hat{\boldsymbol\mu}_h,\mathbf{L}\mid\Theta,\boldsymbol{\Phi})$ would be
 simplified. Although latent variables are not observed, we can compute their
-posterior distribution $p(\mathbf{L}\mid\Theta^\text{old},\boldsymbol{\Phi})$
+posterior distribution $p(\mathbf{L}\mid\hat{\Theta}^{(t)},\boldsymbol{\Phi})$
 using an initial parameter estimate $\hat{\Theta}^{(t)}$. In the E-step of
 the EM algorithm, the expectation of the complete-data likelihood under this
 posterior is firstly calculated. In the M-step, a new parameter set
