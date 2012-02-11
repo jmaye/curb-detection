@@ -1,0 +1,14 @@
+This video illustrates the different steps of the algorithm presented in
+the paper "Curb Detection for a Pedestrian Robot in Urban Environments".
+The computation time has been intentionally slowed down for visualization
+purpose.
+In the opening scene, we see a 3D point cloud acquired by a nodding laser range
+finder. We select a region of the point cloud and compute a DEM. From the DEM,
+a graph-based segmentation provides an initial estimate of the number of planes
+in the scene, as well as initial parameters for the mixture of linear
+regressions learning. Finally, we apply EM to find the parameters that best
+explain the data. In the E-step, we further use a BP stage in order to
+incorporate neighboring relations between the covariates. After the estimation
+steps, we end up with plane parameters, as well as a classification probability
+for each cell of the DEM. The curb locations can be inferred from this latter,
+i.e., they are located at the intersections of plane segments.
