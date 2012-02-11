@@ -30,24 +30,30 @@ int main (int argc, char** argv) {
   }
   LinearRegression<3> dist(Eigen::Matrix<double, 3, 1>(1, 0, 0), 0.0001);
   std::vector<Eigen::Matrix<double, 3, 1> > data;
-  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(1, 0, 0));
+  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(0, 0, 0));
   for (double x = 0; x < 4; x += 0.01)
     for (double y = 0; y < 4; y += 0.01) {
-      if (!(x >= 0 && x < 2 && y >= 0 && y < 2) &&
-        !(x >= 3 && x < 4 && y >= 3 && y < 4)) {
+      if (!(x >= 0 && x < 3 && y >= 0 && y < 2) &&
+        !(x >= 0 && x < 3 && y >= 3 && y < 4)) {
         dist.setBasis(Eigen::Matrix<double, 3, 1>(1.0, x, y));
         data.push_back(Eigen::Matrix<double, 3, 1>(x, y, dist.getSample()));
       }
     }
-  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(1, 1, 0));
-  for (double x = 0; x < 2; x += 0.01)
-    for (double y = 0; y < 2; y += 0.01) {
+  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(-1.5, 0.0, 0.5));
+  for (double x = 0; x < 3; x += 0.01)
+    for (double y = 3; y < 4; y += 0.01) {
       dist.setBasis(Eigen::Matrix<double, 3, 1>(1.0, x, y));
       data.push_back(Eigen::Matrix<double, 3, 1>(x, y, dist.getSample()));
     }
-  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(1.05, 0, 0));
-  for (double x = 3; x < 4; x += 0.01)
-    for (double y = 3; y < 4; y += 0.01) {
+  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(1.6, 0.0, -0.8));
+  for (double x = 0; x < 3; x += 0.01)
+    for (double y = 1.8; y < 2; y += 0.01) {
+      dist.setBasis(Eigen::Matrix<double, 3, 1>(1.0, x, y));
+      data.push_back(Eigen::Matrix<double, 3, 1>(x, y, dist.getSample()));
+    }
+  dist.setCoefficients(Eigen::Matrix<double, 3, 1>(0.2, 0.0, 0.0));
+  for (double x = 0; x < 3; x += 0.01)
+    for (double y = 0; y < 1.8; y += 0.01) {
       dist.setBasis(Eigen::Matrix<double, 3, 1>(1.0, x, y));
       data.push_back(Eigen::Matrix<double, 3, 1>(x, y, dist.getSample()));
     }
