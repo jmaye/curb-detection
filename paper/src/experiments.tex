@@ -16,10 +16,9 @@ has been generated from a tour in a city center and from a drive in our
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/special.eps}
-\caption{Example of curb detection in an unfavorable situation. Our algorithm
-correctly label the planes, and thus curbs, under various viewpoints and
-experimental settings.}
+\includegraphics[width=\columnwidth]{fig/morsel}
+\caption{Our pedestrian robot driving in Morsel in the city-like environment
+used for evaluation.}
 \label{fig:morsel}
 \end{figure}
 
@@ -99,10 +98,9 @@ experimental settings.}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/ml.eps}
-\caption{DEM cell assignments (colors) to plane components using the standard
-EM algorithm. Due to the initial over-segmentation, the algorithm is not able
-to fully smooth out the additional planes.}
+\includegraphics[width=\columnwidth]{fig/sampled.eps}
+\caption{As exemplified on synthetic data, our method can successfully cope with
+various environment configurations.}
 \label{fig:complex}
 \end{figure}
 
@@ -145,8 +143,8 @@ planes and provides a good estimate of the curb positions and heights.}
 
 Proceeding as mentioned above, i.e., evaluating the prediction accuracy on
 unseen data and averaging the RMSE over all the datasets, we obtain a RMSE of
-0.05 [m] for a DEM containing 1600 cells. This result shows that we are able
-to accurately estimate the plane parameters.
+0.016 [m] for a DEM containing 1600 cells. This result shows that we are able
+to accurately estimate the plane parameters and thus reconstruct the scene.
 
 Under the same experimental conditions, the quality of the plane segmentation
 has been quantitatively evaluated on all the datasets and we obtained a
@@ -161,9 +159,10 @@ operations on a robotic platform.
 
 \subsubsection{Synthetic Data}
 
-For the first experiment, we have driven our pedestrian robot in our 3D mobile
-robot simulator and have evaluated the segmentation quality of our algorithm. We
-obtained a V-Measure of 0.9 on average.
+For the first experiment in our 3D mobile robot simulator, we have evaluated the
+segmentation quality and obtained a V-Measure of 0.88 on average with a standard
+deviation of 0.05. Here again, we have witnessed that the discretization induces
+the badly classified cells.
 
 In a second experiment, we have generated multiple artificial mixture of linear
 regression models and sampled 3D point clouds from them. We tried to create
