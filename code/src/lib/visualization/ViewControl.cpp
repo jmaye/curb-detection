@@ -226,6 +226,7 @@ void ViewControl::renderGround(double radius, double elevation, double
 
 void ViewControl::renderAxes(double length) {
   glPushAttrib(GL_CURRENT_BIT);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glBegin(GL_LINES);
   glColor3f(1.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, 0.0);
