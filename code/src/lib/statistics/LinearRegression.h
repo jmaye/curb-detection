@@ -28,7 +28,6 @@
 #include "functions/LinearBasisFunction.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The LinearRegression class represents a multivariate linear regression.
     \brief Multivariate linear regression
@@ -108,7 +107,7 @@ public:
   /// Returns the variance
   double getVariance() const;
   /// Sets the variance
-  void setVariance(double variance) throw (BadArgumentException<double>);
+  void setVariance(double variance);
   /// Returns the basis
   const Eigen::Matrix<double, M - 1, 1>& getBasis() const;
   /// Sets the basis

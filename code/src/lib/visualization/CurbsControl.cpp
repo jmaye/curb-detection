@@ -19,7 +19,6 @@
 #include "visualization/CurbsControl.h"
 
 #include "visualization/BPControl.h"
-#include "visualization/SegmentationControl.h"
 #include "data-structures/TransGrid.h"
 #include "data-structures/Cell.h"
 
@@ -44,12 +43,6 @@ CurbsControl::CurbsControl(bool showCurbs) :
     const DEMGraph::VertexContainer&)), this,
     SLOT(bpUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)));
-  connect(&SegmentationControl::getInstance(),
-    SIGNAL(segmentUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
-    const GraphSegmenter<DEMGraph>::Components&)),
-    this,
-    SLOT(segmentUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
-    const GraphSegmenter<DEMGraph>::Components&)));
   setLineColor(Qt::red);
   setLineSize(1.0);
   setShowCurbs(showCurbs);
@@ -168,11 +161,5 @@ void CurbsControl::bpUpdated(const TransGrid<double, Cell, 2>& dem, const
   mGraph = new DEMGraph(graph);
   mVertices = vertices;
   mUi->showCurbsCheckBox->setEnabled(true);
-  GLView::getInstance().update();
-}
-
-void CurbsControl::segmentUpdated(const TransGrid<double, Cell, 2>& dem, const
-  DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components) {
-  mVertices.clear();
   GLView::getInstance().update();
 }

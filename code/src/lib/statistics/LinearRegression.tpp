@@ -27,8 +27,8 @@ LinearRegression<M>::LinearRegression(const LinearBasisFunction<double, M>&
     linearBasisFunction, double variance, const Eigen::Matrix<double, M - 1, 1>&
     basis) :
     mLinearBasisFunction(linearBasisFunction),
+    mVariance(variance),
     mBasis(basis) {
-  setVariance(variance);
 }
 
 template <size_t M>
@@ -99,13 +99,7 @@ double LinearRegression<M>::getVariance() const {
 }
 
 template <size_t M>
-void LinearRegression<M>::setVariance(double variance)
-    throw (BadArgumentException<double>) {
-  if (variance <= 0.0)
-    throw BadArgumentException<double>(variance,
-      "LinearRegression<M>::setVariance(): variance must be strictly bigger "
-      "than 0",
-      __FILE__, __LINE__);
+void LinearRegression<M>::setVariance(double variance) {
   mVariance = variance;
 }
 

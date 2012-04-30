@@ -121,9 +121,6 @@ protected slots:
   /// Receives a new segmentation
   void bpUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
     const DEMGraph::VertexContainer& vertices);
-  /// Segmentation updated
-  void segmentUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph&
-    graph, const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 
