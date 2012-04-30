@@ -129,7 +129,7 @@ void EstimatorML<LinearRegression<M> >::addPoints(const ConstPointIterator&
     designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
   try {
-    Eigen::Matrix<double, M, 1> coeffs =
+    const Eigen::Matrix<double, M, 1> coeffs =
       (designMatrix.transpose() * responsibilities.asDiagonal() * designMatrix).
       inverse() * designMatrix.transpose() * responsibilities.asDiagonal() *
       targets;

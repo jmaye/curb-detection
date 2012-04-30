@@ -39,6 +39,5 @@ template <typename D, typename P = typename ConjugatePrior<D>::Result>
 //#include "statistics/EstimatorBayesGeometric.h"
 //#include "statistics/EstimatorBayesExponential.h"
 //#include "statistics/EstimatorBayesMixture.h"
-//#include "statistics/EstimatorBayesLinearRegression.h"
 
 #endif // ESTIMATORBAYES_H
