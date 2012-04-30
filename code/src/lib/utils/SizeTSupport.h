@@ -23,9 +23,9 @@
 #ifndef SIZETSUPPORT_H
 #define SIZETSUPPORT_H
 
-#include <Eigen/Core>
-
 #include <cstdlib>
+
+#include <Eigen/Core>
 
 namespace Eigen {
 

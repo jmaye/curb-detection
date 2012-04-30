@@ -29,8 +29,8 @@ template <class C> C* Singleton<C>::instance = 0;
 template <class C>
 Singleton<C>::Singleton() throw (InvalidOperationException) {
   if (instance)
-    throw InvalidOperationException("Singleton<C>::Singleton(): "
-      "a singleton cannot be instantiated");
+    throw InvalidOperationException("Singleton<C>::Singleton(): a singleton "
+      "cannot be instantiated");
   instance = (C*)this;
 }
 
@@ -47,7 +47,6 @@ template <class C>
 C& Singleton<C>::getInstance() {
   if (!instance)
     new C();
-
   return *instance;
 }
 

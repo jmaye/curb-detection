@@ -16,14 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "functions/IncompleteBetaFunction.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 BinomialDistribution::BinomialDistribution(size_t numTrials, double
-  successProbability) :
-  MultinomialDistribution<2>(numTrials) {
-  setSuccessProbability(successProbability);
+    probability) :
+    MultinomialDistribution<2>(numTrials) {
+  setProbability(probability);
 }
 
 BinomialDistribution::BinomialDistribution(const BinomialDistribution& other) :
@@ -33,7 +35,7 @@ BinomialDistribution::BinomialDistribution(const BinomialDistribution& other) :
 BinomialDistribution& BinomialDistribution::operator =
   (const BinomialDistribution& other) {
   if (this != &other) {
-    this->MultinomialDistribution<2>::operator=(other);
+    MultinomialDistribution<2>::operator=(other);
   }
   return *this;
 }
@@ -50,7 +52,7 @@ void BinomialDistribution::read(std::istream& stream) {
 
 void BinomialDistribution::write(std::ostream& stream) const {
   stream << "success probability: "
-    << mSuccessProbabilities(1) << std::endl
+    << mProbabilities(0) << std::endl
     << "trials number: " << mNumTrials;
 }
 
@@ -64,27 +66,38 @@ void BinomialDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void BinomialDistribution::setSuccessProbability(double successProbability) {
-  MultinomialDistribution<2>::setSuccessProbabilities(
-    Eigen::Matrix<double, 2, 1>(1.0 - successProbability, successProbability));
+void BinomialDistribution::setProbability(double probability) {
+  MultinomialDistribution<2>::setProbabilities(
+    Eigen::Matrix<double, 2, 1>(probability, 1.0 - probability));
 }
 
-double BinomialDistribution::getSuccessProbability() const {
-  return mSuccessProbabilities(1);
+double BinomialDistribution::getProbability() const {
+  return mProbabilities(0);
 }
 
 double BinomialDistribution::getMean() const {
-  return MultinomialDistribution<2>::getMean()(1);
+  return MultinomialDistribution<2>::getMean()(0);
 }
 
 double BinomialDistribution::getMedian() const {
-  return floor(mNumTrials * mSuccessProbabilities(1));
+  return floor(mNumTrials * mProbabilities(0));
 }
 
-double BinomialDistribution::getMode() const {
-  return floor((mNumTrials + 1) * mSuccessProbabilities(1));
+int BinomialDistribution::getMode() const {
+  return MultinomialDistribution<2>::getMode()(0);
 }
 
 double BinomialDistribution::getVariance() const {
-  return MultinomialDistribution<2>::getCovariance()(1, 1);
+  return MultinomialDistribution<2>::getCovariance()(0, 0);
+}
+
+double BinomialDistribution::cmf(const int& value) const {
+  const IncompleteBetaFunction<double> incBetaFunction(mNumTrials - value,
+    value + 1);
+  if (value < 0)
+    return 0;
+  else if (value >= (int)mNumTrials)
+    return 1;
+  else
+    return incBetaFunction(1 - mProbabilities(0));
 }

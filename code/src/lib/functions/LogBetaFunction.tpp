@@ -35,16 +35,13 @@ LogBetaFunction<X, M>::~LogBetaFunction() {
 /******************************************************************************/
 
 template <typename X, size_t M>
-double LogBetaFunction<X, M>::getValue(const Eigen::Matrix<X, M, 1>& argument)
-  const {
-  LogGammaFunction<X> logGamma;
+double LogBetaFunction<X, M>::getValue(const VariableType& argument) const {
+  const LogGammaFunction<X> logGamma;
   X sum = X(0);
   X logSumGamma = X(0);
-
-  for (size_t i = 0; i < static_cast<size_t>(argument.size()); ++i) {
+  for (size_t i = 0; i < (size_t)argument.size(); ++i) {
     sum += argument(i);
     logSumGamma += logGamma(argument(i));
   }
-
   return logSumGamma - logGamma(sum);
 }

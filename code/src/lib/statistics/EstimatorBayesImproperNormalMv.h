@@ -21,25 +21,25 @@
            distributions with improper prior.
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "statistics/StudentDistribution.h"
-#include "statistics/InvWishartDistribution.h"
-
-#include <vector>
+#include "statistics/NormalInvWishartDistribution.h"
 
 /** The class EstimatorBayesImproper is implemented for multivariate normal
     distributions.
     \brief Multivariate normal distribution Bayesian estimator with improper
            prior
   */
-template <size_t M> class EstimatorBayesImproper<NormalDistribution<M>, M> :
+template <size_t M> class EstimatorBayesImproper<NormalDistribution<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef Eigen::Matrix<double, M, 1> Point;
+  typedef typename NormalDistribution<M>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -53,11 +53,9 @@ public:
   /// Default constructor
   EstimatorBayesImproper();
   /// Copy constructor
-  EstimatorBayesImproper(const EstimatorBayesImproper<NormalDistribution<M>, M>&
-    other);
+  EstimatorBayesImproper(const EstimatorBayesImproper& other);
   /// Assignment operator
-  EstimatorBayesImproper<NormalDistribution<M>, M>& operator =
-    (const EstimatorBayesImproper<NormalDistribution<M>, M>& other);
+  EstimatorBayesImproper& operator = (const EstimatorBayesImproper& other);
   /// Destructor
   virtual ~EstimatorBayesImproper();
   /** @}
@@ -66,16 +64,10 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the posterior marginal mean distribution
-  const StudentDistribution<M>& getPostMeanDist() const;
-  /// Returns the posterior marginal covariance distribution
-  const InvWishartDistribution<M>& getPostCovarianceDist() const;
-  /// Returns the posterior predictive distribution
-  const StudentDistribution<M>& getPostPredDist() const;
-  /// Returns the sample mean
-  const Eigen::Matrix<double, M, 1>& getSampleMean() const;
-  /// Returns the sample covariance
-  const Eigen::Matrix<double, M, M>& getSampleCovariance() const;
+  /// Returns the mean and covariance distribution
+  const NormalInvWishartDistribution<M>& getDist() const;
+  /// Returns the predictive distribution
+  StudentDistribution<M> getPredDist() const;
   /// Returns the number of points
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
@@ -85,6 +77,8 @@ public:
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}
@@ -108,16 +102,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Posterior marginal mean distribution
-  StudentDistribution<M> mPostMeanDist;
-  /// Posterior marginal covariance distribution
-  InvWishartDistribution<M> mPostCovarianceDist;
-  /// Posterior predictive distribution
-  StudentDistribution<M> mPostPredDist;
-  /// Sample mean
-  Eigen::Matrix<double, M, 1> mSampleMean;
-  /// Sample covariance
-  Eigen::Matrix<double, M, M> mSampleCovariance;
+  /// Mean and covariance distribution
+  NormalInvWishartDistribution<M> mMeanCovarianceDist;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

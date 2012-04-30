@@ -20,6 +20,9 @@
     \brief This file contains a plotting tool for bivariate scatter plots
   */
 
+#include <vector>
+#include <tuple>
+
 #include <QtCore/QVector>
 
 #include <qwt-qt4/qwt_plot.h>
@@ -28,9 +31,8 @@
 #include <qwt-qt4/qwt_plot_panner.h>
 #include <qwt-qt4/qwt_plot_magnifier.h>
 
-#include <Eigen/Core>
-
-#include <vector>
+#include "data-structures/PointCloud.h"
+#include "utils/Colors.h"
 
 /** The ScatterPlot2v class is a plotting tool for bivariate scatter plots.
     \brief 2-v scatter plot
@@ -41,9 +43,9 @@ template <> class ScatterPlot<2> :
     @{
     */
   /// Copy constructor
-  ScatterPlot(const ScatterPlot<2>& other);
+  ScatterPlot(const ScatterPlot& other);
   /// Assignment operator
-  ScatterPlot<2>& operator = (const ScatterPlot<2>& other);
+  ScatterPlot& operator = (const ScatterPlot& other);
   /** @}
     */
 
@@ -52,37 +54,37 @@ public:
     @{
     */
   /// Constructs plot from parameters
+  ScatterPlot(const std::string& title, const PointCloud<double, 2>::Container&
+    data);
+  /// Constructs plot from parameters with different color for points
   ScatterPlot(const std::string& title, const
-    std::vector<Eigen::Matrix<double, 2, 1> >& data);
+    std::vector<std::tuple<PointCloud<double, 2>::Point, size_t> >& data);
   /// Destructor
   virtual ~ScatterPlot();
   /** @}
     */
 
-  /** \name Methods
+protected:
+  /** \name Protected methods
     @{
     */
-  /// Show the plot
-  virtual void show();
+  /// Add a points plot with the specified color
+  void addPoints(const PointCloud<double, 2>::Container& data, const
+    Colors::Color& color);
   /** @}
     */
 
-protected:
   /** \name Protected members
     @{
     */
-  /// Curve plotted
-  QwtPlotCurve mCurve;
+  /// Points plotted
+  std::vector<QwtPlotCurve*> mPoints;
   /// Grid
   QwtPlotGrid mGrid;
   /// Panner
   QwtPlotPanner mPanner;
   /// Magnifier
   QwtPlotMagnifier mMagnifier;
-  /// Data on the x-axis
-  QVector<double> mXData;
-  /// Data on the y-axis
-  QVector<double> mYData;
   /** @}
     */
 

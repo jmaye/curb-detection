@@ -21,11 +21,11 @@
            to the multivariate discrete functions
   */
 
+#include <Eigen/Core>
+
 #include "functions/Function.h"
 #include "utils/SizeTSupport.h"
 #include "utils/SsizeTSupport.h"
-
-#include <Eigen/Core>
 
 /** The DiscreteFunctionMv class is an interface to the multivariate discrete
     functions.
@@ -37,13 +37,23 @@ template <typename Y, typename X, size_t M, size_t N> class DiscreteFunction :
     @{
     */
   /// Copy constructor
-  DiscreteFunction(const DiscreteFunction<Y, X, M, N>& other);
+  DiscreteFunction(const DiscreteFunction& other);
   /// Assignment operator
-  DiscreteFunction& operator = (const DiscreteFunction<Y, X, M, N>& other);
+  DiscreteFunction& operator = (const DiscreteFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Domain type
+  typedef X DomainType;
+  /// Codomain type
+  typedef Y CodomainType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */

@@ -35,9 +35,9 @@ template <typename X> class DiscreteDistribution<X> :
     @{
     */
   /// Copy constructor
-  DiscreteDistribution(const DiscreteDistribution<X>& other);
+  DiscreteDistribution(const DiscreteDistribution& other);
   /// Assignment operator
-  DiscreteDistribution& operator = (const DiscreteDistribution<X>& other);
+  DiscreteDistribution& operator = (const DiscreteDistribution& other);
   /** @}
     */
 
@@ -47,6 +47,16 @@ public:
     */
   /// Distribution type
   typedef DiscreteDistribution<X> DistributionType;
+  /// Random variable type
+  typedef X RandomVariable;
+  /// Mean type
+  typedef double Mean;
+  /// Variance type
+  typedef double Variance;
+  /// Mode type
+  typedef X Mode;
+  /// Median type
+  typedef double Median;
   /** @}
     */
 
@@ -63,8 +73,8 @@ public:
   /** \name Accessors
     @{
     */
-  /// Access the probablity of the variable to take on the given value
-  virtual double pmf(const X& value) const = 0;
+  /// Access the probablity of the random variable to take on the given value
+  virtual double pmf(const RandomVariable& value) const = 0;
   /// Interface to function
   virtual double getValue(const X& argument) const;
   /** @}

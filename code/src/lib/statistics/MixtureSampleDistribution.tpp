@@ -16,25 +16,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "statistics/Randomizer.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <typename D, size_t M>
 MixtureSampleDistribution<D, M>::MixtureSampleDistribution(const std::vector<D>&
-  compDistributions, const CategoricalDistribution<M> assignDistribution) :
-  MixtureDistribution<D, M>(compDistributions, assignDistribution) {
+    compDistributions, const CategoricalDistribution<M> assignDistribution) :
+    MixtureDistribution<D, M>(compDistributions, assignDistribution) {
 }
 
 template <typename D, size_t M>
 MixtureSampleDistribution<D, M>::MixtureSampleDistribution(const
-  MixtureSampleDistribution<D, M>& other) :
-  MixtureDistribution<D, M>(other) {
+    MixtureSampleDistribution& other) :
+    MixtureDistribution<D, M>(other) {
 }
 
 template <typename D, size_t M>
 MixtureSampleDistribution<D, M>& MixtureSampleDistribution<D, M>::operator =
-  (const MixtureSampleDistribution<D, M>& other) {
+    (const MixtureSampleDistribution& other) {
   if (this != &other) {
     this->MixtureDistribution<D, M>::operator=(other);
   }
@@ -50,20 +52,37 @@ MixtureSampleDistribution<D, M>::~MixtureSampleDistribution() {
 /******************************************************************************/
 
 template <typename D, size_t M>
-typename MixtureSampleDistribution<D, M>::VariableType
-  MixtureSampleDistribution<D, M>::getSample() const {
-  Eigen::Matrix<size_t, M, 1> component = this->mAssignDistribution.getSample();
-  for (size_t i = 0; i < (size_t)component.size(); ++i)
-    if (component(i) == 1)
-      return this->mCompDistributions[i].getSample();
-  return this->mCompDistributions[0].getSample();
+typename MixtureSampleDistribution<D, M>::RandomVariable
+    MixtureSampleDistribution<D, M>::getSample() const {
+  const static Randomizer<double, M> randomizer;
+  return this->mCompDistributions[randomizer.sampleCategorical(
+    this->mAssignDistribution.getProbabilities())].getSample();
 }
 
 template <typename D, size_t M>
-void MixtureSampleDistribution<D, M>::getSamples(std::vector<VariableType>&
-  samples, size_t numSamples) const {
+typename MixtureSampleDistribution<D, M>::JointRandomVariable
+    MixtureSampleDistribution<D, M>::getJointSample() const {
+  const static Randomizer<double, M> randomizer;
+  const size_t assignment = randomizer.sampleCategorical(
+    this->mAssignDistribution.getProbabilities());
+  return JointRandomVariable(this->mCompDistributions[assignment].getSample(),
+    assignment);
+}
+
+template <typename D, size_t M>
+void MixtureSampleDistribution<D, M>::getSamples(std::vector<RandomVariable>&
+    samples, size_t numSamples) const {
   samples.clear();
   samples.reserve(numSamples);
   for (size_t i = 0; i < numSamples; ++i)
     samples.push_back(getSample());
+}
+
+template <typename D, size_t M>
+void MixtureSampleDistribution<D, M>::getJointSamples(
+    std::vector<JointRandomVariable>& samples, size_t numSamples) const {
+  samples.clear();
+  samples.reserve(numSamples);
+  for (size_t i = 0; i < numSamples; ++i)
+    samples.push_back(getJointSample());
 }

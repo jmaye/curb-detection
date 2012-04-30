@@ -36,21 +36,21 @@
     \brief Geometric distribution
   */
 class GeometricDistribution :
-  public DiscreteDistribution<size_t>,
-  public SampleDistribution<size_t>,
+  public DiscreteDistribution<int>,
+  public SampleDistribution<int>,
   public virtual Serializable {
 public:
   /** \name Constructors/destructor
     @{
     */
   /// Constructs distribution from parameter
-  GeometricDistribution(double successProbability = 0.5);
+  inline GeometricDistribution(double probability = 0.5);
   /// Copy constructor
-  GeometricDistribution(const GeometricDistribution& other);
+  inline GeometricDistribution(const GeometricDistribution& other);
   /// Assignment operator
-  GeometricDistribution& operator = (const GeometricDistribution& other);
+  inline GeometricDistribution& operator = (const GeometricDistribution& other);
   /// Destructor
-  ~GeometricDistribution();
+  inline ~GeometricDistribution();
   /** @}
     */
 
@@ -58,24 +58,25 @@ public:
     @{
     */
   /// Sets the success probability
-  void setSuccessProbability(double successProbability)
+  inline void setProbability(double probability)
     throw (BadArgumentException<double>);
   /// Returns the success probability
-  double getSuccessProbability() const;
+  inline double getProbability() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline Mean getMean() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline Mode getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline Variance getVariance() const;
   /// Returns the probability mass function at a point
-  virtual double pmf(const size_t& value) const;
+  inline virtual double pmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const size_t& value) const;
+  inline double logpmf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>);
   /// Returns the cumulative mass function at a point
-  double cdf(const size_t& value) const;
+  inline double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  virtual size_t getSample() const;
+  inline virtual RandomVariable getSample() const;
   /** @}
     */
 
@@ -84,13 +85,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -98,7 +99,7 @@ protected:
     @{
     */
   /// Success probability
-  double mSuccessProbability;
+  double mProbability;
   /** @}
     */
 

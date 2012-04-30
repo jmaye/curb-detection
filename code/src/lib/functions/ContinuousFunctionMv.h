@@ -21,9 +21,9 @@
            interface to the multivariate continuous functions
   */
 
-#include "functions/Function.h"
-
 #include <Eigen/Core>
+
+#include "functions/Function.h"
 
 /** The class ContinuousFunctionMv is an interface to the multivariate
     continuous functions.
@@ -35,13 +35,23 @@ template <typename Y, typename X, size_t M, size_t N> class ContinuousFunction :
     @{
     */
   /// Copy constructor
-  ContinuousFunction(const ContinuousFunction<Y, X, M, N>& other);
+  ContinuousFunction(const ContinuousFunction& other);
   /// Assignment operator
-  ContinuousFunction& operator = (const ContinuousFunction<Y, X, M, N>& other);
+  ContinuousFunction& operator = (const ContinuousFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Domain type
+  typedef X DomainType;
+  /// Codomain type
+  typedef Y CodomainType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */

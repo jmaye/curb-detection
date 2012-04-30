@@ -21,28 +21,25 @@
 /******************************************************************************/
 
 template <size_t M>
-EstimatorML<MultinomialDistribution<M>, M>::EstimatorML(size_t numTrials) :
-  mNumTrials(numTrials),
-  mNumPoints(0),
-  mValid(false) {
+EstimatorML<MultinomialDistribution<M> >::EstimatorML() :
+    mNumPoints(0),
+    mValid(false) {
 }
 
 template <size_t M>
-EstimatorML<MultinomialDistribution<M>, M>::EstimatorML(const
-  EstimatorML<MultinomialDistribution<M>, M>& other) :
-  mSuccessProbabilities(other.mSuccessProbabilities),
-  mNumTrials(other.mNumTrials),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<MultinomialDistribution<M> >::EstimatorML(const EstimatorML&
+    other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 template <size_t M>
-EstimatorML<MultinomialDistribution<M>, M>&
-  EstimatorML<MultinomialDistribution<M>, M>::operator =
-  (const EstimatorML<MultinomialDistribution<M>, M>& other) {
+EstimatorML<MultinomialDistribution<M> >&
+    EstimatorML<MultinomialDistribution<M> >::operator = (const EstimatorML&
+    other) {
   if (this != &other) {
-    mSuccessProbabilities = other.mSuccessProbabilities;
-    mNumTrials = other.mNumTrials;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -50,7 +47,7 @@ EstimatorML<MultinomialDistribution<M>, M>&
 }
 
 template <size_t M>
-EstimatorML<MultinomialDistribution<M>, M>::~EstimatorML() {
+EstimatorML<MultinomialDistribution<M> >::~EstimatorML() {
 }
 
 /******************************************************************************/
@@ -58,25 +55,24 @@ EstimatorML<MultinomialDistribution<M>, M>::~EstimatorML() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::read(std::istream& stream) {
+void EstimatorML<MultinomialDistribution<M> >::read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::write(std::ostream& stream)
-  const {
-  stream << "success probabilities: " << mSuccessProbabilities.transpose()
-    << std::endl << "number of trials: " << mNumTrials << std::endl 
+void EstimatorML<MultinomialDistribution<M> >::write(std::ostream& stream)
+    const {
+  stream << "distribution: " << std::endl << mDistribution << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::read(std::ifstream& stream) {
+void EstimatorML<MultinomialDistribution<M> >::read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::write(std::ofstream& stream)
-  const {
+void EstimatorML<MultinomialDistribution<M> >::write(std::ofstream& stream)
+    const {
 }
 
 /******************************************************************************/
@@ -84,54 +80,55 @@ void EstimatorML<MultinomialDistribution<M>, M>::write(std::ofstream& stream)
 /******************************************************************************/
 
 template <size_t M>
-size_t EstimatorML<MultinomialDistribution<M>, M>::getNumPoints() const {
+size_t EstimatorML<MultinomialDistribution<M> >::getNumPoints() const {
   return mNumPoints;
 }
 
 template <size_t M>
-bool EstimatorML<MultinomialDistribution<M>, M>::getValid() const {
+bool EstimatorML<MultinomialDistribution<M> >::getValid() const {
   return mValid;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>&
-EstimatorML<MultinomialDistribution<M>, M>::getSuccessProbabilities() const {
-  return mSuccessProbabilities;
+const MultinomialDistribution<M>&
+    EstimatorML<MultinomialDistribution<M> >::getDistribution() const {
+  return mDistribution;
 }
 
 template <size_t M>
-size_t EstimatorML<MultinomialDistribution<M>, M>::getNumTrials() const {
-  return mNumTrials;
-}
-
-template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::reset() {
+void EstimatorML<MultinomialDistribution<M> >::reset() {
   mNumPoints = 0;
   mValid = false;
 }
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::addPoint(const Point& point) {
-  if (mNumPoints == 0)
-    mSuccessProbabilities = Eigen::Matrix<double, M, 1>::Zero(point.size(), 1);
-  if (point.sum() != mNumTrials)
-    return;
+void EstimatorML<MultinomialDistribution<M> >::addPoint(const Point& point) {
+  const size_t numTrials = point.sum();
   mNumPoints++;
-  if (mNumPoints == 1) {
-    for (size_t i = 0; i < (size_t)point.size(); ++i)
-      mSuccessProbabilities(i) += point(i) / (double)mNumTrials;
+  try {
+    mDistribution.setNumTrials(numTrials);
     mValid = true;
+    if (mNumPoints == 1)
+      mDistribution.setProbabilities(point.template cast<double>() / numTrials);
+    else
+      mDistribution.setProbabilities(mDistribution.getProbabilities() +
+        (point.template cast<double>() /
+        numTrials - mDistribution.getProbabilities()) / mNumPoints);
   }
-  else {
-    for (size_t i = 0; i < (size_t)point.size(); ++i)
-      mSuccessProbabilities(i) += 1.0 / mNumPoints * (point(i) /
-        (double)mNumTrials - mSuccessProbabilities(i));
+  catch (...) {
+    mValid = false;
   }
 }
 
 template <size_t M>
-void EstimatorML<MultinomialDistribution<M>, M>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorML<MultinomialDistribution<M> >::addPoints(const
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+template <size_t M>
+void EstimatorML<MultinomialDistribution<M> >::addPoints(const Container&
+    points) {
+  addPoints(points.begin(), points.end());
 }

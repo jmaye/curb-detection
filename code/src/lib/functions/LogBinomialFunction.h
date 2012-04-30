@@ -43,6 +43,14 @@ class LogBinomialFunction :
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef DiscreteFunction<double, size_t, 2>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -57,8 +65,8 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const Eigen::Matrix<size_t, 2, 1>& argument) const
-    throw (BadArgumentException<Eigen::Matrix<size_t, 2, 1> >);
+  virtual double getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>);
   /** @}
     */
 

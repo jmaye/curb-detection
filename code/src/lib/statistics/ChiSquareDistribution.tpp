@@ -20,19 +20,19 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ChiSquareDistribution::ChiSquareDistribution(size_t degrees) :
-  GammaDistribution<>(0.5 * degrees, 0.5) {
+ChiSquareDistribution::ChiSquareDistribution(double degrees) :
+    GammaDistribution<>(0.5 * degrees, 0.5) {
 }
 
 ChiSquareDistribution::ChiSquareDistribution(const ChiSquareDistribution&
-  other) :
-  GammaDistribution<>(other) {
+    other) :
+    GammaDistribution<>(other) {
 }
 
 ChiSquareDistribution& ChiSquareDistribution::operator =
-  (const ChiSquareDistribution& other) {
+    (const ChiSquareDistribution& other) {
   if (this != &other) {
-    this->GammaDistribution<>::operator=(other);
+    GammaDistribution<>::operator=(other);
   }
   return *this;
 }
@@ -61,14 +61,14 @@ void ChiSquareDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void ChiSquareDistribution::setDegrees(size_t degrees) {
+void ChiSquareDistribution::setDegrees(double degrees) {
   setShape(degrees * 0.5);
 }
 
-size_t ChiSquareDistribution::getDegrees() const {
+double ChiSquareDistribution::getDegrees() const {
   return getShape() * 2;
 }
 
-double ChiSquareDistribution::getMedian() const {
+ChiSquareDistribution::Median ChiSquareDistribution::getMedian() const {
   return getDegrees() * pow(1.0 - 2.0 / (9 * getDegrees()), 3);
 }

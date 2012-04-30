@@ -23,9 +23,9 @@
 #ifndef SSIZETSUPPORT_H
 #define SSIZETSUPPORT_H
 
-#include <Eigen/Core>
-
 #include <cstdlib>
+
+#include <Eigen/Core>
 
 namespace Eigen {
 

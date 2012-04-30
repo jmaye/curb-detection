@@ -20,80 +20,81 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-EstimatorBayes<PoissonDistribution>::EstimatorBayes(double alpha, double beta) :
-  mPostMeanDist(alpha, beta),
-  mPostPredDist(alpha, 1.0 / (beta + 1)),
-  mAlpha(alpha),
-  mBeta(beta) {
+EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    EstimatorBayes(const GammaDistribution<double>& prior) :
+    mMeanDist(prior) {
 }
 
-EstimatorBayes<PoissonDistribution>::EstimatorBayes(const
-  EstimatorBayes<PoissonDistribution>& other) :
-  mPostMeanDist(other.mPostMeanDist),
-  mPostPredDist(other.mPostPredDist),
-  mAlpha(other.mAlpha),
-  mBeta(other.mBeta) {
+EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    EstimatorBayes(const EstimatorBayes& other) :
+    mMeanDist(other.mMeanDist) {
 }
 
-EstimatorBayes<PoissonDistribution>&
-  EstimatorBayes<PoissonDistribution>::operator =
-  (const EstimatorBayes<PoissonDistribution>& other) {
+EstimatorBayes<PoissonDistribution, GammaDistribution<double> >&
+    EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    operator = (const EstimatorBayes& other) {
   if (this != &other) {
-    mPostMeanDist = other.mPostMeanDist;
-    mPostPredDist = other.mPostPredDist;
-    mAlpha = other.mAlpha;
-    mBeta = other.mBeta;
+    mMeanDist = other.mMeanDist;
   }
   return *this;
 }
 
-EstimatorBayes<PoissonDistribution>::~EstimatorBayes() {
+EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    ~EstimatorBayes() {
 }
 
 /******************************************************************************/
 /* Streaming operations                                                       */
 /******************************************************************************/
 
-void EstimatorBayes<PoissonDistribution>::read(std::istream& stream) {
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    read(std::istream& stream) {
 }
 
-void EstimatorBayes<PoissonDistribution>::write(std::ostream& stream) const {
-  stream << "posterior mean distribution: " << std::endl << mPostMeanDist
-    << std::endl << "posterior predictive distribution: " << std::endl
-    << mPostPredDist;
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    write(std::ostream& stream) const {
+  stream << "Mean distribution: " << std::endl << mMeanDist << std::endl <<
+    "Mean mode: " << mMeanDist.getMode() << std::endl <<
+    "Mean variance: " << mMeanDist.getVariance() << std::endl <<
+    "Predictive distribution: " << std::endl << getPredDist() << std::endl <<
+    "Predictive mean: " << getPredDist().getMean() << std::endl <<
+    "Predictive variance: " << getPredDist().getVariance();
 }
 
-void EstimatorBayes<PoissonDistribution>::read(std::ifstream& stream) {
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    read(std::ifstream& stream) {
 }
 
-void EstimatorBayes<PoissonDistribution>::write(std::ofstream& stream) const {
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-const GammaDistribution<double>& EstimatorBayes<PoissonDistribution>::
-getPostMeanDist() const {
-  return mPostMeanDist;
+const GammaDistribution<double>&
+    EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::getDist()
+    const {
+  return mMeanDist;
 }
 
-const NegativeBinomialDistribution& EstimatorBayes<PoissonDistribution>::
-getPostPredDist() const {
-  return mPostPredDist;
+NegativeBinomialDistribution
+    EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    getPredDist() const {
+  return NegativeBinomialDistribution(mMeanDist.getShape(),
+    1.0 / (mMeanDist.getInvScale() + 1));
 }
 
-void EstimatorBayes<PoissonDistribution>::addPoint(const Point& point) {
-  mAlpha += point;
-  mBeta += 1;
-  mPostMeanDist.setShape(mAlpha);
-  mPostMeanDist.setInvScale(mBeta);
-  mPostPredDist.setSuccessProbability(1.0 / (mBeta + 1));
-  mPostPredDist.setNumTrials(mAlpha);
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    addPoint(const Point& point) {
+  mMeanDist.setShape(mMeanDist.getShape() + point);
+  mMeanDist.setInvScale(mMeanDist.getInvScale() + 1);
 }
 
-void EstimatorBayes<PoissonDistribution>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorBayes<PoissonDistribution, GammaDistribution<double> >::
+    addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
 }

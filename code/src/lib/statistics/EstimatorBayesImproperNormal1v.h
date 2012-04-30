@@ -21,11 +21,11 @@
            distributions with improper prior.
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "statistics/StudentDistribution.h"
-#include "statistics/ScaledInvChiSquareDistribution.h"
-
-#include <vector>
+#include "statistics/NormalScaledInvChiSquareDistribution.h"
 
 /** The class EstimatorBayesImproper is implemented for univariate normal
     distributions.
@@ -38,7 +38,7 @@ public:
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef NormalDistribution<1>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -52,11 +52,10 @@ public:
   /// Default constructor
   inline EstimatorBayesImproper();
   /// Copy constructor
-  inline EstimatorBayesImproper(const
-    EstimatorBayesImproper<NormalDistribution<1> >& other);
+  inline EstimatorBayesImproper(const EstimatorBayesImproper& other);
   /// Assignment operator
-  inline EstimatorBayesImproper<NormalDistribution<1> >& operator =
-    (const EstimatorBayesImproper<NormalDistribution<1> >& other);
+  inline EstimatorBayesImproper& operator = (const EstimatorBayesImproper&
+    other);
   /// Destructor
   inline virtual ~EstimatorBayesImproper();
   /** @}
@@ -65,16 +64,10 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the posterior marginal mean distribution
-  inline const StudentDistribution<1>& getPostMeanDist() const;
-  /// Returns the posterior marginal variance distribution
-  inline const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
-  /// Returns the posterior predictive distribution
-  inline const StudentDistribution<1>& getPostPredDist() const;
-  /// Returns the sample mean
-  inline double getSampleMean() const;
-  /// Returns the sample variance
-  inline double getSampleVariance() const;
+  /// Returns the mean and variance distribution
+  inline const NormalScaledInvChiSquareDistribution& getDist() const;
+  /// Returns the predictive distribution
+  inline StudentDistribution<1> getPredDist() const;
   /// Returns the number of points
   inline size_t getNumPoints() const;
   /// Returns the validity state of the estimator
@@ -84,6 +77,8 @@ public:
   /// Add points to the estimator
   inline void addPoints(const ConstPointIterator& itStart, const
     ConstPointIterator& itEnd);
+  /// Add points to the estimator
+  inline void addPoints(const Container& points);
   /// Reset the estimator
   inline void reset();
   /** @}
@@ -107,16 +102,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Posterior marginal mean distribution
-  StudentDistribution<1> mPostMeanDist;
-  /// Posterior marginal variance distribution
-  ScaledInvChiSquareDistribution mPostVarianceDist;
-  /// Posterior predictive distribution
-  StudentDistribution<1> mPostPredDist;
-  /// Sample mean
-  double mSampleMean;
-  /// Sample variance
-  double mSampleVariance;
+  /// Mean and variance distribution
+  NormalScaledInvChiSquareDistribution mMeanVarianceDist;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

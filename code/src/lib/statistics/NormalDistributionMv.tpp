@@ -16,34 +16,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "statistics/Randomizer.h"
-
 #include <Eigen/LU>
+
+#include "statistics/Randomizer.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-NormalDistribution<M>::NormalDistribution(const Eigen::Matrix<double, M, 1>&
-  mean, const Eigen::Matrix<double, M, M>& covariance):
-  mMean(mean) {
+NormalDistribution<M>::NormalDistribution(const Mean& mean, const Covariance&
+    covariance):
+    mMean(mean) {
   setCovariance(covariance);
 }
 
 template <size_t M>
-NormalDistribution<M>::NormalDistribution(const NormalDistribution<M>& other) :
-  mMean(other.mMean),
-  mCovariance(other.mCovariance),
-  mPrecision(other.mPrecision),
-  mDeterminant(other.mDeterminant),
-  mNormalizer(other.mNormalizer),
-  mTransformation(other.mTransformation) {
+NormalDistribution<M>::NormalDistribution(const std::tuple<Mean, Covariance>&
+    parameters):
+    mMean(std::get<0>(parameters)) {
+  setCovariance(std::get<1>(parameters));
+}
+
+template <size_t M>
+NormalDistribution<M>::NormalDistribution(const NormalDistribution& other) :
+    mMean(other.mMean),
+    mCovariance(other.mCovariance),
+    mPrecision(other.mPrecision),
+    mDeterminant(other.mDeterminant),
+    mNormalizer(other.mNormalizer),
+    mTransformation(other.mTransformation) {
 }
 
 template <size_t M>
 NormalDistribution<M>& NormalDistribution<M>::operator = (const
-  NormalDistribution<M>& other) {
+    NormalDistribution& other) {
   if (this != &other) {
     mMean = other.mMean;
     mCovariance = other.mCovariance;
@@ -86,30 +93,30 @@ void NormalDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void NormalDistribution<M>::setMean(const Eigen::Matrix<double, M, 1>& mean) {
+void NormalDistribution<M>::setMean(const Mean& mean) {
   mMean = mean;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>& NormalDistribution<M>::getMean() const {
+typename NormalDistribution<M>::Mean NormalDistribution<M>::getMean() const {
   return mMean;
 }
 
 template <size_t M>
-void NormalDistribution<M>::setCovariance(const Eigen::Matrix<double, M, M>&
-  covariance) throw (BadArgumentException<Eigen::Matrix<double, M, M> >) {
+void NormalDistribution<M>::setCovariance(const Covariance& covariance)
+    throw (BadArgumentException<Covariance>) {
   if (covariance.transpose() != covariance)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(covariance,
+    throw BadArgumentException<Covariance>(covariance,
       "NormalDistribution<M>::setCovariance(): covariance must be symmetric",
       __FILE__, __LINE__);
   mTransformation = covariance.llt();
-  if (mTransformation.isPositiveDefinite() == false)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(covariance,
+  if (!mTransformation.isPositiveDefinite())
+    throw BadArgumentException<Covariance>(covariance,
       "NormalDistribution<M>::setCovariance(): covariance must be positive "
       "definite",
       __FILE__, __LINE__);
-  if ((covariance.diagonal().cwise() < 0).any() == true)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(covariance,
+  if ((covariance.diagonal().cwise() < 0).any())
+    throw BadArgumentException<Covariance>(covariance,
       "NormalDistribution<M>::setCovariance(): variances must be positive",
       __FILE__, __LINE__);
   mDeterminant = covariance.determinant();
@@ -120,13 +127,14 @@ void NormalDistribution<M>::setCovariance(const Eigen::Matrix<double, M, M>&
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, M>& NormalDistribution<M>::getCovariance()
-  const {
+typename NormalDistribution<M>::Covariance
+    NormalDistribution<M>::getCovariance() const {
   return mCovariance;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, M>& NormalDistribution<M>::getPrecision() const {
+typename NormalDistribution<M>::Precision
+    NormalDistribution<M>::getPrecision() const {
   return mPrecision;
 }
 
@@ -141,26 +149,26 @@ double NormalDistribution<M>::getNormalizer() const {
 }
 
 template <size_t M>
-const Eigen::LLT<Eigen::Matrix<double, M, M> >&
-  NormalDistribution<M>::getTransformation() const {
+const Eigen::LLT<typename NormalDistribution<M>::Covariance>&
+    NormalDistribution<M>::getTransformation() const {
   return mTransformation;
 }
 
 template <size_t M>
-double NormalDistribution<M>::pdf(const Eigen::Matrix<double, M, 1>& value)
-  const {
+double NormalDistribution<M>::pdf(const RandomVariable& value) const {
   return exp(logpdf(value));
 }
 
 template <size_t M>
-double NormalDistribution<M>::logpdf(const Eigen::Matrix<double, M, 1>& value)
-  const {
+double NormalDistribution<M>::logpdf(const RandomVariable& value)
+    const {
   return -0.5 * mahalanobisDistance(value) - mNormalizer;
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> NormalDistribution<M>::getSample() const {
-  Eigen::Matrix<double, M, 1> sample(mMean.size());
+typename NormalDistribution<M>::RandomVariable
+    NormalDistribution<M>::getSample() const {
+  RandomVariable sample(mMean.size());
   const static Randomizer<double> randomizer;
   for (size_t i = 0; i < (size_t)mMean.size(); ++i)
     sample(i) = randomizer.sampleNormal();
@@ -169,7 +177,7 @@ Eigen::Matrix<double, M, 1> NormalDistribution<M>::getSample() const {
 
 template <size_t M>
 double NormalDistribution<M>::KLDivergence(const NormalDistribution<M>& other)
-  const {
+    const {
   return 0.5 * (log(other.mDeterminant / mDeterminant) +
     (other.mPrecision * mCovariance).trace() - mMean.size() +
     ((mMean - other.mMean).transpose() * other.mPrecision *
@@ -177,13 +185,13 @@ double NormalDistribution<M>::KLDivergence(const NormalDistribution<M>& other)
 }
 
 template <size_t M>
-double NormalDistribution<M>::mahalanobisDistance(const
-  Eigen::Matrix<double, M, 1>& value) const {
+double NormalDistribution<M>::mahalanobisDistance(const RandomVariable& value)
+    const {
   return ((value - mMean).transpose() * mPrecision *
     (value - mMean))(0, 0);
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>& NormalDistribution<M>::getMode() const {
+typename NormalDistribution<M>::Mode NormalDistribution<M>::getMode() const {
   return mMean;
 }

@@ -26,9 +26,9 @@
 
 #include "statistics/InvGammaDistribution.h"
 
-/** The ScaledInvChiSquareDistribution class represents an inverse chi-square
-    distribution.
-    \brief Scaled inverse chi-Square distribution
+/** The ScaledInvChiSquareDistribution class represents a scaled inverse
+    chi-square distribution.
+    \brief Scaled inverse chi-square distribution
   */
 class ScaledInvChiSquareDistribution :
   public InvGammaDistribution<> {
@@ -37,7 +37,7 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  inline ScaledInvChiSquareDistribution(size_t degrees = 1, double scale = 1.0);
+  inline ScaledInvChiSquareDistribution(double degrees = 1, double scale = 1.0);
   /// Copy constructor
   inline ScaledInvChiSquareDistribution(const ScaledInvChiSquareDistribution&
     other);
@@ -52,14 +52,14 @@ public:
   /** \name Accessors
     @{
     */
-  /// Sets the scale of the distribution
+  /// Sets the scale of the distribution (already squared!)
   inline void setScale(double scale);
   /// Returns the scale of the distribution
   inline double getScale() const;
   /// Sets the degrees of freedom of the distribution
-  inline void setDegrees(size_t degrees);
+  inline void setDegrees(double degrees);
   /// Returns the degrees of freedom of the distribution
-  inline size_t getDegrees() const;
+  inline double getDegrees() const;
   /** @}
     */
 

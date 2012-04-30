@@ -17,17 +17,19 @@
  ******************************************************************************/
 
 /** \file StudentDistribution1v.h
-    \brief This file defines the univariate Student distribution
+    \brief This file defines the univariate Student's t-distribution
   */
 
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
-/** The StudentDistribution1v class represents a univariate Student
-    distribution.
-    \brief Univariate Student distribution
+/** The StudentDistribution1v class represents a univariate Student's
+    t-distribution, i.e., a predictive distribution for a normal with unknown
+    mean and variance.
+    \brief Univariate Student's t-distribution
   */
 template <> class StudentDistribution<1> :
   public ContinuousDistribution<double>,
@@ -41,9 +43,9 @@ public:
   inline StudentDistribution(double degrees = 1.0, double location = 0.0, double
     scale = 1.0);
   /// Copy constructor
-  inline StudentDistribution(const StudentDistribution<1>& other);
+  inline StudentDistribution(const StudentDistribution& other);
   /// Assignment operator
-  inline StudentDistribution& operator = (const StudentDistribution<1>& other);
+  inline StudentDistribution& operator = (const StudentDistribution& other);
   /// Destructor
   inline virtual ~StudentDistribution();
   /** @}
@@ -56,7 +58,7 @@ public:
   inline void setLocation(double scale);
   /// Returns the location of the distribution
   inline double getLocation() const;
-  /// Sets the scale of the distribution
+  /// Sets the scale of the distribution (already squared)
   inline void setScale(double scale) throw (BadArgumentException<double>);
   /// Returns the scale of the distribution
   inline double getScale() const;
@@ -69,27 +71,35 @@ public:
   /// Returns the normalizer of the distribution
   inline double getNormalizer() const;
   /// Returns the mean of the distribution
-  inline double getMean() const;
+  inline Mean getMean() const throw (InvalidOperationException);
   /// Returns the median of the distribution
-  inline double getMedian() const;
+  inline Median getMedian() const;
   /// Returns the mode of the distribution
-  inline double getMode() const;
+  inline Mode getMode() const;
   /// Returns the variance of the distribution
-  inline double getVariance() const;
+  inline Variance getVariance() const throw (InvalidOperationException);
   /// Access the probability density function at the given value
-  inline virtual double pdf(const double& value) const;
+  inline virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
-  inline double logpdf(const double& value) const;
+  inline double logpdf(const RandomVariable& value) const;
   /// Access the cumulative density function at the given value
-  inline double cdf(const double& value) const;
+  inline double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  inline virtual double getSample() const;
+  inline virtual RandomVariable getSample() const;
   /// Returns the squared Mahalanobis distance from a given value
-  inline double mahalanobisDistance(const double& value) const;
+  inline double mahalanobisDistance(const RandomVariable& value) const;
   /** @}
     */
 
 protected:
+  /** \name Protected methods
+    @{
+    */
+  /// Computes the normalizer
+  inline void computeNormalizer();
+  /** @}
+    */
+
   /** \name Stream methods
     @{
     */

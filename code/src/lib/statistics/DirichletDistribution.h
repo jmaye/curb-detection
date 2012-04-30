@@ -27,6 +27,8 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/InvalidOperationException.h"
 #include "base/Serializable.h"
 
 /** The DirichletDistribution class represents a Dirichlet distribution,
@@ -40,6 +42,22 @@ template <size_t M> class DirichletDistribution :
   public SampleDistribution<Eigen::Matrix<double, M, 1> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef ContinuousDistribution<double, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Mean type
+  typedef typename DistributionType::Mode Mode;
+  /// Covariance type
+  typedef typename DistributionType::Covariance Covariance;
+  /** @}
+    */
+
   /** \name Traits
     @{
     */
@@ -73,9 +91,9 @@ public:
   DirichletDistribution(const Eigen::Matrix<double, M, 1>& alpha =
     Eigen::Matrix<double, M, 1>::Ones());
   /// Copy constructor
-  DirichletDistribution(const DirichletDistribution<M>& other);
+  DirichletDistribution(const DirichletDistribution& other);
   /// Assignment operator
-  DirichletDistribution& operator = (const DirichletDistribution<M>& other);
+  DirichletDistribution& operator = (const DirichletDistribution& other);
   /// Destructor
   virtual ~DirichletDistribution();
   /** @}
@@ -89,25 +107,29 @@ public:
     throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
   /// Returns the alpha parameter
   const Eigen::Matrix<double, M, 1>& getAlpha() const;
+  /// Returns an alpha by index
+  double getAlpha(size_t idx) const throw (OutOfBoundException<size_t>);
   /// Returns the normalizer
   double getNormalizer() const;
   /// Returns the mean of the distribution
-  Eigen::Matrix<double, M, 1> getMean() const;
+  Mean getMean() const;
+  /// Returns the mode of the distribution
+  Mode getMode() const throw (InvalidOperationException);
   /// Returns the covariance of the distribution
-  Eigen::Matrix<double, M, M> getCovariance() const;
+  Covariance getCovariance() const;
   /// Access the probability density function at the given value
-  virtual double pdf(const Eigen::Matrix<double, M, 1>& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the probability density function at the given value
   virtual double pdf(const typename
     ContinuousDistribution<double, M - 1>::Domain& value) const;
   /// Access the log-probablity density function at the given value
-  double logpdf(const Eigen::Matrix<double, M, 1>& value) const
-    throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+  double logpdf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>);
   /// Access the log-probablity density function at the given value
   double logpdf(const typename
     ContinuousDistribution<double, M - 1>::Domain& value) const;
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<double, M, 1> getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 

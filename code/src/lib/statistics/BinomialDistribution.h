@@ -38,7 +38,7 @@ public:
     @{
     */
   /// Constructs the distribution from the parameter
-  BinomialDistribution(size_t numTrials = 1, double successProbability = 0.5);
+  BinomialDistribution(size_t numTrials = 1, double probability = 0.5);
   /// Copy constructor
   BinomialDistribution(const BinomialDistribution& other);
   /// Assignment operator
@@ -52,17 +52,19 @@ public:
     @{
     */
   /// Sets the success probability
-  void setSuccessProbability(double successProbability);
+  void setProbability(double probability);
   /// Returns the success probability
-  double getSuccessProbability() const;
+  double getProbability() const;
   /// Returns the mean of the distribution
   double getMean() const;
   /// Returns the median of the distribution
   double getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  int getMode() const;
   /// Returns the variance of the distribution
   double getVariance() const;
+  /// Access the cumulative mass function at the given value
+  double cmf(const int& value) const;
   /** @}
     */
 

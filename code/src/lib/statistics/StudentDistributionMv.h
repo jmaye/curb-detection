@@ -18,37 +18,57 @@
 
 /** \file StudentDistributionMv.h
     \brief This file defines the StudentDistributionMv class, which represents a
-           multivariate Student distribution
+           multivariate Student's t-distribution
   */
+
+#include <Eigen/Cholesky>
 
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
-#include <Eigen/Cholesky>
-
-/** The StudentDistributionMv class represents a multivariate Student
-    distribution.
-    \brief Multivariate Student distribution
+/** The StudentDistributionMv class represents a multivariate Student's
+    t-distribution, i.e., a predictive distribution for a normal with unknown
+    mean and covariance matrix.
+    \brief Multivariate Student's t-distribution
   */
 template <size_t M> class StudentDistribution :
   public ContinuousDistribution<double, M>,
   public SampleDistribution<Eigen::Matrix<double, M, 1> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef ContinuousDistribution<double, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Mode type
+  typedef typename DistributionType::Mode Mode;
+  /// Covariance type
+  typedef typename DistributionType::Covariance Covariance;
+  /// Location type
+  typedef Mean Location;
+  /// Scale type
+  typedef Covariance Scale;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
   /// Constructs the distribution from the parameters
-  StudentDistribution(double degrees = 1.0, const Eigen::Matrix<double, M, 1>&
-    location = Eigen::Matrix<double, M, 1>::Zero(), const
-    Eigen::Matrix<double, M, M>& scale =
-    Eigen::Matrix<double, M, M>::Identity());
+  StudentDistribution(double degrees = 1.0, const Location& location =
+    Location::Zero(), const Scale& scale = Scale::Identity());
   /// Copy constructor
-  StudentDistribution(const StudentDistribution<M>& other);
+  StudentDistribution(const StudentDistribution& other);
   /// Assignment operator
-  StudentDistribution<M>& operator = (const StudentDistribution<M>& other);
+  StudentDistribution& operator = (const StudentDistribution& other);
   /// Destructor
   virtual ~StudentDistribution();
   /** @}
@@ -58,44 +78,51 @@ public:
     @{
     */
   /// Sets the location of the distribution
-  void setLocation(const Eigen::Matrix<double, M, 1>& scale);
+  void setLocation(const Location& scale);
   /// Returns the location of the distribution
-  const Eigen::Matrix<double, M, 1>& getLocation() const;
+  const Location& getLocation() const;
   /// Sets the scale matrix of the distribution
-  void setScale(const Eigen::Matrix<double, M, M>& scale)
-    throw (BadArgumentException<Eigen::Matrix<double, M, M> >);
+  void setScale(const Scale& scale) throw (BadArgumentException<Scale>);
   /// Returns the scale matrix of the distribution
-  const Eigen::Matrix<double, M, M>& getScale() const;
+  const Scale& getScale() const;
   /// Sets the degrees of freedom of the distribution
   void setDegrees(double degrees) throw (BadArgumentException<double>);
   /// Returns the degrees of freedom of the distribution
   double getDegrees() const;
   /// Returns the inverse scale matrix of the distribution
-  const Eigen::Matrix<double, M, M>& getInverseScale() const;
+  const Scale& getInverseScale() const;
   /// Returns the determinant of the scale matrix
   double getDeterminant() const;
   /// Returns the normalizer of the distribution
   double getNormalizer() const;
   /// Returns the cholesky decomposition of the scale matrix
-  const Eigen::LLT<Eigen::Matrix<double, M, M> >& getTransformation() const;
+  const Eigen::LLT<Scale>& getTransformation() const;
   /// Returns the mean of the distribution
-  Eigen::Matrix<double, M, 1> getMean() const;
+  Mean getMean() const throw (InvalidOperationException);
   /// Returns the mode of the distribution
-  Eigen::Matrix<double, M, 1> getMode() const;
-  /// Returns the variance of the distribution
-  Eigen::Matrix<double, M, M> getCovariance() const;
+  Mode getMode() const;
+  /// Returns the covariance of the distribution
+  Covariance getCovariance() const throw (InvalidOperationException);
   /// Access the probability density function at the given value
-  virtual double pdf(const Eigen::Matrix<double, M, 1>& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
-  double logpdf(const Eigen::Matrix<double, M, 1>& value) const;
+  double logpdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<double, M, 1> getSample() const;
+  virtual RandomVariable getSample() const;
   /// Returns the squared Mahalanobis distance from a point
-  double mahalanobisDistance(const Eigen::Matrix<double, M, 1>& value) const;
+  double mahalanobisDistance(const RandomVariable& value) const;
   /** @}
     */
 
 protected:
+  /** \name Protected methods
+    @{
+    */
+  /// Compute normalizer
+  void computeNormalizer();
+  /** @}
+    */
+
   /** \name Stream methods
     @{
     */
@@ -114,19 +141,19 @@ protected:
     @{
     */
   /// Location of the distribution
-  Eigen::Matrix<double, M, 1> mLocation;
+  Location mLocation;
   /// Scale of the distribution
-  Eigen::Matrix<double, M, M> mScale;
+  Scale mScale;
   /// Degrees of freedom of the distribution
   double mDegrees;
   /// Inverse scale of the distribution
-  Eigen::Matrix<double, M, M> mInverseScale;
+  Scale mInverseScale;
   /// Determinant of the scale matrix
   double mDeterminant;
   /// Normalizer of the distribution
   double mNormalizer;
   /// Cholesky decomposition of the scale matrix
-  Eigen::LLT<Eigen::Matrix<double, M, M> > mTransformation;
+  Eigen::LLT<Scale> mTransformation;
   /** @}
     */
 

@@ -21,12 +21,12 @@
            regression models with conjugate prior.
   */
 
+#include <vector>
+
 #include "statistics/LinearRegression.h"
 #include "statistics/LinearRegressionPred.h"
 #include "statistics/StudentDistribution.h"
 #include "statistics/ScaledInvChiSquareDistribution.h"
-
-#include <vector>
 
 /** The class EstimatorBayes is implemented for ordinary linear regression
     models.
@@ -82,6 +82,8 @@ public:
   /// Add points to the estimator with weights
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /** @}
     */
 

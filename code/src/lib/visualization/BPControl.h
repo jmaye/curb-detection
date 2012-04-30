@@ -23,21 +23,21 @@
 #ifndef BPCONTROL_H
 #define BPCONTROL_H
 
+#include <string>
+
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
 #include "data-structures/FactorGraph.h"
-#include "helpers/RandomColors.h"
 #include "segmenter/GraphSegmenter.h"
 
-#include <vector>
-#include <string>
-
 class Ui_BPControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
+template <typename D, size_t M> class MixtureDistribution;
+template <size_t M> class LinearRegression;
 
 /** The BPControl class represents a Qt control for BP segmentation.
     \brief Qt control for BP segmentation
@@ -112,9 +112,9 @@ protected:
   /// Qt user interface
   Ui_BPControl* mUi;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// DEM graph
-  DEMGraph mGraph;
+  DEMGraph* mGraph;
   /// Factor graph
   FactorGraph mFactorGraph;
   /// Factor graph mapping
@@ -131,14 +131,8 @@ protected:
   std::string mAlgo;
   /// Updates types
   std::string mUpdates;
-  /// Vector of random colors
-  std::vector<Helpers::Color> mColors;
-  /// Regression coefficients
-  Eigen::Matrix<double, Eigen::Dynamic, 3> mCoefficients;
-  /// Regression variances
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mVariances;
-  /// Regression weights
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mWeights;
+  /// Mixture distribution
+  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>* mMixtureDist;
   /// Edge strength
   double mStrength;
   /** @}
@@ -175,22 +169,16 @@ protected slots:
   /// Run button pressed
   void runPressed();
   /// ML has been updated
-  void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
-    const std::vector<Helpers::Color>& colors);
-  /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components, const
-    std::vector<Helpers::Color>& colors);
+  void mlUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+    mixtureDist);
   /** @}
     */
 
 signals:
   /// New segmentation done
-  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
-    DEMGraph::VertexContainer& vertices);
+  void bpUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const DEMGraph::VertexContainer& vertices);
 
 };
 

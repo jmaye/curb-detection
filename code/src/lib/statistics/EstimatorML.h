@@ -26,7 +26,7 @@
 
 #include <cstdlib>
 
-template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
+template <typename D> class EstimatorML;
 
 #include "statistics/EstimatorMLNormal1v.h"
 #include "statistics/EstimatorMLNormalMv.h"
@@ -36,8 +36,6 @@ template <typename D, size_t M = 1, size_t N = 1> class EstimatorML;
 #include "statistics/EstimatorMLGeometric.h"
 #include "statistics/EstimatorMLPoisson.h"
 #include "statistics/EstimatorMLLinearRegression.h"
-#include "statistics/EstimatorMLMixtureLinearRegression.h"
-#include "statistics/EstimatorMLMixtureNormal1v.h"
-#include "statistics/EstimatorMLMixtureNormalMv.h"
+#include "statistics/EstimatorMLMixture.h"
 
 #endif // ESTIMATORML_H

@@ -38,7 +38,7 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  inline ChiSquareDistribution(size_t degrees = 1);
+  inline ChiSquareDistribution(double degrees = 1);
   /// Copy constructor
   inline ChiSquareDistribution(const ChiSquareDistribution& other);
   /// Assignment operator
@@ -52,11 +52,11 @@ public:
     @{
     */
   /// Sets the degrees of freedom of the distribution
-  inline void setDegrees(size_t degrees);
+  inline void setDegrees(double degrees);
   /// Returns the degrees of freedom of the distribution
-  inline size_t getDegrees() const;
+  inline double getDegrees() const;
   /// Returns the median of the distribution
-  inline double getMedian() const;
+  inline Median getMedian() const;
   /** @}
     */
 

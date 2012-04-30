@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "statistics/Randomizer.h"
-#include "functions/LogBetaFunction.h"
+#include <limits>
 
 #include <Eigen/Array>
 
-#include <limits>
+#include "statistics/Randomizer.h"
+#include "functions/LogBetaFunction.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -29,20 +29,20 @@
 
 template <size_t M>
 DirichletDistribution<M>::DirichletDistribution(const
-  Eigen::Matrix<double, M, 1>& alpha) {
+    Eigen::Matrix<double, M, 1>& alpha) {
   setAlpha(alpha);
 }
 
 template <size_t M>
 DirichletDistribution<M>::DirichletDistribution(const
-  DirichletDistribution<M>& other) :
-  mAlpha(other.mAlpha),
-  mNormalizer(other.mNormalizer) {
+    DirichletDistribution& other) :
+    mAlpha(other.mAlpha),
+    mNormalizer(other.mNormalizer) {
 }
 
 template <size_t M>
 DirichletDistribution<M>& DirichletDistribution<M>::operator =
-  (const DirichletDistribution<M>& other) {
+    (const DirichletDistribution& other) {
   if (this != &other) {
     mAlpha = other.mAlpha;
     mNormalizer = other.mNormalizer;
@@ -81,8 +81,8 @@ void DirichletDistribution<M>::write(std::ofstream& stream) const {
 
 template <size_t M>
 void DirichletDistribution<M>::setAlpha(const Eigen::Matrix<double, M, 1>&
-  alpha) throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
-  if ((alpha.cwise() <= 0).any() == true)
+    alpha) throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+  if ((alpha.cwise() <= 0).any())
     throw BadArgumentException<Eigen::Matrix<double, M, 1> >(alpha,
       "DirichletDistribution<M>::setAlpha(): alpha must be strictly positive",
       __FILE__, __LINE__);
@@ -97,6 +97,16 @@ const Eigen::Matrix<double, M, 1>& DirichletDistribution<M>::getAlpha() const {
 }
 
 template <size_t M>
+double DirichletDistribution<M>::getAlpha(size_t idx) const
+    throw (OutOfBoundException<size_t>) {
+  if (idx >= (size_t)mAlpha.size())
+    throw OutOfBoundException<size_t>(idx,
+      "DirichletDistribution<M>::getAlpha(): index out of bound",
+      __FILE__, __LINE__);
+  return mAlpha(idx);
+}
+
+template <size_t M>
 double DirichletDistribution<M>::getNormalizer() const {
   return mNormalizer;
 }
@@ -104,8 +114,8 @@ double DirichletDistribution<M>::getNormalizer() const {
 template <size_t M>
 template <size_t N, size_t D>
 double DirichletDistribution<M>::Traits<N, D>::pdf(const
-  DirichletDistribution<N>& distribution, const
-  Eigen::Matrix<double, N - 1, 1>& value) {
+    DirichletDistribution<N>& distribution, const
+    Eigen::Matrix<double, N - 1, 1>& value) {
   Eigen::Matrix<double, M, 1> valueMat;
   valueMat << value, 1.0 - value.sum();
   return distribution.pdf(valueMat);
@@ -114,7 +124,7 @@ double DirichletDistribution<M>::Traits<N, D>::pdf(const
 template <size_t M>
 template <size_t D>
 double DirichletDistribution<M>::Traits<2, D>::pdf(const
-  DirichletDistribution<2>& distribution, const double& value) {
+    DirichletDistribution<2>& distribution, const double& value) {
   Eigen::Matrix<double, 2, 1> valueMat;
   valueMat << value, 1.0 - value;
   return distribution.pdf(valueMat);
@@ -123,8 +133,8 @@ double DirichletDistribution<M>::Traits<2, D>::pdf(const
 template <size_t M>
 template <size_t N, size_t D>
 double DirichletDistribution<M>::Traits<N, D>::logpdf(const
-  DirichletDistribution<N>& distribution, const
-  Eigen::Matrix<double, N - 1, 1>& value) {
+    DirichletDistribution<N>& distribution, const
+    Eigen::Matrix<double, N - 1, 1>& value) {
   Eigen::Matrix<double, M, 1> valueMat;
   valueMat << value, 1.0 - value.sum();
   return distribution.logpdf(valueMat);
@@ -133,18 +143,16 @@ double DirichletDistribution<M>::Traits<N, D>::logpdf(const
 template <size_t M>
 template <size_t D>
 double DirichletDistribution<M>::Traits<2, D>::logpdf(const
-  DirichletDistribution<2>& distribution, const double& value) {
+    DirichletDistribution<2>& distribution, const double& value) {
   Eigen::Matrix<double, 2, 1> valueMat;
   valueMat << value, 1.0 - value;
   return distribution.logpdf(valueMat);
 }
 
 template <size_t M>
-double DirichletDistribution<M>::pdf(const Eigen::Matrix<double, M, 1>& value)
-  const {
-  if (fabs(value.sum() - 1.0) > std::numeric_limits<double>::epsilon())
-    return 0.0;
-  else if ((value.cwise() <= 0).any() == true)
+double DirichletDistribution<M>::pdf(const RandomVariable& value) const {
+  if (fabs(value.sum() - 1.0) > std::numeric_limits<double>::epsilon() ||
+      (value.cwise() <= 0).any())
     return 0.0;
   else
     return exp(logpdf(value));
@@ -152,21 +160,18 @@ double DirichletDistribution<M>::pdf(const Eigen::Matrix<double, M, 1>& value)
 
 template <size_t M>
 double DirichletDistribution<M>::pdf(const typename
-  ContinuousDistribution<double, M - 1>::Domain& value) const {
+    ContinuousDistribution<double, M - 1>::Domain& value) const {
   return Traits<M>::pdf(*this, value);
 }
 
 template <size_t M>
-double DirichletDistribution<M>::logpdf(const Eigen::Matrix<double, M, 1>&
-  value) const throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
-  if (fabs(value.sum() - 1.0) > std::numeric_limits<double>::epsilon())
-    throw BadArgumentException<Eigen::Matrix<double, M, 1> >(value,
-      "DirichletDistribution<M>::logpdf(): input vector must sum to 1",
-      __FILE__, __LINE__);
-  if ((value.cwise() <= 0).any() == true)
-    throw BadArgumentException<Eigen::Matrix<double, M, 1> >(value,
-      "DirichletDistribution<M>::logpdf(): input vector must be strictly "
-      "positive",
+double DirichletDistribution<M>::logpdf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>) {
+  if (fabs(value.sum() - 1.0) > std::numeric_limits<double>::epsilon() ||
+      (value.cwise() <= 0).any())
+    throw BadArgumentException<RandomVariable>(value,
+      "DirichletDistribution<M>::logpdf(): input vector must sum to 1 and "
+      "contains strictly positive values",
       __FILE__, __LINE__);
   double returnValue = 0;
   for (size_t i = 0; i < (size_t)mAlpha.size(); ++i)
@@ -176,28 +181,41 @@ double DirichletDistribution<M>::logpdf(const Eigen::Matrix<double, M, 1>&
 
 template <size_t M>
 double DirichletDistribution<M>::logpdf(const typename
-  ContinuousDistribution<double, M - 1>::Domain& value) const {
+    ContinuousDistribution<double, M - 1>::Domain& value) const {
   return Traits<M>::logpdf(*this, value);
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> DirichletDistribution<M>::getSample() const {
+typename DirichletDistribution<M>::RandomVariable
+    DirichletDistribution<M>::getSample() const {
   const static Randomizer<double> randomizer;
-  Eigen::Matrix<double, M, 1> sampleGammaVector(mAlpha.size());
+  RandomVariable sampleGammaVector(mAlpha.size());
   for (size_t i = 0; i < (size_t)mAlpha.size(); ++i)
     sampleGammaVector(i) = randomizer.sampleGamma(mAlpha(i), 1.0);
   return sampleGammaVector / sampleGammaVector.sum();
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> DirichletDistribution<M>::getMean() const {
+typename DirichletDistribution<M>::Mean DirichletDistribution<M>::getMean()
+    const {
   return mAlpha / mAlpha.sum();
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, M> DirichletDistribution<M>::getCovariance() const {
-  Eigen::Matrix<double, M, M> covariance(mAlpha.size(), mAlpha.size());
-  double sum = mAlpha.sum();
+typename DirichletDistribution<M>::Mode DirichletDistribution<M>::getMode()
+    const throw (InvalidOperationException) {
+  if ((mAlpha.cwise() <= 1).any())
+    throw InvalidOperationException("DirichletDistribution<M>::getMode(): "
+      "alpha must be bigger than 1");
+  else
+    return (mAlpha.cwise() - 1) / (mAlpha.sum() - mAlpha.size());
+}
+
+template <size_t M>
+typename DirichletDistribution<M>::Covariance
+    DirichletDistribution<M>::getCovariance() const {
+  Covariance covariance(mAlpha.size(), mAlpha.size());
+  const double sum = mAlpha.sum();
   for (size_t i = 0; i < (size_t)mAlpha.size(); ++i) {
     covariance(i, i) = mAlpha(i) * (sum - mAlpha(i)) / (sum * sum * (sum + 1));
     for (size_t j = i + 1; j < (size_t)mAlpha.size(); ++j) {

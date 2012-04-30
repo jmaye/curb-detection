@@ -18,21 +18,21 @@
 
 #include "visualization/Camera.h"
 
-#include "visualization/GLView.h"
-
 #include <cmath>
+
+#include "visualization/GLView.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 Camera::Camera(double x, double y, double z, double near, double far) :
-  mPosition(3, 0.0),
-  mViewpoint(3, 0.0),
-  mRange(2, 0.0),
-  mProjection(2, 0.0) {
-  setPosition(x, y, z);
-  setRange(near, far);
+    mPosition(3, 0.0),
+    mViewpoint(3, 0.0),
+    mRange(2, 0.0),
+    mProjection(2, 0.0) {
+    setPosition(x, y, z);
+    setRange(near, far);
 }
 
 Camera::~Camera() {

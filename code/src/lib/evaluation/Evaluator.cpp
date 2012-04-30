@@ -26,6 +26,10 @@
 #include <QPoint>
 #include <QPolygon>
 
+#include "data-structures/Grid.h"
+#include "data-structures/Cell.h"
+#include "data-structures/DEMGraph.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -43,8 +47,7 @@ Evaluator& Evaluator::operator = (const Evaluator& other) {
 }
 
 Evaluator::~Evaluator() {
-  for (std::vector<const QRegion*>::iterator it = mClasses.begin();
-      it != mClasses.end(); ++it)
+  for (auto it = mClasses.begin(); it != mClasses.end(); ++it)
     delete *it;
 }
 
@@ -140,16 +143,14 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   std::set<size_t> labelSet;
   std::map<size_t, size_t> labelMap;
   size_t labelPool = 0;
-  for (DEMGraph::ConstVertexIterator it = verticesLabels.begin(); it !=
-      verticesLabels.end(); ++it)
+  for (auto it = verticesLabels.begin(); it != verticesLabels.end(); ++it)
     if (labelSet.count(it->second) == 0) {
       labelMap[it->second] = labelPool;
       labelPool++;
       labelSet.insert(it->second);
     }
   DEMGraph::VertexContainer verticesLabelsMap;
-  for (DEMGraph::ConstVertexIterator it = demgraph.getVertexBegin(); it !=
-      demgraph.getVertexEnd(); ++it)
+  for (auto it = demgraph.getVertexBegin(); it != demgraph.getVertexEnd(); ++it)
     verticesLabelsMap[it->first] =
       labelMap[verticesLabels.find(it->first)->second];
   const Grid<double, Cell, 2>::Index& numCells = dem.getNumCells();
@@ -160,12 +161,11 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
     for (size_t j = 0; j < numCells(1); ++j) {
       const Cell& cell =
         dem[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      if (cell.getHeightEstimator().getValid() == false)
+      if (!cell.getHeightEstimator().getDist().getKappa())
         continue;
       const Eigen::Matrix<double, 2, 1> point = 
         dem.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-          it != mClasses.end(); ++it)
+      for (auto it = mClasses.begin(); it != mClasses.end(); ++it)
         if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
           if (classSet.count(it - mClasses.begin()) == 0) {
             classMap[it - mClasses.begin()] = classPool;
@@ -176,12 +176,11 @@ double Evaluator::evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph&
   Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> contingencyTable =
     Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic>::Zero(classSet.size(),
     labelSet.size());
-  for (DEMGraph::ConstVertexIterator it = verticesLabelsMap.begin(); it !=
-      verticesLabelsMap.end(); ++it) {
+  for (auto it = verticesLabelsMap.begin(); it != verticesLabelsMap.end();
+      ++it) {
     const Eigen::Matrix<double, 2, 1> point = dem.getCoordinates(it->first);
     const size_t label = it->second;
-    for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-        it != mClasses.end(); ++it)
+    for (auto it = mClasses.begin(); it != mClasses.end(); ++it)
       if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
         contingencyTable(classMap[it - mClasses.begin()], label)++;
   }
@@ -193,15 +192,13 @@ size_t Evaluator::getNumClasses() const {
 }
 
 void Evaluator::clear() {
-  for (std::vector<const QRegion*>::iterator it = mClasses.begin();
-      it != mClasses.end(); ++it)
+  for (auto it = mClasses.begin(); it != mClasses.end(); ++it)
     delete *it;
   mClasses.clear();
 }
 
 size_t Evaluator::getLabel(const Eigen::Matrix<double, 2, 1>& point) const {
-  for (std::vector<const QRegion*>::const_iterator it = mClasses.begin();
-      it != mClasses.end(); ++it)
+  for (auto it = mClasses.begin(); it != mClasses.end(); ++it)
     if ((*it)->contains(QPoint(point(0) * 1000.0, point(1) * 1000.0)))
       return it - mClasses.begin();
   return 0;

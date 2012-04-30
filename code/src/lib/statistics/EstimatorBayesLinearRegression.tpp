@@ -22,29 +22,29 @@
 
 template <size_t M>
 EstimatorBayes<LinearRegression<M>, M>::EstimatorBayes(const
-  Eigen::Matrix<double, M, 1>& mu , const Eigen::Matrix<double, M, M>& V,
-  double nu, double sigma) :
-  mPostCoeffDist(nu, mu, sigma * V),
-  mPostVarianceDist(nu, sigma / nu),
-  mPostPredDist(nu, mu, V, sigma / nu),
-  mMu(mu),
-  mV(V),
-  mNu(nu),
-  mSigma(sigma) {
+    Eigen::Matrix<double, M, 1>& mu , const Eigen::Matrix<double, M, M>& V,
+    double nu, double sigma) :
+    mPostCoeffDist(nu, mu, sigma * V),
+    mPostVarianceDist(nu, sigma / nu),
+    mPostPredDist(nu, mu, V, sigma / nu),
+    mMu(mu),
+    mV(V),
+    mNu(nu),
+    mSigma(sigma) {
 }
 
 template <size_t M>
 EstimatorBayes<LinearRegression<M>, M>::EstimatorBayes(const
-  EstimatorBayes<LinearRegression<M>, M>& other) :
-  mPostCoeffDist(other.mPostCoeffDist),
-  mPostVarianceDist(other.mPostVarianceDist),
-  mPostPredDist(other.mPostPredDist) {
+    EstimatorBayes<LinearRegression<M>, M>& other) :
+    mPostCoeffDist(other.mPostCoeffDist),
+    mPostVarianceDist(other.mPostVarianceDist),
+    mPostPredDist(other.mPostPredDist) {
 }
 
 template <size_t M>
 EstimatorBayes<LinearRegression<M>, M>&
-  EstimatorBayes<LinearRegression<M>, M>::operator =
-  (const EstimatorBayes<LinearRegression<M>, M>& other) {
+    EstimatorBayes<LinearRegression<M>, M>::operator =
+    (const EstimatorBayes<LinearRegression<M>, M>& other) {
   if (this != &other) {
     mPostCoeffDist = other.mPostCoeffDist;
     mPostVarianceDist = other.mPostVarianceDist;
@@ -80,7 +80,7 @@ void EstimatorBayes<LinearRegression<M>, M>::read(std::ifstream& stream) {
 
 template <size_t M>
 void EstimatorBayes<LinearRegression<M>, M>::write(std::ofstream& stream)
-  const {
+    const {
 }
 
 /******************************************************************************/
@@ -89,7 +89,7 @@ void EstimatorBayes<LinearRegression<M>, M>::write(std::ofstream& stream)
 
 template <size_t M>
 const StudentDistribution<M>& EstimatorBayes<LinearRegression<M>, M>::
-  getPostCoeffDist() const {
+    getPostCoeffDist() const {
   return mPostCoeffDist;
 }
 
@@ -101,7 +101,7 @@ EstimatorBayes<LinearRegression<M>, M>::getPostVarianceDist() const {
 
 template <size_t M>
 const LinearRegressionPred<M>& EstimatorBayes<LinearRegression<M>, M>::
-getPostPredDist() const {
+    getPostPredDist() const {
   return mPostPredDist;
 }
 
@@ -135,13 +135,19 @@ void EstimatorBayes<LinearRegression<M>, M>::addPoint(const Point& point) {
 
 template <size_t M>
 void EstimatorBayes<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd) {
+    itStart, const ConstPointIterator& itEnd) {
   for (ConstPointIterator it = itStart; it != itEnd; ++it)
     addPoint(*it);
 }
 
 template <size_t M>
 void EstimatorBayes<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+    itStart, const ConstPointIterator& itEnd, const
+    Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+}
+
+template <size_t M>
+void EstimatorBayes<LinearRegression<M>, M>::addPoints(const Container&
+    points) {
+  addPoints(points.begin(), points.end());
 }

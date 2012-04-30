@@ -23,18 +23,18 @@
 #ifndef DEMCONTROL_H
 #define DEMCONTROL_H
 
+#include <QtCore/QString>
+#include <QtGui/QColor>
+
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "data-structures/PointCloud.h"
 
-#include <QtCore/QString>
-#include <QtGui/QColor>
-
 class Ui_DEMControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
 
 /** The DEMControl class represents a Qt control for DEM.
     \brief Qt control for DEM
@@ -95,7 +95,7 @@ protected:
   /// Color palette
   Palette mPalette;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// Point cloud
   PointCloud<double, 3> mPointCloud;
   /** @}
@@ -127,7 +127,7 @@ signals:
     @{
     */
   /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
+  void demUpdated(const TransGrid<double, Cell, 2>& dem);
   /** @}
     */
 

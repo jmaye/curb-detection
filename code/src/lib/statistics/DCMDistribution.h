@@ -26,19 +26,37 @@
 
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
+#include "statistics/DirichletDistribution.h"
 #include "exceptions/BadArgumentException.h"
 #include "base/Serializable.h"
 
 /** The DCMDistribution class represents a Dirichlet Compound Multinomial
-    distribution.
+    distribution, which is the predictive distribution of a multinomial random
+    variable.
     \brief Dirichlet Compound Multinomial distribution
   */
 template <size_t M> class DCMDistribution :
-  public DiscreteDistribution<size_t, M>,
-  public DiscreteDistribution<size_t, M - 1>,
-  public SampleDistribution<Eigen::Matrix<size_t, M, 1> >,
+  public DiscreteDistribution<int, M>,
+  public DiscreteDistribution<int, M - 1>,
+  public SampleDistribution<Eigen::Matrix<int, M, 1> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef DiscreteDistribution<int, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Mode type
+  typedef typename DistributionType::Mode Mode;
+  /// Covariance type
+  typedef typename DistributionType::Covariance Covariance;
+  /** @}
+    */
+
   /** \name Traits
     @{
     */
@@ -47,19 +65,19 @@ public:
   public:
     /// Access the probability mass function at the given value
     static double pmf(const DCMDistribution<N>& distribution, const
-      Eigen::Matrix<size_t, N - 1, 1>& value);
+      Eigen::Matrix<int, N - 1, 1>& value);
     /// Access the log-probability mass function at the given value
     static double logpmf(const DCMDistribution<N>& distribution, const
-      Eigen::Matrix<size_t, N - 1, 1>& value);
+      Eigen::Matrix<int, N - 1, 1>& value);
   };
   /// Support for N = 2
   template <size_t D> struct Traits<2, D> {
   public:
     /// Access the probability mass function at the given value
-    static double pmf(const DCMDistribution<2>& distribution, const size_t&
+    static double pmf(const DCMDistribution<2>& distribution, const int&
       value);
     /// Access the log-probability mass function at the given value
-    static double logpmf(const DCMDistribution<2>& distribution, const size_t&
+    static double logpmf(const DCMDistribution<2>& distribution, const int&
       value);
   };
   /** @}
@@ -72,9 +90,9 @@ public:
   DCMDistribution(size_t numTrials = 1, const Eigen::Matrix<double, M, 1>&
     alpha = Eigen::Matrix<double, M, 1>::Ones());
   /// Copy constructor
-  DCMDistribution(const DCMDistribution<M>& other);
+  DCMDistribution(const DCMDistribution& other);
   /// Assignment operator
-  DCMDistribution& operator = (const DCMDistribution<M>& other);
+  DCMDistribution& operator = (const DCMDistribution& other);
   /// Destructor
   virtual ~DCMDistribution();
   /** @}
@@ -93,27 +111,29 @@ public:
   /// Returns the number of trials
   size_t getNumTrials() const;
   /// Returns the mean of the distribution
-  Eigen::Matrix<double, M, 1> getMean() const;
+  Mean getMean() const;
+  /// Returns the mode of the distribution
+  Mode getMode() const;
   /// Returns the covariance of the distribution
-  Eigen::Matrix<double, M, M> getCovariance() const;
+  Covariance getCovariance() const;
   /// Access the probability mass function at the given value
-  virtual double pmf(const Eigen::Matrix<size_t, M, 1>& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /// Access the probability mass function at the given value
   virtual double pmf(const typename
-    DiscreteDistribution<size_t, M - 1>::Domain& value) const;
+    DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Access the log-probablity mass function at the given value
-  double logpmf(const Eigen::Matrix<size_t, M, 1>& value) const
-    throw (BadArgumentException<Eigen::Matrix<size_t, M, 1> >);
+  double logpmf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>);
   /// Access the log-probablity mass function at the given value
   double logpmf(const typename
-    DiscreteDistribution<size_t, M - 1>::Domain& value) const;
+    DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<size_t, M, 1> getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
-  using DiscreteDistribution<size_t, M>::operator();
-  using DiscreteDistribution<size_t, M - 1>::operator();
+  using DiscreteDistribution<int, M>::operator();
+  using DiscreteDistribution<int, M - 1>::operator();
 
 protected:
   /** \name Stream methods
@@ -137,6 +157,8 @@ protected:
   Eigen::Matrix<double, M, 1> mAlpha;
   /// Number of trials
   size_t mNumTrials;
+  /// Dirichlet distribution for speeding up sampling
+  DirichletDistribution<M> mDirDist;
   /** @}
     */
 

@@ -24,10 +24,7 @@
 #ifndef EXPONENTIALDISTRIBUTION_H
 #define EXPONENTIALDISTRIBUTION_H
 
-#include "statistics/ContinuousDistribution.h"
-#include "statistics/SampleDistribution.h"
-#include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
+#include "statistics/GammaDistribution.h"
 
 /** The ExponentialDistribution class represents an exponential distribution,
     i.e., a continuous distribution that models the time between events in a
@@ -36,22 +33,19 @@
     \brief Exponential distribution
   */
 class ExponentialDistribution :
-  public ContinuousDistribution<double>,
-  public SampleDistribution<double>,
-  public virtual Serializable {
+  public GammaDistribution<size_t> {
 public:
   /** \name Constructors/destructor
     @{
     */
   /// Constructs distribution from parameter
-  inline ExponentialDistribution(double rate = 1.0);
+  ExponentialDistribution(double rate = 1.0);
   /// Copy constructor
-  inline ExponentialDistribution(const ExponentialDistribution& other);
+  ExponentialDistribution(const ExponentialDistribution& other);
   /// Assignment operator
-  inline ExponentialDistribution& operator = (const ExponentialDistribution&
-    other);
+  ExponentialDistribution& operator = (const ExponentialDistribution& other);
   /// Destructor
-  inline virtual ~ExponentialDistribution();
+  virtual ~ExponentialDistribution();
   /** @}
     */
 
@@ -59,27 +53,11 @@ public:
     @{
     */
   /// Sets the event rate
-  inline void setRate(double rate) throw (BadArgumentException<double>);
+  void setRate(double rate);
   /// Returns the event rate
-  inline double getRate() const;
-  /// Returns the mean of the distribution
-  inline double getMean() const;
+  double getRate() const;
   /// Returns the median of the distribution
-  inline double getMedian() const;
-  /// Returns the mode of the distribution
-  inline double getMode() const;
-  /// Returns the variance of the distribution
-  inline double getVariance() const;
-  /// Access the probablity density function at the given value
-  inline virtual double pdf(const double& value) const;
-  /// Access the log-probablity density function at the given value
-  inline double logpdf(const double& value) const;
-  /// Access the cumulative density function at the given value
-  inline double cdf(const double& value) const;
-  /// Access a sample drawn from the distribution
-  inline virtual double getSample() const;
-  /// Returns the KL-divergence with another distribution
-  inline double KLDivergence(const ExponentialDistribution& other) const;
+  Median getMedian() const;
   /** @}
     */
 
@@ -88,21 +66,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
-  /** \name Protected members
-    @{
-    */
-  /// Rate
-  double mRate;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

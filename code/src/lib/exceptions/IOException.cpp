@@ -23,11 +23,11 @@
 /******************************************************************************/
 
 IOException::IOException(const std::string& msg) :
-  std::runtime_error(msg) {
+    std::runtime_error(msg) {
 }
 
 IOException::IOException(const IOException& other) throw () :
-  std::runtime_error(other) {
+    std::runtime_error(other) {
 }
 
 IOException::~IOException() throw () {

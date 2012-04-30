@@ -20,6 +20,8 @@
 
 #include "visualization/PointCloudControl.h"
 #include "base/Timestamp.h"
+#include "data-structures/TransGrid.h"
+#include "data-structures/Cell.h"
 
 #include "ui_DEMControl.h"
 
@@ -28,10 +30,8 @@
 /******************************************************************************/
 
 DEMControl::DEMControl(bool showDEM) :
-  mUi(new Ui_DEMControl()),
-  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
-    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)) {
+    mUi(new Ui_DEMControl()),
+    mDEM(0) {
   mUi->setupUi(this);
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
@@ -45,20 +45,13 @@ DEMControl::DEMControl(bool showDEM) :
   setLineSize(1.0);
   setShowDEM(showDEM);
   setSmoothLines(true);
-  const double minX = mUi->rangeMinXSpinBox->value();
-  const double minY = mUi->rangeMinYSpinBox->value();
-  const double maxX = mUi->rangeMaxXSpinBox->value();
-  const double maxY = mUi->rangeMaxYSpinBox->value();
-  const double cellSizeX = mUi->resXSpinBox->value();
-  const double cellSizeY = mUi->resYSpinBox->value();
-  mDEM = Grid<double, Cell, 2>(Grid<double, Cell, 2>::Coordinate(minX, minY),
-    Grid<double, Cell, 2>::Coordinate(maxX, maxY),
-    Grid<double, Cell, 2>::Coordinate(cellSizeX, cellSizeY));
-  mUi->numCellsXSpinBox->setValue(mDEM.getNumCells()(0));
-  mUi->numCellsYSpinBox->setValue(mDEM.getNumCells()(1));
+  mUi->numCellsXSpinBox->setValue(0);
+  mUi->numCellsYSpinBox->setValue(0);
 }
 
 DEMControl::~DEMControl() {
+  if (mDEM)
+    delete mDEM;
   delete mUi;
 }
 
@@ -102,26 +95,28 @@ void DEMControl::renderDEM(double size, bool smooth) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBegin(GL_QUADS);
   GLView::getInstance().setColor(mPalette, "DEM");
-  const Grid<double, Cell, 2>::Coordinate& resolution = mDEM.getResolution();
-  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
+  const Grid<double, Cell, 2>::Index& numCells = mDEM->getNumCells();
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
-      const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      const Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
-        .getMean();
-      if (cell.getHeightEstimator().getValid() == false)
+      const Grid<double, Cell, 2>::Index
+        index((Grid<double, Cell, 2>::Index() << i, j).finished());
+      const Cell& cell = (*mDEM)[index];
+      if (!cell.getHeightEstimator().getDist().getKappa())
         continue;
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
+      const double sampleMean =
+        std::get<0>(cell.getHeightEstimator().getDist().getMode());
+      const Grid<double, Cell, 2>::Coordinate ulPoint =
+        mDEM->getULCoordinates(index);
+      const Grid<double, Cell, 2>::Coordinate urPoint =
+        mDEM->getURCoordinates(index);
+      const Grid<double, Cell, 2>::Coordinate lrPoint =
+        mDEM->getLRCoordinates(index);
+      const Grid<double, Cell, 2>::Coordinate llPoint =
+        mDEM->getLLCoordinates(index);
+      glVertex3f(ulPoint(0), ulPoint(1), sampleMean);
+      glVertex3f(urPoint(0), urPoint(1), sampleMean);
+      glVertex3f(lrPoint(0), lrPoint(1), sampleMean);
+      glVertex3f(llPoint(0), llPoint(1), sampleMean);
     }
   glEnd();
   glLineWidth(1.0);
@@ -152,60 +147,29 @@ void DEMControl::demChanged() {
   const double maxY = mUi->rangeMaxYSpinBox->value();
   const double cellSizeX = mUi->resXSpinBox->value();
   const double cellSizeY = mUi->resYSpinBox->value();
+  const double sensorVariance = mUi->sensorSpinBox->value();
   const double before = Timestamp::now();
-  mDEM = Grid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
+  if (mDEM)
+    delete mDEM;
+  mDEM = new
+    TransGrid<double, Cell, 2>(Eigen::Matrix<double, 2, 1>(minX, minY),
     Eigen::Matrix<double, 2, 1>(maxX, maxY),
     Eigen::Matrix<double, 2, 1>(cellSizeX, cellSizeY));
-  mUi->numCellsXSpinBox->setValue(mDEM.getNumCells()(0));
-  mUi->numCellsYSpinBox->setValue(mDEM.getNumCells()(1));
-  for (PointCloud<double, 3>::ConstPointIterator it =
-    mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it) {
+  mUi->numCellsXSpinBox->setValue(mDEM->getNumCells()(0));
+  mUi->numCellsYSpinBox->setValue(mDEM->getNumCells()(1));
+  for (auto it = mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd();
+      ++it) {
     const Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
-    if (mDEM.isInRange(point))
-      mDEM(point).addPoint((*it)(2));
+    if (mDEM->isInRange(point)) {
+      if (!(*mDEM)(point).getHeightEstimator().getDist().getKappa())
+        (*mDEM)(point).setSensorVariance(sensorVariance);
+      (*mDEM)(point).addPoint((*it)(2));
+    }
   }
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
-
-  double mean = 0;
-  double variance = 0;
-  size_t count = 0;
-  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
-  for (size_t i = 0; i < numCells(0); ++i)
-    for (size_t j = 0; j < numCells(1); ++j) {
-      const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      const Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
-        .getMean();
-      const double sampleVariance = cell.getHeightEstimator().getPostPredDist()
-        .getVariance();
-      if (cell.getHeightEstimator().getValid()) {
-        mean += sampleMean;
-        variance += sampleVariance;
-        count++;
-      }
-    }
-  mean /= count;
-  variance /= count;
-  for (size_t i = 0; i < numCells(0); ++i)
-    for (size_t j = 0; j < numCells(1); ++j) {
-      const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
-        .getMean();
-      if (cell.getHeightEstimator().getValid()) {
-        if (NormalDistribution<1>(mean, variance)(sampleMean) == 0) {
-          cell.reset();
-        }
-      }
-    }
-
   GLView::getInstance().update();
-  emit demUpdated(mDEM);
+  emit demUpdated(*mDEM);
 }
 
 void DEMControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
@@ -215,7 +179,7 @@ void DEMControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
 }
 
 void DEMControl::render(GLView& view, Scene& scene) {
-  if (mUi->showDEMCheckBox->isChecked())
+  if (mUi->showDEMCheckBox->isChecked() && mDEM)
     renderDEM(mUi->lineSizeSpinBox->value(),
       mUi->smoothLinesCheckBox->isChecked());
 }

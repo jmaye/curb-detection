@@ -29,7 +29,7 @@
 #include "data-structures/Cell.h"
 #include "data-structures/PointCloud.h"
 #include "data-structures/DEMGraph.h"
-#include "segmenter/GraphSegmenter.h"
+#include "statistics/MixtureDistribution.h"
 
 /** The class Processor performs all the computations to detect planes, curbs,
     and sidewalks from a 3D point cloud input.
@@ -108,12 +108,6 @@ public:
   const DEMGraph& getDEMGraph() const;
   /// Returns the labeling
   const DEMGraph::VertexContainer& getVerticesLabels() const;
-  /// Returns regression coefficients
-  const Eigen::Matrix<double, Eigen::Dynamic, 3>& getCoefficients() const;
-  /// Returns regression variances
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& getVariances() const;
-  /// Returns the regression weights
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& getWeights() const;
   /// Returns the valid flag of the processor
   bool getValid() const;
   /** @}
@@ -122,6 +116,7 @@ public:
   /** \name Methods
       @{
     */
+  /// Process a point cloud
   void processPointCloud(const PointCloud<double, 3>& pointCloud);
   /** @}
     */
@@ -171,12 +166,6 @@ protected:
   DEMGraph mGraph;
   /// Vertices labels
   DEMGraph::VertexContainer mVerticesLabels;
-  /// Regression coefficients
-  Eigen::Matrix<double, Eigen::Dynamic, 3> mCoefficients;
-  /// Regression variances
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mVariances;
-  /// Regression weights
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mWeights;
 
   /// One point cloud has been processed and we have valid results
   bool mValid;

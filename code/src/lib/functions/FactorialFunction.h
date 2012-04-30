@@ -42,6 +42,14 @@ class FactorialFunction :
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef DiscreteFunction<size_t, size_t>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  inline virtual size_t getValue(const size_t& argument) const;
+  inline virtual size_t getValue(const VariableType& argument) const;
   /** @}
     */
 

@@ -35,13 +35,21 @@ template <typename X, size_t M> class LogBetaFunction :
     @{
     */
   /// Copy constructor
-  LogBetaFunction(const LogBetaFunction<X, M>& other);
+  LogBetaFunction(const LogBetaFunction& other);
   /// Assignment operator
-  LogBetaFunction& operator = (const LogBetaFunction<X, M>& other);
+  LogBetaFunction& operator = (const LogBetaFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X, M>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const Eigen::Matrix<X, M, 1>& argument) const;
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

@@ -20,15 +20,15 @@
     \brief This file implements an ML estimator for linear regression models
   */
 
+#include <vector>
+
 #include "statistics/LinearRegression.h"
 #include "base/Serializable.h"
-
-#include <vector>
 
 /** The class EstimatorML is implemented for multivariate linear regression.
     \brief Multivariate linear regression ML estimator
   */
-template <size_t M> class EstimatorML<LinearRegression<M>, M> :
+template <size_t M> class EstimatorML<LinearRegression<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -49,10 +49,9 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<LinearRegression<M>, M>& other);
+  EstimatorML(const EstimatorML& other);
   /// Assignment operator
-  EstimatorML<LinearRegression<M>, M>& operator =
-    (const EstimatorML<LinearRegression<M>, M>& other);
+  EstimatorML& operator = (const EstimatorML& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -65,16 +64,16 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated coefficients
-  const Eigen::Matrix<double, M, 1>& getCoefficients() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the estimated linear regression
+  const LinearRegression<M>& getDistribution() const;
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
-  /// Add points to the estimator with weights
+  /// Add points to the estimator with responsibilities
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
-    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}
@@ -99,9 +98,7 @@ protected:
     @{
     */
   /// Estimated regression coefficients
-  Eigen::Matrix<double, M, 1> mCoefficients;
-  /// Estimated variance
-  double mVariance;
+  LinearRegression<M> mLinearRegression;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

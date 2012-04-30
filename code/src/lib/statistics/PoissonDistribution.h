@@ -36,21 +36,21 @@
     \brief Poisson distribution
   */
 class PoissonDistribution :
-  public DiscreteDistribution<size_t>,
-  public SampleDistribution<size_t>,
+  public DiscreteDistribution<int>,
+  public SampleDistribution<int>,
   public virtual Serializable {
 public:
   /** \name Constructors/destructor
     @{
     */
   /// Constructs the distribution from the parameter
-  inline PoissonDistribution(double mean = 1.0);
+  PoissonDistribution(Mean mean = 1.0);
   /// Copy constructor
-  inline PoissonDistribution(const PoissonDistribution& other);
+  PoissonDistribution(const PoissonDistribution& other);
   /// Assignment operator
-  inline PoissonDistribution& operator = (const PoissonDistribution& other);
+  PoissonDistribution& operator = (const PoissonDistribution& other);
   /// Destructor
-  inline virtual ~PoissonDistribution();
+  virtual ~PoissonDistribution();
   /** @}
     */
 
@@ -58,25 +58,26 @@ public:
     @{
     */
   /// Sets the event mean
-  inline void setMean(double mean) throw (BadArgumentException<double>);
+  void setMean(Mean mean) throw (BadArgumentException<Mean>);
   /// Returns the event mean
-  inline double getMean() const;
+  Mean getMean() const;
   /// Returns the median of the distribution
-  inline double getMedian() const;
+  Median getMedian() const;
   /// Returns the mode of the distribution
-  inline double getMode() const;
+  Mode getMode() const;
   /// Returns the variance of the distribution
-  inline double getVariance() const;
+  Variance getVariance() const;
   /// Returns the probability mass function at a point
-  inline virtual double pmf(const size_t& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
-  inline double logpmf(const size_t& value) const;
+  double logpmf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>);
   /// Returns the cumulative mass function at a point
-  inline double cdf(const size_t& value) const;
+  double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  inline virtual size_t getSample() const;
+  virtual RandomVariable getSample() const;
   /// Returns the KL-divergence with another distribution
-  inline double KLDivergence(const PoissonDistribution& other) const;
+  double KLDivergence(const PoissonDistribution& other) const;
   /** @}
     */
 
@@ -85,13 +86,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

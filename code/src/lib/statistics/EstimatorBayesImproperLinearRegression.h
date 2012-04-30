@@ -21,17 +21,17 @@
            regression models with improper prior.
   */
 
+#include <vector>
+
 #include "statistics/LinearRegression.h"
 #include "statistics/LinearRegressionPred.h"
 #include "statistics/ScaledInvChiSquareDistribution.h"
-
-#include <vector>
 
 /** The class EstimatorBayesImproper is implemented for ordinary linear
     regression models.
     \brief Ordinary linear regresssion Bayesian estimator with improper prior
   */
-template <size_t M> class EstimatorBayesImproper<LinearRegression<M>, M> :
+template <size_t M> class EstimatorBayesImproper<LinearRegression<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
@@ -52,11 +52,9 @@ public:
   /// Default constructor
   EstimatorBayesImproper();
   /// Copy constructor
-  EstimatorBayesImproper(const EstimatorBayesImproper<LinearRegression<M>, M>&
-    other);
+  EstimatorBayesImproper(const EstimatorBayesImproper& other);
   /// Assignment operator
-  EstimatorBayesImproper<LinearRegression<M>, M>& operator =
-    (const EstimatorBayesImproper<LinearRegression<M>, M>& other);
+  EstimatorBayesImproper& operator = (const EstimatorBayesImproper& other);
   /// Destructor
   virtual ~EstimatorBayesImproper();
   /** @}
@@ -87,6 +85,8 @@ public:
   /// Add points to the estimator with weights
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}

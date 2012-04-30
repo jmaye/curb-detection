@@ -18,13 +18,13 @@
 
 #include "visualization/ViewControl.h"
 
-#include "ui_ViewControl.h"
+#include <cmath>
 
 #include <QtGui/QFileDialog>
 #include <QtCore/QDir>
 #include <QtGui/QPixmap>
 
-#include <cmath>
+#include "ui_ViewControl.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -187,7 +187,8 @@ void ViewControl::renderBackground() {
 void ViewControl::renderFog(double start, double end, double density) {
   glPushAttrib(GL_CURRENT_BIT);
   QColor color = mPalette.getColor("Fog");
-  float colorfv[] = {color.redF(), color.greenF(), color.blueF(), 1.0};
+  float colorfv[] = {(float)color.redF(), (float)color.greenF(),
+    (float)color.blueF(), 1.0};
   double scale = GLView::getInstance().getScene().getScale();
   double distance = GLView::getInstance().getCamera().getViewpointDistance();
   glFogi(GL_FOG_MODE, GL_LINEAR);

@@ -21,7 +21,7 @@
            2-dimensional grid that can be transformed
   */
 
-#include "helpers/Transformation.h"
+#include "geometry/Transformation.h"
 
 /** The class TransGrid2d represents an 2-dimensional grid that can be
     transformed.
@@ -36,15 +36,16 @@ public:
   /// Constructs grid with parameters
   TransGrid(const typename Grid<T, C, 2>::Coordinate& minimum,
     const typename Grid<T, C, 2>::Coordinate& maximum,
-    const typename Grid<T, C, 2>::Coordinate& resolution, T x, T y, T yaw);
+    const typename Grid<T, C, 2>::Coordinate& resolution, T x = T(0),
+     T y = T(0), T yaw = T(0));
   TransGrid(const typename Grid<T, C, 2>::Coordinate& minimum,
     const typename Grid<T, C, 2>::Coordinate& maximum,
     const typename Grid<T, C, 2>::Coordinate& resolution,
     const Transformation<double, 2>& transformation);
   /// Copy constructor
-  TransGrid(const TransGrid<T, C, 2>& other);
+  TransGrid(const TransGrid& other);
   /// Assignment operator
-  TransGrid& operator = (const TransGrid<T, C, 2>& other);
+  TransGrid& operator = (const TransGrid& other);
   /// Destructor
   virtual ~TransGrid();
   /** @}

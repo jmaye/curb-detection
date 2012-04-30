@@ -16,36 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <Eigen/QR>
+#include "utils/OuterProduct.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-EstimatorML<NormalDistribution<M>, M>::EstimatorML() :
-  mNumPoints(0),
-  mValid(false) {
+EstimatorML<NormalDistribution<M> >::EstimatorML() :
+    mNumPoints(0),
+    mValid(false) {
 }
 
 template <size_t M>
-EstimatorML<NormalDistribution<M>, M>::EstimatorML(const
-  EstimatorML<NormalDistribution<M>, M>& other) :
-  mMean(other.mMean),
-  mCovariance(other.mCovariance),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid),
-  mValuesSum(other.mValuesSum),
-  mSquaredValuesSum(other.mSquaredValuesSum) {
+EstimatorML<NormalDistribution<M> >::EstimatorML(const EstimatorML& other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid),
+    mValuesSum(other.mValuesSum),
+    mSquaredValuesSum(other.mSquaredValuesSum) {
 }
 
 template <size_t M>
-EstimatorML<NormalDistribution<M>, M>&
-  EstimatorML<NormalDistribution<M>, M>::operator =
-  (const EstimatorML<NormalDistribution<M>, M>& other) {
+EstimatorML<NormalDistribution<M> >&
+    EstimatorML<NormalDistribution<M> >::operator = (const EstimatorML& other) {
   if (this != &other) {
-    mMean = other.mMean;
-    mCovariance = other.mCovariance;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
     mValuesSum = other.mValuesSum;
@@ -55,7 +51,7 @@ EstimatorML<NormalDistribution<M>, M>&
 }
 
 template <size_t M>
-EstimatorML<NormalDistribution<M>, M>::~EstimatorML() {
+EstimatorML<NormalDistribution<M> >::~EstimatorML() {
 }
 
 /******************************************************************************/
@@ -63,24 +59,24 @@ EstimatorML<NormalDistribution<M>, M>::~EstimatorML() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::read(std::istream& stream) {
+void EstimatorML<NormalDistribution<M> >::read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::write(std::ostream& stream)
-  const {
-  stream << "mean: " << std::endl << mMean << std::endl
-    << "covariance: " << std::endl << mCovariance << std::endl
+void EstimatorML<NormalDistribution<M> >::write(std::ostream& stream)
+    const {
+  stream << "distribution: " << std::endl << mDistribution << std::endl
+    << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::read(std::ifstream& stream) {
+void EstimatorML<NormalDistribution<M> >::read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::write(std::ofstream& stream)
-  const {
+void EstimatorML<NormalDistribution<M> >::write(std::ofstream& stream)
+    const {
 }
 
 /******************************************************************************/
@@ -88,35 +84,29 @@ void EstimatorML<NormalDistribution<M>, M>::write(std::ofstream& stream)
 /******************************************************************************/
 
 template <size_t M>
-size_t EstimatorML<NormalDistribution<M>, M>::getNumPoints() const {
+size_t EstimatorML<NormalDistribution<M> >::getNumPoints() const {
   return mNumPoints;
 }
 
 template <size_t M>
-bool EstimatorML<NormalDistribution<M>, M>::getValid() const {
+bool EstimatorML<NormalDistribution<M> >::getValid() const {
   return mValid;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>&
-EstimatorML<NormalDistribution<M>, M>::getMean() const {
-  return mMean;
+const NormalDistribution<M>&
+    EstimatorML<NormalDistribution<M> >::getDistribution() const {
+  return mDistribution;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, M>&
-EstimatorML<NormalDistribution<M>, M>::getCovariance() const {
-  return mCovariance;
-}
-
-template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::reset() {
+void EstimatorML<NormalDistribution<M> >::reset() {
   mNumPoints = 0;
   mValid = false;
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::addPoint(const Point& point) {
+void EstimatorML<NormalDistribution<M> >::addPoint(const Point& point) {
   if (mNumPoints == 0) {
     mValuesSum = Eigen::Matrix<double, M, 1>::Zero(point.size());
     mSquaredValuesSum = Eigen::Matrix<double, M, M>::Zero(point.size(),
@@ -124,25 +114,56 @@ void EstimatorML<NormalDistribution<M>, M>::addPoint(const Point& point) {
   }
   mNumPoints++;
   mValuesSum += point;
-  mSquaredValuesSum += point * point.transpose();
-  mMean = 1.0 / mNumPoints * mValuesSum;
-  mCovariance = 1.0 / mNumPoints * mSquaredValuesSum -
-    2.0 / mNumPoints  * mMean * mValuesSum.transpose()  +
-    mMean * mMean.transpose();
-  const size_t dim = point.size();
-  for (size_t i = 0; i < dim; ++i)
-    for (size_t j = i + 1; j < dim; ++j)
-    mCovariance(i, j) = mCovariance(j, i);
-  const Eigen::QR<Eigen::Matrix<double, M, M> > qrDecomp = mCovariance.qr();
-  if (qrDecomp.rank() == mMean.size())
+  mSquaredValuesSum += outerProduct<double, M>(point);
+  try {
     mValid = true;
-  else
+    const Eigen::Matrix<double, M, 1> mean = mValuesSum / mNumPoints;
+    mDistribution.setMean(mean);
+    mDistribution.setCovariance(mSquaredValuesSum / mNumPoints -
+      outerProduct<double, M>(mValuesSum) * 2 / (mNumPoints * mNumPoints) +
+      outerProduct<double, M>(mean));
+  }
+  catch (...) {
     mValid = false;
+  }
 }
 
 template <size_t M>
-void EstimatorML<NormalDistribution<M>, M>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorML<NormalDistribution<M> >::addPoints(const ConstPointIterator&
+    itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+template <size_t M>
+void EstimatorML<NormalDistribution<M> >::addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
+}
+
+template <size_t M>
+void EstimatorML<NormalDistribution<M> >::addPoints(const ConstPointIterator&
+    itStart, const ConstPointIterator& itEnd, const
+    Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities) {
+  if (responsibilities.size() != itEnd - itStart)
+    return;
+  Eigen::Matrix<double, M, 1> mean =
+    Eigen::Matrix<double, M, 1>::Zero(itStart->size());
+  for (auto it = itStart; it != itEnd; ++it)
+    mean += responsibilities(it - itStart) * (*it);
+  double numPoints = responsibilities.sum();
+  mean /= numPoints;
+  Eigen::Matrix<double, M, M> covariance =
+    Eigen::Matrix<double, M, M>::Zero(itStart->size(), itStart->size());
+  for (auto it = itStart; it != itEnd; ++it)
+    covariance += responsibilities(it - itStart) *
+      outerProduct<double, M>(*it - mean);
+  covariance /= numPoints;
+  try {
+    mValid = true;
+    mDistribution.setMean(mean);
+    mDistribution.setCovariance(covariance);
+  }
+  catch (...) {
+    mValid = false;
+  }
 }

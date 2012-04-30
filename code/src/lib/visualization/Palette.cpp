@@ -56,7 +56,7 @@ const QColor& Palette::getColor(const Iterator& it) const {
 }
 
 const QColor& Palette::getColor(const QString& role) const
-  throw (OutOfBoundException<std::string>) {
+    throw (OutOfBoundException<std::string>) {
   std::map<QString, QColor>::const_iterator it = mColors.find(role);
   if (it != mColors.end())
     return it->second;

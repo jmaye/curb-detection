@@ -35,12 +35,12 @@ LogFunction<X>::~LogFunction() {
 /******************************************************************************/
 
 template <typename X>
-double LogFunction<X>::getValue(const X& argument) const
-  throw (BadArgumentException<X>) {
+double LogFunction<X>::getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>) {
   if (argument > X(0))
     return log(argument);
   else
-    throw BadArgumentException<X>(argument,
+    throw BadArgumentException<VariableType>(argument,
       "LogFunction<X>::getValue(): argument must be strictly positive",
       __FILE__, __LINE__);
 }

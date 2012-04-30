@@ -35,6 +35,6 @@ ErrorFunction<X>::~ErrorFunction() {
 /******************************************************************************/
 
 template <typename X>
-double ErrorFunction<X>::getValue(const X& argument) const {
+double ErrorFunction<X>::getValue(const VariableType& argument) const {
   return erf(argument);
 }

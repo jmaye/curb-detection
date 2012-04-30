@@ -18,25 +18,25 @@
 
 #include "visualization/GLView.h"
 
+#include <cmath>
+
 #include <QtCore/QFileInfo>
 #include <QtGui/QWheelEvent>
 #include <QtGui/QMouseEvent>
 
 #include <FTGL/ftgl.h>
 
-#include <cmath>
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 GLView::GLView(QWidget* parent) :
-  QGLWidget(parent),
-  mFont(0),
-  mMouse(2, 0),
-  mViewport(4, 0),
-  mProjection(16, 0.0),
-  mModelview(16, 0.0) {
+    QGLWidget(parent),
+    mFont(0),
+    mMouse(2, 0),
+    mViewport(4, 0),
+    mProjection(16, 0.0),
+    mModelview(16, 0.0) {
   setFont("/usr/share/fonts/truetype/msttcorefonts/Arial.ttf");
 
   connect(&mCamera, SIGNAL(positionChanged(const std::vector<double>&)), this,
@@ -119,7 +119,7 @@ std::vector<double> GLView::unproject(const QPoint& point, double distance) {
 }
 
 void GLView::render(double x, double y, double z, const QString& text,
-  double scale, bool faceX, bool faceY, bool faceZ) {
+    double scale, bool faceX, bool faceY, bool faceZ) {
   if (!mFont) {
     QFileInfo fileInfo(mFontFilename);
     if (fileInfo.isFile() && fileInfo.isReadable()) {
@@ -193,8 +193,6 @@ void GLView::initializeGL() {
 void GLView::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
   mCamera.setup(*this, width, height);
-  mWidth = width;
-  mHeight = height;
 }
 
 void GLView::paintGL() {
@@ -202,7 +200,7 @@ void GLView::paintGL() {
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  mCamera.setup(*this, mWidth, mHeight);
+  mCamera.setup(*this, width(), height());
   mScene.setup(*this);
   glGetIntegerv(GL_VIEWPORT, &mViewport[0]);
   glGetDoublev(GL_PROJECTION_MATRIX, &mProjection[0]);

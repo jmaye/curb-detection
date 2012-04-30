@@ -35,13 +35,21 @@ template <typename X = double> class TanHFunction :
     @{
     */
   /// Copy constructor
-  TanHFunction(const TanHFunction<X>& other);
+  TanHFunction(const TanHFunction& other);
   /// Assignment operator
-  TanHFunction& operator = (const TanHFunction<X>& other);
+  TanHFunction& operator = (const TanHFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const X& argument) const;
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

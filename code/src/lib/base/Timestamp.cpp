@@ -25,11 +25,11 @@
 /******************************************************************************/
 
 Timestamp::Timestamp(double seconds) :
-  mSeconds(seconds) {
+    mSeconds(seconds) {
 }
 
 Timestamp::Timestamp(const Timestamp& other) :
-  mSeconds(other.mSeconds) {
+    mSeconds(other.mSeconds) {
 }
 
 Timestamp& Timestamp::operator = (const Timestamp& other) {

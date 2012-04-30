@@ -20,6 +20,9 @@
 
 #include "visualization/DEMControl.h"
 #include "base/Timestamp.h"
+#include "data-structures/TransGrid.h"
+#include "data-structures/Cell.h"
+#include "utils/Colors.h"
 
 #include "ui_SegmentationControl.h"
 
@@ -28,21 +31,21 @@
 /******************************************************************************/
 
 SegmentationControl::SegmentationControl(bool showSegmentation) :
-  mUi(new Ui_SegmentationControl()),
-  mDEM(Eigen::Matrix<double, 2, 1>(0.0, 0.0),
-    Eigen::Matrix<double, 2, 1>(4.0, 4.0),
-    Eigen::Matrix<double, 2, 1>(0.1, 0.1)) {
+    mUi(new Ui_SegmentationControl()),
+    mDEM(0) {
   mUi->setupUi(this);
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
   connect(&DEMControl::getInstance(),
-    SIGNAL(demUpdated(const Grid<double, Cell, 2>&)), this,
-    SLOT(demUpdated(const Grid<double, Cell, 2>&)));
+    SIGNAL(demUpdated(const TransGrid<double, Cell, 2>&)), this,
+    SLOT(demUpdated(const TransGrid<double, Cell, 2>&)));
   mK = mUi->kSpinBox->value();
   setShowSegmentation(showSegmentation);
 }
 
 SegmentationControl::~SegmentationControl() {
+  if (mDEM)
+    delete mDEM;
   delete mUi;
 }
 
@@ -65,30 +68,29 @@ void SegmentationControl::setShowSegmentation(bool showSegmentation) {
 /******************************************************************************/
 
 void SegmentationControl::renderSegmentation() {
-  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  GraphSegmenter<DEMGraph>::CstItComp it;
-  std::vector<Helpers::Color>::const_iterator itC;
-  for (it = mComponents.begin(), itC = mColors.begin(); it != mComponents.end();
-    ++it, ++itC) {
-    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
-      ++itV) {
-      const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(*itV);
-      const Cell& cell = mDEM[*itV];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist().
-        getMean();
+  for (auto it = mComponents.begin(); it != mComponents.end(); ++it) {
+    auto color = Colors::genColor(std::distance(mComponents.begin(), it));
+    for (auto itV = it->second.getVertexBegin();
+        itV != it->second.getVertexEnd(); ++itV) {
+      const Cell& cell = (*mDEM)[*itV];
+      const double sampleMean =
+        std::get<0>(cell.getHeightEstimator().getDist().getMode());
+      const Grid<double, Cell, 2>::Coordinate ulPoint =
+        mDEM->getULCoordinates(*itV);
+      const Grid<double, Cell, 2>::Coordinate urPoint =
+        mDEM->getURCoordinates(*itV);
+      const Grid<double, Cell, 2>::Coordinate lrPoint =
+        mDEM->getLRCoordinates(*itV);
+      const Grid<double, Cell, 2>::Coordinate llPoint =
+        mDEM->getLLCoordinates(*itV);
       glBegin(GL_QUADS);
-      glColor3f(itC->mRedColor, itC->mGreenColor, itC->mBlueColor);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-        sampleMean);
-      glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-        sampleMean);
+      glColor3f(color.mRed, color.mGreen, color.mBlue);
+      glVertex3f(ulPoint(0), ulPoint(1), sampleMean);
+      glVertex3f(urPoint(0), urPoint(1), sampleMean);
+      glVertex3f(lrPoint(0), lrPoint(1), sampleMean);
+      glVertex3f(llPoint(0), llPoint(1), sampleMean);
       glEnd();
     }
   }
@@ -96,31 +98,33 @@ void SegmentationControl::renderSegmentation() {
 }
 
 void SegmentationControl::render(GLView& view, Scene& scene) {
-  if (mUi->showSegmentationCheckBox->isChecked())
+  if (mUi->showSegmentationCheckBox->isChecked() && mDEM)
     renderSegmentation();
 }
 
 void SegmentationControl::segment() {
   const double before = Timestamp::now();
-  DEMGraph graph(mDEM);
-  GraphSegmenter<DEMGraph>::segment(graph, mComponents, graph.getVertices(),
+  DEMGraph* graph = new DEMGraph(*mDEM);
+  GraphSegmenter<DEMGraph>::segment(*graph, mComponents, graph->getVertices(),
     mK);
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
-  Helpers::randomColors(mColors, mComponents.size());
   mUi->showSegmentationCheckBox->setEnabled(true);
   GLView::getInstance().update();
-  emit segmentUpdated(mDEM, graph, mComponents, mColors);
+  emit segmentUpdated(*mDEM, *graph, mComponents);
 }
 
-void SegmentationControl::demUpdated(const Grid<double, Cell, 2>& dem) {
-  mDEM = dem;
+void SegmentationControl::demUpdated(const TransGrid<double, Cell, 2>& dem) {
+  if (mDEM)
+    delete mDEM;
+  mDEM = new TransGrid<double, Cell, 2>(dem);
   segment();
 }
 
 void SegmentationControl::kChanged(double value) {
   setK(value);
-  segment();
+  if (mDEM)
+    segment();
 }
 
 void SegmentationControl::showSegmentationToggled(bool checked) {

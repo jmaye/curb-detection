@@ -35,13 +35,21 @@ template <typename X = double> class LogisticFunction :
     @{
     */
   /// Copy constructor
-  LogisticFunction(const LogisticFunction<X>& other);
+  LogisticFunction(const LogisticFunction& other);
   /// Assignment operator
-  LogisticFunction& operator = (const LogisticFunction<X>& other);
+  LogisticFunction& operator = (const LogisticFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const X& argument) const;
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

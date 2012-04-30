@@ -16,34 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <Eigen/QR>
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-EstimatorML<LinearRegression<M>, M>::EstimatorML() :
-  mNumPoints(0),
-  mValid(false) {
+EstimatorML<LinearRegression<M> >::EstimatorML() :
+    mNumPoints(0),
+    mValid(false) {
 }
 
 template <size_t M>
-EstimatorML<LinearRegression<M>, M>::EstimatorML(const
-  EstimatorML<LinearRegression<M>, M>& other) :
-  mCoefficients(other.mCoefficients),
-  mVariance(other.mVariance),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<LinearRegression<M> >::EstimatorML(const EstimatorML& other) :
+    mLinearRegression(other.mLinearRegression),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 template <size_t M>
-EstimatorML<LinearRegression<M>, M>&
-  EstimatorML<LinearRegression<M>, M>::operator =
-  (const EstimatorML<LinearRegression<M>, M>& other) {
+EstimatorML<LinearRegression<M> >&
+    EstimatorML<LinearRegression<M> >::operator = (const EstimatorML& other) {
   if (this != &other) {
-    mCoefficients = other.mCoefficients;
-    mVariance = other.mVariance;
+    mLinearRegression = other.mLinearRegression;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -51,7 +45,7 @@ EstimatorML<LinearRegression<M>, M>&
 }
 
 template <size_t M>
-EstimatorML<LinearRegression<M>, M>::~EstimatorML() {
+EstimatorML<LinearRegression<M> >::~EstimatorML() {
 }
 
 /******************************************************************************/
@@ -59,23 +53,22 @@ EstimatorML<LinearRegression<M>, M>::~EstimatorML() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::read(std::istream& stream) {
+void EstimatorML<LinearRegression<M> >::read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::write(std::ostream& stream) const {
-  stream << "coefficients: " << mCoefficients.transpose() << std::endl
-    << "variance: " << mVariance << std::endl
+void EstimatorML<LinearRegression<M> >::write(std::ostream& stream) const {
+  stream << "linear regression: " << std::endl << mLinearRegression << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::read(std::ifstream& stream) {
+void EstimatorML<LinearRegression<M> >::read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::write(std::ofstream& stream) const {
+void EstimatorML<LinearRegression<M> >::write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
@@ -83,44 +76,39 @@ void EstimatorML<LinearRegression<M>, M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-size_t EstimatorML<LinearRegression<M>, M>::getNumPoints() const {
+size_t EstimatorML<LinearRegression<M> >::getNumPoints() const {
   return mNumPoints;
 }
 
 template <size_t M>
-bool EstimatorML<LinearRegression<M>, M>::getValid() const {
+bool EstimatorML<LinearRegression<M> >::getValid() const {
   return mValid;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>&
-EstimatorML<LinearRegression<M>, M>::getCoefficients() const {
-  return mCoefficients;
+const LinearRegression<M>&
+    EstimatorML<LinearRegression<M> >::getDistribution() const {
+  return mLinearRegression;
 }
 
 template <size_t M>
-double EstimatorML<LinearRegression<M>, M>::getVariance() const {
-  return mVariance;
-}
-
-template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::reset() {
+void EstimatorML<LinearRegression<M> >::reset() {
   mNumPoints = 0;
   mValid = false;
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd) {
-  Eigen::Matrix<double, Eigen::Dynamic, 1> weights =
+void EstimatorML<LinearRegression<M> >::addPoints(const ConstPointIterator&
+    itStart, const ConstPointIterator& itEnd) {
+  Eigen::Matrix<double, Eigen::Dynamic, 1> responsibilities =
     Eigen::Matrix<double, Eigen::Dynamic, 1>::Ones(itEnd - itStart);
-  return addPoints(itStart, itEnd, weights);
+  return addPoints(itStart, itEnd, responsibilities);
 }
 
 template <size_t M>
-void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
-  itStart, const ConstPointIterator& itEnd, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+void EstimatorML<LinearRegression<M> >::addPoints(const ConstPointIterator&
+    itStart, const ConstPointIterator& itEnd, const
+    Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities) {
   reset();
   mNumPoints = itEnd - itStart;
   size_t dim;
@@ -128,29 +116,40 @@ void EstimatorML<LinearRegression<M>, M>::addPoints(const ConstPointIterator&
     dim = itStart->size();
   else
     return;
-  if (mNumPoints < dim)
+  if (mNumPoints < dim || responsibilities.sum() < dim)
     return;
-  if ((size_t)weights.size() != mNumPoints)
+  if ((size_t)responsibilities.size() != mNumPoints)
     return;
   Eigen::Matrix<double, Eigen::Dynamic, 1> targets(mNumPoints);
   Eigen::Matrix<double, Eigen::Dynamic, M> designMatrix(mNumPoints, (int)dim);
-  for (ConstPointIterator it = itStart; it != itEnd; ++it) {
+  for (auto it = itStart; it != itEnd; ++it) {
     const size_t row = it - itStart;
     targets(row) = (*it)(dim - 1);
     designMatrix(row, 0) = 1.0;
     designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
-  const Eigen::QR<Eigen::Matrix<double, Eigen::Dynamic, M> > qrDecomp =
-    (weights.asDiagonal() * designMatrix).qr();
-  if ((size_t)qrDecomp.rank() == dim) {
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> coeff;
-    qrDecomp.solve(weights.asDiagonal() * targets, &coeff);
-    mCoefficients = coeff;
-    mVariance = ((targets - designMatrix * mCoefficients).transpose() *
-      weights.asDiagonal() * (targets - designMatrix * mCoefficients))(0) /
-      mNumPoints;
+  try {
+    Eigen::Matrix<double, M, 1> coeffs =
+      (designMatrix.transpose() * responsibilities.asDiagonal() * designMatrix).
+      inverse() * designMatrix.transpose() * responsibilities.asDiagonal() *
+      targets;
+    for (size_t i = 0; i < dim; ++i)
+      if (std::isnan(coeffs(i)))
+        return;
     mValid = true;
+    mLinearRegression.setLinearBasisFunction(
+      LinearBasisFunction<double, M>(coeffs));
+    mLinearRegression.setVariance(
+      ((targets - designMatrix * coeffs).transpose() *
+      responsibilities.asDiagonal() * (targets - designMatrix * coeffs))(0) /
+      responsibilities.sum());
   }
-  else
+  catch (...) {
     mValid = false;
+  }
+}
+
+template <size_t M>
+void  EstimatorML<LinearRegression<M> >::addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
 }

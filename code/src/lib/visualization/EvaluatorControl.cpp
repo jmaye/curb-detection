@@ -24,34 +24,37 @@
 #include "visualization/PointCloudControl.h"
 #include "visualization/BPControl.h"
 #include "exceptions/IOException.h"
+#include "data-structures/TransGrid.h"
+#include "data-structures/Cell.h"
+#include "utils/Colors.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 EvaluatorControl::EvaluatorControl(bool showGroundTruth) :
-  mUi(new Ui_EvaluatorControl()),
-  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
-    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)) {
+    mUi(new Ui_EvaluatorControl()),
+    mDEM(0) {
   mUi->setupUi(this);
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
   connect(&DEMControl::getInstance(),
-    SIGNAL(demUpdated(const Grid<double, Cell, 2>&)), this,
-    SLOT(demUpdated(const Grid<double, Cell, 2>&)));
+    SIGNAL(demUpdated(const TransGrid<double, Cell, 2>&)), this,
+    SLOT(demUpdated(const TransGrid<double, Cell, 2>&)));
   connect(&PointCloudControl::getInstance(),
     SIGNAL(pointCloudRead(const std::string&)), this,
     SLOT(pointCloudRead(const std::string&)));
   connect(&BPControl::getInstance(),
-    SIGNAL(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    SIGNAL(bpUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)), this,
-    SLOT(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    SLOT(bpUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)));
   setShowGroundTruth(showGroundTruth);
 }
 
 EvaluatorControl::~EvaluatorControl() {
+  if (mDEM)
+    delete mDEM;
   delete mUi;
 }
 
@@ -69,26 +72,28 @@ void EvaluatorControl::setShowGroundTruth(bool showGroundTruth) {
 /******************************************************************************/
 
 void EvaluatorControl::renderGroundTruth() {
-  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  for (DEMGraph::ConstVertexIterator it = mVertices.begin(); it !=
-    mVertices.end(); ++it) {
-    const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(it->first);
-    const Cell& cell = mDEM[it->first];
-    const double sampleMean = cell.getHeightEstimator().getPostPredDist().
-      getMean();
+  for (auto it = mVertices.begin(); it != mVertices.end(); ++it) {
+    const Eigen::Matrix<double, 2, 1> point =  mDEM->getCoordinates(it->first);
+    const Cell& cell = (*mDEM)[it->first];
+    const double sampleMean =
+      std::get<0>(cell.getHeightEstimator().getDist().getMode());
+    auto color = Colors::genColor(it->second);
+    const Grid<double, Cell, 2>::Coordinate ulPoint =
+      mDEM->getULCoordinates(it->first);
+    const Grid<double, Cell, 2>::Coordinate urPoint =
+      mDEM->getURCoordinates(it->first);
+    const Grid<double, Cell, 2>::Coordinate lrPoint =
+      mDEM->getLRCoordinates(it->first);
+    const Grid<double, Cell, 2>::Coordinate llPoint =
+      mDEM->getLLCoordinates(it->first);
     glBegin(GL_QUADS);
-    glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
-      mColors[it->second].mBlueColor);
-    glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-      sampleMean);
+    glColor3f(color.mRed, color.mGreen, color.mBlue);
+    glVertex3f(ulPoint(0), ulPoint(1), sampleMean);
+    glVertex3f(urPoint(0), urPoint(1), sampleMean);
+    glVertex3f(lrPoint(0), lrPoint(1), sampleMean);
+    glVertex3f(llPoint(0), llPoint(1), sampleMean);
     glEnd();
   }
   glPopAttrib();
@@ -108,20 +113,20 @@ void EvaluatorControl::labelDEM() {
   std::ifstream gtFile(mGTFilename.c_str());
   try {
     gtFile >> mEvaluator;
-    Helpers::randomColors(mColors, mEvaluator.getNumClasses());
   }
   catch (IOException& e) {
     return;
   }
-  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
+  const Grid<double, Cell, 2>::Index& numCells = mDEM->getNumCells();
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
       const Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      if (cell.getHeightEstimator().getValid() == false)
+        (*mDEM)[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
+      if (!cell.getHeightEstimator().getDist().getKappa())
         continue;
       const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
+        mDEM->getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).
+        finished());
       mVertices[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()] =
         mEvaluator.getLabel(point);
     }
@@ -141,12 +146,14 @@ void EvaluatorControl::pointCloudRead(const std::string& filename) {
   }
 }
 
-void EvaluatorControl::demUpdated(const Grid<double, Cell, 2>& dem) {
-  mDEM = dem;
+void EvaluatorControl::demUpdated(const TransGrid<double, Cell, 2>& dem) {
+  if (mDEM)
+    delete mDEM;
+  mDEM = new TransGrid<double, Cell, 2>(dem);
   labelDEM();
 }
 
-void EvaluatorControl::bpUpdated(const Grid<double, Cell, 2>& dem, const
+void EvaluatorControl::bpUpdated(const TransGrid<double, Cell, 2>& dem, const
     DEMGraph& graph, const DEMGraph::VertexContainer& vertices) {
   const double vMeasure = mEvaluator.evaluate(dem, graph, vertices);
   mUi->vMeasureSpinBox->setValue(vMeasure);

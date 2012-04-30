@@ -23,16 +23,16 @@
 #ifndef POINTCLOUDCONTROL_H
 #define POINTCLOUDCONTROL_H
 
+#include <string>
+
+#include <QtCore/QString>
+#include <QtGui/QColor>
+
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
 #include "data-structures/PointCloud.h"
-
-#include <QtCore/QString>
-#include <QtGui/QColor>
-
-#include <string>
 
 class Ui_PointCloudControl;
 

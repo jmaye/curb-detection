@@ -23,20 +23,22 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
-#include "exceptions/OutOfBoundException.h"
+#include <map>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
-#include <map>
+#include "exceptions/OutOfBoundException.h"
 
 /** The Palette class represents a palette in OpenGL.
     \brief Palette for OpenGL
   */
 class Palette :
   public QObject {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */

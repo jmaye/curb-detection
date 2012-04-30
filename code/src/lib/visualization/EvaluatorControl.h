@@ -26,17 +26,16 @@
 #include <string>
 #include <vector>
 
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "helpers/RandomColors.h"
 #include "data-structures/DEMGraph.h"
 #include "evaluation/Evaluator.h"
 
 class Ui_EvaluatorControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
 
 /** The EvaluatorControl class represents a Qt control for evaluation.
     \brief Qt control for evaluation
@@ -91,11 +90,9 @@ protected:
   /// Qt user interface
   Ui_EvaluatorControl* mUi;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
-  /// Vector of random colors
-  std::vector<Helpers::Color> mColors;
   /// Evaluator of the solution
   Evaluator mEvaluator;
   /// Ground truth filename
@@ -114,10 +111,10 @@ protected slots:
   /// New point cloud read with filename
   void pointCloudRead(const std::string& filename);
   /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
+  void demUpdated(const TransGrid<double, Cell, 2>& dem);
   /// New segmentation done
-  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
-    DEMGraph::VertexContainer& vertices);
+  void bpUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const DEMGraph::VertexContainer& vertices);
   /** @}
     */
 

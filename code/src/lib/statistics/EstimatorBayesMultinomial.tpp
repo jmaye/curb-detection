@@ -16,45 +16,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <Eigen/Array>
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-EstimatorBayes<MultinomialDistribution<M>, M>::EstimatorBayes(size_t numTrials,
-  const Eigen::Matrix<double, M, 1>& alpha) :
-  mNumTrials(numTrials),
-  mPostSuccessDist(alpha),
-  mPostPredDist(numTrials, alpha),
-  mAlpha(alpha) {
+EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    EstimatorBayes(const DirichletDistribution<M>& prior) :
+    mProbDist(prior),
+    mNumTrials(1) {
 }
 
 template <size_t M>
-EstimatorBayes<MultinomialDistribution<M>, M>::EstimatorBayes(const
-  EstimatorBayes<MultinomialDistribution<M>, M>& other) :
-  mNumTrials(other.mNumTrials),
-  mPostSuccessDist(other.mPostSuccessDist),
-  mPostPredDist(other.mPostPredDist),
-  mAlpha(other.mAlpha) {
+EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    EstimatorBayes(const EstimatorBayes& other) :
+    mProbDist(other.mProbDist),
+    mNumTrials(other.mNumTrials) {
 }
 
 template <size_t M>
-EstimatorBayes<MultinomialDistribution<M>, M>&
-  EstimatorBayes<MultinomialDistribution<M>, M>::operator =
-  (const EstimatorBayes<MultinomialDistribution<M>, M>& other) {
+EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >&
+    EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    operator = (const EstimatorBayes& other) {
   if (this != &other) {
+    mProbDist = other.mProbDist;
     mNumTrials = other.mNumTrials;
-    mPostSuccessDist = other.mPostSuccessDist;
-    mPostPredDist = other.mPostPredDist;
-    mAlpha = other.mAlpha;
   }
   return *this;
 }
 
 template <size_t M>
-EstimatorBayes<MultinomialDistribution<M>, M>::~EstimatorBayes() {
+EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    ~EstimatorBayes() {
 }
 
 /******************************************************************************/
@@ -62,26 +55,28 @@ EstimatorBayes<MultinomialDistribution<M>, M>::~EstimatorBayes() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::read(std::istream& stream) {
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::write(std::ostream& stream) 
-const {
-  stream << "trials number: " << mNumTrials << std::endl
-    << "posterior success probablities distribution: " << std::endl
-    << mPostSuccessDist << std::endl
-    << "posterior predictive distribution: " << std::endl << mPostPredDist;
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    write(std::ostream& stream) const {
+  stream << "Probabilities distribution: " << std::endl << mProbDist
+    << std::endl <<
+    "Probabilities mode: " << std::endl << mProbDist.getMode() << std::endl <<
+    "Predictive distribution: " << std::endl << getPredDist() << std::endl <<
+    "Predictive mean: " << std::endl << getPredDist().getMean();
 }
 
 template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::read(std::ifstream&
-  stream) {
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::write(std::ofstream& stream)
-  const {
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
@@ -89,34 +84,36 @@ void EstimatorBayes<MultinomialDistribution<M>, M>::write(std::ofstream& stream)
 /******************************************************************************/
 
 template <size_t M>
-size_t EstimatorBayes<MultinomialDistribution<M>, M>::getNumTrials() const {
-  return mNumTrials;
+const DirichletDistribution<M>&
+    EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    getDist() const {
+  return mProbDist;
 }
 
 template <size_t M>
-const DirichletDistribution<M>& EstimatorBayes<MultinomialDistribution<M>, M>::
-getPostSuccessDist() const {
-  return mPostSuccessDist;
+DCMDistribution<M>
+    EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    getPredDist() const {
+  return DCMDistribution<M>(mNumTrials, mProbDist.getAlpha());
 }
 
 template <size_t M>
-const DCMDistribution<M>& EstimatorBayes<MultinomialDistribution<M>, M>::
-getPostPredDist() const {
-  return mPostPredDist;
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    addPoint(const Point& point) {
+  mNumTrials = point.sum();
+  mProbDist.setAlpha(mProbDist.getAlpha() + point.template cast<double>());
 }
 
 template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::addPoint(const Point&
-  point) {
-  for (size_t i = 0; i < (size_t)mAlpha.size(); ++i)
-    mAlpha(i) += point(i);
-  mPostSuccessDist.setAlpha(mAlpha);
-  mPostPredDist.setAlpha(mAlpha);
-}
-
-template <size_t M>
-void EstimatorBayes<MultinomialDistribution<M>, M>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+template <size_t M>
+void EstimatorBayes<MultinomialDistribution<M>, DirichletDistribution<M> >::
+    addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
 }

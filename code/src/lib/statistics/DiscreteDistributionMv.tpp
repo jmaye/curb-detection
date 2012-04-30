@@ -34,6 +34,6 @@ DiscreteDistribution<X, M, N>::~DiscreteDistribution() {
 
 template <typename X, size_t M, size_t N>
 double DiscreteDistribution<X, M, N>::getValue(const Eigen::Matrix<X, M, N>&
-  argument) const {
+    argument) const {
   return pmf(argument);
 }

@@ -35,6 +35,6 @@ LogisticFunction<X>::~LogisticFunction() {
 /******************************************************************************/
 
 template <typename X>
-double LogisticFunction<X>::getValue(const X& argument) const {
+double LogisticFunction<X>::getValue(const VariableType& argument) const {
   return 1.0 / (1.0  + exp(-argument));
 }

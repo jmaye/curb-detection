@@ -34,9 +34,9 @@ template <typename Y, typename X> class Function {
     @{
     */
   /// Copy constructor
-  Function(const Function<Y, X>& other);
+  Function(const Function& other);
   /// Assignment operator
-  Function& operator = (const Function<Y, X>& other);
+  Function& operator = (const Function& other);
   /** @}
     */
 
@@ -44,7 +44,9 @@ public:
   /** \name Types
     @{
     */
+  /// Domain
   typedef X Domain;
+  /// Codomain
   typedef Y Codomain;
   /** @}
     */

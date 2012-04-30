@@ -20,6 +20,8 @@
     \brief This file defines the univariate normal distribution
   */
 
+#include <tuple>
+
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
@@ -33,15 +35,27 @@ template <> class NormalDistribution<1> :
   public SampleDistribution<double>,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Precision type
+  typedef Variance Precision;
+  /// Standard deviation type
+  typedef Variance Std;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
   /// Constructs a normal distribution from the parameters
-  inline NormalDistribution(double mean = 0.0, double variance = 1.0);
+  inline NormalDistribution(Mean mean = 0.0, Variance variance = 1.0);
+  /// Constructs a normal distribution from the parameters
+  inline NormalDistribution(const std::tuple<Mean, Variance>& parameters);
   /// Copy constructor
-  inline NormalDistribution(const NormalDistribution<1>& other);
+  inline NormalDistribution(const NormalDistribution& other);
   /// Assignment operator
-  inline NormalDistribution& operator = (const NormalDistribution<1>& other);
+  inline NormalDistribution& operator = (const NormalDistribution& other);
   /// Destructor
   inline virtual ~NormalDistribution();
   /** @}
@@ -51,35 +65,36 @@ public:
     @{
     */
   /// Sets the mean of the distribution
-  inline void setMean(double mean);
+  inline void setMean(Mean mean);
   /// Returns the mean of the distribution
-  inline double getMean() const;
+  inline Mean getMean() const;
   /// Sets the variance of the distribution
-  inline void setVariance(double variance) throw (BadArgumentException<double>);
+  inline void setVariance(Variance variance)
+    throw (BadArgumentException<Variance>);
   /// Returns the variance of the distribution
-  inline double getVariance() const;
+  inline Variance getVariance() const;
   /// Returns the precision of the distribution
-  inline double getPrecision() const;
+  inline Precision getPrecision() const;
   /// Returns the standard deviation of the distribution
-  inline double getStandardDeviation() const;
+  inline Std getStandardDeviation() const;
   /// Returns the normalizer of the distribution
   inline double getNormalizer() const;
   /// Returns the median of the distribution
-  inline double getMedian() const;
+  inline Median getMedian() const;
   /// Returns the mode of the distribution
-  inline double getMode() const;
+  inline Mode getMode() const;
   /// Access the probability density function at the given value
-  inline virtual double pdf(const double& value) const;
+  inline virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
-  inline double logpdf(const double& value) const;
+  inline double logpdf(const RandomVariable& value) const;
   /// Access the cumulative density function at the given value
-  inline double cdf(const double& value) const;
+  inline double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  inline virtual double getSample() const;
+  inline virtual RandomVariable getSample() const;
   /// Returns the KL-divergence with another distribution
   inline double KLDivergence(const NormalDistribution<1>& other) const;
   /// Returns the squared Mahalanobis distance from a given value
-  inline double mahalanobisDistance(const double& value) const;
+  inline double mahalanobisDistance(const RandomVariable& value) const;
   /** @}
     */
 

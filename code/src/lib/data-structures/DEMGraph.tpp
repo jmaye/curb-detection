@@ -28,19 +28,18 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
       Grid<double, Cell, 2>::Index cellIdx =
         (Grid<double, Cell, 2>::Index() << i, j).finished();
       const Cell& cell = dem[cellIdx];
-      if (cell.getHeightEstimator().getValid()) {
+      if (cell.getHeightEstimator().getDist().getKappa()) {
         mVertices[cellIdx] = dem.computeLinearIndex(cellIdx);
-        NormalDistribution<1> cellDist(cell.getHeightEstimator().
-          getPostPredDist().getMean(), cell.getHeightEstimator().
-          getPostPredDist().getVariance());
+        auto mode = cell.getHeightEstimator().getDist().getMode();
+        NormalDistribution<1> cellDist(std::get<0>(mode), std::get<1>(mode));
         if ((i + 1) < numCells(0)) {
           Grid<double, Cell, 2>::Index cellDownIdx =
               (Grid<double, Cell, 2>::Index() << i + 1, j).finished();
           const Cell& cellDown = dem[cellDownIdx];
-          if (cellDown.getHeightEstimator().getValid()) {
-            NormalDistribution<1> cellDownDist(
-              cellDown.getHeightEstimator().getPostPredDist().getMean(),
-              cellDown.getHeightEstimator().getPostPredDist().getVariance());
+          if (cellDown.getHeightEstimator().getDist().getKappa()) {
+            mode = cellDown.getHeightEstimator().getDist().getMode();
+            NormalDistribution<1> cellDownDist(std::get<0>(mode),
+              std::get<1>(mode));
             mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellDownIdx,
               cellDist.KLDivergence(cellDownDist) +
               cellDownDist.KLDivergence(cellDist)));
@@ -50,10 +49,10 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
           Grid<double, Cell, 2>::Index cellRightIdx =
             (Grid<double, Cell, 2>::Index() << i, j + 1).finished();
           const Cell& cellRight = dem[cellRightIdx];
-          if (cellRight.getHeightEstimator().getValid()) {
-            NormalDistribution<1> cellRightDist(
-              cellRight.getHeightEstimator().getPostPredDist().getMean(),
-              cellRight.getHeightEstimator().getPostPredDist().getVariance());
+          if (cellRight.getHeightEstimator().getDist().getKappa()) {
+            mode = cellRight.getHeightEstimator().getDist().getMode();
+            NormalDistribution<1> cellRightDist(std::get<0>(mode),
+              std::get<1>(mode));
             mEdges.push_back(UndirectedEdge<V, P>(cellIdx, cellRightIdx,
               cellDist.KLDivergence(cellRightDist) +
               cellRightDist.KLDivergence(cellDist)));
@@ -64,8 +63,8 @@ DEMGraph::DEMGraph(const Grid<double, Cell, 2>& dem) {
 }
 
 DEMGraph::DEMGraph(const DEMGraph& other) :
-  mEdges(other.mEdges),
-  mVertices(other.mVertices) {
+    mEdges(other.mEdges),
+    mVertices(other.mVertices) {
 }
 
 DEMGraph& DEMGraph::operator = (const DEMGraph& other) {
@@ -123,7 +122,7 @@ size_t DEMGraph::getNumEdges() const {
 }
 
 DEMGraph::E DEMGraph::getEdge(const ConstEdgeIterator& it) const throw
-  (OutOfBoundException<size_t>) {
+    (OutOfBoundException<size_t>) {
   if (it >= getEdgeEnd())
     throw OutOfBoundException<size_t>(0,
       "DEMGraph::getEdge(): invalid iterator", __FILE__, __LINE__);
@@ -143,7 +142,7 @@ void DEMGraph::setEdgeProperty(const E& edge, const P& property) {
 }
 
 DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) throw
-  (OutOfBoundException<E>) {
+    (OutOfBoundException<E>) {
   EdgeIterator it = findEdge(edge);
   if (it == getEdgeEnd())
     throw OutOfBoundException<E>(edge,
@@ -153,7 +152,7 @@ DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) throw
 }
 
 const DEMGraph::P& DEMGraph::getEdgeProperty(const E& edge) const throw
-  (OutOfBoundException<E>) {
+    (OutOfBoundException<E>) {
   EdgeIterator it = findEdge(edge);
   if (it == getEdgeEnd())
     throw OutOfBoundException<E>(edge,

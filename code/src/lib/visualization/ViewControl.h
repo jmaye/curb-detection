@@ -23,15 +23,15 @@
 #ifndef VIEWCONTROL_H
 #define VIEWCONTROL_H
 
-#include "visualization/Control.h"
-#include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include <vector>
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
-#include <vector>
+#include "visualization/Control.h"
+#include "base/Singleton.h"
+#include "visualization/GLView.h"
+#include "visualization/Scene.h"
 
 class Ui_ViewControl;
 

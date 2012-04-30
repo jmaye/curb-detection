@@ -34,9 +34,9 @@ template <typename X> class Distribution :
     @{
     */
   /// Copy constructor
-  Distribution(const Distribution<X>& other);
+  Distribution(const Distribution& other);
   /// Assignment operator
-  Distribution& operator = (const Distribution<X>& other);
+  Distribution& operator = (const Distribution& other);
   /** @}
     */
 
@@ -44,8 +44,8 @@ public:
   /** \name Types
     @{
     */
-  /// Variable type
-  typedef X VariableType;
+  /// Random variable type
+  typedef typename Function<double, X>::Domain RandomVariable;
   /** @}
     */
 

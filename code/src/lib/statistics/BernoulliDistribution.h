@@ -37,7 +37,7 @@ public:
     @{
     */
   /// Constructs the distribution from the parameter
-  BernoulliDistribution(double successProbability = 0.5);
+  BernoulliDistribution(double probability = 0.5);
   /// Copy constructor
   BernoulliDistribution(const BernoulliDistribution& other);
   /// Assignment operator
@@ -51,15 +51,17 @@ public:
     @{
     */
   /// Sets the success probability
-  void setSuccessProbability(double successProbability);
+  void setProbability(double probability);
   /// Returns the success probability
-  double getSuccessProbability() const;
+  double getProbability() const;
   /// Returns the mean of the distribution
   double getMean() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  int getMode() const;
   /// Returns the variance of the distribution
   double getVariance() const;
+  /// Access the cumulative mass function at the given value
+  double cmf(const int& value) const;
   /** @}
     */
 

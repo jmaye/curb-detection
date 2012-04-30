@@ -23,20 +23,19 @@
 #ifndef CURBSCONTROL_H
 #define CURBSCONTROL_H
 
+#include <QtCore/QString>
+#include <QtGui/QColor>
+
 #include "visualization/Control.h"
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
-#include "helpers/RandomColors.h"
-
-#include <QtCore/QString>
-#include <QtGui/QColor>
 
 class Ui_CurbsControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
 
 /** The CurbsControl class represents a Qt control for curbs.
     \brief Qt control for curbs
@@ -97,11 +96,11 @@ protected:
   /// Palette
   Palette mPalette;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// Segmented vertices
   DEMGraph::VertexContainer mVertices;
   /// DEM graph
-  DEMGraph mGraph;
+  DEMGraph* mGraph;
   /** @}
     */
 
@@ -120,12 +119,11 @@ protected slots:
   /// Render the scene
   void render(GLView& view, Scene& scene);
   /// Receives a new segmentation
-  void bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
-    DEMGraph::VertexContainer& vertices);
+  void bpUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const DEMGraph::VertexContainer& vertices);
   /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components, const
-    std::vector<Helpers::Color>& colors);
+  void segmentUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 

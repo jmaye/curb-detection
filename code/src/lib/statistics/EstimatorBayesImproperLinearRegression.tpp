@@ -23,28 +23,28 @@
 /******************************************************************************/
 
 template <size_t M>
-EstimatorBayesImproper<LinearRegression<M>, M>::EstimatorBayesImproper() :
-  mNumPoints(0),
-  mValid(false) {
+EstimatorBayesImproper<LinearRegression<M> >::EstimatorBayesImproper() :
+    mNumPoints(0),
+    mValid(false) {
 }
 
 template <size_t M>
-EstimatorBayesImproper<LinearRegression<M>, M>::EstimatorBayesImproper(const
-  EstimatorBayesImproper<LinearRegression<M>, M>& other) :
-  mPostCoeffDist(other.mPostCoeffDist),
-  mPostVarianceDist(other.mPostVarianceDist),
-  mPostPredDist(other.mPostPredDist),
-  mSampleCoeff(other.mSampleCoeff),
-  mSampleCoeffCovariance(other.mSampleCoeffCovariance),
-  mSampleRegressionVariance(other.mSampleRegressionVariance),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorBayesImproper<LinearRegression<M> >::EstimatorBayesImproper(const
+    EstimatorBayesImproper& other) :
+    mPostCoeffDist(other.mPostCoeffDist),
+    mPostVarianceDist(other.mPostVarianceDist),
+    mPostPredDist(other.mPostPredDist),
+    mSampleCoeff(other.mSampleCoeff),
+    mSampleCoeffCovariance(other.mSampleCoeffCovariance),
+    mSampleRegressionVariance(other.mSampleRegressionVariance),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 template <size_t M>
-EstimatorBayesImproper<LinearRegression<M>, M>&
-  EstimatorBayesImproper<LinearRegression<M>, M>::operator =
-  (const EstimatorBayesImproper<LinearRegression<M>, M>& other) {
+EstimatorBayesImproper<LinearRegression<M> >&
+    EstimatorBayesImproper<LinearRegression<M> >::operator =
+    (const EstimatorBayesImproper& other) {
   if (this != &other) {
     mPostCoeffDist = other.mPostCoeffDist;
     mPostVarianceDist = other.mPostVarianceDist;
@@ -59,7 +59,7 @@ EstimatorBayesImproper<LinearRegression<M>, M>&
 }
 
 template <size_t M>
-EstimatorBayesImproper<LinearRegression<M>, M>::~EstimatorBayesImproper() {
+EstimatorBayesImproper<LinearRegression<M> >::~EstimatorBayesImproper() {
 }
 
 /******************************************************************************/
@@ -67,13 +67,12 @@ EstimatorBayesImproper<LinearRegression<M>, M>::~EstimatorBayesImproper() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::read(std::istream&
-  stream) {
+void EstimatorBayesImproper<LinearRegression<M> >::read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::write(std::ostream&
-  stream) const {
+void EstimatorBayesImproper<LinearRegression<M> >::write(std::ostream& stream)
+    const {
   stream << "posterior coefficients distribution: " << std::endl
     << mPostCoeffDist
     << std::endl << "posterior variance distribution: " << std::endl
@@ -89,13 +88,12 @@ void EstimatorBayesImproper<LinearRegression<M>, M>::write(std::ostream&
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::read(std::ifstream&
-  stream) {
+void EstimatorBayesImproper<LinearRegression<M> >::read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::write(std::ofstream&
-  stream) const {
+void EstimatorBayesImproper<LinearRegression<M> >::write(std::ofstream& stream)
+    const {
 }
 
 /******************************************************************************/
@@ -103,71 +101,70 @@ void EstimatorBayesImproper<LinearRegression<M>, M>::write(std::ofstream&
 /******************************************************************************/
 
 template <size_t M>
-const StudentDistribution<M>& EstimatorBayesImproper<LinearRegression<M>, M>::
-getPostCoeffDist() const {
+const StudentDistribution<M>&
+    EstimatorBayesImproper<LinearRegression<M> >::getPostCoeffDist() const {
   return mPostCoeffDist;
 }
 
 template <size_t M>
 const ScaledInvChiSquareDistribution&
-EstimatorBayesImproper<LinearRegression<M>, M>::getPostVarianceDist()
-  const {
+    EstimatorBayesImproper<LinearRegression<M> >::getPostVarianceDist() const {
   return mPostVarianceDist;
 }
 
 template <size_t M>
-const LinearRegressionPred<M>& EstimatorBayesImproper<LinearRegression<M>, M>::
-getPostPredDist() const {
+const LinearRegressionPred<M>&
+    EstimatorBayesImproper<LinearRegression<M> >::getPostPredDist() const {
   return mPostPredDist;
 }
 
 template <size_t M>
 const Eigen::Matrix<double, M, 1>&
-EstimatorBayesImproper<LinearRegression<M>, M>::getSampleCoeff() const {
+    EstimatorBayesImproper<LinearRegression<M> >::getSampleCoeff() const {
   return mSampleCoeff;
 }
 
 template <size_t M>
 const Eigen::Matrix<double, M, M>&
-EstimatorBayesImproper<LinearRegression<M>, M>::getSampleCoeffCovariance()
-  const {
+    EstimatorBayesImproper<LinearRegression<M> >::getSampleCoeffCovariance()
+    const {
   return mSampleCoeffCovariance;
 }
 
 template <size_t M>
-double EstimatorBayesImproper<LinearRegression<M>, M>::
-getSampleRegressionVariance() const {
+double EstimatorBayesImproper<LinearRegression<M> >::
+    getSampleRegressionVariance() const {
   return mSampleRegressionVariance;
 }
 
 template <size_t M>
-size_t EstimatorBayesImproper<LinearRegression<M>, M>::getNumPoints() const {
+size_t EstimatorBayesImproper<LinearRegression<M> >::getNumPoints() const {
   return mNumPoints;
 }
 
 template <size_t M>
-bool EstimatorBayesImproper<LinearRegression<M>, M>::getValid() const {
+bool EstimatorBayesImproper<LinearRegression<M> >::getValid() const {
   return mValid;
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::reset() {
+void EstimatorBayesImproper<LinearRegression<M> >::reset() {
   mNumPoints = 0;
   mValid = false;
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+void EstimatorBayesImproper<LinearRegression<M> >::addPoints(const
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
   Eigen::Matrix<double, Eigen::Dynamic, 1> weights =
     Eigen::Matrix<double, Eigen::Dynamic, 1>::Ones(itEnd - itStart);
   return addPoints(itStart, itEnd, weights);
 }
 
 template <size_t M>
-void EstimatorBayesImproper<LinearRegression<M>, M>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
+void EstimatorBayesImproper<LinearRegression<M> >::addPoints(const
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd, const
+    Eigen::Matrix<double, Eigen::Dynamic, 1>& weights) {
   reset();
   mNumPoints = itEnd - itStart;
   size_t dim;
@@ -211,4 +208,10 @@ void EstimatorBayesImproper<LinearRegression<M>, M>::addPoints(const
   }
   else
     mValid = false;
+}
+
+template <size_t M>
+void EstimatorBayesImproper<LinearRegression<M> >::addPoints(const Container&
+    points) {
+  addPoints(points.begin(), points.end());
 }

@@ -21,22 +21,22 @@
            distributions.
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "base/Serializable.h"
-
-#include <vector>
 
 /** The class EstimatorML is implemented for multivariate normal distributions.
     \brief Multivariate normal distribution ML estimator
   */
-template <size_t M> class EstimatorML<NormalDistribution<M>, M> :
+template <size_t M> class EstimatorML<NormalDistribution<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef Eigen::Matrix<double, M, 1> Point;
+  typedef typename NormalDistribution<M>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -50,10 +50,9 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<M>, M>& other);
+  EstimatorML(const EstimatorML& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<M>, M>& operator =
-    (const EstimatorML<NormalDistribution<M>, M>& other);
+  EstimatorML& operator = (const EstimatorML& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -66,15 +65,18 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated mean
-  const Eigen::Matrix<double, M, 1>& getMean() const;
-  /// Returns the estimated covariance
-  const Eigen::Matrix<double, M, M>& getCovariance() const;
+  /// Returns the estimated distribution
+  const NormalDistribution<M>& getDistribution() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator with responsibilities
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}
@@ -98,10 +100,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated mean
-  Eigen::Matrix<double, M, 1> mMean;
-  /// Estimated covariance
-  Eigen::Matrix<double, M, M> mCovariance;
+  /// Estimated distribution
+  NormalDistribution<M> mDistribution;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

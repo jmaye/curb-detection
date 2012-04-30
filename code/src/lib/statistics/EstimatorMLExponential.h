@@ -20,10 +20,10 @@
     \brief This file implements an ML estimator for exponential distributions.
   */
 
+#include <vector>
+
 #include "statistics/ExponentialDistribution.h"
 #include "base/Serializable.h"
-
-#include <vector>
 
 /** The class EstimatorML is implemented for exponential distributions.
     \brief Exponential distribution ML estimator
@@ -35,7 +35,7 @@ public:
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef ExponentialDistribution::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -49,10 +49,9 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<ExponentialDistribution>& other);
+  EstimatorML(const EstimatorML& other);
   /// Assignment operator
-  EstimatorML<ExponentialDistribution>& operator =
-    (const EstimatorML<ExponentialDistribution>& other);
+  EstimatorML& operator = (const EstimatorML& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -65,13 +64,15 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated rate
-  double getRate() const;
+  /// Returns the estimated distribution
+  const ExponentialDistribution& getDistribution() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}
@@ -95,10 +96,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated rate
-  double mRate;
-  /// Estimated mean
-  double mMean;
+  /// Estimated distribution
+  ExponentialDistribution mDistribution;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

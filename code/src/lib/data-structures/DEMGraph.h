@@ -24,13 +24,13 @@
 #ifndef DEMGRAPH_H
 #define DEMGRAPH_H
 
+#include <vector>
+#include <unordered_map>
+
 #include "data-structures/Grid.h"
 #include "data-structures/Cell.h"
 #include "data-structures/UndirectedEdge.h"
 #include "utils/IndexHash.h"
-
-#include <vector>
-#include <tr1/unordered_map>
 
 /** The class DEMGraph represents a special graph implementation for a DEM.
     \brief DEM graph
@@ -60,7 +60,7 @@ public:
   /// Edge iterator
   typedef EdgeContainer::iterator EdgeIterator;
   /// Vertex container
-  typedef std::tr1::unordered_map<V, size_t, IndexHash> VertexContainer;
+  typedef std::unordered_map<V, size_t, IndexHash> VertexContainer;
   /// Constant vertex iterator
   typedef VertexContainer::const_iterator ConstVertexIterator;
   /// Vertex iterator

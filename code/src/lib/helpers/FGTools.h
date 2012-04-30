@@ -33,25 +33,21 @@ namespace Helpers {
 /** The buildFactorGraph function generates a factor graph from a DEMGraph.
 */
 static void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
+  graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+  mixture, FactorGraph& factorGraph,
   DEMGraph::VertexContainer& fgMapping, double strength = 10.0);
 
 /** The updateNodeFactors function updates factor graph nodes factors.
 */
 static void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, FactorGraph& factorGraph,
+  graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+  mixture, FactorGraph& factorGraph,
   DEMGraph::VertexContainer& fgMapping);
 
 /** The computeFactor function computes a node factor from the graph.
 */
 static void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
-  Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances, const
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, const
+  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>& mixture, const
   Grid<double, Cell, 2>::Index& index, dai::Factor& factor);
 
 #include "helpers/FGTools.tpp"

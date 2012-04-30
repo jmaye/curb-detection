@@ -40,15 +40,14 @@ TransGrid<T, C, 2>::TransGrid(const typename Grid<T, C, 2>::Coordinate& minimum,
 }
 
 template <typename T, typename C>
-TransGrid<T, C, 2>::TransGrid(const TransGrid<T, C, 2>& other) :
+TransGrid<T, C, 2>::TransGrid(const TransGrid& other) :
     Grid<T, C, 2>(other),
     mTransformation(other.mTransformation),
     mInvTransformation(other.mInvTransformation) {
 }
 
 template <typename T, typename C>
-TransGrid<T, C, 2>& TransGrid<T, C, 2>::operator = (const TransGrid<T, C, 2>&
-    other) {
+TransGrid<T, C, 2>& TransGrid<T, C, 2>::operator = (const TransGrid& other) {
   if (this != &other) {
     Grid<T, C, 2>::operator=(other);
     mTransformation = other.mTransformation;

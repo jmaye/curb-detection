@@ -24,10 +24,10 @@
 #ifndef GRAPHSEGMENTER_H
 #define GRAPHSEGMENTER_H
 
+#include <unordered_map>
+
 #include "data-structures/Component.h"
 #include "exceptions/BadArgumentException.h"
-
-#include <tr1/unordered_map>
 
 /** The class GraphSegmenter implements the graph-based segmentation algorithm
     described in [Felzenszwalb, 2004]. The input graph must be an undirected
@@ -54,7 +54,7 @@ public:
   /// Constant vertex iterator
   typedef typename G::ConstVertexIterator CstItV;
   /// Components type
-  typedef std::tr1::unordered_map<size_t, Component<V, double> > Components;
+  typedef std::unordered_map<size_t, Component<V, double> > Components;
   /// Components constant iterator
   typedef typename Components::const_iterator CstItComp;
   /** @}
@@ -64,7 +64,7 @@ public:
       @{
     */
   /// Segment the graph
-  static void segment(const G& graph, Components& components, Vertices&
+  static void segment(G& graph, Components& components, Vertices&
     vertices, double k = 100.0) throw (BadArgumentException<double>);
   /** @}
     */

@@ -35,9 +35,9 @@ template <typename X, size_t M, size_t N> class DiscreteDistribution :
     @{
     */
   /// Copy constructor
-  DiscreteDistribution(const DiscreteDistribution<X, M, N>& other);
+  DiscreteDistribution(const DiscreteDistribution& other);
   /// Assignment operator
-  DiscreteDistribution& operator = (const DiscreteDistribution<X, M, N>& other);
+  DiscreteDistribution& operator = (const DiscreteDistribution& other);
   /** @}
     */
 
@@ -47,6 +47,16 @@ public:
     */
   /// Distribution type
   typedef DiscreteDistribution<X, M, N> DistributionType;
+  /// Random variable type
+  typedef Eigen::Matrix<X, M, N> RandomVariable;
+  /// Mean type
+  typedef Eigen::Matrix<double, M, N> Mean;
+  /// Covariance type
+  typedef Eigen::Matrix<double, M, M> Covariance;
+  /// Mode type
+  typedef Eigen::Matrix<X, M, N> Mode;
+  /// Median type
+  typedef Eigen::Matrix<double, M, N> Median;
   /** @}
     */
 
@@ -63,8 +73,8 @@ public:
   /** \name Accessors
     @{
     */
-  /// Access the probablity of the variable to take on the given value
-  virtual double pmf(const Eigen::Matrix<X, M, N>& value) const = 0;
+  /// Access the probablity of the random variable to take on the given value
+  virtual double pmf(const RandomVariable& value) const = 0;
   /// Interface to function
   virtual double getValue(const Eigen::Matrix<X, M, N>& argument) const;
   /** @}

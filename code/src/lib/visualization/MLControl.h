@@ -27,16 +27,14 @@
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
-#include "data-structures/DEMGraph.h"
-#include "data-structures/Component.h"
 #include "segmenter/GraphSegmenter.h"
-#include "helpers/RandomColors.h"
-
-#include <vector>
+#include "data-structures/DEMGraph.h"
 
 class Ui_MLControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
+template <typename D, size_t M> class MixtureDistribution;
+template <size_t M> class LinearRegression;
 
 /** The MLControl class represents a Qt control for ML segmentation.
     \brief Qt control for ML segmentation
@@ -97,21 +95,21 @@ protected:
   /// Qt user interface
   Ui_MLControl* mUi;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// DEM graph
-  DEMGraph mGraph;
+  DEMGraph* mGraph;
   /// Segmented components
   GraphSegmenter<DEMGraph>::Components mComponents;
   /// Vertices labels
   DEMGraph::VertexContainer mVertices;
+  /// Estimated mixture distribution
+  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>* mMixtureDist;
   /// ML maximum number of iterations
   size_t mMaxIter;
   /// ML tolerance
   double mTol;
   /// Weighted regression
   bool mWeighted;
-  /// Vector of random colors
-  std::vector<Helpers::Color> mColors;
   /** @}
     */
 
@@ -132,9 +130,8 @@ protected slots:
   /// Run button pressed
   void runPressed();
   /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components, const
-    std::vector<Helpers::Color>& colors);
+  void segmentUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 
@@ -143,11 +140,9 @@ signals:
     @{
     */
   /// ML has been updated
-  void mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
-    const std::vector<Helpers::Color>& colors);
+  void mlUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+    mixtureDist);
   /** @}
     */
 

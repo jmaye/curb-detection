@@ -21,24 +21,26 @@
            distributions with conjugate prior
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "statistics/StudentDistribution.h"
 #include "statistics/InvWishartDistribution.h"
-
-#include <vector>
+#include "statistics/NormalInvWishartDistribution.h"
 
 /** The class EstimatorBayes is implemented for multivariate normal
-    distributions with conjugate prior.
-    \brief Multivariate normal distribution Bayesian estimator
+    distributions with conjugate prior for the mean
+    \brief Multivariate normal distribution Bayesian estimator for the mean
   */
-template <size_t M> class EstimatorBayes<NormalDistribution<M>, M> :
+template <size_t M>
+class EstimatorBayes<NormalDistribution<M>, NormalDistribution<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef Eigen::Matrix<double, M, 1> Point;
+  typedef typename NormalDistribution<M>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -49,16 +51,14 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs estimator with hyperparameters prior
-  EstimatorBayes(const Eigen::Matrix<double, M, 1>& mu =
-    Eigen::Matrix<double, M, 1>::Zero(), double kappa = 1.0, double nu =
-    M + 1.0, const Eigen::Matrix<double, M, M>& sigma =
-    Eigen::Matrix<double, M, M>::Identity());
+  /// Constructs estimator with prior
+  EstimatorBayes(const Eigen::Matrix<double, M, M>& covariance =
+    Eigen::Matrix<double, M, M>::Identity(), const NormalDistribution<M>&
+    prior = NormalDistribution<M>());
   /// Copy constructor
-  EstimatorBayes(const EstimatorBayes<NormalDistribution<M>, M>& other);
+  EstimatorBayes(const EstimatorBayes& other);
   /// Assignment operator
-  EstimatorBayes<NormalDistribution<M>, M>& operator =
-    (const EstimatorBayes<NormalDistribution<M>, M>& other);
+  EstimatorBayes& operator = (const EstimatorBayes& other);
   /// Destructor
   virtual ~EstimatorBayes();
   /** @}
@@ -67,17 +67,17 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the posterior marginal mean distribution
-  const StudentDistribution<M>& getPostMeanDist() const;
-  /// Returns the posterior marginal covariance distribution
-  const InvWishartDistribution<M>& getPostCovarianceDist() const;
-  /// Returns the posterior predictive distribution
-  const StudentDistribution<M>& getPostPredDist() const;
+  /// Returns the mean distribution
+  const NormalDistribution<M>& getDist() const;
+  /// Returns the predictive distribution
+  NormalDistribution<M> getPredDist() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /** @}
     */
 
@@ -99,20 +99,169 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Posterior marginal mean distribution
-  StudentDistribution<M> mPostMeanDist;
-  /// Posterior marginal covariance distribution
-  InvWishartDistribution<M> mPostCovarianceDist;
-  /// Posterior predictive distribution
-  StudentDistribution<M> mPostPredDist;
-  /// Hyperparameter mu (location of the mean)
-  Eigen::Matrix<double, M, 1> mMu;
-  /// Hyperparameter kappa (scale of the mean: mSigma/mKappa)
-  double mKappa;
-  /// Hyperparameter nu (degrees of freedom of the variance)
-  double mNu;
-  /// Hyperparameter sigma (scale of the variance)
-  Eigen::Matrix<double, M, M> mSigma;
+  /// Mean distribution
+  NormalDistribution<M> mMeanDist;
+  /// Covariance
+  Eigen::Matrix<double, M, M> mCovariance;
+  /// Precision
+  Eigen::Matrix<double, M, M> mPrecision;
+  /** @}
+    */
+
+};
+
+/** The class EstimatorBayes is implemented for multivariate normal
+    distributions with conjugate prior for the covariance
+    \brief Multivariate normal distribution Bayesian estimator for the
+           covariance
+  */
+template <size_t M>
+class EstimatorBayes<NormalDistribution<M>, InvWishartDistribution<M> > :
+  public virtual Serializable {
+public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef typename NormalDistribution<M>::RandomVariable Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef typename Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs estimator with prior
+  EstimatorBayes(const Eigen::Matrix<double, M, 1>& mean =
+    Eigen::Matrix<double, M, M>::Zero(), const
+    InvWishartDistribution<M>& prior = InvWishartDistribution<M>());
+  /// Copy constructor
+  EstimatorBayes(const EstimatorBayes& other);
+  /// Assignment operator
+  EstimatorBayes& operator = (const EstimatorBayes& other);
+  /// Destructor
+  virtual ~EstimatorBayes();
+  /** @}
+    */
+
+  /** \name Accessors
+    @{
+    */
+  /// Returns the covariance distribution
+  const InvWishartDistribution<M>& getDist() const;
+  /// Add a point to the estimator
+  void addPoint(const Point& point);
+  /// Add points to the estimator
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
+  /** @}
+    */
+
+protected:
+  /** \name Stream methods
+    @{
+    */
+  /// Reads from standard input
+  virtual void read(std::istream& stream);
+  /// Writes to standard output
+  virtual void write(std::ostream& stream) const;
+  /// Reads from a file
+  virtual void read(std::ifstream& stream);
+  /// Writes to a file
+  virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected members
+    @{
+    */
+  /// Covariance distribution
+  InvWishartDistribution<M> mCovarianceDist;
+  /// Mean
+  Eigen::Matrix<double, M, 1> mMean;
+  /** @}
+    */
+
+};
+
+/** The class EstimatorBayes is implemented for multivariate normal
+    distributions with conjugate prior for the mean and covariance
+    \brief Multivariate normal distribution Bayesian estimator for the mean and
+           covariance
+  */
+template <size_t M>
+class EstimatorBayes<NormalDistribution<M>, NormalInvWishartDistribution<M> > :
+  public virtual Serializable {
+public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef typename NormalDistribution<M>::RandomVariable Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef typename Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs estimator with prior
+  EstimatorBayes(const NormalInvWishartDistribution<M>& prior =
+    NormalInvWishartDistribution<M>());
+  /// Copy constructor
+  EstimatorBayes(const EstimatorBayes& other);
+  /// Assignment operator
+  EstimatorBayes& operator = (const EstimatorBayes& other);
+  /// Destructor
+  virtual ~EstimatorBayes();
+  /** @}
+    */
+
+  /** \name Accessors
+    @{
+    */
+  /// Returns the mean and covariance distribution
+  const NormalInvWishartDistribution<M>& getDist() const;
+  /// Returns the predictive distribution
+  StudentDistribution<M> getPredDist() const;
+  /// Add a point to the estimator
+  void addPoint(const Point& point);
+  /// Add points to the estimator
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
+  /** @}
+    */
+
+protected:
+  /** \name Stream methods
+    @{
+    */
+  /// Reads from standard input
+  virtual void read(std::istream& stream);
+  /// Writes to standard output
+  virtual void write(std::ostream& stream) const;
+  /// Reads from a file
+  virtual void read(std::ifstream& stream);
+  /// Writes to a file
+  virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected members
+    @{
+    */
+  /// Mean and covariance distribution
+  NormalInvWishartDistribution<M> mMeanCovarianceDist;
   /** @}
     */
 

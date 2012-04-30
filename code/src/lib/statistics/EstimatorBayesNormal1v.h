@@ -21,24 +21,26 @@
            distributions with conjugate prior
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "statistics/StudentDistribution.h"
 #include "statistics/ScaledInvChiSquareDistribution.h"
-
-#include <vector>
+#include "statistics/NormalScaledInvChiSquareDistribution.h"
 
 /** The class EstimatorBayes is implemented for univariate normal
-    distributions with conjugate prior.
-    \brief Univariate normal distribution Bayesian estimator
+    distributions with conjugate prior for the mean
+    \brief Univariate normal distribution Bayesian estimator for the mean
   */
-template <> class EstimatorBayes<NormalDistribution<1> > :
+template <>
+class EstimatorBayes<NormalDistribution<1>, NormalDistribution<1> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef NormalDistribution<1>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -49,14 +51,13 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs estimator with hyperparameters prior
-  inline EstimatorBayes(double mu = 0.0, double kappa = 1.0, double nu = 1.0,
-    double sigma = 1.0);
+  /// Constructs estimator with prior
+  inline EstimatorBayes(double variance = 1.0, const NormalDistribution<1>&
+    prior = NormalDistribution<1>());
   /// Copy constructor
-  inline EstimatorBayes(const EstimatorBayes<NormalDistribution<1> >& other);
+  inline EstimatorBayes(const EstimatorBayes& other);
   /// Assignment operator
-  inline EstimatorBayes<NormalDistribution<1> >& operator =
-    (const EstimatorBayes<NormalDistribution<1> >& other);
+  inline EstimatorBayes& operator = (const EstimatorBayes& other);
   /// Destructor
   inline virtual ~EstimatorBayes();
   /** @}
@@ -65,17 +66,17 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the posterior marginal mean distribution
-  inline const StudentDistribution<1>& getPostMeanDist() const;
-  /// Returns the posterior marginal variance distribution
-  inline const ScaledInvChiSquareDistribution& getPostVarianceDist() const;
-  /// Returns the posterior predictive distribution
-  inline const StudentDistribution<1>& getPostPredDist() const;
+  /// Returns the mean distribution
+  inline const NormalDistribution<1>& getDist() const;
+  /// Returns the predictive distribution
+  inline NormalDistribution<1> getPredDist() const;
   /// Add a point to the estimator
   inline void addPoint(const Point& point);
   /// Add points to the estimator
   inline void addPoints(const ConstPointIterator& itStart, const
     ConstPointIterator& itEnd);
+  /// Add points to the estimator
+  inline void addPoints(const Container& points);
   /** @}
     */
 
@@ -97,20 +98,168 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Posterior marginal mean distribution
-  StudentDistribution<1> mPostMeanDist;
-  /// Posterior marginal variance distribution
-  ScaledInvChiSquareDistribution mPostVarianceDist;
-  /// Posterior predictive distribution
-  StudentDistribution<1> mPostPredDist;
-  /// Hyperparameter mu (location of the mean)
-  double mMu;
-  /// Hyperparameter kappa (scale of the mean: mSigma/mKappa)
-  double mKappa;
-  /// Hyperparameter nu (degrees of freedom of the variance)
-  double mNu;
-  /// Hyperparameter sigma (scale of the variance)
-  double mSigma;
+  /// Mean distribution
+  NormalDistribution<1> mMeanDist;
+  /// Variance
+  double mVariance;
+  /// Precision
+  double mPrecision;
+  /** @}
+    */
+
+};
+
+/** The class EstimatorBayes is implemented for univariate normal
+    distributions with conjugate prior for the variance
+    \brief Univariate normal distribution Bayesian estimator for the variance
+  */
+template <>
+class EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution> :
+  public virtual Serializable {
+public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef NormalDistribution<1>::RandomVariable Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs estimator with prior
+  inline EstimatorBayes(double mean = 0.0, const
+    ScaledInvChiSquareDistribution& prior = ScaledInvChiSquareDistribution());
+  /// Copy constructor
+  inline EstimatorBayes(const EstimatorBayes& other);
+  /// Assignment operator
+  inline EstimatorBayes& operator = (const EstimatorBayes& other);
+  /// Destructor
+  inline virtual ~EstimatorBayes();
+  /** @}
+    */
+
+  /** \name Accessors
+    @{
+    */
+  /// Returns the variance distribution
+  inline const ScaledInvChiSquareDistribution& getDist() const;
+  /// Add a point to the estimator
+  inline void addPoint(const Point& point);
+  /// Add points to the estimator
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
+  /// Add points to the estimator
+  inline void addPoints(const Container& points);
+  /** @}
+    */
+
+protected:
+  /** \name Stream methods
+    @{
+    */
+  /// Reads from standard input
+  inline virtual void read(std::istream& stream);
+  /// Writes to standard output
+  inline virtual void write(std::ostream& stream) const;
+  /// Reads from a file
+  inline virtual void read(std::ifstream& stream);
+  /// Writes to a file
+  inline virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected members
+    @{
+    */
+  /// Variance distribution
+  ScaledInvChiSquareDistribution mVarianceDist;
+  /// Mean
+  double mMean;
+  /** @}
+    */
+
+};
+
+/** The class EstimatorBayes is implemented for univariate normal
+    distributions with conjugate prior for the mean and variance
+    \brief Univariate normal distribution Bayesian estimator for the mean and
+           variance
+  */
+template <>
+class EstimatorBayes<NormalDistribution<1>,
+  NormalScaledInvChiSquareDistribution> :
+  public virtual Serializable {
+public:
+  /** \name Types definitions
+    @{
+    */
+  /// Point type
+  typedef NormalDistribution<1>::RandomVariable Point;
+  /// Points container
+  typedef std::vector<Point> Container;
+  /// Constant point iterator
+  typedef Container::const_iterator ConstPointIterator;
+  /** @}
+    */
+
+  /** \name Constructors/destructor
+    @{
+    */
+  /// Constructs estimator with prior
+  inline EstimatorBayes(const NormalScaledInvChiSquareDistribution& prior =
+    NormalScaledInvChiSquareDistribution());
+  /// Copy constructor
+  inline EstimatorBayes(const EstimatorBayes& other);
+  /// Assignment operator
+  inline EstimatorBayes& operator = (const EstimatorBayes& other);
+  /// Destructor
+  inline virtual ~EstimatorBayes();
+  /** @}
+    */
+
+  /** \name Accessors
+    @{
+    */
+  /// Returns the mean and variance distribution
+  inline const NormalScaledInvChiSquareDistribution& getDist() const;
+  /// Returns the predictive distribution
+  inline StudentDistribution<1> getPredDist() const;
+  /// Add a point to the estimator
+  inline void addPoint(const Point& point);
+  /// Add points to the estimator
+  inline void addPoints(const ConstPointIterator& itStart, const
+    ConstPointIterator& itEnd);
+  /// Add points to the estimator
+  inline void addPoints(const Container& points);
+  /** @}
+    */
+
+protected:
+  /** \name Stream methods
+    @{
+    */
+  /// Reads from standard input
+  inline virtual void read(std::istream& stream);
+  /// Writes to standard output
+  inline virtual void write(std::ostream& stream) const;
+  /// Reads from a file
+  inline virtual void read(std::ifstream& stream);
+  /// Writes to a file
+  inline virtual void write(std::ofstream& stream) const;
+  /** @}
+    */
+
+  /** \name Protected members
+    @{
+    */
+  /// Mean and variance distribution
+  NormalScaledInvChiSquareDistribution mMeanVarianceDist;
   /** @}
     */
 

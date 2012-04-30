@@ -21,25 +21,25 @@
 /******************************************************************************/
 
 template <size_t M>
-EstimatorML<CategoricalDistribution<M>, M>::EstimatorML() :
-  mNumPoints(0),
-  mValid(false) {
+EstimatorML<CategoricalDistribution<M> >::EstimatorML() :
+    mNumPoints(0),
+    mValid(false) {
 }
 
 template <size_t M>
-EstimatorML<CategoricalDistribution<M>, M>::EstimatorML(const
-  EstimatorML<CategoricalDistribution<M>, M>& other) :
-  mSuccessProbabilities(other.mSuccessProbabilities),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<CategoricalDistribution<M> >::EstimatorML(const EstimatorML&
+    other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 template <size_t M>
-EstimatorML<CategoricalDistribution<M>, M>&
-  EstimatorML<CategoricalDistribution<M>, M>::operator =
-  (const EstimatorML<CategoricalDistribution<M>, M>& other) {
+EstimatorML<CategoricalDistribution<M> >&
+    EstimatorML<CategoricalDistribution<M> >::operator = (const EstimatorML&
+    other) {
   if (this != &other) {
-    mSuccessProbabilities = other.mSuccessProbabilities;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -47,7 +47,7 @@ EstimatorML<CategoricalDistribution<M>, M>&
 }
 
 template <size_t M>
-EstimatorML<CategoricalDistribution<M>, M>::~EstimatorML() {
+EstimatorML<CategoricalDistribution<M> >::~EstimatorML() {
 }
 
 /******************************************************************************/
@@ -55,24 +55,24 @@ EstimatorML<CategoricalDistribution<M>, M>::~EstimatorML() {
 /******************************************************************************/
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::read(std::istream& stream) {
+void EstimatorML<CategoricalDistribution<M> >::read(std::istream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::write(std::ostream& stream)
-  const {
-  stream << "success probabilities: " << mSuccessProbabilities.transpose()
-    << std::endl << "number of points: " << mNumPoints << std::endl
+void EstimatorML<CategoricalDistribution<M> >::write(std::ostream& stream)
+    const {
+  stream << "distribution: " << std::endl << mDistribution << std::endl
+    << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::read(std::ifstream& stream) {
+void EstimatorML<CategoricalDistribution<M> >::read(std::ifstream& stream) {
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::write(std::ofstream& stream)
-  const {
+void EstimatorML<CategoricalDistribution<M> >::write(std::ofstream& stream)
+    const {
 }
 
 /******************************************************************************/
@@ -80,46 +80,53 @@ void EstimatorML<CategoricalDistribution<M>, M>::write(std::ofstream& stream)
 /******************************************************************************/
 
 template <size_t M>
-size_t EstimatorML<CategoricalDistribution<M>, M>::getNumPoints() const {
+size_t EstimatorML<CategoricalDistribution<M> >::getNumPoints() const {
   return mNumPoints;
 }
 
 template <size_t M>
-bool EstimatorML<CategoricalDistribution<M>, M>::getValid() const {
+bool EstimatorML<CategoricalDistribution<M> >::getValid() const {
   return mValid;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>&
-EstimatorML<CategoricalDistribution<M>, M>::getSuccessProbabilities() const {
-  return mSuccessProbabilities;
+const CategoricalDistribution<M>&
+    EstimatorML<CategoricalDistribution<M> >::getDistribution() const {
+  return mDistribution;
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::reset() {
+void EstimatorML<CategoricalDistribution<M> >::reset() {
   mNumPoints = 0;
   mValid = false;
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::addPoint(const Point& point) {
-  if (mNumPoints == 0)
-    mSuccessProbabilities = Eigen::Matrix<double, M, 1>::Zero(point.size(), 1);
+void EstimatorML<CategoricalDistribution<M> >::addPoint(const Point& point) {
   mNumPoints++;
-  if (mNumPoints == 1) {
-    for (size_t i = 0; i < (size_t)point.size(); ++i)
-      mSuccessProbabilities(i) += point(i);
+  try {
     mValid = true;
+    if (mNumPoints == 1)
+      mDistribution.setProbabilities(point.template cast<double>());
+    else
+      mDistribution.setProbabilities(mDistribution.getProbabilities() +
+        (point.template cast<double>() - mDistribution.getProbabilities()) /
+        mNumPoints);
   }
-  else
-    for (size_t i = 0; i < (size_t)point.size(); ++i)
-      mSuccessProbabilities(i) += 1.0 / mNumPoints * (point(i) -
-        mSuccessProbabilities(i));
+  catch (...) {
+    mValid = false;
+  }
 }
 
 template <size_t M>
-void EstimatorML<CategoricalDistribution<M>, M>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorML<CategoricalDistribution<M> >::addPoints(const
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+template <size_t M>
+void EstimatorML<CategoricalDistribution<M> >::addPoints(const Container&
+    points) {
+  addPoints(points.begin(), points.end());
 }

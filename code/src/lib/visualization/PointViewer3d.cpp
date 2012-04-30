@@ -16,21 +16,48 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include <unordered_map>
+
 #include "visualization/PointViewer3d.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-PointViewer3d::PointViewer3d(const std::vector<Eigen::Matrix<double, 3, 1> >&
-  data) :
-  mData(data) {
+PointViewer3d::PointViewer3d(const PointCloud<>::Container& data) {
+  PointCloud<> pointCloud;
+  for (auto it = data.cbegin(); it != data.cend(); ++it)
+    pointCloud.insertPoint(*it);
+  Colors::Color color;
+  color.mRed = 0;
+  color.mGreen = 0;
+  color.mBlue = 1;
+  mPointClouds.push_back(std::tuple<PointCloud<>, Colors::Color>(pointCloud,
+    color));
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
   setBackgroundColor(Qt::white);
   setFogColor(Qt::white);
   setGroundColor(Qt::lightGray);
-  setPointColor(Qt::blue);
+}
+
+PointViewer3d::PointViewer3d(const
+    std::vector<std::tuple<PointCloud<>::Point, size_t> >& data) {
+  std::unordered_map<size_t, std::vector<PointCloud<>::Point> > points;
+  for (auto it = data.cbegin(); it != data.cend(); ++it)
+    points[std::get<1>(*it)].push_back(std::get<0>(*it));
+  for (auto it = points.cbegin(); it != points.cend(); ++it) {
+    PointCloud<> pointCloud;
+    for (auto itP = it->second.cbegin(); itP != it->second.cend(); ++itP)
+      pointCloud.insertPoint(*itP);
+    mPointClouds.push_back(std::tuple<PointCloud<>, Colors::Color>(pointCloud,
+      Colors::genColor(it->first)));
+  }
+  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
+    this, SLOT(render(GLView&, Scene&)));
+  setBackgroundColor(Qt::white);
+  setFogColor(Qt::white);
+  setGroundColor(Qt::lightGray);
 }
 
 PointViewer3d::~PointViewer3d() {
@@ -52,10 +79,6 @@ void PointViewer3d::setGroundColor(const QColor& color) {
   mPalette.setColor("Ground", color);
 }
 
-void PointViewer3d::setPointColor(const QColor& color) {
-  mPalette.setColor("Point", color);
-}
-
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -72,7 +95,8 @@ void PointViewer3d::renderBackground() {
 void PointViewer3d::renderFog(double start, double end, double density) {
   glPushAttrib(GL_CURRENT_BIT);
   QColor color = mPalette.getColor("Fog");
-  float colorfv[] = {color.redF(), color.greenF(), color.blueF(), 1.0};
+  float colorfv[] = {(float)color.redF(), (float)color.greenF(),
+    (float)color.blueF(), 1.0};
   double scale = GLView::getInstance().getScene().getScale();
   double distance = GLView::getInstance().getCamera().getViewpointDistance();
   glFogi(GL_FOG_MODE, GL_LINEAR);
@@ -85,7 +109,7 @@ void PointViewer3d::renderFog(double start, double end, double density) {
 }
 
 void PointViewer3d::renderGround(double radius, double elevation, double
-  angleStep, double rangeStep) {
+    angleStep, double rangeStep) {
   glPushAttrib(GL_CURRENT_BIT);
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "Ground");
@@ -146,9 +170,14 @@ void PointViewer3d::renderPoints(double size, bool smooth) {
   else
     glDisable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
-  GLView::getInstance().setColor(mPalette, "Point");
-  for (size_t i = 0; i < mData.size(); ++i)
-    glVertex3f(mData[i](0), mData[i](1), mData[i](2));
+  for (auto it = mPointClouds.cbegin(); it != mPointClouds.cend(); ++it) {
+    const Colors::Color& color = std::get<1>(*it);
+    glColor3f(color.mRed, color.mGreen, color.mBlue);
+    const PointCloud<>& pointCloud = std::get<0>(*it);
+    for (auto itP = pointCloud.getPointBegin(); itP != pointCloud.getPointEnd();
+        ++itP)
+      glVertex3f((*itP)(0), (*itP)(1), (*itP)(2));
+  }
   glEnd();
   glPointSize(1.0);
   glDisable(GL_POINT_SMOOTH);
@@ -163,7 +192,7 @@ void PointViewer3d::render(GLView& view, Scene& scene) {
   renderBackground();
   glEnable(GL_FOG);
   renderFog(10, 2.0 * 10, 1.0);
-  renderGround(10, 0, 30.0 * M_PI / 180.0, 5.0);
+  //renderGround(10, 0, 30.0 * M_PI / 180.0, 5.0);
   renderAxes(2.5);
   renderPoints(1.0, true);
 }

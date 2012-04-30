@@ -18,18 +18,18 @@
 
 #include "visualization/Scene.h"
 
-#include "visualization/GLView.h"
-
 #include <cmath>
+
+#include "visualization/GLView.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 Scene::Scene() :
-  mTranslation(3, 0.0),
-  mRotation(3, 0.0),
-  mScale(1.0) {
+    mTranslation(3, 0.0),
+    mRotation(3, 0.0),
+    mScale(1.0) {
   setTranslation(0.0, 0.0, 0.0);
   setRotation(-10.0 * M_PI / 180.0, -5.0 * M_PI / 180.0, 0.0);
   setScale(1.0);

@@ -24,9 +24,9 @@
 #ifndef TIMESTAMP_H
 #define TIMESTAMP_H
 
-#include "base/Serializable.h"
-
 #include <time.h>
+
+#include "base/Serializable.h"
 
 /** The class Timestamp implements timestamping facilities.
     \brief Timestamping facilities

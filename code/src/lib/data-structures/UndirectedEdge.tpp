@@ -22,22 +22,22 @@
 
 template <typename V, typename P>
 UndirectedEdge<V, P>::UndirectedEdge(const V& head, const V& tail, const P&
-  property) :
-  mHead(head),
-  mTail(tail),
-  mProperty(property) {
+    property) :
+    mHead(head),
+    mTail(tail),
+    mProperty(property) {
 }
 
 template <typename V, typename P>
 UndirectedEdge<V, P>::UndirectedEdge(const UndirectedEdge& other) :
-  mHead(other.mHead),
-  mTail(other.mTail),
-  mProperty(other.mProperty) {
+    mHead(other.mHead),
+    mTail(other.mTail),
+    mProperty(other.mProperty) {
 }
 
 template <typename V, typename P>
-UndirectedEdge<V, P>& UndirectedEdge<V, P>::operator = (const
-  UndirectedEdge<V, P>& other) {
+UndirectedEdge<V, P>& UndirectedEdge<V, P>::operator = (const UndirectedEdge&
+    other) {
   if (this != &other) {
     mHead = other.mHead;
     mTail = other.mTail;

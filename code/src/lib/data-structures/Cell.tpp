@@ -20,11 +20,13 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Cell::Cell() {
+Cell::Cell(double sensorVariance) :
+    mHeightEstimator(NormalScaledInvChiSquareDistribution(0, 0, 1,
+      3 * sensorVariance)) {
 }
 
 Cell::Cell(const Cell& other) :
-  mHeightEstimator(other.mHeightEstimator) {
+    mHeightEstimator(other.mHeightEstimator) {
 }
 
 Cell& Cell::operator = (const Cell& other) {
@@ -45,7 +47,7 @@ void Cell::read(std::istream& stream) {
 }
 
 void Cell::write(std::ostream& stream) const {
-  stream << "height estimator: " << mHeightEstimator << std::endl;
+  stream << "height estimator: " << mHeightEstimator;
 }
 
 void Cell::read(std::ifstream& stream) {
@@ -62,15 +64,12 @@ void Cell::addPoint(double point) {
   mHeightEstimator.addPoint(point);
 }
 
-const EstimatorBayesImproper<NormalDistribution<1> >& Cell::getHeightEstimator()
-  const {
+const EstimatorBayes<NormalDistribution<1> >& Cell::getHeightEstimator()
+    const {
   return mHeightEstimator;
 }
 
-/******************************************************************************/
-/* Methods                                                                    */
-/******************************************************************************/
-
-void Cell::reset() {
-  mHeightEstimator.reset();
+void Cell::setSensorVariance(double sensorVariance) {
+  mHeightEstimator = EstimatorBayes<NormalDistribution<1> >(
+    NormalScaledInvChiSquareDistribution(0, 0, 1, 3 * sensorVariance));
 }

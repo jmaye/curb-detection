@@ -35,13 +35,21 @@ template <typename X, size_t M> class BetaFunction :
     @{
     */
   /// Copy constructor
-  BetaFunction(const BetaFunction<X, M>& other);
+  BetaFunction(const BetaFunction& other);
   /// Assignment operator
-  BetaFunction& operator = (const BetaFunction<X, M>& other);
+  BetaFunction& operator = (const BetaFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X, M>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const Eigen::Matrix<X, M, 1>& argument) const;
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

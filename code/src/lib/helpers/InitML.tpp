@@ -23,68 +23,56 @@
 /******************************************************************************/
 
 bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
-  GraphSegmenter<DEMGraph>::Components& components,
-  EstimatorBayesImproper<LinearRegression<3>, 3>::Container& points,
-  std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
-  Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  Eigen::Matrix<double, Eigen::Dynamic, 1>& weights, bool weighted) {
+    GraphSegmenter<DEMGraph>::Components& components,
+    EstimatorML<LinearRegression<3> >::Container& points,
+    std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
+    MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>*& initMixture,
+    bool weighted) {
   points.clear();
   pointsMapping.clear();
   pointsMapping.reserve(graph.getNumVertices());
   points.reserve(graph.getNumVertices());
-  std::vector<EstimatorBayesImproper<LinearRegression<3>, 3>::Point> c;
-  c.reserve(components.size());
-  std::vector<double> v;
-  v.reserve(components.size());
-  std::vector<double> w;
-  w.reserve(components.size());
-  EstimatorBayesImproper<LinearRegression<3>, 3> estPlane;
-  for (GraphSegmenter<DEMGraph>::CstItComp it = components.begin(); it !=
-    components.end(); ++it) {
-    Component<Grid<double, Cell, 2>::Index, double>::ConstVertexIterator itV;
-    EstimatorBayesImproper<LinearRegression<3>, 3>::ConstPointIterator itStart =
+  std::vector<LinearRegression<3> > distPlanes;
+  distPlanes.reserve(components.size());
+  std::vector<double> numPoints;
+  numPoints.reserve(components.size());
+  EstimatorML<LinearRegression<3> > estPlane;
+  for (auto it = components.begin(); it != components.end(); ++it) {
+    EstimatorML<LinearRegression<3> >::ConstPointIterator itStart =
       points.end();
     Eigen::Matrix<double, Eigen::Dynamic, 1>
       precision(it->second.getNumVertices());
-    for (itV = it->second.getVertexBegin(); itV != it->second.getVertexEnd();
-      ++itV) {
+    for (auto itV = it->second.getVertexBegin();
+        itV != it->second.getVertexEnd(); ++itV) {
       PointCloud<double, 3>::Point point;
       point.segment(0, 2) = dem.getCoordinates(*itV);
-      point(2) = dem[*itV].getHeightEstimator().getPostPredDist().getMean();
+      auto mode = dem[*itV].getHeightEstimator().getDist().getMode();
+      point(2) = std::get<0>(mode);
       points.push_back(point);
       pointsMapping.push_back(*itV);
       precision(itV - it->second.getVertexBegin()) =
-        1.0 / dem[*itV].getHeightEstimator().getPostPredDist().getVariance();
+        1.0 / std::get<1>(mode);
     }
-    EstimatorBayesImproper<LinearRegression<3>, 3>::ConstPointIterator itEnd =
-      points.end();
+    auto itEnd = points.end();
     if (weighted)
       estPlane.addPoints(itStart, itEnd, precision);
     else
       estPlane.addPoints(itStart, itEnd);
     if (estPlane.getValid()) {
-      c.push_back(estPlane.getPostPredDist().getCoefficients());
-      v.push_back(estPlane.getPostPredDist().getVariance());
-      w.push_back(it->second.getNumVertices());
+      distPlanes.push_back(estPlane.getDistribution());
+      numPoints.push_back(it->second.getNumVertices());
     }
   }
-  if (c.size() != 0) {
-    coefficients.resize(c.size(), 3);
-    variances.resize(v.size());
-    weights.resize(w.size());
-    std::vector<EstimatorBayesImproper<LinearRegression<3>, 3>::Point>::
-      const_iterator itC;
-    std::vector<double>::const_iterator itV;
-    std::vector<double>::const_iterator itW;
-    for (itC = c.begin(), itV = v.begin(), itW = w.begin(); itC != c.end();
-      ++itC, ++itV, ++itW) {
-      const size_t row = itC - c.begin();
-      coefficients.row(row) = *itC;
-      variances(row) = *itV;
-      weights(row) = *itW;
+  if (distPlanes.size() != 0) {
+    double pointsSum = 0;
+    Eigen::Matrix<double, Eigen::Dynamic, 1> weights(numPoints.size());
+    for (auto it = numPoints.begin(); it != numPoints.end(); ++it) {
+      pointsSum += *it;
+      weights(it - numPoints.begin()) = *it;
     }
-    weights = weights / weights.sum();
+    initMixture = new
+      MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>(distPlanes,
+      CategoricalDistribution<Eigen::Dynamic>(weights / weights.sum()));
     return true;
   }
   else

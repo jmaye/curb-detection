@@ -26,13 +26,19 @@
 
 #include <cstdlib>
 
-template <typename D, size_t M = 1, size_t N = 1> class EstimatorBayes;
+#include "statistics/ConjugatePrior.h"
+
+template <typename D, typename P = typename ConjugatePrior<D>::Result>
+  class EstimatorBayes;
 
 #include "statistics/EstimatorBayesNormal1v.h"
-#include "statistics/EstimatorBayesNormalMv.h"
-#include "statistics/EstimatorBayesMultinomial.h"
-#include "statistics/EstimatorBayesPoisson.h"
-#include "statistics/EstimatorBayesExponential.h"
-#include "statistics/EstimatorBayesLinearRegression.h"
+//#include "statistics/EstimatorBayesNormalMv.h"
+//#include "statistics/EstimatorBayesMultinomial.h"
+//#include "statistics/EstimatorBayesCategorical.h"
+//#include "statistics/EstimatorBayesPoisson.h"
+//#include "statistics/EstimatorBayesGeometric.h"
+//#include "statistics/EstimatorBayesExponential.h"
+//#include "statistics/EstimatorBayesMixture.h"
+//#include "statistics/EstimatorBayesLinearRegression.h"
 
 #endif // ESTIMATORBAYES_H

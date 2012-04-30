@@ -15,6 +15,27 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QGridLayout" name="sensorLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="sensorLabel">
+       <property name="text">
+        <string>Sensor variance:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="sensorSpinBox">
+       <property name="decimals">
+        <number>9</number>
+       </property>
+       <property name="value">
+        <double>0.000100000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <layout class="QGridLayout" name="cellLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="rangeMinTextLabel">
@@ -461,6 +482,22 @@
    <hints>
     <hint type="sourcelabel">
      <x>328</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sensorSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>DEMControl</receiver>
+   <slot>demChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>296</x>
      <y>23</y>
     </hint>
     <hint type="destinationlabel">

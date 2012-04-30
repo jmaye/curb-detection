@@ -24,11 +24,11 @@
 
 template <typename T, typename C, size_t M>
 Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
-  Coordinate& resolution) throw
-  (BadArgumentException<Grid<T, C, M>::Coordinate>) :
-  mMinimum(minimum),
-  mMaximum(maximum),
-  mResolution(resolution) {
+    Coordinate& resolution) throw
+    (BadArgumentException<Grid<T, C, M>::Coordinate>) :
+    mMinimum(minimum),
+    mMaximum(maximum),
+    mResolution(resolution) {
   if ((resolution.cwise() <= 0).any())
     throw BadArgumentException<Coordinate>(resolution,
       "Grid<T, C, M>::Grid(): resolution must be strictly positive",
@@ -37,15 +37,16 @@ Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
     throw BadArgumentException<Coordinate>(minimum,
       "Grid<T, C, M>::Grid(): minimum must be strictly smaller than maximum",
        __FILE__, __LINE__);
-  if ((resolution.cwise() >= maximum - minimum).any())
+  if ((resolution.cwise() > maximum - minimum).any())
     throw BadArgumentException<Coordinate>(resolution,
-      "Grid<T, C, M>::Grid(): resolution must be strictly smaller than range",
+      "Grid<T, C, M>::Grid(): resolution must be smaller than range",
        __FILE__, __LINE__);
   mNumCells.resize(resolution.size());
   mNumCellsTot = 1.0;
   mLinProd = Index::Ones(resolution.size());
   for (size_t i = 0; i < static_cast<size_t>(minimum.size()); ++i) {
-    mNumCells(i) = ceil((maximum(i) - minimum(i)) / resolution(i));
+    mNumCells(i) = Traits::template ceil<T, true>((maximum(i) - minimum(i)) /
+      resolution(i));
     mNumCellsTot *= mNumCells(i);
   }
   for (size_t i = 0; i < static_cast<size_t>(minimum.size()); ++i)
@@ -56,17 +57,17 @@ Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
 
 template <typename T, typename C, size_t M>
 Grid<T, C, M>::Grid(const Grid& other) :
-  mCells(other.mCells),
-  mMinimum(other.mMinimum),
-  mMaximum(other.mMaximum),
-  mResolution(other.mResolution),
-  mNumCells(other.mNumCells),
-  mNumCellsTot(other.mNumCellsTot),
-  mLinProd(other.mLinProd) {
+    mCells(other.mCells),
+    mMinimum(other.mMinimum),
+    mMaximum(other.mMaximum),
+    mResolution(other.mResolution),
+    mNumCells(other.mNumCells),
+    mNumCellsTot(other.mNumCellsTot),
+    mLinProd(other.mLinProd) {
 }
 
 template <typename T, typename C, size_t M>
-Grid<T, C, M>& Grid<T, C, M>::operator = (const Grid<T, C, M>& other) {
+Grid<T, C, M>& Grid<T, C, M>::operator = (const Grid& other) {
   if (this != &other) {
     mCells = other.mCells;
     mMinimum = other.mMinimum;
@@ -99,7 +100,7 @@ void Grid<T, C, M>::write(std::ostream& stream) const {
     << "number of cells per dim: " << mNumCells.transpose() << std:: endl
     << "total number of cells: " << mNumCellsTot << std::endl
     << "cells: " << std::endl;
-    for (ConstCellIterator it = getCellBegin(); it != getCellEnd(); ++it)
+    for (auto it = getCellBegin(); it != getCellEnd(); ++it)
       stream << *it << std::endl;
 }
 
@@ -150,7 +151,7 @@ const typename Grid<T, C, M>::Container& Grid<T, C, M>::getCells() const {
 
 template <typename T, typename C, size_t M>
 const C& Grid<T, C, M>::getCell(const Index& idx) const throw
-  (OutOfBoundException<Index>) {
+    (OutOfBoundException<Index>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
@@ -177,7 +178,7 @@ C& Grid<T, C, M>::operator [] (const Index& idx) {
 
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::Index Grid<T, C, M>::getIndex(const Coordinate& point)
-  const throw (OutOfBoundException<Coordinate>) {
+      const throw (OutOfBoundException<Coordinate>) {
   if (!isInRange(point))
     throw OutOfBoundException<Coordinate>(point,
       "Grid<T, C, M>::getIndex(): point out of range", __FILE__, __LINE__);
@@ -202,7 +203,7 @@ C& Grid<T, C, M>::operator () (const Coordinate& point) {
 
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::Coordinate Grid<T, C, M>::getCoordinates(const Index&
-  idx) const throw (OutOfBoundException<Index>) {
+    idx) const throw (OutOfBoundException<Index>) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCoordinates(): index out of range",
@@ -263,6 +264,35 @@ size_t Grid<T, C, M>::computeLinearIndex(const Index& idx) const {
 
 template <typename T, typename C, size_t M>
 void Grid<T, C, M>::reset() {
-  for (CellIterator it = getCellBegin(); it != getCellEnd(); ++it)
-    it->reset();
+  for (auto it = getCellBegin(); it != getCellEnd(); ++it)
+    *it = C();
+}
+
+template <typename T, typename C, size_t M>
+typename Grid<T, C, M>::Index& Grid<T, C, M>::incrementIndex(Index& idx) const {
+  for (size_t i = 0; i < (size_t)idx.size(); ++i) {
+    if (idx(i) + 1 < mNumCells(i)) {
+      idx(i)++;
+      break;
+    }
+    else {
+      if (i < (size_t)idx.size() - 1)
+        idx(i) = 0;
+      else
+        idx = mNumCells;
+    }
+  }
+  return idx;
+}
+
+template <typename T, typename C, size_t M>
+template <typename Z, typename IsReal<Z>::Result::Numeric>
+Z Grid<T, C, M>::Traits::ceil(const Z& value) {
+  return ::ceil(value);
+}
+
+template <typename T, typename C, size_t M>
+template <typename Z, typename IsInteger<Z>::Result::Numeric>
+Z Grid<T, C, M>::Traits::ceil(const Z& value) {
+  return ::ceil(value) + 1;
 }

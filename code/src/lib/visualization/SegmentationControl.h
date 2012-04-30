@@ -27,16 +27,13 @@
 #include "base/Singleton.h"
 #include "visualization/GLView.h"
 #include "visualization/Scene.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
 #include "data-structures/Component.h"
-#include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
-#include "helpers/RandomColors.h"
-
-#include <vector>
+#include "data-structures/DEMGraph.h"
 
 class Ui_SegmentationControl;
+class Cell;
+template <typename T, typename C, size_t M> class TransGrid;
 
 /** The SegmentationControl class represents a Qt control for segmentation.
     \brief Qt control for segmentation
@@ -93,13 +90,11 @@ protected:
   /// Qt user interface
   Ui_SegmentationControl* mUi;
   /// DEM
-  Grid<double, Cell, 2> mDEM;
+  TransGrid<double, Cell, 2>* mDEM;
   /// Segmented components
   GraphSegmenter<DEMGraph>::Components mComponents;
   /// Segmentation parameter
   double mK;
-  /// Vector of random colors
-  std::vector<Helpers::Color> mColors;
   /** @}
     */
 
@@ -110,7 +105,7 @@ protected slots:
   /// Renders the segmentation
   void render(GLView& view, Scene& scene);
   /// DEM updated
-  void demUpdated(const Grid<double, Cell, 2>& dem);
+  void demUpdated(const TransGrid<double, Cell, 2>& dem);
   /// Segmentation parameter changed
   void kChanged(double value);
   /// Show the segmentation
@@ -123,9 +118,8 @@ signals:
     @{
     */
   /// Segmentation updated
-  void segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-    const GraphSegmenter<DEMGraph>::Components& components, const
-    std::vector<Helpers::Color>& colors);
+  void segmentUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const GraphSegmenter<DEMGraph>::Components& components);
   /** @}
     */
 

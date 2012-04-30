@@ -26,8 +26,10 @@
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 #include "utils/IfThenElse.h"
 #include "utils/IsReal.h"
+#include "utils/IsInteger.h"
 
 /** The UniformDistribution1v class represents an interface to the univariate
     uniform distributions.
@@ -39,42 +41,44 @@ template <typename X> class UniformDistribution<X> :
   public SampleDistribution<X>,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef typename IfThenElse<typename IsReal<X>::Result,
+    ContinuousDistribution<X>, DiscreteDistribution<X> >::Result
+    DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Variance type
+  typedef typename DistributionType::Variance Variance;
+  /// Mode type
+  typedef typename DistributionType::Mode Mode;
+  /// Median type
+  typedef typename DistributionType::Median Median;
+  /** @}
+    */
+
   /** \name Traits
     @{
     */
-  /// Mapping in case one calls the pdf instead of pmf
-  template <typename U, size_t D = 0> struct Traits {
+  /// Specialization for integer or real types
+  struct Traits {
   public:
-    /// Access the probablity density function at the given value
-    static double pdf(const UniformDistribution<U>& distribution, U value);
-    /// Access the probablity mass function at the given value
-    static double pmf(const UniformDistribution<U>& distribution, U value);
-    /// Returns the variance of the distribution
-    static double getVariance(const UniformDistribution<U>& distribution);
-  };
-  /// Mapping in case one calls the pmf instead of pdf
-  template <size_t D> struct Traits<float, D> {
-  public:
-    /// Access the probablity density function at the given value
-    static double pdf(const UniformDistribution<float>& distribution,
-      float value);
-    /// Access the probablity mass function at the given value
-    static double pmf(const UniformDistribution<float>& distribution,
-      float value);
-    /// Returns the variance of the distribution
-    static double getVariance(const UniformDistribution<float>& distribution);
-  };
-  /// Mapping in case one calls the pmf instead of pdf
-  template <size_t D> struct Traits<double, D> {
-  public:
-    /// Access the probablity density function at the given value
-    static double pdf(const UniformDistribution<double>& distribution,
-      double value);
-    /// Access the probablity mass function at the given value
-    static double pmf(const UniformDistribution<double>& distribution,
-      double value);
-    /// Returns the variance of the distribution
-    static double getVariance(const UniformDistribution<double>& distribution);
+    /// Get support area for real types
+    template <typename Z, typename IsReal<Z>::Result::Numeric>
+      static Z getSupportArea(const Z& minSupport, const Z& maxSupport);
+    /// Get support area for integer types
+    template <typename Z, typename IsInteger<Z>::Result::Numeric>
+      static Z getSupportArea(const Z& minSupport, const Z& maxSupport);
+    /// Get variance for real types
+    template <typename Z, typename IsReal<Z>::Result::Numeric>
+      static double getVariance(const Z& minSupport, const Z& maxSupport);
+    /// Get variance for integer types
+    template <typename Z, typename IsInteger<Z>::Result::Numeric>
+      static double getVariance(const Z& minSupport, const Z& maxSupport);
   };
   /** @}
     */
@@ -83,11 +87,12 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  UniformDistribution(const X& minSupport = X(0), const X& maxSupport = X(1));
+  UniformDistribution(const RandomVariable& minSupport = X(0), const
+    RandomVariable& maxSupport = X(1));
   /// Copy constructor
-  UniformDistribution(const UniformDistribution<X>& other);
+  UniformDistribution(const UniformDistribution& other);
   /// Assignment operator
-  UniformDistribution& operator = (const UniformDistribution<X>& other);
+  UniformDistribution& operator = (const UniformDistribution& other);
   /// Destructor
   virtual ~UniformDistribution();
   /** @}
@@ -97,30 +102,32 @@ public:
     @{
     */
   /// Sets the support of the distribution
-  void setSupport(const X& minSupport, const X& maxSupport)
-    throw (BadArgumentException<X>);
+  void setSupport(const RandomVariable& minSupport, const RandomVariable&
+    maxSupport) throw (BadArgumentException<RandomVariable>);
   /// Sets the minimum support
-  void setMinSupport(const X& minSupport);
+  void setMinSupport(const RandomVariable& minSupport);
   /// Returns the minimum support
-  const X& getMinSupport() const;
+  const RandomVariable& getMinSupport() const;
   /// Sets the maximum support
-  void setMaxSupport(const X& maxSupport);
+  void setMaxSupport(const RandomVariable& maxSupport);
   /// Returns the maximum support
-  const X& getMaxSupport() const;
+  const RandomVariable& getMaxSupport() const;
+  /// Returns the support area
+  const X& getSupportArea() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  Mean getMean() const;
   /// Returns the median of the distribution
-  double getMedian() const;
+  Median getMedian() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  Mode getMode() const throw (InvalidOperationException);
   /// Returns the variance of the distribution
-  double getVariance() const;
+  Variance getVariance() const;
   /// Access the probablity density function at the given value
-  virtual double pdf(const X& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the probablity mass function at the given value
-  virtual double pmf(const X& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  virtual X getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
@@ -143,9 +150,11 @@ protected:
     @{
     */
   /// Minimum support of the distribution
-  X mMinSupport;
+  RandomVariable mMinSupport;
   /// Maximum support of the distribution
-  X mMaxSupport;
+  RandomVariable mMaxSupport;
+  /// Support area
+  RandomVariable mSupportArea;
   /** @}
     */
 

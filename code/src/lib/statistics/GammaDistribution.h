@@ -28,6 +28,7 @@
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /** The GammaDistribution class represents a gamma distribution,
     i.e., a continuous distribution that models waiting times, e.g., the
@@ -46,9 +47,9 @@ public:
   /// Constructs distribution from parameters
   GammaDistribution(const T& shape = T(1), double invScale = 1.0);
   /// Copy constructor
-  GammaDistribution(const GammaDistribution<T>& other);
+  GammaDistribution(const GammaDistribution& other);
   /// Assignment operator
-  GammaDistribution<T>& operator = (const GammaDistribution<T>& other);
+  GammaDistribution& operator = (const GammaDistribution& other);
   /// Destructor
   virtual ~GammaDistribution();
   /** @}
@@ -68,23 +69,33 @@ public:
   /// Returns the normalizer
   double getNormalizer() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  Mean getMean() const;
   /// Returns the mode of the distribution
-  virtual double getMode() const;
+  Mode getMode() const throw (InvalidOperationException);
   /// Returns the variance of the distribution
-  double getVariance() const;
+  Variance getVariance() const;
   /// Access the probablity density function at the given value
-  virtual double pdf(const double& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probablity density function at the given value
-  double logpdf(const double& value) const;
+  double logpdf(const RandomVariable& value) const;
   /// Access the cumulative density function at the given value
-  double cdf(const double& value) const;
+  double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  virtual double getSample() const;
+  virtual RandomVariable getSample() const;
+  /// Returns the KL-divergence with another distribution
+  double KLDivergence(const GammaDistribution<T>& other) const;
   /** @}
     */
 
 protected:
+  /** \name Protected methods
+    @{
+    */
+  /// Compute normalizer
+  void computeNormalizer();
+  /** @}
+    */
+
   /** \name Stream methods
     @{
     */

@@ -23,9 +23,9 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <QtCore/QObject>
-
 #include <vector>
+
+#include <QtCore/QObject>
 
 class GLView;
 
@@ -34,7 +34,9 @@ class GLView;
   */
 class Scene :
   public QObject {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */

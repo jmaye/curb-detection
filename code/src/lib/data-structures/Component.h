@@ -24,9 +24,9 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "base/Serializable.h"
-
 #include <vector>
+
+#include "base/Serializable.h"
 
 /** The class Component represents a graph component, i.e., a collection of
     vertices and some property.

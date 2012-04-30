@@ -18,11 +18,11 @@
 
 #include "visualization/PointCloudControl.h"
 
-#include "ui_PointCloudControl.h"
+#include <fstream>
 
 #include <QtGui/QFileDialog>
 
-#include <fstream>
+#include "ui_PointCloudControl.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */

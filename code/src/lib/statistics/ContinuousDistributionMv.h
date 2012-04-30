@@ -35,10 +35,9 @@ template <typename X, size_t M, size_t N> class ContinuousDistribution :
     @{
     */
   /// Copy constructor
-  ContinuousDistribution(const ContinuousDistribution<X, M, N>& other);
+  ContinuousDistribution(const ContinuousDistribution& other);
   /// Assignment operator
-  ContinuousDistribution& operator =
-    (const ContinuousDistribution<X, M, N>& other);
+  ContinuousDistribution& operator = (const ContinuousDistribution& other);
   /** @}
     */
 
@@ -48,6 +47,16 @@ public:
     */
   /// Distribution type
   typedef ContinuousDistribution<X, M, N> DistributionType;
+  /// Random variable type
+  typedef Eigen::Matrix<X, M, N> RandomVariable;
+  /// Mean type
+  typedef Eigen::Matrix<double, M, N> Mean;
+  /// Covariance type
+  typedef Eigen::Matrix<double, M, M> Covariance;
+  /// Mode type
+  typedef Eigen::Matrix<X, M, N> Mode;
+  /// Median type
+  typedef Eigen::Matrix<double, M, N> Median;
   /** @}
     */
 
@@ -65,7 +74,7 @@ public:
     @{
     */
   /// Access the probablity density function at the given value
-  virtual double pdf(const Eigen::Matrix<X, M, N>& value) const = 0;
+  virtual double pdf(const RandomVariable& value) const = 0;
   /// Interface to function
   virtual double getValue(const Eigen::Matrix<X, M, N>& argument) const;
   /** @}

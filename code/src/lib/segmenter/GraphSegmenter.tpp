@@ -33,35 +33,34 @@ double GraphSegmenter<G>::getTau(const Component<V, double>& c) {
 
 template <typename G>
 double GraphSegmenter<G>::getMInt(const Component<V, double>& c1, const
-  Component<V, double>& c2) {
+    Component<V, double>& c2) {
   return std::min(c1.getProperty() + getTau(c1), c2.getProperty() + getTau(c2));
 }
 
 template <typename G>
-void GraphSegmenter<G>::segment(const G& graph, Components& components,
-  Vertices& vertices, double k) throw (BadArgumentException<double>) {
+void GraphSegmenter<G>::segment(G& graph, Components& components,
+    Vertices& vertices, double k) throw (BadArgumentException<double>) {
   if (k < 0)
     throw BadArgumentException<double>(k,
       "GraphSegmenter<G>::segment(): k must be positive", __FILE__, __LINE__);
   std::multimap<double, E> edges;
-  for (CstItE it = graph.getEdgeBegin(); it != graph.getEdgeEnd(); ++it) {
+  for (auto it = graph.getEdgeBegin(); it != graph.getEdgeEnd(); ++it) {
     const E e = graph.getEdge(it);
     edges.insert(std::pair<double, E>(graph.getEdgeProperty(e), e));
   }
   components.clear();
-  for (CstItV it = vertices.begin(); it != vertices.end(); ++it)
+  for (auto it = vertices.begin(); it != vertices.end(); ++it)
     components[it->second] = Component<V, double>(it->first);
   mK = k;
-  typename std::multimap<double, E>::const_iterator it;
-  for (it = edges.begin(); it != edges.end(); ++it) {
+  for (auto it = edges.begin(); it != edges.end(); ++it) {
     const E& e = it->second;
     const V& v1 = graph.getHeadVertex(e);
     const size_t c1  = vertices[v1];
     const V& v2 = graph.getTailVertex(e);
     const size_t c2 = vertices[v2];
     if (c1 != c2 && it->first <= getMInt(components[c1], components[c2])) {
-      for (CstItCV itC = components[c2].getVertexBegin();
-        itC != components[c2].getVertexEnd(); ++itC)
+      for (auto itC = components[c2].getVertexBegin();
+          itC != components[c2].getVertexEnd(); ++itC)
         vertices[*itC] = c1;
       const double maxInt = std::max(components[c1].getProperty(),
         components[c2].getProperty());

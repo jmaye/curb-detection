@@ -23,11 +23,11 @@
 #ifndef COLORCHOOSER_H
 #define COLORCHOOSER_H
 
-#include "visualization/Palette.h"
-
 #include <QtCore/QSignalMapper>
 #include <QtGui/QWidget>
 #include <QtGui/QGridLayout>
+
+#include "visualization/Palette.h"
 
 /** The ColorChooser class represents a color chooser widget for Qt.
     \brief Color chooser widget for Qt

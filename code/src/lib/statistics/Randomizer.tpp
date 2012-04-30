@@ -26,16 +26,16 @@
 
 template <typename T, size_t M>
 Randomizer<T, M>::Randomizer(const T& seed) :
-  mSeed(seed) {
+    mSeed(seed) {
 }
 
 template <typename T, size_t M>
-Randomizer<T, M>::Randomizer(const Randomizer<T, M>& other) :
-  mSeed(other.mSeed) {
+Randomizer<T, M>::Randomizer(const Randomizer& other) :
+    mSeed(other.mSeed) {
 }
 
 template <typename T, size_t M>
-Randomizer<T, M>& Randomizer<T, M>::operator = (const Randomizer<T, M>& other) {
+Randomizer<T, M>& Randomizer<T, M>::operator = (const Randomizer& other) {
   if (this != &other) {
     mSeed = other.mSeed;
   }
@@ -95,19 +95,19 @@ T Randomizer<T, M>::getSeed() {
 
 template <typename T, size_t M>
 T Randomizer<T, M>::sampleUniform(const T& minSupport, const T& maxSupport)
-  const throw (BadArgumentException<T>) {
+    const throw (BadArgumentException<T>) {
   if (minSupport >= maxSupport)
     throw BadArgumentException<T>(minSupport,
       "Randomizer<T, M>::sampleUniform(): minimum support must be smaller "
       "than maximum support",
       __FILE__, __LINE__);
-  return minSupport + Traits<T>::round(random() / (double)RAND_MAX *
-    (maxSupport - minSupport));
+  return minSupport + Traits::template round<T, true>(random() /
+    (double)RAND_MAX * (maxSupport - minSupport));
 }
 
 template <typename T, size_t M>
 T Randomizer<T, M>::sampleNormal(const T& mean, const T& variance) const
-  throw (BadArgumentException<T>) {
+    throw (BadArgumentException<T>) {
   if (variance <= 0)
     throw BadArgumentException<T>(variance,
       "Randomizer<T, M>::sampleNormal(): variance must be strictly positive",
@@ -119,45 +119,34 @@ T Randomizer<T, M>::sampleNormal(const T& mean, const T& variance) const
     s = u * u + v * v;
   }
   while (s >= 1.0 || s == 0.0);
-  return Traits<T>::round(mean + sqrt(variance) * u * sqrt(-2.0 * log(s) / s));
+  return Traits::template round<T, true>(mean + sqrt(variance) * u *
+    sqrt(-2.0 * log(s) / s));
 }
 
 template <typename T, size_t M>
-Eigen::Matrix<size_t, M, 1> Randomizer<T, M>::sampleCategorical(const
-  Eigen::Matrix<double, M, 1>& successProbabilities) const
-  throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
-  if (fabs(successProbabilities.sum() - 1.0) >
-    std::numeric_limits<double>::epsilon() ||
-    (successProbabilities.cwise() < 0).any() == true)
+size_t Randomizer<T, M>::sampleCategorical(const
+    Eigen::Matrix<double, M, 1>& probabilities) const
+    throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+  if (fabs(probabilities.sum() - 1.0) > 1e-12 ||
+      (probabilities.cwise() < 0).any())
     throw BadArgumentException<Eigen::Matrix<double, M, 1> >(
-      successProbabilities,
+      probabilities,
       "Randomizer<T, M>::sampleCategorical: success probabilities must sum "
       "to 1 and probabilities bigger or equal to 0",
       __FILE__, __LINE__);
-  Eigen::Matrix<double, Eigen::Dynamic, 1> cumProbabilities =
-    Eigen::Matrix<double, Eigen::Dynamic, 1>::Zero(successProbabilities.size()
-      + 1);
-  double sum = 0.0;
-  for (size_t i = 1; i < (size_t)successProbabilities.size() + 1; ++i) {
-    sum += successProbabilities(i - 1);
-    cumProbabilities(i) += sum;
-  }
+  double sum = probabilities(0);
   const double u = sampleUniform();
-  Eigen::Matrix<size_t, M, 1> sample =
-    Eigen::Matrix<size_t, M, 1>::Zero(successProbabilities.size());
-  for (size_t i = 1; i < (size_t)cumProbabilities.size(); ++i) {
-    if (u > cumProbabilities(i - 1) && u <= cumProbabilities(i)) {
-      sample(i - 1)++;
-      return sample;
-    }
-  }
-  sample(successProbabilities.size() - 1)++;
-  return sample;
+  for (size_t i = 1; i < (size_t)probabilities.size(); ++i)
+    if (u > sum)
+      sum += probabilities(i);
+    else
+      return i - 1;
+  return probabilities.size() - 1;
 }
 
 template <typename T, size_t M>
 size_t Randomizer<T, M>::samplePoisson(double mean) const
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (mean <= 0)
     throw BadArgumentException<double>(mean,
       "Randomizer<T, M>::samplePoisson(): mean must be strictly positive",
@@ -175,7 +164,7 @@ size_t Randomizer<T, M>::samplePoisson(double mean) const
 
 template <typename T, size_t M>
 double Randomizer<T, M>::sampleExponential(double rate) const
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (rate <= 0)
     throw BadArgumentException<double>(rate,
       "Randomizer<T, M>::sampleExponential(): rate must be strictly positive",
@@ -189,10 +178,10 @@ double Randomizer<T, M>::sampleExponential(double rate) const
 }
 
 template <typename T, size_t M>
-size_t Randomizer<T, M>::sampleGeometric(double successProbability) const
-  throw (BadArgumentException<double>) {
-  if (successProbability <= 0.0 || successProbability > 1.0)
-    throw BadArgumentException<double>(successProbability,
+size_t Randomizer<T, M>::sampleGeometric(double probability) const
+    throw (BadArgumentException<double>) {
+  if (probability <= 0.0 || probability > 1.0)
+    throw BadArgumentException<double>(probability,
       "Randomizer<T, M>::sampleGeometric(): success probability must be "
       "between 0 and 1",
       __FILE__, __LINE__);
@@ -201,12 +190,12 @@ size_t Randomizer<T, M>::sampleGeometric(double successProbability) const
     u = sampleUniform();
   }
   while (u == 0);
-  return floor(log(u) / log(1 - successProbability));
+  return floor(log(u) / log(1 - probability));
 }
 
 template <typename T, size_t M>
 double Randomizer<T, M>::sampleGamma(double shape, double invScale) const
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (shape <= 0)
     throw BadArgumentException<double>(shape,
       "Randomizer<T, M>::sampleGamma(): shape must be strictly positive",
@@ -223,7 +212,7 @@ double Randomizer<T, M>::sampleGamma(double shape, double invScale) const
     y += sampleExponential(1.0);
   double b = (M_E + fractionalPart) / M_E;
   double z = 0;
-  if (fabs(fractionalPart - 0) > std::numeric_limits<double>::epsilon())
+  if (fabs(fractionalPart) > std::numeric_limits<double>::epsilon())
     while (true) {
       const double p = b * sampleUniform();
       if (p > 1) {
@@ -245,19 +234,13 @@ double Randomizer<T, M>::sampleGamma(double shape, double invScale) const
 }
 
 template <typename T, size_t M>
-template <typename U, size_t D>
-U Randomizer<T, M>::Traits<U, D>::round(double value) {
-  return (U)::round(value);
-}
-
-template <typename T, size_t M>
-template <size_t D>
-float Randomizer<T, M>::Traits<float, D>::round(float value) {
+template <typename Z, typename IsReal<Z>::Result::Numeric>
+Z Randomizer<T, M>::Traits::round(const Z& value) {
   return value;
 }
 
 template <typename T, size_t M>
-template <size_t D>
-double Randomizer<T, M>::Traits<double, D>::round(double value) {
-  return value;
+template <typename Z, typename IsInteger<Z>::Result::Numeric>
+Z Randomizer<T, M>::Traits::round(const double& value) {
+  return (Z)::round(value);
 }

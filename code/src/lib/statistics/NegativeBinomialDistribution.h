@@ -39,16 +39,14 @@ public:
     @{
     */
   /// Constructs the distribution from the parameter
-  inline NegativeBinomialDistribution(size_t numTrials = 1, double
-    successProbability = 0.5);
+  NegativeBinomialDistribution(size_t numTrials = 1, double probability = 0.5);
   /// Copy constructor
-  inline NegativeBinomialDistribution(const NegativeBinomialDistribution&
-    other);
+  NegativeBinomialDistribution(const NegativeBinomialDistribution& other);
   /// Assignment operator
-  inline NegativeBinomialDistribution& operator =
+  NegativeBinomialDistribution& operator =
     (const NegativeBinomialDistribution& other);
   /// Destructor
-  inline virtual ~NegativeBinomialDistribution();
+  virtual ~NegativeBinomialDistribution();
   /** @}
     */
 
@@ -56,17 +54,19 @@ public:
     @{
     */
   /// Sets the success probability
-  inline void setSuccessProbability(double successProbability);
+  void setProbability(double probability);
   /// Returns the success probability
-  inline double getSuccessProbability() const;
+  double getProbability() const;
   /// Returns the mean of the distribution
-  inline double getMean() const;
+  double getMean() const;
   /// Returns the mode of the distribution
-  inline double getMode() const;
+  int getMode() const;
   /// Returns the variance of the distribution
-  inline double getVariance() const;
+  double getVariance() const;
   /// Access a sample drawn from the distribution
-  inline virtual Eigen::Matrix<size_t, 2, 1> getSample() const;
+  virtual Eigen::Matrix<int, 2, 1> getSample() const;
+  /// Access the cumulative mass function at the given value
+  double cmf(const int& value) const;
   /** @}
     */
 
@@ -75,13 +75,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

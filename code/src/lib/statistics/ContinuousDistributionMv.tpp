@@ -34,6 +34,6 @@ ContinuousDistribution<X, M, N>::~ContinuousDistribution() {
 
 template <typename X, size_t M, size_t N>
 double ContinuousDistribution<X, M, N>::getValue(const Eigen::Matrix<X, M, N>&
-  argument) const {
+    argument) const {
   return pdf(argument);
 }

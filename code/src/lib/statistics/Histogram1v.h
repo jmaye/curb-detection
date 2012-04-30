@@ -17,56 +17,24 @@
  ******************************************************************************/
 
 /** \file Histogram1v.h
-    \brief This file contains the definition of an univariate histogram
+    \brief This file contains the definition of a univariate histogram
   */
 
-#include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/OutOfBoundException.h"
-
-#include <Eigen/Core>
-
-#include <vector>
+#include "data-structures/Grid.h"
 
 /** The Histogram1v class defines univariate histograms
-    \brief 1-v histogram
+    \brief Univariate histogram
   */
 template <typename T> class Histogram<T, 1> :
-  public virtual Serializable {
+  public Grid<T, double, 1> {
 public:
-  /** \name Traits
+  /** \name Types definitions
     @{
     */
-  /// Computing for all integer types
-  template <typename U, size_t D = 0> struct Traits {
-  public:
-    /// Bin computing function
-    static size_t computeNumBins(const Histogram<U, 1>& hist);
-    /// Add sample to the histogram
-    static void addSample(Histogram<U, 1>& hist, U sample);
-    /// Returns the value at the center of a bin
-    static double getBinCenter(const Histogram<U, 1>& hist, size_t bin);
-  };
-  /// Computing for float type
-  template <size_t D> struct Traits<float, D> {
-  public:
-    /// Bin computing function
-    static size_t computeNumBins(const Histogram<float, 1>& hist);
-    /// Add sample to the histogram
-    static void addSample(Histogram<float, 1>& hist, float sample);
-    /// Returns the value at the center of a bin
-    static double getBinCenter(const Histogram<float, 1>& hist, size_t bin);
-  };
-  /// Computing for double type
-  template <size_t D> struct Traits<double, D> {
-  public:
-    /// Bin computing function
-    static size_t computeNumBins(const Histogram<double, 1>& hist);
-    /// Add sample to the histogram
-    static void addSample(Histogram<double, 1>& hist, double sample);
-    /// Returns the value at the center of a bin
-    static double getBinCenter(const Histogram<double, 1>& hist, size_t bin);
-  };
+  /// Coordinate type
+  typedef typename Grid<T, double, 1>::Coordinate Coordinate;
+  /// Index type
+  typedef typename Grid<T, double, 1>::Index Index;
   /** @}
     */
 
@@ -74,12 +42,11 @@ public:
     @{
     */
   /// Constructs histogram from parameters
-  Histogram(T minValue = T(0), T maxValue = T(1), T binWidth = T(1))
-    throw (BadArgumentException<T>);
+  Histogram(const T& min = T(0), const T& max = T(1), const T& binSize = T(1));
   /// Copy constructor
-  Histogram(const Histogram<T, 1>& other);
+  Histogram(const Histogram& other);
   /// Assignment operator
-  Histogram<T, 1>& operator = (const Histogram<T, 1>& other);
+  Histogram& operator = (const Histogram& other);
   /// Destructor
   virtual ~Histogram();
   /** @}
@@ -88,100 +55,26 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the minimum value of the histogram
-  T getMinValue() const;
-  /// Returns the maximum value of the histogram
-  T getMaxValue() const;
-  /// Returns the bin width of the histogram
-  T getBinWidth() const;
-  /// Returns the number of bins of the histogram
-  size_t getNumBins() const;
-  /// Returns the bins of the histogram
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& getBins() const;
-  /// Sets a bin content
-  void setBinContent(size_t bin, double value)
-    throw (OutOfBoundException<size_t>);
-  /// Returns a bin content
-  double getBinContent(size_t bin) const throw (OutOfBoundException<size_t>);
-  /// Increment a bin
-  void addBinContent(size_t bin) throw (OutOfBoundException<size_t>);
-  /// Returns the normalization factor
-  double getNormFactor() const;
-  /// Returns the bins sum
-  double getBinsSum() const;
-  /// Returns the maximum bin count of the histogram
-  double getMaximumBinCount() const;
-  /// Returns the maximum bin of the histogram
-  size_t getMaximumBin() const;
-  /// Returns the minimum bin count of the histogram
-  double getMinimumBinCount() const;
-  /// Returns the minimum bin of the histogram
-  size_t getMinimumBin() const;
-  /// Returns a sample from the histogram
-  double getSample() const;
   /// Returns the mean value of the histogram
-  double getSampleMean() const;
+  double getMean() const;
+  /// Returns the median value of the histogram
+  double getMedian() const;
+  /// Returns the mode value of the histogram
+  double getMode() const;
   /// Returns the variance of the histogram
-  double getSampleVariance() const;
-  /// Returns the median of the histogram
-  double getSampleMedian() const;
-  /// Clears the histogram
-  void clear();
-  /// Gets the x value at the center of a bin
-  double getBinCenter(size_t bin) const throw (OutOfBoundException<size_t>);
-  /// Gets the x value at the start of a bin
-  T getBinStart(size_t bin) const throw (OutOfBoundException<size_t>);
-  /** @}
-    */
-
-  /** \name Methods
-    @{
-    */
+  double getVariance() const;
+  /// Returns the sum of the histogram
+  double getSum() const;
   /// Add a sample to the histogram
-  void addSample(T sample);
+  void addSample(const T& sample);
   /// Add samples to the histogram
   void addSamples(const std::vector<T>& samples);
-  /// Normalize the histogram
-  void normalize(double norm = 1.0);
-  /// Scale the histogram
-  void scale(double scale);
-  /// Add another histogram
-  void add(const Histogram<T, 1>& other);
+  /// Returns a normalized copy of the histogram
+  Histogram getNormalized() const;
   /** @}
     */
 
 protected:
-  /** \name Stream methods
-    @{
-    */
-  /// Reads from standard input
-  virtual void read(std::istream& stream);
-  /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
-  /// Reads from a file
-  virtual void read(std::ifstream& stream);
-  /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
-  /** @}
-    */
-
-  /** \name Protected members
-    @{
-    */
-  /// Minimum value to be stored
-  T mMinValue;
-  /// Maximum value to be stored
-  T mMaxValue;
-  /// Bin width
-  T mBinWidth;
-  /// Number of bins
-  size_t mNumBins;
-  /// Contains the bin values
-  Eigen::Matrix<double, Eigen::Dynamic, 1> mBins;
-  /// Normalization factor
-  double mNormFactor;
-  /** @}
-    */
 
 };
 

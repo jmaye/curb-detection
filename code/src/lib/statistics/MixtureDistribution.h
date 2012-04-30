@@ -23,12 +23,12 @@
 #ifndef MIXTUREDISTRIBUTION_H
 #define MIXTUREDISTRIBUTION_H
 
+#include <vector>
+
 #include "statistics/Distribution.h"
 #include "statistics/CategoricalDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
-
-#include <vector>
 
 /** The MixtureDistribution class represents an interface to any kind of mixture
     distributions.
@@ -41,8 +41,8 @@ public:
   /** \name Types
     @{
     */
-  /// Variable type
-  typedef typename D::VariableType VariableType;
+  /// Random variable type
+  typedef typename D::DistributionType::RandomVariable RandomVariable;
   /** @}
     */
 
@@ -79,13 +79,9 @@ public:
   /// Sets the assignments distribution
   void setAssignDistribution(const CategoricalDistribution<M>& distribution);
   /// Returns the probability density function at the given value
-  virtual double pdf(const VariableType& value) const;
-  /// Returns the log-probability density function at the given value
-  double logpdf(const VariableType& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Returns the probability mass function at the given value
-  virtual double pmf(const VariableType& value) const;
-  /// Returns the probability mass function at the given value
-  double logpmf(const VariableType& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /** @}
     */
 

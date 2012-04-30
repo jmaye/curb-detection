@@ -21,23 +21,20 @@
 /******************************************************************************/
 
 EstimatorML<PoissonDistribution>::EstimatorML() :
-  mMean(0.0),
-  mNumPoints(0),
-  mValid(false) {
+    mNumPoints(0),
+    mValid(false) {
 }
 
-EstimatorML<PoissonDistribution>::EstimatorML(const
-  EstimatorML<PoissonDistribution>& other) :
-  mMean(other.mMean),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<PoissonDistribution>::EstimatorML(const EstimatorML& other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 EstimatorML<PoissonDistribution>&
-  EstimatorML<PoissonDistribution>::operator =
-  (const EstimatorML<PoissonDistribution>& other) {
+    EstimatorML<PoissonDistribution>::operator = (const EstimatorML& other) {
   if (this != &other) {
-    mMean = other.mMean;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -55,7 +52,7 @@ void EstimatorML<PoissonDistribution>::read(std::istream& stream) {
 }
 
 void EstimatorML<PoissonDistribution>::write(std::ostream& stream) const {
-  stream << "mean " << mMean << std::endl
+  stream << "distribution: " << std::endl << mDistribution << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
@@ -78,28 +75,39 @@ bool EstimatorML<PoissonDistribution>::getValid() const {
   return mValid;
 }
 
-double EstimatorML<PoissonDistribution>::getMean() const {
-  return mMean;
+const PoissonDistribution&
+    EstimatorML<PoissonDistribution>::getDistribution() const {
+  return mDistribution;
 }
 
 void EstimatorML<PoissonDistribution>::reset() {
   mNumPoints = 0;
   mValid = false;
-  mMean = 0;
 }
 
 void EstimatorML<PoissonDistribution>::addPoint(const Point& point) {
   mNumPoints++;
-  if (mNumPoints == 1) {
-    mMean = point;
+  try {
     mValid = true;
+    double mean;
+    if (mNumPoints == 1)
+      mean = point;
+    else
+      mean = mDistribution.getMean();
+    mean += (point - mean) / mNumPoints;
+    mDistribution.setMean(mean);
   }
-  else
-    mMean += 1.0 / mNumPoints * (point - mMean);
+  catch (...) {
+    mValid = false;
+  }
 }
 
 void EstimatorML<PoissonDistribution>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+void EstimatorML<PoissonDistribution>::addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
 }

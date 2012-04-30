@@ -16,40 +16,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include <Eigen/LU>
+
 #include "functions/LogGammaFunction.h"
 #include "statistics/ChiSquareDistribution.h"
 #include "statistics/NormalDistribution.h"
-
-#include <Eigen/LU>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-StudentDistribution<M>::StudentDistribution(double degrees, const
-  Eigen::Matrix<double, M, 1>& location, const Eigen::Matrix<double, M, M>&
-  scale):
-  mLocation(location) {
+StudentDistribution<M>::StudentDistribution(double degrees, const Location&
+    location, const Scale& scale):
+    mLocation(location) {
   setDegrees(degrees);
   setScale(scale);
 }
 
 template <size_t M>
-StudentDistribution<M>::StudentDistribution(const StudentDistribution<M>&
-  other) :
-  mLocation(other.mLocation),
-  mScale(other.mScale),
-  mDegrees(other.mDegrees),
-  mInverseScale(other.mInverseScale),
-  mDeterminant(other.mDeterminant),
-  mNormalizer(other.mNormalizer),
-  mTransformation(other.mTransformation) {
+StudentDistribution<M>::StudentDistribution(const StudentDistribution& other) :
+    mLocation(other.mLocation),
+    mScale(other.mScale),
+    mDegrees(other.mDegrees),
+    mInverseScale(other.mInverseScale),
+    mDeterminant(other.mDeterminant),
+    mNormalizer(other.mNormalizer),
+    mTransformation(other.mTransformation) {
 }
 
 template <size_t M>
 StudentDistribution<M>& StudentDistribution<M>::operator = (const
-  StudentDistribution<M>& other) {
+    StudentDistribution& other) {
   if (this != &other) {
     mLocation = other.mLocation;
     mScale = other.mScale;
@@ -94,60 +92,54 @@ void StudentDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void StudentDistribution<M>::setLocation(const Eigen::Matrix<double, M, 1>&
-  location) {
+void StudentDistribution<M>::setLocation(const Location& location) {
   mLocation = location;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>& StudentDistribution<M>::getLocation() const {
+const typename StudentDistribution<M>::Location&
+    StudentDistribution<M>::getLocation() const {
   return mLocation;
 }
 
 template <size_t M>
-void StudentDistribution<M>::setScale(const Eigen::Matrix<double, M, M>&
-  scale) throw (BadArgumentException<Eigen::Matrix<double, M, M> >) {
+void StudentDistribution<M>::setScale(const Scale& scale)
+    throw (BadArgumentException<Scale>) {
   if (scale.transpose() != scale)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(scale,
+    throw BadArgumentException<Scale>(scale,
       "StudentDistribution<M>::setScale(): scale must be symmetric",
       __FILE__, __LINE__);
   mTransformation = scale.llt();
-  if (mTransformation.isPositiveDefinite() == false)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(scale,
-      "StudentDistribution<M>::setScale(): covariance must be positive "
+  if (!mTransformation.isPositiveDefinite())
+    throw BadArgumentException<Scale>(scale,
+      "StudentDistribution<M>::setScale(): scale must be positive "
       "definite",
       __FILE__, __LINE__);
-  if ((scale.diagonal().cwise() < 0).any() == true)
-    throw BadArgumentException<Eigen::Matrix<double, M, M> >(scale,
+  if ((scale.diagonal().cwise() < 0).any())
+    throw BadArgumentException<Scale>(scale,
       "StudentDistribution<M>::setScale(): elements must be positive",
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
   mInverseScale = scale.inverse();
-  const LogGammaFunction<double> logGammaFunction;
-  mNormalizer = logGammaFunction(mDegrees * 0.5) + mLocation.size() * 0.5 *
-    log(mDegrees * M_PI) + 0.5 * log(mDeterminant) - logGammaFunction(0.5 *
-    (mDegrees + mLocation.size()));
   mScale = scale;
+  computeNormalizer();
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, M>& StudentDistribution<M>::getScale()
-  const {
+const typename StudentDistribution<M>::Scale& StudentDistribution<M>::getScale()
+    const {
   return mScale;
 }
 
 template <size_t M>
 void StudentDistribution<M>::setDegrees(double degrees)
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (degrees <= 0)
     throw BadArgumentException<double>(degrees,
       "StudentDistribution<M>::setDegrees(): degrees must be strictly positive",
       __FILE__, __LINE__);
   mDegrees = degrees;
-  const LogGammaFunction<double> logGammaFunction;
-  mNormalizer = logGammaFunction(mDegrees * 0.5) + mLocation.size() * 0.5 *
-    log(mDegrees * M_PI) + 0.5 * log(mDeterminant) - logGammaFunction(0.5 *
-    (mDegrees + mLocation.size()));
+  computeNormalizer();
 }
 
 template <size_t M>
@@ -156,8 +148,8 @@ double StudentDistribution<M>::getDegrees() const {
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, M>& StudentDistribution<M>::getInverseScale()
-  const {
+const typename StudentDistribution<M>::Scale&
+    StudentDistribution<M>::getInverseScale() const {
   return mInverseScale;
 }
 
@@ -167,31 +159,38 @@ double StudentDistribution<M>::getDeterminant() const {
 }
 
 template <size_t M>
+void StudentDistribution<M>::computeNormalizer() {
+  const LogGammaFunction<double> logGammaFunction;
+  mNormalizer = logGammaFunction(mDegrees * 0.5) + mLocation.size() * 0.5 *
+    log(mDegrees * M_PI) + 0.5 * log(mDeterminant) - logGammaFunction(0.5 *
+    (mDegrees + mLocation.size()));
+}
+
+template <size_t M>
 double StudentDistribution<M>::getNormalizer() const {
   return mNormalizer;
 }
 
 template <size_t M>
-const Eigen::LLT<Eigen::Matrix<double, M, M> >&
-  StudentDistribution<M>::getTransformation() const {
+const Eigen::LLT<typename StudentDistribution<M>::Scale>&
+    StudentDistribution<M>::getTransformation() const {
   return mTransformation;
 }
 
 template <size_t M>
-double StudentDistribution<M>::pdf(const Eigen::Matrix<double, M, 1>& value)
-  const {
+double StudentDistribution<M>::pdf(const RandomVariable& value) const {
   return exp(logpdf(value));
 }
 
 template <size_t M>
-double StudentDistribution<M>::logpdf(const Eigen::Matrix<double, M, 1>& value)
-  const {
+double StudentDistribution<M>::logpdf(const RandomVariable& value) const {
   return -0.5 * (mLocation.size() + mDegrees) * log(1.0 + 1.0 / mDegrees *
     mahalanobisDistance(value)) - mNormalizer;
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> StudentDistribution<M>::getSample() const {
+typename StudentDistribution<M>::RandomVariable
+    StudentDistribution<M>::getSample() const {
   static NormalDistribution<M> normalDist(mLocation, mScale);
   static ChiSquareDistribution chi2Dist;
   normalDist.setMean(mLocation);
@@ -201,27 +200,34 @@ Eigen::Matrix<double, M, 1> StudentDistribution<M>::getSample() const {
 }
 
 template <size_t M>
-double StudentDistribution<M>::mahalanobisDistance(const
-  Eigen::Matrix<double, M, 1>& value) const {
+double StudentDistribution<M>::mahalanobisDistance(const RandomVariable& value)
+    const {
   return ((value - mLocation).transpose() * mInverseScale *
     (value - mLocation))(0, 0);
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> StudentDistribution<M>::getMean() const {
+typename StudentDistribution<M>::Mean StudentDistribution<M>::getMean() const
+    throw (InvalidOperationException) {
+  if (mDegrees > 1)
+    return mLocation;
+  else
+    throw InvalidOperationException("StudentDistribution<M>::getMean(): "
+      "degrees must be bigger than 1");
+}
+
+template <size_t M>
+typename StudentDistribution<M>::Mode StudentDistribution<M>::getMode() const {
   return mLocation;
 }
 
 template <size_t M>
-Eigen::Matrix<double, M, 1> StudentDistribution<M>::getMode() const {
-  return mLocation;
-}
-
-template <size_t M>
-Eigen::Matrix<double, M, M> StudentDistribution<M>::getCovariance()
-  const {
+typename StudentDistribution<M>::Covariance
+    StudentDistribution<M>::getCovariance() const
+    throw (InvalidOperationException) {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
   else
-    return 4 * mScale;
+    throw InvalidOperationException("StudentDistribution<M>::getCovariance(): "
+      "degrees must be bigger than 2");
 }

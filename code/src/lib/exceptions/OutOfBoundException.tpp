@@ -24,25 +24,25 @@
 
 template <typename X>
 OutOfBoundException<X>::OutOfBoundException(const X& argument, const
-  std::string& msg, const std::string& filename, size_t line) :
-  mMsg(msg),
-  mArg(argument),
-  mFilename(filename),
-  mLine(line) {
+    std::string& msg, const std::string& filename, size_t line) :
+    mMsg(msg),
+    mArg(argument),
+    mFilename(filename),
+    mLine(line) {
 }
 
 template <typename X>
-OutOfBoundException<X>::OutOfBoundException(const OutOfBoundException<X>& other)
-  throw() :
-  mMsg(other.mMsg),
-  mArg(other.mArg),
-  mFilename(other.mFilename),
-  mLine(other.mLine) {
+OutOfBoundException<X>::OutOfBoundException(const OutOfBoundException& other)
+    throw() :
+    mMsg(other.mMsg),
+    mArg(other.mArg),
+    mFilename(other.mFilename),
+    mLine(other.mLine) {
 }
 
 template <typename X>
 OutOfBoundException<X>& OutOfBoundException<X>::operator =
-  (const OutOfBoundException<X>& other) throw() {
+    (const OutOfBoundException& other) throw() {
   if (this != &other) {
     mMsg = other.mMsg;
     mArg = other.mArg;

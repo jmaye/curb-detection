@@ -21,10 +21,11 @@
 #include "helpers/InitML.h"
 #include "helpers/FGTools.h"
 #include "data-structures/PropertySet.h"
-#include "statistics/BeliefPropagation.h"
+#include "ml/BeliefPropagation.h"
 #include "data-structures/FactorGraph.h"
 #include "data-structures/Component.h"
 #include "statistics/EstimatorML.h"
+#include "segmenter/GraphSegmenter.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -35,39 +36,36 @@ Processor::Processor(const Grid<double, Cell, 2>::Coordinate& minDEM,
     const Grid<double, Cell, 2>::Coordinate& demCellSize, double k,
     size_t maxMLIter, double mlTol, bool weighted, size_t maxBPIter,
     double bpTol, bool logDomain) :
-  mMinDEM(minDEM),
-  mMaxDEM(maxDEM),
-  mDEMCellSize(demCellSize),
-  mK(k),
-  mMaxMLIter(maxMLIter),
-  mMLTol(mlTol),
-  mWeighted(weighted),
-  mMaxBPIter(maxBPIter),
-  mBPTol(bpTol),
-  mLogDomain(logDomain),
-  mDEM(mMinDEM, mMaxDEM, mDEMCellSize),
-  mGraph(mDEM),
-  mValid(false) {
+    mMinDEM(minDEM),
+    mMaxDEM(maxDEM),
+    mDEMCellSize(demCellSize),
+    mK(k),
+    mMaxMLIter(maxMLIter),
+    mMLTol(mlTol),
+    mWeighted(weighted),
+    mMaxBPIter(maxBPIter),
+    mBPTol(bpTol),
+    mLogDomain(logDomain),
+    mDEM(mMinDEM, mMaxDEM, mDEMCellSize),
+    mGraph(mDEM),
+    mValid(false) {
 }
 
 Processor::Processor(const Processor& other) :
-  mMinDEM(other.mMinDEM),
-  mMaxDEM(other.mMaxDEM),
-  mDEMCellSize(other.mDEMCellSize),
-  mK(other.mK),
-  mMaxMLIter(other.mMaxMLIter),
-  mMLTol(other.mMLTol),
-  mWeighted(other.mWeighted),
-  mMaxBPIter(other.mMaxBPIter),
-  mBPTol(other.mBPTol),
-  mLogDomain(other.mLogDomain),
-  mDEM(other.mDEM),
-  mGraph(other.mGraph),
-  mVerticesLabels(other.mVerticesLabels),
-  mCoefficients(other.mCoefficients),
-  mVariances(other.mVariances),
-  mWeights(other.mWeights),
-  mValid(other.mValid) {
+    mMinDEM(other.mMinDEM),
+    mMaxDEM(other.mMaxDEM),
+    mDEMCellSize(other.mDEMCellSize),
+    mK(other.mK),
+    mMaxMLIter(other.mMaxMLIter),
+    mMLTol(other.mMLTol),
+    mWeighted(other.mWeighted),
+    mMaxBPIter(other.mMaxBPIter),
+    mBPTol(other.mBPTol),
+    mLogDomain(other.mLogDomain),
+    mDEM(other.mDEM),
+    mGraph(other.mGraph),
+    mVerticesLabels(other.mVerticesLabels),
+    mValid(other.mValid) {
 }
 
 Processor& Processor::operator = (const Processor& other) {
@@ -85,9 +83,6 @@ Processor& Processor::operator = (const Processor& other) {
     mDEM = other.mDEM;
     mGraph = other.mGraph;
     mVerticesLabels = other.mVerticesLabels;
-    mCoefficients = other.mCoefficients;
-    mVariances = other.mVariances;
-    mWeights = other.mWeights;
     mValid = other.mValid;
   }
   return *this;
@@ -209,20 +204,6 @@ const DEMGraph::VertexContainer& Processor::getVerticesLabels() const {
   return mVerticesLabels;
 }
 
-const Eigen::Matrix<double, Eigen::Dynamic, 3>& Processor::getCoefficients()
-    const {
-  return mCoefficients;
-}
-
-const Eigen::Matrix<double, Eigen::Dynamic, 1>& Processor::getVariances()
-    const {
-  return mVariances;
-}
-
-const Eigen::Matrix<double, Eigen::Dynamic, 1>& Processor::getWeights() const {
-  return mWeights;
-}
-
 bool Processor::getValid() const {
   return mValid;
 }
@@ -234,76 +215,50 @@ bool Processor::getValid() const {
 void Processor::processPointCloud(const PointCloud<double, 3>& pointCloud) {
   mDEM.reset();
   mValid = false;
-  for (PointCloud<double, 3>::ConstPointIterator it =
-      pointCloud.getPointBegin();
-      it != pointCloud.getPointEnd(); ++it) {
+  double before = Timestamp::now();
+  for (auto it = pointCloud.getPointBegin(); it != pointCloud.getPointEnd();
+      ++it) {
     const Eigen::Matrix<double, 2, 1> point = (*it).segment(0, 2);
     if (mDEM.isInRange(point))
       mDEM(point).addPoint((*it)(2));
   }
-  // FILTERING CODE: HACK!
-  double mean = 0;
-  double variance = 0;
-  size_t count = 0;
-  const Grid<double, Cell, 2>::Index& numCells = mDEM.getNumCells();
-  for (size_t i = 0; i < numCells(0); ++i)
-    for (size_t j = 0; j < numCells(1); ++j) {
-      const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      const Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
-        .getMean();
-      const double sampleVariance = cell.getHeightEstimator().getPostPredDist()
-        .getVariance();
-      if (cell.getHeightEstimator().getValid()) {
-        mean += sampleMean;
-        variance += sampleVariance;
-        count++;
-      }
-    }
-  mean /= count;
-  variance /= count;
-  for (size_t i = 0; i < numCells(0); ++i)
-    for (size_t j = 0; j < numCells(1); ++j) {
-      const Eigen::Matrix<double, 2, 1> point = 
-        mDEM.getCoordinates((Eigen::Matrix<size_t, 2, 1>() << i, j).finished());
-      Cell& cell =
-        mDEM[(Eigen::Matrix<size_t, 2, 1>() << i, j).finished()];
-      const double sampleMean = cell.getHeightEstimator().getPostPredDist()
-        .getMean();
-      if (cell.getHeightEstimator().getValid()) {
-        if (NormalDistribution<1>(mean, variance)(sampleMean) == 0) {
-          cell.reset();
-        }
-      }
-    }
-  // FILTERING CODE: HACK!
+  double after = Timestamp::now();
+  std::cout << "DEM creation: " << after - before << std::endl;
+  const double demTime = after - before;
+  before = Timestamp::now();
   mGraph = DEMGraph(mDEM);
+  after = Timestamp::now();
+  std::cout << "Graph creation: " << after - before << std::endl;
+  const double graphTime = after - before;
+  before = Timestamp::now();
   GraphSegmenter<DEMGraph>::Components components;
   GraphSegmenter<DEMGraph>::segment(mGraph, components, mGraph.getVertices(),
     mK);
-  Eigen::Matrix<double, Eigen::Dynamic, 3> initCoefficients;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> initVariances;
-  Eigen::Matrix<double, Eigen::Dynamic, 1> initWeights;
-  EstimatorBayesImproper<LinearRegression<3>, 3>::Container points;
+  after = Timestamp::now();
+  std::cout << "Graph segmentation: " << after - before << std::endl;
+  const double segTime = after - before;
+  std::cout << "Init time: " << demTime + graphTime + segTime << std::endl;
+  before = Timestamp::now();
+  EstimatorML<LinearRegression<3> >::Container points;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
+  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>* initMixture = 0;
   if (Helpers::initML(mDEM, mGraph, components, points, pointsMapping,
-      initCoefficients, initVariances, initWeights, mWeighted)) {
-    if (initCoefficients.rows() > 1) {
-      EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>, 3,
-        Eigen::Dynamic> estMixtPlane(initCoefficients, initVariances,
-        initWeights, mMaxMLIter, mMLTol);
-      const size_t numIter = estMixtPlane.addPoints(points.begin(),
+      initMixture, mWeighted)) {
+    after = Timestamp::now();
+    std::cout << "Initial ML: " << after - before << std::endl;
+    if (initMixture->getCompDistributions().size() > 1) {
+      before = Timestamp::now();
+      EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic> >
+        estMixtPlane(*initMixture, mMaxMLIter, mMLTol);
+      const size_t numIter = estMixtPlane.addPointsEM(points.begin(),
         points.end());
+      after = Timestamp::now();
+      std::cout << "Mixture ML: " << after - before << std::endl;
       if (estMixtPlane.getValid()) {
-        mCoefficients = estMixtPlane.getCoefficients();
-        mVariances = estMixtPlane.getVariances();
-        mWeights = estMixtPlane.getWeights();
         FactorGraph factorGraph;
         DEMGraph::VertexContainer fgMapping;
-        Helpers::buildFactorGraph(mDEM, mGraph, mCoefficients, mVariances,
-          mWeights, factorGraph, fgMapping);
+        Helpers::buildFactorGraph(mDEM, mGraph, estMixtPlane.getMixtureDist(),
+          factorGraph, fgMapping);
         PropertySet opts;
         opts.set("maxiter", mMaxBPIter);
         opts.set("tol", mBPTol);
@@ -317,27 +272,27 @@ void Processor::processPointCloud(const PointCloud<double, 3>& pointCloud) {
           bp.run();
         }
         catch (dai::Exception& e) {
-          std::cout << mCoefficients << std::endl;
-          std::cout << mVariances << std::endl;
-          std::cout << mWeights << std::endl;
+          std::cout << estMixtPlane.getMixtureDist() << std::endl;
           return;
         }
         std::vector<size_t> mapState;
         mapState.reserve(factorGraph.nrVars());
         mapState = bp.findMaximum();
         mVerticesLabels.clear();
-        for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
-            mGraph.getVertexEnd(); ++it)
+        for (auto it = mGraph.getVertexBegin(); it != mGraph.getVertexEnd();
+            ++it)
           mVerticesLabels[it->first] = mapState[fgMapping[it->first]];
         mValid = true;
       }
     }
     else {
       mVerticesLabels.clear();
-      for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
-          mGraph.getVertexEnd(); ++it)
+      for (auto it = mGraph.getVertexBegin(); it != mGraph.getVertexEnd();
+          ++it)
         mVerticesLabels[it->first] = 0;
       mValid = true;
     }
   }
+  if (initMixture)
+    delete initMixture;
 }

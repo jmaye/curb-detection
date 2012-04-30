@@ -24,12 +24,14 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include <vector>
+
 #include "base/Serializable.h"
 #include "exceptions/OutOfBoundException.h"
 #include "exceptions/BadArgumentException.h"
 #include "utils/SizeTSupport.h"
-
-#include <vector>
+#include "utils/IsReal.h"
+#include "utils/IsInteger.h"
 
 /** The class Grid represents an n-dimensional grid.
     \brief An n-dimensional grid
@@ -50,6 +52,22 @@ public:
   typedef Eigen::Matrix<size_t, M, 1> Index;
   /// Coordinate type
   typedef Eigen::Matrix<T, M, 1> Coordinate;
+  /** @}
+    */
+
+  /** \name Traits
+    @{
+    */
+  /// Specialization for integer or real types
+  struct Traits {
+  public:
+    /// Ceil function for real types
+    template <typename Z, typename IsReal<Z>::Result::Numeric>
+      static Z ceil(const Z& value);
+    /// Ceil function for integer types
+    template <typename Z, typename IsInteger<Z>::Result::Numeric>
+      static Z ceil(const Z& value);
+  };
   /** @}
     */
 
@@ -121,6 +139,8 @@ public:
     */
   /// Computes linear index
   size_t computeLinearIndex(const Index& idx) const;
+  /// Increment an index
+  Index& incrementIndex(Index& idx) const;
   /// Reset the grid
   void reset();
   /** @}

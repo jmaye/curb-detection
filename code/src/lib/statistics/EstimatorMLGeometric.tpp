@@ -21,26 +21,20 @@
 /******************************************************************************/
 
 EstimatorML<GeometricDistribution>::EstimatorML() :
-  mSuccessProbability(0.0),
-  mMean(0.0),
-  mNumPoints(0),
-  mValid(false) {
+    mNumPoints(0),
+    mValid(false) {
 }
 
-EstimatorML<GeometricDistribution>::EstimatorML(const
-  EstimatorML<GeometricDistribution>& other) :
-  mSuccessProbability(other.mSuccessProbability),
-  mMean(other.mMean),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<GeometricDistribution>::EstimatorML(const EstimatorML& other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 EstimatorML<GeometricDistribution>&
-  EstimatorML<GeometricDistribution>::operator =
-  (const EstimatorML<GeometricDistribution>& other) {
+    EstimatorML<GeometricDistribution>::operator = (const EstimatorML& other) {
   if (this != &other) {
-    mSuccessProbability = other.mSuccessProbability;
-    mMean = other.mMean;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -58,7 +52,7 @@ void EstimatorML<GeometricDistribution>::read(std::istream& stream) {
 }
 
 void EstimatorML<GeometricDistribution>::write(std::ostream& stream) const {
-  stream << "success probability: " << mSuccessProbability << std::endl
+  stream << "distribution: " << std::endl << mDistribution << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
@@ -81,30 +75,39 @@ bool EstimatorML<GeometricDistribution>::getValid() const {
   return mValid;
 }
 
-double EstimatorML<GeometricDistribution>::getSuccessProbability() const {
-  return mSuccessProbability;
+const GeometricDistribution&
+    EstimatorML<GeometricDistribution>::getDistribution() const {
+  return mDistribution;
 }
 
 void EstimatorML<GeometricDistribution>::reset() {
   mNumPoints = 0;
   mValid = false;
-  mSuccessProbability = 0;
-  mMean = 0;
 }
 
 void EstimatorML<GeometricDistribution>::addPoint(const Point& point) {
   mNumPoints++;
-  if (mNumPoints == 1) {
-    mMean = point;
+  try {
     mValid = true;
+    double mean;
+    if (mNumPoints == 1)
+      mean = point;
+    else
+      mean = mDistribution.getMean();
+    mean += (point - mean) / mNumPoints;
+    mDistribution.setProbability(1.0 / (1 + mean));
   }
-  else
-    mMean += 1.0 / mNumPoints * (point - mMean);
-  mSuccessProbability = 1.0 / (1 + mMean);
+  catch (...) {
+    mValid = false;
+  }
 }
 
 void EstimatorML<GeometricDistribution>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+void EstimatorML<GeometricDistribution>::addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
 }

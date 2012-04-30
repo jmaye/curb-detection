@@ -28,7 +28,7 @@
 
 /** The InvChiSquareDistribution class represents an inverse chi-square
     distribution.
-    \brief Inverse chi-Square distribution
+    \brief Inverse chi-square distribution
   */
 class InvChiSquareDistribution :
   public InvGammaDistribution<> {
@@ -37,7 +37,7 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  InvChiSquareDistribution(size_t degrees = 1);
+  InvChiSquareDistribution(double degrees = 1);
   /// Copy constructor
   InvChiSquareDistribution(const InvChiSquareDistribution& other);
   /// Assignment operator
@@ -51,9 +51,9 @@ public:
     @{
     */
   /// Sets the degrees of freedom of the distribution
-  void setDegrees(size_t degrees);
+  void setDegrees(double degrees);
   /// Returns the degrees of freedom of the distribution
-  size_t getDegrees() const;
+  double getDegrees() const;
   /** @}
     */
 

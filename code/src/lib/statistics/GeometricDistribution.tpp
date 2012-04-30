@@ -22,19 +22,19 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-GeometricDistribution::GeometricDistribution(double successProbability) {
-  setSuccessProbability(successProbability);
+GeometricDistribution::GeometricDistribution(double probability) {
+  setProbability(probability);
 }
 
 GeometricDistribution::GeometricDistribution(const
-  GeometricDistribution& other) :
-  mSuccessProbability(other.mSuccessProbability) {
+    GeometricDistribution& other) :
+    mProbability(other.mProbability) {
 }
 
 GeometricDistribution& GeometricDistribution::operator =
-  (const GeometricDistribution& other) {
+    (const GeometricDistribution& other) {
   if (this != &other) {
-    mSuccessProbability = other.mSuccessProbability;
+    mProbability = other.mProbability;
   }
   return *this;
 }
@@ -50,7 +50,7 @@ void GeometricDistribution::read(std::istream& stream) {
 }
 
 void GeometricDistribution::write(std::ostream& stream) const {
-  stream << "success probability: " << mSuccessProbability;
+  stream << "success probability: " << mProbability;
 }
 
 void GeometricDistribution::read(std::ifstream& stream) {
@@ -64,46 +64,58 @@ void GeometricDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void GeometricDistribution::setSuccessProbability(double successProbability)
-  throw (BadArgumentException<double>) {
-  if (successProbability <= 0.0 || successProbability > 1.0)
-    throw BadArgumentException<double>(successProbability,
-      "GeometricDistribution::setSuccessProbability(): success probability "
+void GeometricDistribution::setProbability(double probability)
+    throw (BadArgumentException<double>) {
+  if (probability <= 0.0 || probability > 1.0)
+    throw BadArgumentException<double>(probability,
+      "GeometricDistribution::setProbability(): success probability "
       "must be between 0 and 1",
       __FILE__, __LINE__);
-  mSuccessProbability = successProbability;
+  mProbability = probability;
 }
 
-double GeometricDistribution::getSuccessProbability() const {
-  return mSuccessProbability;
+double GeometricDistribution::getProbability() const {
+  return mProbability;
 }
 
-double GeometricDistribution::pmf(const size_t& value) const {
-  return exp(logpmf(value));
+double GeometricDistribution::pmf(const RandomVariable& value) const {
+  if (value < 0)
+    return 0.0;
+  else
+    return exp(logpmf(value));
 }
 
-double GeometricDistribution::logpmf(const size_t& value) const {
-  return value * log(1 - mSuccessProbability) + log(mSuccessProbability);
+double GeometricDistribution::logpmf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>) {
+  if (value < 0)
+    throw BadArgumentException<RandomVariable>(value,
+      "GeometricDistribution::logpmf(): value must be bigger than 0",
+      __FILE__, __LINE__);
+  else
+    return value * log(1 - mProbability) + log(mProbability);
 }
 
-double GeometricDistribution::cdf(const size_t& value) const {
-  return 1 - pow(1 - mSuccessProbability, value + 1);
+double GeometricDistribution::cdf(const RandomVariable& value) const {
+  if (value < 0)
+    return 0.0;
+  else
+    return 1 - pow(1 - mProbability, value + 1);
 }
 
-size_t GeometricDistribution::getSample() const {
+GeometricDistribution::RandomVariable GeometricDistribution::getSample() const {
   const static Randomizer<double> randomizer;
-  return randomizer.sampleGeometric(mSuccessProbability);
+  return randomizer.sampleGeometric(mProbability);
 }
 
-double GeometricDistribution::getMean() const {
-  return (1.0 - mSuccessProbability) / mSuccessProbability;
+GeometricDistribution::Mean GeometricDistribution::getMean() const {
+  return (1.0 - mProbability) / mProbability;
 }
 
-double GeometricDistribution::getMode() const {
+GeometricDistribution::Mode GeometricDistribution::getMode() const {
   return 0;
 }
 
-double GeometricDistribution::getVariance() const {
-  return (1.0 - mSuccessProbability) / (mSuccessProbability *
-    mSuccessProbability);
+GeometricDistribution::Variance GeometricDistribution::getVariance() const {
+  return (1.0 - mProbability) / (mProbability *
+    mProbability);
 }

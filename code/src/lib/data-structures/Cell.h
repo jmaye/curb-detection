@@ -24,7 +24,7 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "statistics/EstimatorBayesImproper.h"
+#include "statistics/EstimatorBayes.h"
 #include "base/Serializable.h"
 
 /** The class Cell represents a cell of a Digital Elevation Map (DEM).
@@ -37,7 +37,7 @@ public:
     @{
     */
   /// Default constructor
-  inline Cell();
+  inline Cell(double sensorVariance = 0.0001);
   /// Copy constructor
   inline Cell(const Cell& other);
   /// Assignment operator
@@ -52,17 +52,11 @@ public:
     */
   /// Adds a point into the cell
   inline void addPoint(double point);
-  /// Returns the improper height estimator
-  inline const EstimatorBayesImproper<NormalDistribution<1> >&
+  /// Returns the height estimator
+  inline const EstimatorBayes<NormalDistribution<1> >&
     getHeightEstimator() const;
-  /** @}
-    */
-
-  /** \name Methods
-      @{
-    */
-  /// Reset the cell
-  inline void reset();
+  /// Set the sensor variance
+  inline void setSensorVariance(double sensorVariance);
   /** @}
     */
 
@@ -84,8 +78,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Improper Bayesian estimator for the height values
-  EstimatorBayesImproper<NormalDistribution<1> > mHeightEstimator;
+  /// Bayesian estimator for the height values
+  EstimatorBayes<NormalDistribution<1> > mHeightEstimator;
   /** @}
     */
 

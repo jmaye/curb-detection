@@ -20,19 +20,19 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-BernoulliDistribution::BernoulliDistribution(double successProbability) {
-  setSuccessProbability(successProbability);
+BernoulliDistribution::BernoulliDistribution(double probability) {
+  setProbability(probability);
 }
 
 BernoulliDistribution::BernoulliDistribution(const BernoulliDistribution&
-  other) : 
-  CategoricalDistribution<2>(other) {
+    other) : 
+    CategoricalDistribution<2>(other) {
 }
 
 BernoulliDistribution& BernoulliDistribution::operator =
-  (const BernoulliDistribution& other) {
+    (const BernoulliDistribution& other) {
   if (this != &other) {
-    this->CategoricalDistribution<2>::operator=(other);
+    CategoricalDistribution<2>::operator=(other);
   }
   return *this;
 }
@@ -48,7 +48,7 @@ void BernoulliDistribution::read(std::istream& stream) {
 }
 
 void BernoulliDistribution::write(std::ostream& stream) const {
-  stream << "success probability: " << mSuccessProbabilities(1);
+  stream << "success probability: " << mProbabilities(0);
 }
 
 void BernoulliDistribution::read(std::ifstream& stream) {
@@ -61,27 +61,32 @@ void BernoulliDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void BernoulliDistribution::setSuccessProbability(double successProbability) {
-  CategoricalDistribution<2>::setSuccessProbabilities(
-    Eigen::Matrix<double, 2, 1>(1.0 - successProbability, successProbability));
+void BernoulliDistribution::setProbability(double probability) {
+  CategoricalDistribution<2>::setProbabilities(
+    Eigen::Matrix<double, 2, 1>(probability, 1.0 - probability));
 }
 
-double BernoulliDistribution::getSuccessProbability() const {
-  return mSuccessProbabilities(1);
+double BernoulliDistribution::getProbability() const {
+  return mProbabilities(0);
 }
 
 double BernoulliDistribution::getMean() const {
-  return CategoricalDistribution<2>::getMean()(1);
+  return CategoricalDistribution<2>::getMean()(0);
 }
 
-double BernoulliDistribution::getMode() const {
-  if (mSuccessProbabilities(0) > mSuccessProbabilities(1))
-    return 0;
-  if (mSuccessProbabilities(0) < mSuccessProbabilities(1))
-    return 1;
-  return 0;
+int BernoulliDistribution::getMode() const {
+  return CategoricalDistribution<2>::getMode()(0);
 }
 
 double BernoulliDistribution::getVariance() const {
-  return CategoricalDistribution<2>::getCovariance()(1, 1);
+  return CategoricalDistribution<2>::getCovariance()(0, 0);
+}
+
+double BernoulliDistribution::cmf(const int& value) const {
+  if (value < 0)
+    return 0;
+  else if (value >= 0 && value < 1)
+    return mProbabilities(1);
+  else
+    return 1;
 }

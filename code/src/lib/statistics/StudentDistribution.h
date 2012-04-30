@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file StudentDistribution.h
-    \brief This file is an interface to the Student distributions
+    \brief This file is an interface to the Student's t-distributions
   */
 
 #ifndef STUDENTDISTRIBUTION_H

@@ -24,7 +24,9 @@
 #ifndef LINEARREGRESSION_H
 #define LINEARREGRESSION_H
 
-#include "statistics/NormalDistribution.h"
+#include "statistics/ContinuousDistribution.h"
+#include "functions/LinearBasisFunction.h"
+#include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
 
@@ -32,16 +34,60 @@
     \brief Multivariate linear regression
   */
 template <size_t M> class LinearRegression :
-  public NormalDistribution<1>,
+  public ContinuousDistribution<double, M>,
+  public SampleDistribution<Eigen::Matrix<double, M, 1> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef ContinuousDistribution<double, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /** @}
+    */
+
+  /** \name Traits
+    @{
+    */
+  /// Normal case
+  template <size_t N, size_t D = 0> struct Traits {
+  public:
+    /// Returns the pdf
+    static double pdf(const LinearRegression<N>& linearRegression,
+      const Eigen::Matrix<double, N, 1>& value);
+    /// Returns the log-pdf
+    static double logpdf(const LinearRegression<N>& linearRegression,
+      const Eigen::Matrix<double, N, 1>& value);
+    /// Returns a sample
+    static Eigen::Matrix<double, N, 1> getSample(const LinearRegression<N>&
+      linearRegression);
+  };
+  /// Support for N = 2
+  template <size_t D> struct Traits<2, D> {
+  public:
+    /// Returns the pdf
+    static double pdf(const LinearRegression<2>& linearRegression,
+      const Eigen::Matrix<double, 2, 1>& value);
+    /// Returns the log-pdf
+    static double logpdf(const LinearRegression<2>& linearRegression,
+      const Eigen::Matrix<double, 2, 1>& value);
+    /// Returns a sample
+    static Eigen::Matrix<double, 2, 1> getSample(const LinearRegression<2>&
+      linearRegression);
+  };
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
   /// Constructs linear regression from parameters
-  LinearRegression(const Eigen::Matrix<double, M, 1>& coefficients =
-    Eigen::Matrix<double, M, 1>::Ones(), double variance = 1.0, const
-    Eigen::Matrix<double, M, 1>& basis = Eigen::Matrix<double, M, 1>::Zero());
+  LinearRegression(const LinearBasisFunction<double, M>& linearBasisFunction =
+    LinearBasisFunction<double, M>(), double variance = 1.0,
+    const Eigen::Matrix<double, M - 1, 1>& basis =
+    Eigen::Matrix<double, M - 1, 1>::Ones());
   /// Copy constructor
   LinearRegression(const LinearRegression& other);
   /// Assignment operator
@@ -54,14 +100,25 @@ public:
   /** \name Accessors
     @{
     */
-  /// Sets the coefficients
-  void setCoefficients(const Eigen::Matrix<double, M, 1>& coefficients);
-  /// Returns the coefficients
-  const Eigen::Matrix<double, M, 1>& getCoefficients() const;
-  /// Sets the basis
-  void setBasis(const Eigen::Matrix<double, M, 1>& basis);
+  /// Returns the linear basis function
+  const LinearBasisFunction<double, M>& getLinearBasisFunction() const;
+  /// Sets the linear basis function
+  void setLinearBasisFunction(const LinearBasisFunction<double, M>&
+    linearBasisFunction);
+  /// Returns the variance
+  double getVariance() const;
+  /// Sets the variance
+  void setVariance(double variance) throw (BadArgumentException<double>);
   /// Returns the basis
-  const Eigen::Matrix<double, M, 1>& getBasis() const;
+  const Eigen::Matrix<double, M - 1, 1>& getBasis() const;
+  /// Sets the basis
+  void setBasis(const Eigen::Matrix<double, M - 1, 1>& basis);
+  /// Access the probability density function at the given value
+  virtual double pdf(const RandomVariable& value) const;
+  /// Access the log-probability density function at the given value
+  double logpdf(const RandomVariable& value) const;
+  /// Access a sample drawn from the distribution
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
@@ -83,10 +140,12 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Regression coefficients
-  Eigen::Matrix<double, M, 1> mCoefficients;
-  /// Basis
-  Eigen::Matrix<double, M, 1> mBasis;
+  /// Linear basis function
+  LinearBasisFunction<double, M> mLinearBasisFunction;
+  /// Variance
+  double mVariance;
+  /// Current basis
+  Eigen::Matrix<double, M - 1, 1> mBasis;
   /** @}
     */
 

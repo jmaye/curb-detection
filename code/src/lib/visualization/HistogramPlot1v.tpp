@@ -16,9 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <QtCore/QString>
+#include <QtCore/QVector>
 #include <qwt-qt4/qwt_plot_canvas.h>
-#include <qwt-qt4/qwt_symbol.h>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -26,30 +25,34 @@
 
 template <typename T>
 HistogramPlot<T, 1>::HistogramPlot(const std::string& title, const
-  Histogram<T, 1>& histogram) :
-  QwtPlot(0),
-  mPanner(canvas()),
-  mMagnifier(canvas()) {
-  QwtPlot::setTitle(QString(title.c_str()));
-  mXData.resize(histogram.getNumBins() + 1);
-  mYData.resize(histogram.getNumBins() + 1);
-  mXData[0] = histogram.getBinStart(0);
-  mYData[0] = histogram.getBinContent(0);
-  for (size_t i = 0; i < histogram.getNumBins(); ++i) {
-    mXData[i + 1] = histogram.getBinStart(i) + histogram.getBinWidth();
-    mYData[i + 1] = histogram.getBinContent(i);
-  }
-  mHistogram.setData(mXData, mYData);
-  mHistogram.setBrush(QBrush(QColor(Qt::blue)));
-  mHistogram.setPen(QPen(QColor(Qt::blue)));
-  mHistogram.setStyle(QwtPlotCurve::Steps);
-  mHistogram.attach(this);
+    Histogram<T, 1>& histogram) :
+    mTitle(title),
+    mHistogram(histogram),
+    mPanner(canvas()),
+    mMagnifier(canvas()) {
+  QVector<double> xData;
+  QVector<double> yData;
+  auto numCells = mHistogram.getNumCells();
+  xData.reserve(numCells(0));
+  yData.reserve(numCells(0));
+  for (auto i = (typename Histogram<T, 1>::Index() << 0).finished();
+      i != numCells; mHistogram.incrementIndex(i))
+    if (mHistogram[i]) {
+      xData.push_back(mHistogram.getCoordinates(i)(0));
+      yData.push_back(mHistogram[i]);
+    }
+  mCurve.setData(xData, yData);
+  mCurve.setBrush(QBrush(QColor(Qt::blue)));
+  mCurve.setPen(QPen(QColor(Qt::blue), 10));
+  mCurve.setStyle(QwtPlotCurve::Sticks);
+  mCurve.attach(this);
   mGrid.enableX(true);
   mGrid.enableY(true);
   mGrid.enableXMin(false);
   mGrid.enableYMin(false);
   mGrid.setMajPen(QPen(Qt::black, 0, Qt::DotLine));
   mGrid.attach(this);
+  QwtPlot::setTitle(QString(title.c_str()));
   canvas()->setLineWidth(2);
   QPalette palette = canvas()->palette();
   palette.setColor(backgroundRole(), Qt::white);
@@ -68,11 +71,12 @@ HistogramPlot<T, 1>::~HistogramPlot() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-/******************************************************************************/
-/* Methods                                                                    */
-/******************************************************************************/
+template <typename T>
+const std::string& HistogramPlot<T, 1>::getTitle() const {
+  return mTitle;
+}
 
 template <typename T>
-void HistogramPlot<T, 1>::show() {
-  QWidget::show();
+const Histogram<T, 1>& HistogramPlot<T, 1>::getHistogram() const {
+  return mHistogram;
 }

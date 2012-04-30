@@ -20,6 +20,8 @@
 
 #include "visualization/BPControl.h"
 #include "visualization/SegmentationControl.h"
+#include "data-structures/TransGrid.h"
+#include "data-structures/Cell.h"
 
 #include "ui_CurbsControl.h"
 
@@ -28,11 +30,9 @@
 /******************************************************************************/
 
 CurbsControl::CurbsControl(bool showCurbs) :
-  mUi(new Ui_CurbsControl()),
-  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
-    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)),
-  mGraph(mDEM) {
+    mUi(new Ui_CurbsControl()),
+    mDEM(0),
+    mGraph(0) {
   mUi->setupUi(this);
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
@@ -40,17 +40,16 @@ CurbsControl::CurbsControl(bool showCurbs) :
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
   connect(&BPControl::getInstance(),
-    SIGNAL(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    SIGNAL(bpUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)), this,
-    SLOT(bpUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
+    SLOT(bpUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const DEMGraph::VertexContainer&)));
   connect(&SegmentationControl::getInstance(),
-    SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&, const std::vector<Helpers::Color>&)),
+    SIGNAL(segmentUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
+    const GraphSegmenter<DEMGraph>::Components&)),
     this,
-    SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&, const
-    std::vector<Helpers::Color>&)));
+    SLOT(segmentUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
+    const GraphSegmenter<DEMGraph>::Components&)));
   setLineColor(Qt::red);
   setLineSize(1.0);
   setShowCurbs(showCurbs);
@@ -58,6 +57,10 @@ CurbsControl::CurbsControl(bool showCurbs) :
 }
 
 CurbsControl::~CurbsControl() {
+  if (mDEM)
+    delete mDEM;
+  if (mGraph)
+    delete mGraph;
   delete mUi;
 }
 
@@ -100,21 +103,20 @@ void CurbsControl::renderCurbs(double size, bool smooth) {
     glDisable(GL_LINE_SMOOTH);
   glBegin(GL_LINES);
   GLView::getInstance().setColor(mPalette, "Curb");
-  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
-  for (DEMGraph::ConstEdgeIterator it = mGraph.getEdgeBegin(); it !=
-    mGraph.getEdgeEnd(); ++it) {
-    const DEMGraph::EdgeDescriptor e = mGraph.getEdge(it);
-    const DEMGraph::VertexDescriptor& v1 = mGraph.getHeadVertex(e);
-    const DEMGraph::VertexDescriptor& v2 = mGraph.getTailVertex(e);
+  const Eigen::Matrix<double, 2, 1>& resolution = mDEM->getResolution();
+  for (auto it = mGraph->getEdgeBegin(); it != mGraph->getEdgeEnd(); ++it) {
+    const DEMGraph::EdgeDescriptor e = mGraph->getEdge(it);
+    const DEMGraph::VertexDescriptor& v1 = mGraph->getHeadVertex(e);
+    const DEMGraph::VertexDescriptor& v2 = mGraph->getTailVertex(e);
     if (mVertices[v1] != mVertices[v2]) {
-      const Eigen::Matrix<double, 2, 1> point1 =  mDEM.getCoordinates(v1);
-      const Cell& cell1 = mDEM[v1];
-      const double sampleMean1 = cell1.getHeightEstimator().getPostPredDist().
-        getMean();
-      const Eigen::Matrix<double, 2, 1> point2 =  mDEM.getCoordinates(v2);
-      const Cell& cell2 = mDEM[v2];
-      const double sampleMean2 = cell2.getHeightEstimator().getPostPredDist().
-        getMean();
+      const Eigen::Matrix<double, 2, 1> point1 = mDEM->getCoordinates(v1);
+      const Cell& cell1 = (*mDEM)[v1];
+      const double sampleMean1 =
+        std::get<0>(cell1.getHeightEstimator().getDist().getMode());
+      const Eigen::Matrix<double, 2, 1> point2 = mDEM->getCoordinates(v2);
+      const Cell& cell2 = (*mDEM)[v2];
+      const double sampleMean2 =
+        std::get<0>(cell2.getHeightEstimator().getDist().getMode());
       Eigen::Matrix<double, 2, 1> point = point1;
       if (v1(0) > v2(0))
         point(0) -= resolution(0) / 2.0;
@@ -151,23 +153,26 @@ void CurbsControl::smoothLinesToggled(bool checked) {
 }
 
 void CurbsControl::render(GLView& view, Scene& scene) {
-  if (mUi->showCurbsCheckBox->isChecked())
+  if (mUi->showCurbsCheckBox->isChecked() && mDEM)
     renderCurbs(mUi->lineSizeSpinBox->value(),
       mUi->smoothLinesCheckBox->isChecked());
 }
 
-void CurbsControl::bpUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const DEMGraph::VertexContainer& vertices) {
-  mDEM = dem;
-  mGraph = graph;
+void CurbsControl::bpUpdated(const TransGrid<double, Cell, 2>& dem, const
+    DEMGraph& graph, const DEMGraph::VertexContainer& vertices) {
+  if (mDEM)
+    delete mDEM;
+  mDEM = new TransGrid<double, Cell, 2>(dem);
+  if (mGraph)
+    delete mGraph;
+  mGraph = new DEMGraph(graph);
   mVertices = vertices;
   mUi->showCurbsCheckBox->setEnabled(true);
   GLView::getInstance().update();
 }
 
-void CurbsControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const
-  DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components, const
-  std::vector<Helpers::Color>& colors) {
+void CurbsControl::segmentUpdated(const TransGrid<double, Cell, 2>& dem, const
+  DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components) {
   mVertices.clear();
   GLView::getInstance().update();
 }

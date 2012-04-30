@@ -21,24 +21,25 @@
            with conjugate prior
   */
 
+#include <vector>
+
 #include "statistics/PoissonDistribution.h"
 #include "statistics/GammaDistribution.h"
 #include "statistics/NegativeBinomialDistribution.h"
-
-#include <vector>
 
 /** The class EstimatorBayes is implemented for Poisson distributions with
     conjugate prior.
     \brief Poisson distribution Bayesian estimator
   */
-template <> class EstimatorBayes<PoissonDistribution> :
+template <>
+class EstimatorBayes<PoissonDistribution, GammaDistribution<double> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef size_t Point;
+  typedef PoissonDistribution::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -49,30 +50,32 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs estimator with hyperparameters prior
-  inline EstimatorBayes(double alpha = 1.0, double beta = 1.0);
+  /// Constructs estimator with prior
+  EstimatorBayes(const GammaDistribution<double>& prior =
+    GammaDistribution<double>());
   /// Copy constructor
-  inline EstimatorBayes(const EstimatorBayes<PoissonDistribution>& other);
+  EstimatorBayes(const EstimatorBayes& other);
   /// Assignment operator
-  inline EstimatorBayes<PoissonDistribution>& operator =
-    (const EstimatorBayes<PoissonDistribution>& other);
+  EstimatorBayes& operator = (const EstimatorBayes& other);
   /// Destructor
-  inline virtual ~EstimatorBayes();
+  virtual ~EstimatorBayes();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Returns the posterior mean distribution
-  inline const GammaDistribution<double>& getPostMeanDist() const;
-  /// Returns the posterior predictive distribution
-  inline const NegativeBinomialDistribution& getPostPredDist() const;
+  /// Returns the mean distribution
+  const GammaDistribution<double>& getDist() const;
+  /// Returns the predictive distribution
+  NegativeBinomialDistribution getPredDist() const;
   /// Add a point to the estimator
-  inline void addPoint(const Point& point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
-  inline void addPoints(const ConstPointIterator& itStart, const
-    ConstPointIterator& itEnd);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /** @}
     */
 
@@ -81,27 +84,25 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
   /** \name Protected members
     @{
     */
-  /// Posterior mean distribution
-  GammaDistribution<double> mPostMeanDist;
-  /// Posterior predictive distribution
-  NegativeBinomialDistribution mPostPredDist;
-  /// Hyperparameter alpha (alpha - 1 prior counts)
-  double mAlpha;
-  /// Hyperparameter beta (beta prior observations)
-  double mBeta;
+  /*! \brief Mean distribution
+  *
+  * Hyperparameter alpha (alpha - 1 prior counts) and
+  * hyperparameter beta (beta prior observations)
+  */
+  GammaDistribution<double> mMeanDist;
   /** @}
     */
 

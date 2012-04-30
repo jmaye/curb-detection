@@ -16,31 +16,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "statistics/NormalDistribution.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <size_t M>
-LinearRegression<M>::LinearRegression(const Eigen::Matrix<double, M, 1>&
-  coefficients, double variance, const Eigen::Matrix<double, M, 1>& basis) :
-  NormalDistribution<1>(coefficients.dot(basis), variance),
-  mCoefficients(coefficients),
-  mBasis(basis) {
+LinearRegression<M>::LinearRegression(const LinearBasisFunction<double, M>&
+    linearBasisFunction, double variance, const Eigen::Matrix<double, M - 1, 1>&
+    basis) :
+    mLinearBasisFunction(linearBasisFunction),
+    mBasis(basis) {
+  setVariance(variance);
 }
 
 template <size_t M>
-LinearRegression<M>::LinearRegression(const LinearRegression<M>& other) :
-  NormalDistribution<1>(other),
-  mCoefficients(other.mCoefficients),
-  mBasis(other.mBasis) {
+LinearRegression<M>::LinearRegression(const LinearRegression& other) :
+    mLinearBasisFunction(other.mLinearBasisFunction),
+    mVariance(other.mVariance),
+    mBasis(other.mBasis) {
 }
 
 template <size_t M>
-LinearRegression<M>& LinearRegression<M>::operator = (const LinearRegression<M>&
-  other) {
+LinearRegression<M>& LinearRegression<M>::operator = (const LinearRegression&
+    other) {
   if (this != &other) {
-    this->NormalDistribution<1>::operator=(other);
-    mCoefficients = other.mCoefficients;
+    mLinearBasisFunction = other.mLinearBasisFunction;
+    mVariance = other.mVariance;
     mBasis = other.mBasis;
   }
   return *this;
@@ -60,9 +63,10 @@ void LinearRegression<M>::read(std::istream& stream) {
 
 template <size_t M>
 void LinearRegression<M>::write(std::ostream& stream) const {
-  stream << "coefficients: " << std::endl << mCoefficients << std::endl
-    << "basis: " << std::endl << mBasis << std::endl
-    << "variance: " << mVariance;
+  stream << "linear basis function: " << std::endl << mLinearBasisFunction
+    << std::endl
+    << "variance: " << mVariance  << std::endl
+    << "basis: " << std::endl << mBasis;
 }
 
 template <size_t M>
@@ -78,25 +82,115 @@ void LinearRegression<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void LinearRegression<M>::setCoefficients(const Eigen::Matrix<double, M, 1>&
-  coefficients) {
-  setMean(coefficients.dot(mBasis));
-  mCoefficients = coefficients;
+const LinearBasisFunction<double, M>&
+    LinearRegression<M>::getLinearBasisFunction() const {
+  return mLinearBasisFunction;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getCoefficients()
-  const {
-  return mCoefficients;
+void LinearRegression<M>::setLinearBasisFunction(const
+    LinearBasisFunction<double, M>& linearBasisFunction) {
+  mLinearBasisFunction = linearBasisFunction;
 }
 
 template <size_t M>
-void LinearRegression<M>::setBasis(const Eigen::Matrix<double, M, 1>& basis) {
-  setMean(mCoefficients.dot(basis));
+double LinearRegression<M>::getVariance() const {
+  return mVariance;
+}
+
+template <size_t M>
+void LinearRegression<M>::setVariance(double variance)
+    throw (BadArgumentException<double>) {
+  if (variance <= 0.0)
+    throw BadArgumentException<double>(variance,
+      "LinearRegression<M>::setVariance(): variance must be strictly bigger "
+      "than 0",
+      __FILE__, __LINE__);
+  mVariance = variance;
+}
+
+template <size_t M>
+const Eigen::Matrix<double, M - 1, 1>& LinearRegression<M>::getBasis() const {
+  return mBasis;
+}
+
+template <size_t M>
+void LinearRegression<M>::setBasis(const Eigen::Matrix<double, M - 1, 1>&
+    basis) {
   mBasis = basis;
 }
 
 template <size_t M>
-const Eigen::Matrix<double, M, 1>& LinearRegression<M>::getBasis() const {
-  return mBasis;
+template <size_t N, size_t D>
+double LinearRegression<M>::Traits<N, D>::pdf(const
+    LinearRegression<N>& linearRegression, const
+    Eigen::Matrix<double, N, 1>& value) {
+  return NormalDistribution<1>(linearRegression.mLinearBasisFunction(
+    value.start(value.size() - 1)),
+    linearRegression.mVariance).pdf(value.template end<1>()(0));
+}
+
+template <size_t M>
+template <size_t D>
+double LinearRegression<M>::Traits<2, D>::pdf(const
+    LinearRegression<2>& linearRegression, const Eigen::Matrix<double, 2, 1>&
+    value) {
+  return NormalDistribution<1>(
+    linearRegression.mLinearBasisFunction(value(0)),
+    linearRegression.mVariance).pdf(value(1));
+}
+
+template <size_t M>
+template <size_t N, size_t D>
+double LinearRegression<M>::Traits<N, D>::logpdf(const
+    LinearRegression<N>& linearRegression, const
+    Eigen::Matrix<double, N, 1>& value) {
+  return NormalDistribution<1>(linearRegression.mLinearBasisFunction(
+    value.start(value.size() - 1)),
+    linearRegression.mVariance).logpdf(value.template end<1>()(0));
+}
+
+template <size_t M>
+template <size_t D>
+double LinearRegression<M>::Traits<2, D>::logpdf(const
+    LinearRegression<2>& linearRegression, const Eigen::Matrix<double, 2, 1>&
+    value) {
+  return NormalDistribution<1>(
+    linearRegression.mLinearBasisFunction(value(0)),
+    linearRegression.mVariance).logpdf(value(1));
+}
+
+template <size_t M>
+template <size_t N, size_t D>
+Eigen::Matrix<double, N, 1> LinearRegression<M>::Traits<N, D>::getSample(const
+    LinearRegression<N>& linearRegression) {
+  return (Eigen::Matrix<double, N, 1>() << linearRegression.mBasis,
+    NormalDistribution<1>(linearRegression.mLinearBasisFunction(
+    linearRegression.mBasis), linearRegression.mVariance).getSample()).
+    finished();
+}
+
+template <size_t M>
+template <size_t D>
+Eigen::Matrix<double, 2, 1> LinearRegression<M>::Traits<2, D>::getSample(const
+    LinearRegression<2>& linearRegression) {
+  return Eigen::Matrix<double, 2, 1>(linearRegression.mBasis(0),
+    NormalDistribution<1>(linearRegression.mLinearBasisFunction(
+    linearRegression.mBasis(0)), linearRegression.mVariance).getSample());
+}
+
+template <size_t M>
+double LinearRegression<M>::pdf(const RandomVariable& value) const {
+  return Traits<M>::pdf(*this, value);
+}
+
+template <size_t M>
+double LinearRegression<M>::logpdf(const RandomVariable& value) const {
+  return Traits<M>::logpdf(*this, value);
+}
+
+template <size_t M>
+typename  LinearRegression<M>::RandomVariable
+    LinearRegression<M>::getSample() const {
+  return Traits<M>::getSample(*this);
 }

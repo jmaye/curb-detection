@@ -23,16 +23,21 @@
 #ifndef POINTVIEWER3D_H
 #define POINTVIEWER3D_H
 
-#include "visualization/GLView.h"
+#include <vector>
+#include <tuple>
 
-#include <Eigen/Core>
+#include "data-structures/PointCloud.h"
+#include "visualization/GLView.h"
+#include "utils/Colors.h"
 
 /** The PointViewer3d class is a plotting tool 3d points.
     \brief 3d points viewer
   */
 class PointViewer3d :
   public QObject {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
@@ -48,7 +53,10 @@ public:
     @{
     */
   /// Constructs viewer with points
-  PointViewer3d(const std::vector<Eigen::Matrix<double, 3, 1> >& data);
+  PointViewer3d(const PointCloud<>::Container& data);
+  /// Constructs viewer with points with different colors
+  PointViewer3d(const std::vector<std::tuple<PointCloud<>::Point, size_t> >&
+    data);
   /// Destructor
   virtual ~PointViewer3d();
   /** @}
@@ -63,8 +71,6 @@ public:
   void setFogColor(const QColor& color);
   /// Sets the ground color
   void setGroundColor(const QColor& color);
-  /// Sets the point color
-  void setPointColor(const QColor& color);
   /** @}
     */
 
@@ -99,8 +105,8 @@ protected:
     */
   /// GL viewer
   GLView mGLView;
-  /// Points to be displayed
-  std::vector<Eigen::Matrix<double, 3, 1> > mData;
+  /// Point cloud to be displayed
+  std::vector<std::tuple<PointCloud<>, Colors::Color> > mPointClouds;
   /// Palette
   Palette mPalette;
   /** @}

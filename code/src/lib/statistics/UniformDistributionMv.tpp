@@ -16,32 +16,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <statistics/Randomizer.h>
-
 #include <Eigen/Array>
+
+#include <statistics/Randomizer.h>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <typename X, size_t M>
-UniformDistribution<X, M>::UniformDistribution(const Eigen::Matrix<X, M, 1>&
-  minSupport, const Eigen::Matrix<X, M, 1>& maxSupport) :
-  mSupportArea(0.0) {
+UniformDistribution<X, M>::UniformDistribution(const RandomVariable& minSupport,
+    const RandomVariable& maxSupport) :
+    mSupportArea(0.0) {
   setSupport(minSupport, maxSupport);
 }
 
 template <typename X, size_t M>
-UniformDistribution<X, M>::UniformDistribution(const UniformDistribution<X, M>&
-  other) :
-  mMinSupport(other.mMinSupport),
-  mMaxSupport(other.mMaxSupport),
-  mSupportArea(other.mSupportArea) {
+UniformDistribution<X, M>::UniformDistribution(const UniformDistribution&
+    other) :
+    mMinSupport(other.mMinSupport),
+    mMaxSupport(other.mMaxSupport),
+    mSupportArea(other.mSupportArea) {
 }
 
 template <typename X, size_t M>
 UniformDistribution<X, M>& UniformDistribution<X, M>::operator =
-  (const UniformDistribution<X, M>& other) {
+    (const UniformDistribution& other) {
   if (this != &other) {
     mMaxSupport = other.mMaxSupport;
     mMinSupport = other.mMinSupport;
@@ -82,129 +82,141 @@ void UniformDistribution<X, M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename X, size_t M>
-void UniformDistribution<X, M>::setSupport(const Eigen::Matrix<X, M, 1>&
-  minSupport, const Eigen::Matrix<X, M, 1>& maxSupport)
-  throw (BadArgumentException<Eigen::Matrix<X, M, 1> >) {
+void UniformDistribution<X, M>::setSupport(const RandomVariable& minSupport,
+    const RandomVariable& maxSupport)
+    throw (BadArgumentException<RandomVariable>) {
   if ((minSupport.cwise() >= maxSupport).any())
-    throw BadArgumentException<Eigen::Matrix<X, M, 1> >(minSupport,
+    throw BadArgumentException<RandomVariable>(minSupport,
       "UniformDistribution<X, M>::setSupport(): minimum support must be "
       "smaller than maximum support",
       __FILE__, __LINE__);
   mMinSupport = minSupport;
   mMaxSupport = maxSupport;
-  mSupportArea = 1;
-  for (size_t i = 0; i < (size_t)mMinSupport.size(); ++i)
-    mSupportArea *= mMaxSupport(i) - mMinSupport(i);
+  mSupportArea = Traits::template getSupportArea<X, true>(minSupport,
+    maxSupport);
 }
 
 template <typename X, size_t M>
-void UniformDistribution<X, M>::setMinSupport(const Eigen::Matrix<X, M, 1>&
-  minSupport) {
+void UniformDistribution<X, M>::setMinSupport(const RandomVariable&
+    minSupport) {
   setSupport(minSupport, mMaxSupport);
 }
 
 template <typename X, size_t M>
-const Eigen::Matrix<X, M, 1>& UniformDistribution<X, M>::getMinSupport() const {
+const typename UniformDistribution<X, M>::RandomVariable&
+    UniformDistribution<X, M>::getMinSupport() const {
   return mMinSupport;
 }
 
 template <typename X, size_t M>
-void UniformDistribution<X, M>::setMaxSupport(const Eigen::Matrix<X, M, 1>&
-  maxSupport) {
+void UniformDistribution<X, M>::setMaxSupport(const RandomVariable&
+    maxSupport) {
   setSupport(mMinSupport, maxSupport);
 }
 
 template <typename X, size_t M>
-const Eigen::Matrix<X, M, 1>& UniformDistribution<X, M>::getMaxSupport() const {
+const typename UniformDistribution<X, M>::RandomVariable&
+    UniformDistribution<X, M>::getMaxSupport() const {
   return mMaxSupport;
 }
 
 template <typename X, size_t M>
-X UniformDistribution<X, M>::getSupportArea() const {
+const X& UniformDistribution<X, M>::getSupportArea() const {
   return mSupportArea;
 }
 
 template <typename X, size_t M>
-template <typename U, size_t D>
-double UniformDistribution<X, M>::Traits<U, D>::pdf(const
-  UniformDistribution<U, M>& distribution, const Eigen::Matrix<U, M, 1>&
-  value) {
-  return Traits<U>::pmf(distribution, value);
-}
-
-template <typename X, size_t M>
-template <typename U, size_t D>
-double UniformDistribution<X, M>::Traits<U, D>::pmf(const
-  UniformDistribution<U, M>& distribution, const Eigen::Matrix<U, M, 1>&
-  value) {
-  U supportArea = 1;
-  for (size_t i = 0; i < (size_t)distribution.mMinSupport.size(); ++i)
-    supportArea *= distribution.mMaxSupport(i) -
-      distribution.mMinSupport(i) + 1;
-  if ((value.cwise() >= distribution.mMinSupport).all() &&
-    (value.cwise() <=distribution. mMaxSupport).all())
-    return 1.0 / supportArea;
+double UniformDistribution<X, M>::pdf(const RandomVariable& value) const {
+  if ((value.cwise() <= mMaxSupport).all() &&
+      (value.cwise() >= mMinSupport).all())
+    return 1.0 / mSupportArea;
   else
-    return 0.0;
+    return 0;
 }
 
 template <typename X, size_t M>
-template <size_t D>
-double UniformDistribution<X, M>::Traits<float, D>::pdf(const
-  UniformDistribution<float, M>& distribution, const Eigen::Matrix<float, M, 1>&
-  value) {
-  if ((value.cwise() >= distribution.mMinSupport).all() &&
-    (value.cwise() <= distribution.mMaxSupport).all())
-    return 1.0 / distribution.mSupportArea;
-  else
-    return 0.0;
+double UniformDistribution<X, M>::pmf(const RandomVariable& value) const {
+  return pdf(value);
 }
 
 template <typename X, size_t M>
-template <size_t D>
-double UniformDistribution<X, M>::Traits<float, D>::pmf(const
-  UniformDistribution<float, M>& distribution, const Eigen::Matrix<float, M, 1>&
-  value) {
-  return Traits<float>::pdf(distribution, value);
-}
-
-template <typename X, size_t M>
-template <size_t D>
-double UniformDistribution<X, M>::Traits<double, D>::pdf(const
-  UniformDistribution<double, M>& distribution, const
-  Eigen::Matrix<double, M, 1>& value) {
-  if ((value.cwise() >= distribution.mMinSupport).all() &&
-    (value.cwise() <= distribution.mMaxSupport).all())
-    return 1.0 / distribution.mSupportArea;
-  else
-    return 0.0;
-}
-
-template <typename X, size_t M>
-template <size_t D>
-double UniformDistribution<X, M>::Traits<double, D>::pmf(const
-  UniformDistribution<double, M>& distribution, const
-  Eigen::Matrix<double, M, 1>& value) {
-  return Traits<double>::pdf(distribution, value);
-}
-
-template <typename X, size_t M>
-double UniformDistribution<X, M>::pdf(const Eigen::Matrix<X, M, 1>& value)
-  const {
-  return Traits<X>::pdf(*this, value);
-}
-
-template <typename X, size_t M>
-double UniformDistribution<X, M>::pmf(const Eigen::Matrix<X, M, 1>& value)
-  const {
-  return Traits<X>::pmf(*this, value);
-}
-
-template <typename X, size_t M>
-Eigen::Matrix<X, M, 1> UniformDistribution<X, M>::getSample() const {
+typename UniformDistribution<X, M>::RandomVariable
+    UniformDistribution<X, M>::getSample() const {
   const static Randomizer<X> randomizer;
-  Eigen::Matrix<X, M, 1> sample(mMinSupport.size());
-  for (size_t i = 0; i < M; ++i)
+  RandomVariable sample(mMinSupport.size());
+  for (size_t i = 0; i < (size_t)sample.size(); ++i)
     sample(i) = randomizer.sampleUniform(mMinSupport(i), mMaxSupport(i));
   return sample;
+}
+
+template <typename X, size_t M>
+typename UniformDistribution<X, M>::Mean
+    UniformDistribution<X, M>::getMean() const {
+  return 0.5 * (mMaxSupport - mMinSupport).template cast<double>();
+}
+
+template <typename X, size_t M>
+typename UniformDistribution<X, M>::Mode
+    UniformDistribution<X, M>::getMode() const
+    throw (InvalidOperationException) {
+  throw InvalidOperationException("UniformDistribution<X, M>::getMode(): "
+    "undefined mode");
+}
+
+template <typename X, size_t M>
+typename UniformDistribution<X, M>::Median
+    UniformDistribution<X, M>::getMedian() const {
+  return 0.5 * (mMaxSupport - mMinSupport).template cast<double>();
+}
+
+template <typename X, size_t M>
+typename UniformDistribution<X, M>::Covariance
+    UniformDistribution<X, M>::getCovariance() const {
+  return Traits::template getCovariance<X, true>(mMinSupport, mMaxSupport);
+}
+
+template <typename X, size_t M>
+template <typename Z, typename IsReal<Z>::Result::Numeric>
+Z UniformDistribution<X, M>::Traits::getSupportArea(
+    const Eigen::Matrix<Z, M, 1>& minSupport,
+    const Eigen::Matrix<Z, M, 1>& maxSupport) {
+  double supportArea = 1;
+  for (size_t i = 0; i < (size_t)minSupport.size(); ++i)
+    supportArea *= maxSupport(i) - minSupport(i);
+  return supportArea;
+}
+
+template <typename X, size_t M>
+template <typename Z, typename IsInteger<Z>::Result::Numeric>
+Z UniformDistribution<X, M>::Traits::getSupportArea(
+    const Eigen::Matrix<Z, M, 1>& minSupport,
+    const Eigen::Matrix<Z, M, 1>& maxSupport) {
+  double supportArea = 1;
+  for (size_t i = 0; i < (size_t)minSupport.size(); ++i)
+    supportArea *= maxSupport(i) - minSupport(i) + 1;
+  return supportArea;
+}
+
+template <typename X, size_t M>
+template <typename Z, typename IsReal<Z>::Result::Numeric>
+Eigen::Matrix<double, M, M> UniformDistribution<X, M>::Traits::getCovariance(
+    const Eigen::Matrix<Z, M, 1>& minSupport,
+    const Eigen::Matrix<Z, M, 1>& maxSupport) {
+  const Eigen::Matrix<double, M, M> covariance =
+    Eigen::Matrix<double, M, M>::Identity(minSupport.size(), minSupport.size());
+  const double supportArea =
+    Traits::template getSupportArea<Z, true>(minSupport, maxSupport);
+  return (supportArea * supportArea) / 12.0 * covariance;
+}
+
+template <typename X, size_t M>
+template <typename Z, typename IsInteger<Z>::Result::Numeric>
+Eigen::Matrix<double, M, M> UniformDistribution<X, M>::Traits::getCovariance(
+    const Eigen::Matrix<Z, M, 1>& minSupport,
+    const Eigen::Matrix<Z, M, 1>& maxSupport) {
+  const Eigen::Matrix<double, M, M> covariance =
+    Eigen::Matrix<double, M, M>::Identity(minSupport.size(), minSupport.size());
+  const double supportArea =
+    Traits::template getSupportArea<Z, true>(minSupport, maxSupport);
+  return (supportArea * supportArea - 1.0) / 12.0 * covariance;
 }

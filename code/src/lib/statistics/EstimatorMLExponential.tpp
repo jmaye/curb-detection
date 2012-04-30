@@ -21,26 +21,21 @@
 /******************************************************************************/
 
 EstimatorML<ExponentialDistribution>::EstimatorML() :
-  mRate(0.0),
-  mMean(0.0),
-  mNumPoints(0),
-  mValid(false) {
+    mNumPoints(0),
+    mValid(false) {
 }
 
-EstimatorML<ExponentialDistribution>::EstimatorML(const
-  EstimatorML<ExponentialDistribution>& other) :
-  mRate(other.mRate),
-  mMean(other.mMean),
-  mNumPoints(other.mNumPoints),
-  mValid(other.mValid) {
+EstimatorML<ExponentialDistribution>::EstimatorML(const EstimatorML& other) :
+    mDistribution(other.mDistribution),
+    mNumPoints(other.mNumPoints),
+    mValid(other.mValid) {
 }
 
 EstimatorML<ExponentialDistribution>&
-  EstimatorML<ExponentialDistribution>::operator =
-  (const EstimatorML<ExponentialDistribution>& other) {
+    EstimatorML<ExponentialDistribution>::operator = (const EstimatorML&
+    other) {
   if (this != &other) {
-    mRate = other.mRate;
-    mMean = other.mMean;
+    mDistribution = other.mDistribution;
     mNumPoints = other.mNumPoints;
     mValid = other.mValid;
   }
@@ -58,8 +53,8 @@ void EstimatorML<ExponentialDistribution>::read(std::istream& stream) {
 }
 
 void EstimatorML<ExponentialDistribution>::write(std::ostream& stream)
-  const {
-  stream << "rate: " << mRate << std::endl
+    const {
+  stream << "distribution: " << std::endl << mDistribution << std::endl
     << "number of points: " << mNumPoints << std::endl
     << "valid: " << mValid;
 }
@@ -68,7 +63,7 @@ void EstimatorML<ExponentialDistribution>::read(std::ifstream& stream) {
 }
 
 void EstimatorML<ExponentialDistribution>::write(std::ofstream& stream)
-  const {
+    const {
 }
 
 /******************************************************************************/
@@ -83,33 +78,39 @@ bool EstimatorML<ExponentialDistribution>::getValid() const {
   return mValid;
 }
 
-double EstimatorML<ExponentialDistribution>::getRate() const {
-  return mRate;
+const ExponentialDistribution&
+    EstimatorML<ExponentialDistribution>::getDistribution() const {
+  return mDistribution;
 }
 
 void EstimatorML<ExponentialDistribution>::reset() {
   mNumPoints = 0;
   mValid = false;
-  mRate = 0;
-  mMean = 0;
 }
 
 void EstimatorML<ExponentialDistribution>::addPoint(const Point& point) {
   mNumPoints++;
-  if (mNumPoints == 1)
-    mMean = point;
-  else
-    mMean += 1.0 / mNumPoints * (point - mMean);
-  if (mMean != 0) {
-    mRate = 1.0 / mMean;
+  try {
     mValid = true;
+    double mean;
+    if (mNumPoints == 1)
+      mean = point;
+    else
+      mean = mDistribution.getMean();
+    mean += (point - mean) / mNumPoints;
+    mDistribution.setRate(1 / mean);
   }
-  else
+  catch (...) {
     mValid = false;
+  }
 }
 
 void EstimatorML<ExponentialDistribution>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+    ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
+}
+
+void EstimatorML<ExponentialDistribution>::addPoints(const Container& points) {
+  addPoints(points.begin(), points.end());
 }

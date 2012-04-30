@@ -24,19 +24,19 @@
 
 template <typename X>
 GammaFunction<X>::GammaFunction(size_t dim) :
-  mDim(dim) {
+    mDim(dim) {
 }
 
 GammaFunction<size_t>::GammaFunction() {
 }
 
 template <typename X>
-GammaFunction<X>::GammaFunction(const GammaFunction<X>& other) :
-  mDim(other.mDim) {
+GammaFunction<X>::GammaFunction(const GammaFunction& other) :
+    mDim(other.mDim) {
 }
 
 template <typename X>
-GammaFunction<X>& GammaFunction<X>::operator = (const GammaFunction<X>& other) {
+GammaFunction<X>& GammaFunction<X>::operator = (const GammaFunction& other) {
   if (this != &other) {
     mDim = other.mDim;
   }
@@ -76,7 +76,7 @@ void GammaFunction<X>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename X>
-double GammaFunction<X>::getValue(const X& argument) const {
+double GammaFunction<X>::getValue(const VariableType& argument) const {
   double prod = 1.0;
   for (size_t i = 0; i < mDim; ++i) {
     prod *= tgamma(argument - 0.5 * i);
@@ -84,8 +84,8 @@ double GammaFunction<X>::getValue(const X& argument) const {
   return prod * pow(M_PI, mDim * (mDim - 1) * 0.25);
 }
 
-size_t GammaFunction<size_t>::getValue(const size_t& argument) const
-  throw (BadArgumentException<size_t>) {
+size_t GammaFunction<size_t>::getValue(const VariableType& argument) const
+    throw (BadArgumentException<size_t>) {
   if (argument)
     return FactorialFunction::getValue(argument - 1);
   else throw BadArgumentException<size_t>(argument,

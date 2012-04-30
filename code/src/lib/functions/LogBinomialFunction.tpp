@@ -32,15 +32,15 @@ LogBinomialFunction::~LogBinomialFunction() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-double LogBinomialFunction::getValue(const Eigen::Matrix<size_t, 2, 1>&
-  argument) const throw (BadArgumentException<Eigen::Matrix<size_t, 2, 1> >) {
+double LogBinomialFunction::getValue(const VariableType&
+    argument) const throw (BadArgumentException<VariableType>) {
   LogFactorialFunction logFactorial;
   if (argument(0) >= argument(1))
     return logFactorial(argument(0)) - (logFactorial(argument(1)) +
       logFactorial(argument(0) - argument(1)));
   else
-    throw BadArgumentException<Eigen::Matrix<size_t, 2, 1> >(argument,
-      "LogBinomialFunction::getValue(): "
-      "argument(0) must be larger than argument(1)",
+    throw BadArgumentException<VariableType>(argument,
+      "LogBinomialFunction::getValue(): argument(0) must be larger than "
+      "argument(1)",
       __FILE__, __LINE__);
 }

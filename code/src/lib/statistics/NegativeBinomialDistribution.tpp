@@ -18,26 +18,27 @@
 
 #include "statistics/GammaDistribution.h"
 #include "statistics/PoissonDistribution.h"
+#include "functions/IncompleteBetaFunction.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 NegativeBinomialDistribution::NegativeBinomialDistribution(size_t numTrials,
-  double successProbability) :
-  NegativeMultinomialDistribution<2>(numTrials) {
-  setSuccessProbability(successProbability);
+    double probability) :
+    NegativeMultinomialDistribution<2>(numTrials) {
+  setProbability(probability);
 }
 
 NegativeBinomialDistribution::NegativeBinomialDistribution(const
-  NegativeBinomialDistribution& other) :
-  NegativeMultinomialDistribution<2>(other) {
+    NegativeBinomialDistribution& other) :
+    NegativeMultinomialDistribution<2>(other) {
 }
 
 NegativeBinomialDistribution& NegativeBinomialDistribution::operator =
-  (const NegativeBinomialDistribution& other) {
+    (const NegativeBinomialDistribution& other) {
   if (this != &other) {
-    this->NegativeMultinomialDistribution<2>::operator=(other);
+    NegativeMultinomialDistribution<2>::operator=(other);
   }
   return *this;
 }
@@ -54,7 +55,7 @@ void NegativeBinomialDistribution::read(std::istream& stream) {
 
 void NegativeBinomialDistribution::write(std::ostream& stream) const {
   stream << "success probability: "
-    << mSuccessProbabilities(1) << std::endl
+    << mProbabilities(0) << std::endl
     << "trials number: " << mNumTrials;
 }
 
@@ -68,44 +69,45 @@ void NegativeBinomialDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void NegativeBinomialDistribution::setSuccessProbability(double
-  successProbability) {
-  Eigen::Matrix<double, 2, 1> successProbabilities;
-  successProbabilities(0) = 1.0 - successProbability;
-  successProbabilities(1) = successProbability;
-  setSuccessProbabilities(successProbabilities);
+void NegativeBinomialDistribution::setProbability(double probability) {
+  setProbabilities(Eigen::Matrix<double, 2, 1>(probability, 1.0 - probability));
 }
 
-double NegativeBinomialDistribution::getSuccessProbability() const {
-  return mSuccessProbabilities(1);
+double NegativeBinomialDistribution::getProbability() const {
+  return mProbabilities(0);
 }
 
 double NegativeBinomialDistribution::getMean() const {
-  return NegativeMultinomialDistribution<2>::getMean()(1);
+  return NegativeMultinomialDistribution<2>::getMean()(0);
 }
 
-
-
-double NegativeBinomialDistribution::getMode() const {
+int NegativeBinomialDistribution::getMode() const {
   if (mNumTrials > 1)
-    return floor(mSuccessProbabilities(1) * (mNumTrials - 1) /
-      mSuccessProbabilities(0));
+    return mProbabilities(0) * (mNumTrials - 1) / mProbabilities(1);
   else
     return 0.0;
 }
 
 double NegativeBinomialDistribution::getVariance() const {
-  return NegativeMultinomialDistribution<2>::getCovariance()(1, 1);
+  return NegativeMultinomialDistribution<2>::getCovariance()(0, 0);
 }
 
-Eigen::Matrix<size_t, 2, 1> NegativeBinomialDistribution::getSample() const {
+Eigen::Matrix<int, 2, 1> NegativeBinomialDistribution::getSample() const {
   static GammaDistribution<double> gammaDist;
   static PoissonDistribution poissonDist;
   gammaDist.setShape(mNumTrials);
-  gammaDist.setInvScale(1.0 / mSuccessProbabilities(1) - 1.0);
+  gammaDist.setInvScale(mProbabilities(1) / mProbabilities(0));
   poissonDist.setMean(gammaDist.getSample());
-  Eigen::Matrix<size_t, 2, 1> sample;
-  sample(0) = mNumTrials;
-  sample(1) = poissonDist.getSample();
+  Eigen::Matrix<int, 2, 1> sample;
+  sample(0) = poissonDist.getSample();
+  sample(1) = mNumTrials;
   return sample;
+}
+
+double NegativeBinomialDistribution::cmf(const int& value) const {
+  const IncompleteBetaFunction<double> incBetaFunction(value + 1, mNumTrials);
+  if (value < 0)
+    return 0;
+  else 
+    return 1.0 - incBetaFunction(mProbabilities(0));
 }

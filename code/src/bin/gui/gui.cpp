@@ -27,7 +27,6 @@
 #include "visualization/SegmentationControl.h"
 #include "visualization/MLControl.h"
 #include "visualization/BPControl.h"
-#include "visualization/MLBPControl.h"
 #include "visualization/CurbsControl.h"
 #include "visualization/EvaluatorControl.h"
 
@@ -39,10 +38,9 @@ int main (int argc, char** argv) {
   ViewControl viewControl;
   PointCloudControl pointCloudControl(true);
   DEMControl demControl(true);
-  SegmentationControl segControl(true);
-  MLControl mlControl(true);
+  SegmentationControl segControl(false);
+  MLControl mlControl(false);
   BPControl bpControl(true);
-  MLBPControl mlbpControl(true);
   CurbsControl curbsControl(true);
   EvaluatorControl evaluatorControl(false);
   if (argc > 1)
@@ -53,7 +51,6 @@ int main (int argc, char** argv) {
   mainWindow.addControl("Segmentation", segControl);
   mainWindow.addControl("ML", mlControl);
   mainWindow.addControl("BP", bpControl);
-  mainWindow.addControl("MLBP", mlbpControl);
   mainWindow.addControl("Curbs", curbsControl);
   mainWindow.addControl("Evaluation", evaluatorControl);
   mainWindow.show();

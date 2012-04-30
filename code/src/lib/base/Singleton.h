@@ -34,9 +34,9 @@ template <class C> class Singleton {
     @{
     */
   /// Copy constructor
-  Singleton(const Singleton<C>& other);
+  Singleton(const Singleton& other);
   /// Assignment operator
-  Singleton& operator = (const Singleton<C>& other);
+  Singleton& operator = (const Singleton& other);
   /** @}
     */
 
@@ -78,6 +78,6 @@ protected:
 
 };
 
-#include "Singleton.tpp"
+#include "base/Singleton.tpp"
 
 #endif

@@ -20,31 +20,29 @@
 #include "statistics/NormalDistribution.h"
 #include "functions/LogGammaFunction.h"
 #include "functions/GammaFunction.h"
-
-#include <gsl/gsl_sf_hyperg.h>
+#include "functions/IncompleteBetaFunction.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 StudentDistribution<1>::StudentDistribution(double degrees, double location,
-  double scale) :
-  mLocation(location) {
+    double scale) :
+    mLocation(location) {
   setScale(scale);
   setDegrees(degrees);
 }
 
-StudentDistribution<1>::StudentDistribution(const StudentDistribution<1>&
-  other) :
-  mLocation(other.mLocation),
-  mScale(other.mScale),
-  mDegrees(other.mDegrees),
-  mInverseScale(other.mInverseScale),
-  mNormalizer(other.mNormalizer) {
+StudentDistribution<1>::StudentDistribution(const StudentDistribution& other) :
+    mLocation(other.mLocation),
+    mScale(other.mScale),
+    mDegrees(other.mDegrees),
+    mInverseScale(other.mInverseScale),
+    mNormalizer(other.mNormalizer) {
 }
 
 StudentDistribution<1>& StudentDistribution<1>::operator =
-  (const StudentDistribution<1>& other) {
+    (const StudentDistribution& other) {
   if (this != &other) {
     mLocation = other.mLocation;
     mScale = other.mScale;
@@ -90,16 +88,14 @@ double StudentDistribution<1>::getLocation() const {
 }
 
 void StudentDistribution<1>::setScale(double scale)
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "StudentDistribution<1>::setScale(): scale must be strictly positive",
       __FILE__, __LINE__);
   mInverseScale = 1.0 / scale;
   mScale = scale;
-  const LogGammaFunction<double> logGammaFunction;
-  mNormalizer = logGammaFunction(mDegrees * 0.5) +  0.5 * log(mDegrees *
-    M_PI) + 0.5 * log(mScale) - logGammaFunction(0.5 * (mDegrees + 1));
+  computeNormalizer();
 }
 
 double StudentDistribution<1>::getScale() const {
@@ -107,15 +103,13 @@ double StudentDistribution<1>::getScale() const {
 }
 
 void StudentDistribution<1>::setDegrees(double degrees)
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (degrees <= 0)
     throw BadArgumentException<double>(degrees,
       "StudentDistribution<1>::setDegrees(): degrees must be strictly positive",
       __FILE__, __LINE__);
   mDegrees = degrees;
-  const LogGammaFunction<double> logGammaFunction;
-  mNormalizer = logGammaFunction(mDegrees * 0.5) +  0.5 * log(mDegrees *
-    M_PI) + 0.5 * log(mScale) - logGammaFunction(0.5 * (mDegrees + 1));
+  computeNormalizer();
 }
 
 double StudentDistribution<1>::getDegrees() const {
@@ -126,27 +120,33 @@ double StudentDistribution<1>::getInverseScale() const {
   return mInverseScale;
 }
 
+void StudentDistribution<1>::computeNormalizer() {
+  const LogGammaFunction<double> logGammaFunction;
+  mNormalizer = logGammaFunction(mDegrees * 0.5) + 0.5 * log(mDegrees *
+    M_PI) + 0.5 * log(mScale) - logGammaFunction(0.5 * (mDegrees + 1));
+}
+
 double StudentDistribution<1>::getNormalizer() const {
   return mNormalizer;
 }
 
-double StudentDistribution<1>::pdf(const double& value) const {
+double StudentDistribution<1>::pdf(const RandomVariable& value) const {
   return exp(logpdf(value));
 }
 
-double StudentDistribution<1>::logpdf(const double& value) const {
-  return -0.5 * (1 + mDegrees) * log(1.0 + 1.0 / mDegrees *
-    mahalanobisDistance(value)) - mNormalizer;
+double StudentDistribution<1>::logpdf(const RandomVariable& value) const {
+  return -0.5 * (1 + mDegrees) * log(1.0 +
+    mahalanobisDistance(value) / mDegrees) - mNormalizer;
 }
 
-double StudentDistribution<1>::cdf(const double& value) const {
-  const GammaFunction<double> gammaFunction;
-  return 0.5 + value * gammaFunction((mDegrees + 1) * 0.5) *
-    gsl_sf_hyperg_2F1(0.5, 0.5 * (mDegrees + 1), 1.5, -value * value / mDegrees)
-    / gammaFunction(0.5 * mDegrees) / sqrt(M_PI * mDegrees);
+double StudentDistribution<1>::cdf(const RandomVariable& value) const {
+  // TODO: SEEMS TO BE INCORRECT
+  const IncompleteBetaFunction<double> incBetaFunction(0.5 * mDegrees, 0.5);
+  return 1.0 - 0.5 * incBetaFunction(mDegrees / (value * value + mDegrees));
 }
 
-double StudentDistribution<1>::getSample() const {
+StudentDistribution<1>::RandomVariable StudentDistribution<1>::getSample()
+    const {
   static NormalDistribution<1> normalDist;
   static ChiSquareDistribution chi2Dist;
   normalDist.setMean(mLocation);
@@ -155,25 +155,33 @@ double StudentDistribution<1>::getSample() const {
   return normalDist.getSample() / sqrt(chi2Dist.getSample() / mDegrees);
 }
 
-double StudentDistribution<1>::mahalanobisDistance(const double& value) const {
+double StudentDistribution<1>::mahalanobisDistance(const RandomVariable& value)
+    const {
   return (value - mLocation) * mInverseScale * (value - mLocation);
 }
 
-double StudentDistribution<1>::getMean() const {
+StudentDistribution<1>::Mean StudentDistribution<1>::getMean() const
+    throw (InvalidOperationException) {
+  if (mDegrees > 1)
+    return mLocation;
+  else
+    throw InvalidOperationException("StudentDistribution<1>::getMean(): "
+      "degrees must be bigger than 1");
+}
+
+StudentDistribution<1>::Median StudentDistribution<1>::getMedian() const {
   return mLocation;
 }
 
-double StudentDistribution<1>::getMedian() const {
+StudentDistribution<1>::Mode StudentDistribution<1>::getMode() const {
   return mLocation;
 }
 
-double StudentDistribution<1>::getMode() const {
-  return mLocation;
-}
-
-double StudentDistribution<1>::getVariance() const {
+StudentDistribution<1>::Variance StudentDistribution<1>::getVariance() const
+    throw (InvalidOperationException) {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
   else
-    return 3 * mScale;
+    throw InvalidOperationException("StudentDistribution<1>::getVariance(): "
+      "degrees must be bigger than 2");
 }

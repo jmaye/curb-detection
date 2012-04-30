@@ -16,22 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include <functions/IncompleteBetaFunction.h>
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 BetaDistribution::BetaDistribution(double alpha, double beta) :
-  DirichletDistribution<2>() {
-  DirichletDistribution<2>::setAlpha(Eigen::Matrix<double, 2, 1>(alpha, beta));
+    DirichletDistribution<2>(Eigen::Matrix<double, 2, 1>(alpha, beta)) {
 }
 
 BetaDistribution::BetaDistribution(const BetaDistribution& other) :
-  DirichletDistribution<2>(other) {
+    DirichletDistribution<2>(other) {
 }
 
 BetaDistribution& BetaDistribution::operator = (const BetaDistribution& other) {
   if (this != &other) {
-    this->DirichletDistribution<2>::operator=(other);
+    DirichletDistribution<2>::operator=(other);
   }
   return *this;
 }
@@ -79,16 +80,23 @@ double BetaDistribution::getBeta() const {
 }
 
 double BetaDistribution::getMean() const {
-  return DirichletDistribution<2>::getMean()(1);
+  return DirichletDistribution<2>::getMean()(0);
 }
 
 double BetaDistribution::getMode() const {
-  if (mAlpha(0) > 1 && mAlpha(1) > 1)
-    return (mAlpha(1) - 1) / (mAlpha(0) + mAlpha(1) - 2);
-  else
-    return 0;
+  return DirichletDistribution<2>::getMode()(0);
 }
 
 double BetaDistribution::getVariance() const {
-  return DirichletDistribution<2>::getCovariance()(1, 1);
+  return DirichletDistribution<2>::getCovariance()(0, 0);
+}
+
+double BetaDistribution::cdf(const double& value) const {
+  const IncompleteBetaFunction<double> incBetaFunction(mAlpha(0), mAlpha(1));
+  if (value < 0)
+    return 0;
+  else if (value > 1)
+    return 1;
+  else 
+    return incBetaFunction(value);
 }

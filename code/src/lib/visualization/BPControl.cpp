@@ -18,49 +18,39 @@
 
 #include "visualization/BPControl.h"
 
+#include <limits>
+
 #include "visualization/MLControl.h"
+#include "statistics/MixtureDistribution.h"
+#include "statistics/LinearRegression.h"
 #include "helpers/FGTools.h"
 #include "data-structures/PropertySet.h"
-#include "statistics/BeliefPropagation.h"
+#include "ml/BeliefPropagation.h"
 #include "base/Timestamp.h"
 #include "utils/IndexHash.h"
-#include "visualization/SegmentationControl.h"
+#include "data-structures/TransGrid.h"
+#include "data-structures/Cell.h"
+#include "utils/Colors.h"
 
 #include "ui_BPControl.h"
-
-#include <limits>
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 BPControl::BPControl(bool showBP) :
-  mUi(new Ui_BPControl()),
-  mDEM(Grid<double, Cell, 2>::Coordinate(0.0, 0.0),
-    Grid<double, Cell, 2>::Coordinate(4.0, 4.0),
-    Grid<double, Cell, 2>::Coordinate(0.1, 0.1)),
-  mGraph(mDEM) {
+    mUi(new Ui_BPControl()),
+    mDEM(0),
+    mGraph(0),
+    mMixtureDist(0) {
   mUi->setupUi(this);
   connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
     this, SLOT(render(GLView&, Scene&)));
   connect(&MLControl::getInstance(),
-    SIGNAL(mlUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 3>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const std::vector<Helpers::Color>&)), this,
-    SLOT(mlUpdated(const Grid<double, Cell, 2>&, const DEMGraph&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 3>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const Eigen::Matrix<double, Eigen::Dynamic, 1>&,
-    const std::vector<Helpers::Color>&)));
-  connect(&SegmentationControl::getInstance(),
-    SIGNAL(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&, const std::vector<Helpers::Color>&)),
-    this,
-    SLOT(segmentUpdated(const Grid<double, Cell, 2>&, const DEMGraph&, const
-    GraphSegmenter<DEMGraph>::Components&, const
-    std::vector<Helpers::Color>&)));
+    SIGNAL(mlUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
+    const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&)), this,
+    SLOT(mlUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
+    const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&)));
   mMaxIter = mUi->maxIterSpinBox->value();
   mTol =  mUi->tolSpinBox->value();
   mLogDomain = mUi->logDomainCheckBox->isChecked();
@@ -81,6 +71,12 @@ BPControl::BPControl(bool showBP) :
 }
 
 BPControl::~BPControl() {
+  if (mDEM)
+    delete mDEM;
+  if (mGraph)
+    delete mGraph;
+  if (mMixtureDist)
+    delete mMixtureDist;
   delete mUi;
 }
 
@@ -96,8 +92,9 @@ void BPControl::setMaxIter(size_t maxIter) {
 void BPControl::setStrength(double strength) {
   mStrength = strength;
   mUi->strengthSpinBox->setValue(strength);
-  Helpers::buildFactorGraph(mDEM, mGraph, mCoefficients, mVariances, mWeights,
-    mFactorGraph, mFgMapping, mStrength);
+  if (mDEM)
+    Helpers::buildFactorGraph(*mDEM, *mGraph, *mMixtureDist,
+      mFactorGraph, mFgMapping, mStrength);
 }
 
 void BPControl::setTolerance(double tol) {
@@ -156,33 +153,39 @@ void BPControl::setSumProd(bool checked) {
 /******************************************************************************/
 
 void BPControl::renderBP() {
-  const Eigen::Matrix<double, 2, 1>& resolution = mDEM.getResolution();
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  for (DEMGraph::ConstVertexIterator it = mVertices.begin(); it !=
-    mVertices.end(); ++it) {
-    const Eigen::Matrix<double, 2, 1> point =  mDEM.getCoordinates(it->first);
-    const Cell& cell = mDEM[it->first];
-    const double sampleMean = cell.getHeightEstimator().getPostPredDist().
-      getMean();
+  for (auto it = mVertices.begin(); it != mVertices.end(); ++it) {
+    Grid<double, Cell, 2>::Coordinate ulPoint =
+      mDEM->getULCoordinates(it->first);
+    Grid<double, Cell, 2>::Coordinate urPoint =
+      mDEM->getURCoordinates(it->first);
+    Grid<double, Cell, 2>::Coordinate lrPoint =
+      mDEM->getLRCoordinates(it->first);
+    Grid<double, Cell, 2>::Coordinate llPoint =
+      mDEM->getLLCoordinates(it->first);
+    auto color = Colors::genColor(it->second);
     glBegin(GL_QUADS);
-    glColor3f(mColors[it->second].mRedColor, mColors[it->second].mGreenColor,
-      mColors[it->second].mBlueColor);
-    glVertex3f(point(0) + resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) + resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) - resolution(0) / 2.0, point(1) - resolution(1) / 2.0,
-      sampleMean);
-    glVertex3f(point(0) - resolution(0) / 2.0, point(1) + resolution(1) / 2.0,
-      sampleMean);
+    glColor3f(color.mRed, color.mGreen, color.mBlue);
+    glVertex3f(ulPoint(0), ulPoint(1),
+      mMixtureDist->getCompDistribution(it->second).
+      getLinearBasisFunction()(ulPoint));
+    glVertex3f(urPoint(0), urPoint(1),
+      mMixtureDist->getCompDistribution(it->second).
+      getLinearBasisFunction()(urPoint));
+    glVertex3f(lrPoint(0), lrPoint(1),
+      mMixtureDist->getCompDistribution(it->second).
+      getLinearBasisFunction()(lrPoint));
+    glVertex3f(llPoint(0), llPoint(1),
+      mMixtureDist->getCompDistribution(it->second).
+      getLinearBasisFunction()(llPoint));
     glEnd();
   }
   glPopAttrib();
 }
 
 void BPControl::render(GLView& view, Scene& scene) {
-  if (mUi->showBPCheckBox->isChecked())
+  if (mUi->showBPCheckBox->isChecked() && mDEM)
     renderBP();
 }
 
@@ -198,22 +201,25 @@ void BPControl::tolChanged(double tol) {
   setTolerance(tol);
 }
 
-void BPControl::mlUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const Eigen::Matrix<double, Eigen::Dynamic, 3>& coefficients,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& variances,
-  const Eigen::Matrix<double, Eigen::Dynamic, 1>& weights,
-  const std::vector<Helpers::Color>& colors) {
-  mDEM = dem;
-  mGraph = graph;
-  mCoefficients = coefficients;
-  mVariances = variances;
-  mWeights = weights;
-  Helpers::buildFactorGraph(dem, graph, coefficients, variances, weights,
-    mFactorGraph, mFgMapping, mStrength);
-  mColors = colors;
+void BPControl::mlUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+    mixtureDist) {
+  if (mDEM)
+    delete mDEM;
+  mDEM = new TransGrid<double, Cell, 2>(dem);
+  if (mGraph)
+    delete mGraph;
+  mGraph = new DEMGraph(graph);
+  if (mMixtureDist)
+    delete mMixtureDist;
+  mMixtureDist =
+    new MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>(mixtureDist);
+  Helpers::buildFactorGraph(dem, graph, mixtureDist, mFactorGraph, mFgMapping,
+    mStrength);
   mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
   mUi->strengthSpinBox->setEnabled(true);
+  runBP();
 }
 
 void BPControl::runBP() {
@@ -235,6 +241,7 @@ void BPControl::runBP() {
       bp.run();
     }
     catch (dai::Exception& e) {
+      std::cout << e.what() << std::endl;
       return;
     }
     const double after = Timestamp::now();
@@ -262,12 +269,11 @@ void BPControl::runBP() {
     for (size_t i = 0; i < mFactorGraph.nrVars(); ++i)
       mapState.push_back(0);
   }
-  for (DEMGraph::ConstVertexIterator it = mGraph.getVertexBegin(); it !=
-    mGraph.getVertexEnd(); ++it)
+  for (auto it = mGraph->getVertexBegin(); it != mGraph->getVertexEnd(); ++it)
     mVertices[it->first] = mapState[mFgMapping[it->first]];
   mUi->showBPCheckBox->setEnabled(true);
   GLView::getInstance().update();
-  emit bpUpdated(mDEM, mGraph, mVertices);
+  emit bpUpdated(*mDEM, *mGraph, mVertices);
 }
 
 void BPControl::showBPToggled(bool checked) {
@@ -304,12 +310,4 @@ void BPControl::sumProdToggled(bool checked) {
 
 void BPControl::runPressed() {
   runBP();
-}
-
-void BPControl::segmentUpdated(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const GraphSegmenter<DEMGraph>::Components& components, const
-  std::vector<Helpers::Color>& colors) {
-  mVertices.clear();
-  mUi->runButton->setEnabled(false);
-  GLView::getInstance().update();
 }

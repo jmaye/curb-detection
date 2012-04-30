@@ -36,17 +36,25 @@ template <typename X = size_t> class GammaFunction :
   public ContinuousFunction<double, X>,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
   /// Constructs gamma function with parameter
-  GammaFunction(size_t dim = 1.0);
+  inline GammaFunction(size_t dim = 1.0);
   /// Copy constructor
-  GammaFunction(const GammaFunction<X>& other);
+  inline GammaFunction(const GammaFunction& other);
   /// Assignment operator
-  GammaFunction& operator = (const GammaFunction<X>& other);
+  inline GammaFunction& operator = (const GammaFunction& other);
   /// Destructor
-  virtual ~GammaFunction();
+  inline virtual ~GammaFunction();
   /** @}
     */
 
@@ -54,11 +62,11 @@ public:
     @{
     */
   /// Returns the dimension
-  size_t getDim() const;
+  inline size_t getDim() const;
   /// Sets the dimension
-  void setDim(size_t dim);
+  inline void setDim(size_t dim);
   /// Access the function value for the given argument
-  virtual double getValue(const X& argument) const;
+  inline virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 
@@ -67,13 +75,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
@@ -103,6 +111,14 @@ template <> class GammaFunction<size_t> :
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef FactorialFunction::VariableType VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -117,8 +133,8 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  inline virtual size_t getValue(const size_t& argument) const
-    throw (BadArgumentException<size_t>);
+  inline virtual size_t getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>);
   /** @}
     */
 

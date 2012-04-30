@@ -43,6 +43,14 @@ class BinomialFunction :
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef DiscreteFunction<size_t, size_t, 2>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -57,8 +65,8 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual size_t getValue(const Eigen::Matrix<size_t, 2, 1>& argument) const
-    throw (BadArgumentException<Eigen::Matrix<size_t, 2, 1> >);
+  virtual size_t getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>);
   /** @}
     */
 

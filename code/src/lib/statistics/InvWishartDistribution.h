@@ -24,12 +24,13 @@
 #ifndef INVWISHARTDISTRIBUTION_H
 #define INVWISHARTDISTRIBUTION_H
 
+#include <Eigen/Cholesky>
+
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
-
-#include <Eigen/Cholesky>
+#include "exceptions/InvalidOperationException.h"
 
 /** The InvWishartDistribution class represents an inverse Wishart distribution.
     \brief Inverse Wishart distribution
@@ -39,17 +40,34 @@ template <size_t M> class InvWishartDistribution :
   public SampleDistribution<Eigen::Matrix<double, M, M> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef ContinuousDistribution<double, M, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Mode type
+  typedef typename DistributionType::Mode Mode;
+  /// Covariance type
+  typedef typename DistributionType::Covariance Covariance;
+  /// Scale type
+  typedef typename DistributionType::Covariance Scale;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
   /// Constructs the distribution from the parameters
-  InvWishartDistribution(double degrees = M, const Eigen::Matrix<double, M, M>&
-    scale = Eigen::Matrix<double, M, M>::Identity());
+  InvWishartDistribution(double degrees = M, const Scale&
+    scale = Scale::Identity());
   /// Copy constructor
-  InvWishartDistribution(const InvWishartDistribution<M>& other);
+  InvWishartDistribution(const InvWishartDistribution& other);
   /// Assignment operator
-  InvWishartDistribution<M>& operator = (const InvWishartDistribution<M>&
-    other);
+  InvWishartDistribution& operator = (const InvWishartDistribution& other);
   /// Destructor
   virtual ~InvWishartDistribution();
   /** @}
@@ -63,31 +81,40 @@ public:
   /// Returns the degrees of freedom of the distribution
   double getDegrees() const;
   /// Sets the scale matrix of the distribution
-  void setScale(const Eigen::Matrix<double, M, M>& covariance)
-    throw (BadArgumentException<Eigen::Matrix<double, M, M> >);
+  void setScale(const Scale& scale) throw (BadArgumentException<Scale>);
   /// Returns the scale matrix of the distribution
-  const Eigen::Matrix<double, M, M>& getScale() const;
+  const Scale& getScale() const;
   /// Returns the determinant of the scale matrix
   double getDeterminant() const;
   /// Returns the normalizer of the distribution
   double getNormalizer() const;
   /// Returns the cholesky decomposition of the scale matrix
-  const Eigen::LLT<Eigen::Matrix<double, M, M> >& getTransformation() const;
+  const Eigen::LLT<Scale>& getTransformation() const;
   /// Returns the mean of the distribution
-  Eigen::Matrix<double, M, M> getMean() const;
+  Mean getMean() const throw (InvalidOperationException);
   /// Returns the mode of the distribution
-  Eigen::Matrix<double, M, M> getMode() const;
+  Mode getMode() const;
+  /// Returns the covariance of the distribution
+  Covariance getCovariance() const throw (InvalidOperationException);
   /// Access the probability density function at the given value
-  virtual double pdf(const Eigen::Matrix<double, M, M>& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
-  double logpdf(const Eigen::Matrix<double, M, M>& value) const 
-    throw (BadArgumentException<Eigen::Matrix<double, M, M> >);
+  double logpdf(const RandomVariable& value) const 
+    throw (BadArgumentException<RandomVariable>);
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<double, M, M> getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
 protected:
+  /** \name Protected methods
+    @{
+    */
+  /// Compute normalizer
+  void computeNormalizer();
+  /** @}
+    */
+
   /** \name Stream methods
     @{
     */
@@ -108,13 +135,15 @@ protected:
   /// Degrees of freedom
   double mDegrees;
   /// Scale
-  Eigen::Matrix<double, M, M> mScale;
+  Scale mScale;
+  /// Inverse scale
+  Scale mInverseScale;
   /// Scale determinant
   double mDeterminant;
   /// Normalizer
   double mNormalizer;
   /// Cholesky decomposition of the scale matrix
-  Eigen::LLT<Eigen::Matrix<double, M, M> > mTransformation;
+  Eigen::LLT<Scale> mTransformation;
   /** @}
     */
 

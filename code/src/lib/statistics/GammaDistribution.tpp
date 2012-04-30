@@ -17,11 +17,9 @@
  ******************************************************************************/
 
 #include "statistics/Randomizer.h"
-
 #include "functions/LogGammaFunction.h"
-#include "functions/GammaFunction.h"
-
-#include <gsl/gsl_sf_gamma.h>
+#include "functions/DigammaFunction.h"
+#include "functions/IncompleteGammaPFunction.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -34,15 +32,15 @@ GammaDistribution<T>::GammaDistribution(const T& shape, double invScale) {
 }
 
 template <typename T>
-GammaDistribution<T>::GammaDistribution(const GammaDistribution<T>& other) :
-  mShape(other.mShape),
-  mInvScale(other.mInvScale),
-  mNormalizer(other.mNormalizer) {
+GammaDistribution<T>::GammaDistribution(const GammaDistribution& other) :
+    mShape(other.mShape),
+    mInvScale(other.mInvScale),
+    mNormalizer(other.mNormalizer) {
 }
 
 template <typename T>
 GammaDistribution<T>& GammaDistribution<T>::operator =
-  (const GammaDistribution<T>& other) {
+    (const GammaDistribution& other) {
   if (this != &other) {
     mShape = other.mShape;
     mInvScale = other.mInvScale;
@@ -83,14 +81,13 @@ void GammaDistribution<T>::write(std::ofstream& stream) const {
 
 template <typename T>
 void GammaDistribution<T>::setShape(const T& shape)
-  throw (BadArgumentException<T>) {
+    throw (BadArgumentException<T>) {
   if (shape <= 0)
     throw BadArgumentException<T>(shape,
       "GammaDistribution::setShape(): shape must be strictly positive",
       __FILE__, __LINE__);
   mShape = shape;
-  LogGammaFunction<T> logGammaFunction;
-  mNormalizer = logGammaFunction(mShape) - mShape * log(mInvScale);
+  computeNormalizer();
 }
 
 template <typename T>
@@ -100,14 +97,13 @@ const T& GammaDistribution<T>::getShape() const {
 
 template <typename T>
 void GammaDistribution<T>::setInvScale(double invScale)
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (invScale <= 0)
     throw BadArgumentException<double>(invScale,
       "GammaDistribution::setScale(): inverse scale must be strictly positive",
       __FILE__, __LINE__);
   mInvScale = invScale;
-  LogGammaFunction<T> logGammaFunction;
-  mNormalizer = logGammaFunction(mShape) - mShape * log(mInvScale);
+  computeNormalizer();
 }
 
 template <typename T>
@@ -116,52 +112,78 @@ double GammaDistribution<T>::getInvScale() const {
 }
 
 template <typename T>
+void GammaDistribution<T>::computeNormalizer() {
+  LogGammaFunction<T> logGammaFunction;
+  mNormalizer = logGammaFunction(mShape) - mShape * log(mInvScale);
+}
+
+template <typename T>
 double GammaDistribution<T>::getNormalizer() const {
   return mNormalizer;
 }
 
 template <typename T>
-double GammaDistribution<T>::pdf(const double& value) const {
-  if (value <= 0)
+double GammaDistribution<T>::pdf(const RandomVariable& value) const {
+  if (value < 0)
     return 0.0;
   else
     return exp(logpdf(value));
 }
 
 template <typename T>
-double GammaDistribution<T>::logpdf(const double& value) const {
-  return (mShape - 1) * log(value) - value * mInvScale - mNormalizer;
+double GammaDistribution<T>::logpdf(const RandomVariable& value) const {
+  if (value == 0 && mShape == T(1))
+    return -mNormalizer;
+  else
+    return (mShape - 1) * log(value) - value * mInvScale - mNormalizer;
 }
 
 template <typename T>
-double GammaDistribution<T>::cdf(const double& value) const {
+double GammaDistribution<T>::cdf(const RandomVariable& value) const {
+  const IncompleteGammaPFunction incGammaPFunction(mShape);
   if (value <= 0)
     return 0.0;
-  else {
-    GammaFunction<T> gammaFunction;
-    return gsl_sf_gamma_inc(mShape, value * mInvScale) / gammaFunction(mShape);
-  }
+  else
+    return incGammaPFunction(value * mInvScale);
 }
 
 template <typename T>
-double GammaDistribution<T>::getSample() const {
-  static Randomizer<double> randomizer;
+typename GammaDistribution<T>::RandomVariable GammaDistribution<T>::getSample()
+    const {
+  const static Randomizer<double> randomizer;
   return randomizer.sampleGamma(mShape, mInvScale);
 }
 
 template <typename T>
-double GammaDistribution<T>::getMean() const {
+typename GammaDistribution<T>::Mean GammaDistribution<T>::getMean() const {
   return mShape / mInvScale;
 }
 
 template <typename T>
-double GammaDistribution<T>::getMode() const {
+typename GammaDistribution<T>::Mode GammaDistribution<T>::getMode() const
+    throw (InvalidOperationException) {
   if (mShape >= 1)
     return (mShape - 1) / mInvScale;
-  return 0;
+  else
+    throw InvalidOperationException("GammaDistribution<T>::getMode(): "
+      "shape must be bigger or equal than 1");
 }
 
 template <typename T>
-double GammaDistribution<T>::getVariance() const {
+typename GammaDistribution<T>::Variance GammaDistribution<T>::getVariance()
+    const {
   return mShape / (mInvScale * mInvScale);
+}
+
+template <typename T>
+double GammaDistribution<T>::KLDivergence(const GammaDistribution<T>& other)
+    const {
+  LogGammaFunction<T> logGammaFunction;
+  const DigammaFunction<T> digammaFunction;
+  return (mShape - 1) * digammaFunction(mShape) -
+    (other.mShape - 1) * digammaFunction(other.mShape) -
+    logGammaFunction(mShape) +
+    logGammaFunction(other.mShape) + other.mShape *
+    (log(mInvScale) - log(other.mInvScale)) +
+    mShape * (1.0 / mInvScale - 1.0 / other.mInvScale) * other.mInvScale;
 }

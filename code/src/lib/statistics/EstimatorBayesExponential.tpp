@@ -20,84 +20,71 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-EstimatorBayes<ExponentialDistribution>::EstimatorBayes(double alpha, double
-  beta) :
-  mPostRateDist(alpha, beta),
-  mPostPredDist(alpha, 1.0 / (beta + 1)),
-  mAlpha(alpha),
-  mBeta(beta) {
+EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    EstimatorBayes(const GammaDistribution<double>& prior) :
+    mRateDist(prior) {
 }
 
-EstimatorBayes<ExponentialDistribution>::EstimatorBayes(const
-  EstimatorBayes<ExponentialDistribution>& other) :
-  mPostRateDist(other.mPostRateDist),
-  mPostPredDist(other.mPostPredDist),
-  mAlpha(other.mAlpha),
-  mBeta(other.mBeta) {
+EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    EstimatorBayes(const EstimatorBayes& other) :
+    mRateDist(other.mRateDist) {
 }
 
-EstimatorBayes<ExponentialDistribution>&
-  EstimatorBayes<ExponentialDistribution>::operator =
-  (const EstimatorBayes<ExponentialDistribution>& other) {
+EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >&
+    EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    operator = (const EstimatorBayes& other) {
   if (this != &other) {
-    mPostRateDist = other.mPostRateDist;
-    mPostPredDist = other.mPostPredDist;
-    mAlpha = other.mAlpha;
-    mBeta = other.mBeta;
+    mRateDist = other.mRateDist;
   }
   return *this;
 }
 
-EstimatorBayes<ExponentialDistribution>::~EstimatorBayes() {
+EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    ~EstimatorBayes() {
 }
 
 /******************************************************************************/
 /* Streaming operations                                                       */
 /******************************************************************************/
 
-void EstimatorBayes<ExponentialDistribution>::read(std::istream& stream) {
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    read(std::istream& stream) {
 }
 
-void EstimatorBayes<ExponentialDistribution>::write(std::ostream& stream)
-  const {
-  stream << "posterior rate distribution: " << std::endl << mPostRateDist
-    << std::endl << "posterior predictive distribution: " << std::endl
-    << mPostPredDist;
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    write(std::ostream& stream) const {
+  stream << "Rate distribution: " << std::endl << mRateDist << std::endl <<
+    "Rate mode: " << mRateDist.getMode() << std::endl <<
+    "Rate variance: " << mRateDist.getVariance();
 }
 
-void EstimatorBayes<ExponentialDistribution>::read(std::ifstream& stream) {
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    read(std::ifstream& stream) {
 }
 
-void EstimatorBayes<ExponentialDistribution>::write(std::ofstream& stream)
-  const {
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    write(std::ofstream& stream) const {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-const GammaDistribution<double>& EstimatorBayes<ExponentialDistribution>::
-getPostRateDist() const {
-  return mPostRateDist;
+const GammaDistribution<double>&
+    EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    getDist() const {
+  return mRateDist;
 }
 
-const NegativeBinomialDistribution& EstimatorBayes<ExponentialDistribution>::
-getPostPredDist() const {
-  return mPostPredDist;
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    addPoint(const Point& point) {
+  mRateDist.setShape(mRateDist.getShape() + 1);
+  mRateDist.setInvScale(mRateDist.getInvScale() + point);
 }
 
-void EstimatorBayes<ExponentialDistribution>::addPoint(const Point& point) {
-  mAlpha += 1;
-  mBeta += point;
-  mPostRateDist.setShape(mAlpha);
-  mPostRateDist.setInvScale(mBeta);
-  // TODO: POST PRED DIST CHECK
-  mPostPredDist.setSuccessProbability(1.0 / (mBeta + 1));
-  mPostPredDist.setNumTrials(mAlpha);
-}
-
-void EstimatorBayes<ExponentialDistribution>::addPoints(const
-  ConstPointIterator& itStart, const ConstPointIterator& itEnd) {
-  for (ConstPointIterator it = itStart; it != itEnd; ++it)
+void EstimatorBayes<ExponentialDistribution, GammaDistribution<double> >::
+    addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd) {
+  for (auto it = itStart; it != itEnd; ++it)
     addPoint(*it);
 }

@@ -22,23 +22,23 @@
 
 template <typename V, typename P>
 Component<V, P>::Component(const V& vertex, const P& property) :
-  mProperty(property) {
+    mProperty(property) {
   mVertices.push_back(vertex);
 }
 
 template <typename V, typename P>
 Component<V, P>::Component(const P& property) :
-  mProperty(property) {
+    mProperty(property) {
 }
 
 template <typename V, typename P>
 Component<V, P>::Component(const Component& other) :
-  mVertices(other.mVertices),
-  mProperty(other.mProperty) {
+    mVertices(other.mVertices),
+    mProperty(other.mProperty) {
 }
 
 template <typename V, typename P>
-Component<V, P>& Component<V, P>::operator = (const Component<V, P>& other) {
+Component<V, P>& Component<V, P>::operator = (const Component& other) {
   if (this != &other) {
     mVertices = other.mVertices;
     mProperty = other.mProperty;
@@ -116,7 +116,7 @@ P& Component<V, P>::getProperty() {
 
 template <typename V, typename P>
 typename Component<V, P>::ConstVertexIterator Component<V, P>::getVertexBegin()
-  const {
+    const {
   return mVertices.begin();
 }
 
@@ -127,7 +127,7 @@ typename Component<V, P>::VertexIterator Component<V, P>::getVertexBegin() {
 
 template <typename V, typename P>
 typename Component<V, P>::ConstVertexIterator Component<V, P>::getVertexEnd()
-  const {
+    const {
   return mVertices.end();
 }
 
@@ -138,6 +138,6 @@ typename Component<V, P>::VertexIterator Component<V, P>::getVertexEnd() {
 
 template <typename V, typename P>
 const typename Component<V, P>::Container& Component<V, P>::getVertices()
-  const {
+    const {
   return mVertices;
 }

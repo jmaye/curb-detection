@@ -9,7 +9,7 @@
  *                                                                            *
  * This program is distributed in the hope that it will be useful,            *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              *
  * Lesser GNU General Public License for more details.                        *
  *                                                                            *
  * You should have received a copy of the Lesser GNU General Public License   *
@@ -23,68 +23,11 @@
 #ifndef FUNCTIONPLOT_H
 #define FUNCTIONPLOT_H
 
-#include <string>
+#include <cstdlib>
 
-/** The FunctionPlot class is an interface for plotting any kind of functions.
-    \brief Function plotting interface
-  */
-template <typename Y, typename X> class FunctionPlot {
-  /** \name Private constructors
-    @{
-    */
-  /// Copy constructor
-  FunctionPlot(const FunctionPlot<Y, X>& other);
-  /// Assignment operator
-  FunctionPlot<Y, X>& operator = (const FunctionPlot<Y, X>& other);
-  /** @}
-    */
+template <typename F, size_t M = 1> class FunctionPlot;
 
-public:
-  /** \name Constructors/destructor
-    @{
-    */
-  /// Constructs plot from parameters
-  FunctionPlot(const std::string& title, const X& minimum, const X& maximum);
-  /// Destructor
-  virtual ~FunctionPlot();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Returns the plot's title
-  const std::string& getTitle() const;
-  /// Returns the plot's minimum
-  const X& getMinimum() const;
-  /// Returns the plot's maximum
-  const X& getMaximum() const;
-  /** @}
-    */
-
-  /** \name Methods
-    @{
-    */
-  /// Show the plot
-  virtual void show() = 0;
-  /** @}
-    */
-
-protected:
-  /** \name Protected members
-    @{
-    */
-  /// Title of the graph
-  std::string mTitle;
-  /// Minimum value on the x-axis
-  X mMinimum;
-  /// Maximum value on the x-axis
-  X mMaximum;
-  /** @}
-    */
-
-};
-
-#include "visualization/FunctionPlot.tpp"
+#include "visualization/FunctionPlot1v.h"
+#include "visualization/FunctionPlot2v.h"
 
 #endif // FUNCTIONPLOT_H

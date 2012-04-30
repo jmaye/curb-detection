@@ -35,6 +35,6 @@ TanHFunction<X>::~TanHFunction() {
 /******************************************************************************/
 
 template <typename X>
-double TanHFunction<X>::getValue(const X& argument) const {
+double TanHFunction<X>::getValue(const VariableType& argument) const {
   return tanh(argument);
 }

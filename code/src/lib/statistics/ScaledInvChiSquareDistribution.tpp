@@ -20,20 +20,20 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ScaledInvChiSquareDistribution::ScaledInvChiSquareDistribution(size_t degrees,
-  double scale) :
-  InvGammaDistribution<>(0.5 * degrees, 0.5 * degrees * scale) {
+ScaledInvChiSquareDistribution::ScaledInvChiSquareDistribution(double degrees,
+    double scale) :
+    InvGammaDistribution<>(0.5 * degrees, 0.5 * degrees * scale) {
 }
 
 ScaledInvChiSquareDistribution::ScaledInvChiSquareDistribution(const
-  ScaledInvChiSquareDistribution& other) :
-  InvGammaDistribution<>(other) {
+    ScaledInvChiSquareDistribution& other) :
+    InvGammaDistribution<>(other) {
 }
 
 ScaledInvChiSquareDistribution& ScaledInvChiSquareDistribution::operator =
-  (const ScaledInvChiSquareDistribution& other) {
+    (const ScaledInvChiSquareDistribution& other) {
   if (this != &other) {
-    this->InvGammaDistribution<>::operator=(other);
+    InvGammaDistribution<>::operator=(other);
   }
   return *this;
 }
@@ -71,10 +71,11 @@ double ScaledInvChiSquareDistribution::getScale() const {
   return InvGammaDistribution<>::getScale() * 2.0 / (double)getDegrees();
 }
 
-void ScaledInvChiSquareDistribution::setDegrees(size_t degrees) {
+void ScaledInvChiSquareDistribution::setDegrees(double degrees) {
+  InvGammaDistribution<>::setScale(0.5 * degrees * getScale());
   setShape(degrees * 0.5);
 }
 
-size_t ScaledInvChiSquareDistribution::getDegrees() const {
+double ScaledInvChiSquareDistribution::getDegrees() const {
   return getShape() * 2;
 }

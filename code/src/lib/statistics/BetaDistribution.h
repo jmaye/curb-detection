@@ -25,6 +25,7 @@
 #define BETADISTRIBUTION_H
 
 #include "statistics/DirichletDistribution.h"
+#include "exceptions/InvalidOperationException.h"
 
 /** The BetaDistribution class represents a beta distribution,
     i.e., a continuous distribution that is a conjugate prior to the binomial or
@@ -38,13 +39,13 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  BetaDistribution(double alpha = 1.0, double beta = 1.0);
+  inline BetaDistribution(double alpha = 1.0, double beta = 1.0);
   /// Copy constructor
-  BetaDistribution(const BetaDistribution& other);
+  inline BetaDistribution(const BetaDistribution& other);
   /// Assignment operator
-  BetaDistribution& operator = (const BetaDistribution& other);
+  inline BetaDistribution& operator = (const BetaDistribution& other);
   /// Destructor
-  virtual ~BetaDistribution();
+  inline virtual ~BetaDistribution();
   /** @}
     */
 
@@ -52,19 +53,21 @@ public:
     @{
     */
   /// Sets the number of successes
-  void setAlpha(double alpha);
+  inline void setAlpha(double alpha);
   /// Returns the number of successes
-  double getAlpha() const;
+  inline double getAlpha() const;
   /// Sets the number of failures
-  void setBeta(double beta);
+  inline void setBeta(double beta);
   /// Returns the number of failures
-  double getBeta() const;
+  inline double getBeta() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  inline double getMean() const;
   /// Returns the mode of the distribution
-  double getMode() const;
+  inline double getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  inline double getVariance() const;
+  /// Access the cumulative distribution function at the given value
+  inline double cdf(const double& value) const;
   /** @}
     */
 
@@ -73,13 +76,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  virtual void read(std::istream& stream);
+  inline virtual void read(std::istream& stream);
   /// Writes to standard output
-  virtual void write(std::ostream& stream) const;
+  inline virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  virtual void read(std::ifstream& stream);
+  inline virtual void read(std::ifstream& stream);
   /// Writes to a file
-  virtual void write(std::ofstream& stream) const;
+  inline virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

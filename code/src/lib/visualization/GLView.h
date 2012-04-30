@@ -23,17 +23,17 @@
 #ifndef GLVIEW_H
 #define GLVIEW_H
 
-#include "base/Singleton.h"
-#include "visualization/Palette.h"
-#include "visualization/Camera.h"
-#include "visualization/Scene.h"
+#include <vector>
 
 #include <QtOpenGL/QGLWidget>
 #include <QtGui/QColor>
 #include <QtCore/QString>
 #include <QtCore/QPoint>
 
-#include <vector>
+#include "base/Singleton.h"
+#include "visualization/Palette.h"
+#include "visualization/Camera.h"
+#include "visualization/Scene.h"
 
 class FTPolygonFont;
 
@@ -43,7 +43,9 @@ class FTPolygonFont;
 class GLView :
   public QGLWidget,
   public Singleton<GLView> {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
@@ -139,10 +141,6 @@ protected:
   std::vector<double> mProjection;
   /// Model view
   std::vector<double> mModelview;
-  /// Stored width
-  int mWidth;
-  /// Stored height
-  int mHeight;
   /** @}
     */
 

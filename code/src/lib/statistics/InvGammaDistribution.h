@@ -28,6 +28,7 @@
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 #include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /** The InvGammaDistribution class represents an inverse gamma distribution.
     \brief Inverse gamma distribution
@@ -43,9 +44,9 @@ public:
   /// Constructs distribution from parameters
   InvGammaDistribution(const T& shape = T(1), double scale = 1.0);
   /// Copy constructor
-  InvGammaDistribution(const InvGammaDistribution<T>& other);
+  InvGammaDistribution(const InvGammaDistribution& other);
   /// Assignment operator
-  InvGammaDistribution<T>& operator = (const InvGammaDistribution<T>& other);
+  InvGammaDistribution<T>& operator = (const InvGammaDistribution& other);
   /// Destructor
   virtual ~InvGammaDistribution();
   /** @}
@@ -65,23 +66,31 @@ public:
   /// Returns the normalizer
   double getNormalizer() const;
   /// Returns the mean of the distribution
-  double getMean() const;
+  Mean getMean() const throw (InvalidOperationException);
   /// Returns the mode of the distribution
-  virtual double getMode() const;
+  Mode getMode() const;
   /// Returns the variance of the distribution
-  double getVariance() const;
+  Variance getVariance() const throw (InvalidOperationException);
   /// Access the probablity density function at the given value
-  virtual double pdf(const double& value) const;
+  virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probablity density function at the given value
-  double logpdf(const double& value) const;
+  double logpdf(const RandomVariable& value) const;
   /// Access the cumulative density function at the given value
-  double cdf(const double& value) const;
+  double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  virtual double getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
 protected:
+  /** \name Protected methods
+    @{
+    */
+  /// Compute normalizer
+  void computeNormalizer();
+  /** @}
+    */
+
   /** \name Stream methods
     @{
     */

@@ -21,10 +21,10 @@
            distributions.
   */
 
+#include <vector>
+
 #include "statistics/NormalDistribution.h"
 #include "base/Serializable.h"
-
-#include <vector>
 
 /** The class EstimatorML is implemented for univariate normal distributions.
     \brief Univariate normal distribution ML estimator
@@ -36,7 +36,7 @@ public:
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef NormalDistribution<1>::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -50,10 +50,9 @@ public:
   /// Default constructor
   EstimatorML();
   /// Copy constructor
-  EstimatorML(const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML(const EstimatorML& other);
   /// Assignment operator
-  EstimatorML<NormalDistribution<1> >& operator =
-    (const EstimatorML<NormalDistribution<1> >& other);
+  EstimatorML& operator = (const EstimatorML& other);
   /// Destructor
   virtual ~EstimatorML();
   /** @}
@@ -66,15 +65,18 @@ public:
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Returns the estimated mean
-  double getMean() const;
-  /// Returns the estimated variance
-  double getVariance() const;
+  /// Returns the estimated distribution
+  const NormalDistribution<1>& getDistribution() const;
   /// Add a point to the estimator
   void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
+  /// Add points to the estimator with responsibilities
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd, const Eigen::Matrix<double, Eigen::Dynamic, 1>& responsibilities);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /// Reset the estimator
   void reset();
   /** @}
@@ -98,10 +100,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Estimated mean
-  double mMean;
-  /// Estimated variance
-  double mVariance;
+  /// Estimated distribution
+  NormalDistribution<1> mDistribution;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag

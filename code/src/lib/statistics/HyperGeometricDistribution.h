@@ -36,11 +36,25 @@
     \brief Hypergeometric distribution
   */
 template <size_t M> class HyperGeometricDistribution :
-  public DiscreteDistribution<size_t, M>,
-  public DiscreteDistribution<size_t, M - 1>,
-  public SampleDistribution<Eigen::Matrix<size_t, M, 1> >,
+  public DiscreteDistribution<int, M>,
+  public DiscreteDistribution<int, M - 1>,
+  public SampleDistribution<Eigen::Matrix<int, M, 1> >,
   public virtual Serializable {
 public:
+  /** \name Types
+    @{
+    */
+  /// Distribution type
+  typedef DiscreteDistribution<int, M> DistributionType;
+  /// Random variable type
+  typedef typename DistributionType::RandomVariable RandomVariable;
+  /// Mean type
+  typedef typename DistributionType::Mean Mean;
+  /// Covariance type
+  typedef typename DistributionType::Covariance Covariance;
+  /** @}
+    */
+
   /** \name Traits
     @{
     */
@@ -49,20 +63,20 @@ public:
   public:
     /// Returns the probability mass function at a point
     static double pmf(const HyperGeometricDistribution<N>& distribution,
-      const Eigen::Matrix<size_t, N - 1, 1>& value);
+      const Eigen::Matrix<int, N - 1, 1>& value);
     /// Returns the log-probability mass function at a point
     static double logpmf(const HyperGeometricDistribution<N>& distribution,
-      const Eigen::Matrix<size_t, N - 1, 1>& value);
+      const Eigen::Matrix<int, N - 1, 1>& value);
   };
   /// Support for N = 2
   template <size_t D> struct Traits<2, D> {
   public:
     /// Returns the probability mass function at a point
     static double pmf(const HyperGeometricDistribution<2>& distribution,
-      const size_t& value);
+      const int& value);
     /// Returns the log-probability mass function at a point
     static double logpmf(const HyperGeometricDistribution<2>& distribution,
-      const size_t& value);
+      const int& value);
   };
   /** @}
     */
@@ -97,24 +111,28 @@ public:
   const Eigen::Matrix<size_t, M, 1>& getMarbles() const;
   /// Returns the normalizer
   double getNormalizer() const;
+  /// Returns the mean of the distribution
+  Mean getMean() const;
+  /// Returns the covariance of the distribution
+  Covariance getCovariance() const;
   /// Returns the probability mass function at a point
-  virtual double pmf(const Eigen::Matrix<size_t, M, 1>& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /// Returns the probability mass function at a point
   virtual double pmf(const typename
-    DiscreteDistribution<size_t, M - 1>::Domain& value) const;
+    DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const Eigen::Matrix<size_t, M, 1>& value) const
-    throw (BadArgumentException<Eigen::Matrix<size_t, M, 1> >);
+  double logpmf(const RandomVariable& value) const
+    throw (BadArgumentException<RandomVariable>);
   /// Returns the log-probability mass function at a point
   double logpmf(const typename
-    DiscreteDistribution<size_t, M - 1>::Domain& value) const;
+    DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Access a sample drawn from the distribution
-  virtual Eigen::Matrix<size_t, M, 1> getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
-  using DiscreteDistribution<size_t, M>::operator();
-  using DiscreteDistribution<size_t, M - 1>::operator();
+  using DiscreteDistribution<int, M>::operator();
+  using DiscreteDistribution<int, M - 1>::operator();
 
 protected:
   /** \name Stream methods

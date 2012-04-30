@@ -36,13 +36,21 @@ template <typename X = double> class LogFunction :
     @{
     */
   /// Copy constructor
-  LogFunction(const LogFunction<X>& other);
+  LogFunction(const LogFunction& other);
   /// Assignment operator
-  LogFunction& operator = (const LogFunction<X>& other);
+  LogFunction& operator = (const LogFunction& other);
   /** @}
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef typename ContinuousFunction<double, X>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -57,8 +65,8 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const X& argument) const
-    throw (BadArgumentException<X>);
+  virtual double getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>);
   /** @}
     */
 

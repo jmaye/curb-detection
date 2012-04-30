@@ -24,9 +24,9 @@
 #ifndef SAMPLEDISTRIBUTION_H
 #define SAMPLEDISTRIBUTION_H
 
-#include "statistics/Distribution.h"
-
 #include <vector>
+
+#include "statistics/Distribution.h"
 
 /** The SampleDistribution class represents an interface to sample
     distributions, i.e. distributions which can directly be sampled from

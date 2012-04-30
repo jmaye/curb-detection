@@ -42,6 +42,14 @@ class LogFactorialFunction :
     */
 
 public:
+  /** \name Types
+    @{
+    */
+  /// Variable type
+  typedef DiscreteFunction<double, size_t>::Domain VariableType;
+  /** @}
+    */
+
   /** \name Constructors/destructor
     @{
     */
@@ -56,7 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  inline virtual double getValue(const size_t& argument) const;
+  inline virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

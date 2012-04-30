@@ -21,24 +21,25 @@
            distribution with conjugate prior
   */
 
+#include <vector>
+
 #include "statistics/ExponentialDistribution.h"
 #include "statistics/GammaDistribution.h"
 #include "statistics/NegativeBinomialDistribution.h"
-
-#include <vector>
 
 /** The class EstimatorBayes is implemented for exponential distributions with
     conjugate prior.
     \brief Exponential distribution Bayesian estimator
   */
-template <> class EstimatorBayes<ExponentialDistribution> :
+template <>
+class EstimatorBayes<ExponentialDistribution, GammaDistribution<double> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef double Point;
+  typedef ExponentialDistribution::RandomVariable Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
@@ -49,30 +50,30 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs estimator with hyperparameters prior
-  inline EstimatorBayes(double alpha = 1.0, double beta = 1.0);
+  /// Constructs estimator with prior
+  EstimatorBayes(const GammaDistribution<double>& prior =
+    GammaDistribution<double>());
   /// Copy constructor
-  inline EstimatorBayes(const EstimatorBayes<ExponentialDistribution>& other);
+  EstimatorBayes(const EstimatorBayes& other);
   /// Assignment operator
-  inline EstimatorBayes<ExponentialDistribution>& operator =
-    (const EstimatorBayes<ExponentialDistribution>& other);
+  EstimatorBayes& operator = (const EstimatorBayes& other);
   /// Destructor
-  inline virtual ~EstimatorBayes();
+  virtual ~EstimatorBayes();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
-  /// Returns the posterior rate distribution
-  inline const GammaDistribution<double>& getPostRateDist() const;
-  /// Returns the posterior predictive distribution
-  inline const NegativeBinomialDistribution& getPostPredDist() const;
+  /// Returns the rate distribution
+  const GammaDistribution<double>& getDist() const;
   /// Add a point to the estimator
-  inline void addPoint(const Point& point);
+  void addPoint(const Point& point);
   /// Add points to the estimator
-  inline void addPoints(const ConstPointIterator& itStart, const
-    ConstPointIterator& itEnd);
+  void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
+    itEnd);
+  /// Add points to the estimator
+  void addPoints(const Container& points);
   /** @}
     */
 
@@ -81,27 +82,25 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 
   /** \name Protected members
     @{
     */
-  /// Posterior rate distribution
-  GammaDistribution<double> mPostRateDist;
-  /// Posterior predictive distribution
-  NegativeBinomialDistribution mPostPredDist;
-  /// Hyperparameter alpha (corresponds to alpha - 1 prior observations)
-  double mAlpha;
-  /// Hyperparameter beta (corresponds to beta prior total waiting time)
-  double mBeta;
+  /*! \brief Rate distribution
+  *
+  * Hyperparameter alpha (corresponds to alpha - 1 prior observations) and 
+  * hyperparameter beta (corresponds to beta prior total waiting time)
+  */
+  GammaDistribution<double> mRateDist;
   /** @}
     */
 

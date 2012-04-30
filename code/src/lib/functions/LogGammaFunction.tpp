@@ -24,20 +24,20 @@
 
 template <typename X>
 LogGammaFunction<X>::LogGammaFunction(size_t dim) :
-  mDim(dim) {
+    mDim(dim) {
 }
 
 LogGammaFunction<size_t>::LogGammaFunction() {
 }
 
 template <typename X>
-LogGammaFunction<X>::LogGammaFunction(const LogGammaFunction<X>& other) :
-  mDim(other.mDim) {
+LogGammaFunction<X>::LogGammaFunction(const LogGammaFunction& other) :
+    mDim(other.mDim) {
 }
 
 template <typename X>
-LogGammaFunction<X>& LogGammaFunction<X>::operator = (const LogGammaFunction<X>&
-  other) {
+LogGammaFunction<X>& LogGammaFunction<X>::operator = (const LogGammaFunction&
+    other) {
   if (this != &other) {
     mDim = other.mDim;
   }
@@ -77,7 +77,7 @@ void LogGammaFunction<X>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename X>
-double LogGammaFunction<X>::getValue(const X& argument) const {
+double LogGammaFunction<X>::getValue(const VariableType& argument) const {
   double sum = 0.0;
   for (size_t i = 0; i < mDim; ++i) {
     sum += lgamma(argument - 0.5 * i);
@@ -85,8 +85,8 @@ double LogGammaFunction<X>::getValue(const X& argument) const {
   return sum + mDim * (mDim - 1) * 0.25 * log(M_PI);
 }
 
-double LogGammaFunction<size_t>::getValue(const size_t& argument) const
-  throw (BadArgumentException<size_t>) {
+double LogGammaFunction<size_t>::getValue(const VariableType& argument) const
+    throw (BadArgumentException<VariableType>) {
   if (argument)
     return LogFactorialFunction::getValue(argument - 1);
   else throw BadArgumentException<size_t>(argument,

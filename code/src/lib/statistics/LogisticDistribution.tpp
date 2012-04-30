@@ -17,24 +17,25 @@
  ******************************************************************************/
 
 #include "functions/LogisticFunction.h"
+#include "statistics/Randomizer.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 LogisticDistribution::LogisticDistribution(double location, double scale) :
-  mLocation(location) {
+    mLocation(location) {
   setScale(scale);
 }
 
 LogisticDistribution::LogisticDistribution(const LogisticDistribution& other) :
-  mLocation(other.mLocation),
-  mScale(other.mScale),
-  mInverseScale(other.mInverseScale) {
+    mLocation(other.mLocation),
+    mScale(other.mScale),
+    mInverseScale(other.mInverseScale) {
 }
 
 LogisticDistribution& LogisticDistribution::operator =
-  (const LogisticDistribution& other) {
+    (const LogisticDistribution& other) {
   if (this != &other) {
     mLocation = other.mLocation;
     mScale = other.mScale;
@@ -77,7 +78,7 @@ double LogisticDistribution::getLocation() const {
 }
 
 void LogisticDistribution::setScale(double scale)
-  throw (BadArgumentException<double>) {
+    throw (BadArgumentException<double>) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "LogisticDistribution<1>::setScale(): scale must be strictly positive",
@@ -94,37 +95,40 @@ double LogisticDistribution::getInverseScale() const {
   return mInverseScale;
 }
 
-double LogisticDistribution::pdf(const double& value) const {
+double LogisticDistribution::pdf(const RandomVariable& value) const {
   return exp(logpdf(value));
 }
 
-double LogisticDistribution::logpdf(const double& value) const {
-  return (value - mLocation) * mInverseScale - (log(mScale) + 2 * log(1.0 +
-    exp((value - mLocation) * mInverseScale)));
+double LogisticDistribution::logpdf(const RandomVariable& value) const {
+  return -(value - mLocation) * mInverseScale - (log(mScale) + 2 * log(1.0 +
+    exp(-(value - mLocation) * mInverseScale)));
 }
 
-double LogisticDistribution::cdf(const double& value) const {
-  const LogisticFunction<double> logisticFunction;
-  return logisticFunction(-(value - mLocation) * mInverseScale);
+double LogisticDistribution::cdf(const RandomVariable& value) const {
+  const static LogisticFunction<double> logisticFunction;
+  return logisticFunction((value - mLocation) * mInverseScale);
 }
 
-double LogisticDistribution::getSample() const {
-  // TODO: NOT IMPLEMENTED!
-  return 0.0;
+LogisticDistribution::RandomVariable LogisticDistribution::getSample() const {
+  const static Randomizer<double> randomizer;
+  double y = 0;
+  while (y == 0)
+    y = randomizer.sampleUniform();
+  return mLocation + mScale * log(y / (1 - y));
 }
 
-double LogisticDistribution::getMean() const {
+LogisticDistribution::Mean LogisticDistribution::getMean() const {
   return mLocation;
 }
 
-double LogisticDistribution::getMedian() const {
+LogisticDistribution::Median LogisticDistribution::getMedian() const {
   return mLocation;
 }
 
-double LogisticDistribution::getMode() const {
+LogisticDistribution::Mode LogisticDistribution::getMode() const {
   return mLocation;
 }
 
-double LogisticDistribution::getVariance() const {
-  return M_PI / 3.0 * mScale * mScale;
+LogisticDistribution::Variance LogisticDistribution::getVariance() const {
+  return M_PI * M_PI / 3.0 * mScale * mScale;
 }

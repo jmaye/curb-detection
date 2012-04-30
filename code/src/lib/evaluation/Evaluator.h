@@ -25,14 +25,19 @@
 #define EVALUATOR_H
 
 #include <vector>
+#include <unordered_map>
+
+#include <Eigen/Core>
 
 #include <QRegion>
 
 #include "base/Serializable.h"
 #include "exceptions/IOException.h"
-#include "data-structures/Grid.h"
-#include "data-structures/Cell.h"
-#include "data-structures/DEMGraph.h"
+#include "utils/IndexHash.h"
+
+class Cell;
+template <typename T, typename C, size_t M> class Grid;
+class DEMGraph;
 
 /** The class Evaluator performs the evaluation of the curb detection algorithm
     from a ground truth file.
@@ -70,7 +75,8 @@ public:
     */
   /// Evaluate the labeling against the ground truth
   double evaluate(const Grid<double, Cell, 2>& dem, const DEMGraph& demgraph,
-    const DEMGraph::VertexContainer& verticesLabels) const;
+    const std::unordered_map<Eigen::Matrix<size_t, 2, 1>, size_t, IndexHash>&
+    verticesLabels) const;
   /// Returns the label of a point in the ground truth
   size_t getLabel(const Eigen::Matrix<double, 2, 1>& point) const;
   /** @}
