@@ -51,7 +51,8 @@ public:
   /// Copy constructor
   inline IncompleteGammaPFunction(const IncompleteGammaPFunction& other);
   /// Assignment operator
-  inline IncompleteGammaPFunction& operator = (const IncompleteGammaPFunction& other);
+  inline IncompleteGammaPFunction& operator = (const IncompleteGammaPFunction&
+    other);
   /// Destructor
   inline virtual ~IncompleteGammaPFunction();
   /** @}
