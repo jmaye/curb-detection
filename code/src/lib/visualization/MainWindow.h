@@ -23,9 +23,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "visualization/Control.h"
-
 #include <QtGui/QMainWindow>
+
+#include "visualization/Control.h"
 
 class Ui_MainWindow;
 
