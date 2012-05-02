@@ -85,7 +85,7 @@ void EstimatorBayesImproper<NormalDistribution<1> >::write(std::ofstream&
 /* Accessors                                                                  */
 /******************************************************************************/
 
-const NormalScaledInvChiSquareDistribution&
+const NormalScaledInvChiSquareDistribution<>&
     EstimatorBayesImproper<NormalDistribution<1> >::getDist() const {
   return mMeanVarianceDist;
 }

@@ -44,13 +44,13 @@ public:
     @{
     */
   /// Constructs distribution from parameter
-  inline GeometricDistribution(double probability = 0.5);
+  GeometricDistribution(double probability = 0.5);
   /// Copy constructor
-  inline GeometricDistribution(const GeometricDistribution& other);
+  GeometricDistribution(const GeometricDistribution& other);
   /// Assignment operator
-  inline GeometricDistribution& operator = (const GeometricDistribution& other);
+  GeometricDistribution& operator = (const GeometricDistribution& other);
   /// Destructor
-  inline ~GeometricDistribution();
+  ~GeometricDistribution();
   /** @}
     */
 
@@ -58,25 +58,24 @@ public:
     @{
     */
   /// Sets the success probability
-  inline void setProbability(double probability)
-    throw (BadArgumentException<double>);
+  void setProbability(double probability) throw (BadArgumentException<double>);
   /// Returns the success probability
-  inline double getProbability() const;
+  double getProbability() const;
   /// Returns the mean of the distribution
-  inline Mean getMean() const;
+  Mean getMean() const;
   /// Returns the mode of the distribution
-  inline Mode getMode() const;
+  Mode getMode() const;
   /// Returns the variance of the distribution
-  inline Variance getVariance() const;
+  Variance getVariance() const;
   /// Returns the probability mass function at a point
-  inline virtual double pmf(const RandomVariable& value) const;
+  virtual double pmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
-  inline double logpmf(const RandomVariable& value) const
+  double logpmf(const RandomVariable& value) const
     throw (BadArgumentException<RandomVariable>);
   /// Returns the cumulative mass function at a point
-  inline double cdf(const RandomVariable& value) const;
+  double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
-  inline virtual RandomVariable getSample() const;
+  virtual RandomVariable getSample() const;
   /** @}
     */
 
@@ -85,13 +84,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

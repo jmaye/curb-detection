@@ -28,13 +28,13 @@
 
 template <typename D> class EstimatorML;
 
-#include "statistics/EstimatorMLNormal1v.h"
-#include "statistics/EstimatorMLNormalMv.h"
-#include "statistics/EstimatorMLCategorical.h"
-#include "statistics/EstimatorMLMultinomial.h"
-#include "statistics/EstimatorMLExponential.h"
-#include "statistics/EstimatorMLGeometric.h"
-#include "statistics/EstimatorMLPoisson.h"
+//#include "statistics/EstimatorMLNormal1v.h"
+//#include "statistics/EstimatorMLNormalMv.h"
+//#include "statistics/EstimatorMLCategorical.h"
+//#include "statistics/EstimatorMLMultinomial.h"
+//#include "statistics/EstimatorMLExponential.h"
+//#include "statistics/EstimatorMLGeometric.h"
+//#include "statistics/EstimatorMLPoisson.h"
 #include "statistics/EstimatorMLLinearRegression.h"
 #include "statistics/EstimatorMLMixture.h"
 

@@ -30,6 +30,8 @@
 #include "statistics/MultinomialDistribution.h"
 #include "statistics/CategoricalDistribution.h"
 #include "statistics/PoissonDistribution.h"
+#include "statistics/LinearRegression.h"
+#include "statistics/LinearRegressionPred.h"
 
 /** The PredictiveDistribution structure defines the PredictiveDistribution
     template.
@@ -80,6 +82,15 @@ template <> struct PredictiveDistribution<PoissonDistribution> {
 public:
   /// Predictive distribution for Poisson distribution
   typedef BetaBinomialDistribution Result;
+};
+
+/** The PredictiveDistribution is defined for linear regression models.
+    \brief Predictive distribution for linear regression models
+  */
+template <size_t M> struct PredictiveDistribution<LinearRegression<M> > {
+public:
+  /// Predictive distribution for linear regression
+  typedef LinearRegressionPred<M> Result;
 };
 
 #endif // PREDICTIVEDISTRIBUTION_H

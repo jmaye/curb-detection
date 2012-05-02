@@ -21,7 +21,7 @@
 /******************************************************************************/
 
 Cell::Cell(double sensorVariance) :
-    mHeightEstimator(NormalScaledInvChiSquareDistribution(0, 0, 1,
+    mHeightEstimator(NormalScaledInvChiSquareDistribution<>(0, 0, 1,
       3 * sensorVariance)) {
 }
 
@@ -71,5 +71,5 @@ const EstimatorBayes<NormalDistribution<1> >& Cell::getHeightEstimator()
 
 void Cell::setSensorVariance(double sensorVariance) {
   mHeightEstimator = EstimatorBayes<NormalDistribution<1> >(
-    NormalScaledInvChiSquareDistribution(0, 0, 1, 3 * sensorVariance));
+    NormalScaledInvChiSquareDistribution<>(0, 0, 1, 3 * sensorVariance));
 }

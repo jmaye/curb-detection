@@ -16,23 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file LinearRegression.h
-    \brief This file defines the LinearRegression class, which represents a
-           multivariate linear regression
+/** \file LinearRegressionPred.h
+    \brief This file defines the LinearRegressionPred class, which represents a
+           multivariate predictive linear regression
   */
 
-#ifndef LINEARREGRESSION_H
-#define LINEARREGRESSION_H
+#ifndef LINEARREGRESSIONPRED_H
+#define LINEARREGRESSIONPRED_H
 
 #include "statistics/ContinuousDistribution.h"
 #include "functions/LinearBasisFunction.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
 
-/** The LinearRegression class represents a multivariate linear regression.
-    \brief Multivariate linear regression
+/** The LinearRegressionPred class represents a multivariate predictive linear
+    regression.
+    \brief Multivariate predictive linear regression
   */
-template <size_t M> class LinearRegression :
+template <size_t M> class LinearRegressionPred :
   public ContinuousDistribution<double, M>,
   public SampleDistribution<Eigen::Matrix<double, M, 1> >,
   public virtual Serializable {
@@ -54,31 +55,37 @@ public:
   template <size_t N, size_t D = 0> struct Traits {
   public:
     /// Returns the pdf
-    static double pdf(const LinearRegression<N>& linearRegression,
+    static double pdf(const LinearRegressionPred<N>& linearRegression,
       const Eigen::Matrix<double, N, 1>& value);
     /// Returns the log-pdf
-    static double logpdf(const LinearRegression<N>& linearRegression,
+    static double logpdf(const LinearRegressionPred<N>& linearRegression,
       const Eigen::Matrix<double, N, 1>& value);
     /// Returns a sample
-    static Eigen::Matrix<double, N, 1> getSample(const LinearRegression<N>&
+    static Eigen::Matrix<double, N, 1> getSample(const LinearRegressionPred<N>&
       linearRegression);
-    /// Returns the mean
-    static double getMean(const LinearRegression<N>& linearRegression);
+    /// Returns the predictive mean
+    static double getPredMean(const LinearRegressionPred<N>& linearRegression);
+    /// Returns the predictive variance
+    static double getPredVariance(const LinearRegressionPred<N>&
+      linearRegression);
   };
   /// Support for N = 2
   template <size_t D> struct Traits<2, D> {
   public:
     /// Returns the pdf
-    static double pdf(const LinearRegression<2>& linearRegression,
+    static double pdf(const LinearRegressionPred<2>& linearRegression,
       const Eigen::Matrix<double, 2, 1>& value);
     /// Returns the log-pdf
-    static double logpdf(const LinearRegression<2>& linearRegression,
+    static double logpdf(const LinearRegressionPred<2>& linearRegression,
       const Eigen::Matrix<double, 2, 1>& value);
     /// Returns a sample
-    static Eigen::Matrix<double, 2, 1> getSample(const LinearRegression<2>&
+    static Eigen::Matrix<double, 2, 1> getSample(const LinearRegressionPred<2>&
       linearRegression);
-    /// Returns the mean
-    static double getMean(const LinearRegression<2>& linearRegression);
+    /// Returns the predictive mean
+    static double getPredMean(const LinearRegressionPred<2>& linearRegression);
+    /// Returns the predictive variance
+    static double getPredVariance(const LinearRegressionPred<2>&
+      linearRegression);
   };
   /** @}
     */
@@ -87,27 +94,37 @@ public:
     @{
     */
   /// Constructs linear regression from parameters
-  LinearRegression(const LinearBasisFunction<double, M>& linearBasisFunction =
-    LinearBasisFunction<double, M>(), double variance = 1.0,
-    const Eigen::Matrix<double, M - 1, 1>& basis =
+  LinearRegressionPred(double degrees = 1, const LinearBasisFunction<double, M>&
+    linearBasisFunction = LinearBasisFunction<double, M>(), const
+    Eigen::Matrix<double, M, M> coeffsCovariance =
+    Eigen::Matrix<double, M, M>::Identity(),
+    double variance = 1.0, const Eigen::Matrix<double, M - 1, 1>& basis =
     Eigen::Matrix<double, M - 1, 1>::Ones());
   /// Copy constructor
-  LinearRegression(const LinearRegression& other);
+  LinearRegressionPred(const LinearRegressionPred& other);
   /// Assignment operator
-  LinearRegression& operator = (const LinearRegression& other);
+  LinearRegressionPred& operator = (const LinearRegressionPred& other);
   /// Destructor
-  ~LinearRegression();
+  ~LinearRegressionPred();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
+  /// Returns the degrees of freedom
+  double getDegrees() const;
+  /// Sets the degrees of freedom
+  void setDegrees(double degrees);
   /// Returns the linear basis function
   const LinearBasisFunction<double, M>& getLinearBasisFunction() const;
   /// Sets the linear basis function
   void setLinearBasisFunction(const LinearBasisFunction<double, M>&
     linearBasisFunction);
+  /// Returns the coefficients covariance
+  const Eigen::Matrix<double, M, M>& getCoeffsCovariance() const;
+  /// Sets the coefficients covariance
+  void setCoeffsCovariance(const Eigen::Matrix<double, M, M>& coeffsCovariance);
   /// Returns the variance
   double getVariance() const;
   /// Sets the variance
@@ -116,8 +133,10 @@ public:
   const Eigen::Matrix<double, M - 1, 1>& getBasis() const;
   /// Sets the basis
   void setBasis(const Eigen::Matrix<double, M - 1, 1>& basis);
-  /// Return the mean at the basis
-  double getMean() const;
+  /// Returns the predictive mean
+  double getPredMean() const;
+  /// Returns the predictive variance
+  double getPredVariance() const;
   /// Access the probability density function at the given value
   virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
@@ -145,8 +164,12 @@ protected:
   /** \name Protected members
     @{
     */
+  /// Degrees of freedom
+  double mDegrees;
   /// Linear basis function
   LinearBasisFunction<double, M> mLinearBasisFunction;
+  /// Covariance on the coefficients
+  Eigen::Matrix<double, M, M> mCoeffsCovariance;
   /// Variance
   double mVariance;
   /// Current basis
@@ -156,6 +179,6 @@ protected:
 
 };
 
-#include "statistics/LinearRegression.tpp"
+#include "statistics/LinearRegressionPred.tpp"
 
-#endif // LINEARREGRESSION_H
+#endif // LINEARREGRESSIONPRED_H

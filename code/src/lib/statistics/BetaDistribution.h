@@ -39,13 +39,13 @@ public:
     @{
     */
   /// Constructs distribution from parameters
-  inline BetaDistribution(double alpha = 1.0, double beta = 1.0);
+  BetaDistribution(double alpha = 1.0, double beta = 1.0);
   /// Copy constructor
-  inline BetaDistribution(const BetaDistribution& other);
+  BetaDistribution(const BetaDistribution& other);
   /// Assignment operator
-  inline BetaDistribution& operator = (const BetaDistribution& other);
+  BetaDistribution& operator = (const BetaDistribution& other);
   /// Destructor
-  inline virtual ~BetaDistribution();
+  virtual ~BetaDistribution();
   /** @}
     */
 
@@ -53,21 +53,21 @@ public:
     @{
     */
   /// Sets the number of successes
-  inline void setAlpha(double alpha);
+  void setAlpha(double alpha);
   /// Returns the number of successes
-  inline double getAlpha() const;
+  double getAlpha() const;
   /// Sets the number of failures
-  inline void setBeta(double beta);
+  void setBeta(double beta);
   /// Returns the number of failures
-  inline double getBeta() const;
+  double getBeta() const;
   /// Returns the mean of the distribution
-  inline double getMean() const;
+  double getMean() const;
   /// Returns the mode of the distribution
-  inline double getMode() const;
+  double getMode() const;
   /// Returns the variance of the distribution
-  inline double getVariance() const;
+  double getVariance() const;
   /// Access the cumulative distribution function at the given value
-  inline double cdf(const double& value) const;
+  double cdf(const double& value) const;
   /** @}
     */
 
@@ -76,13 +76,13 @@ protected:
     @{
     */
   /// Reads from standard input
-  inline virtual void read(std::istream& stream);
+  virtual void read(std::istream& stream);
   /// Writes to standard output
-  inline virtual void write(std::ostream& stream) const;
+  virtual void write(std::ostream& stream) const;
   /// Reads from a file
-  inline virtual void read(std::ifstream& stream);
+  virtual void read(std::ifstream& stream);
   /// Writes to a file
-  inline virtual void write(std::ofstream& stream) const;
+  virtual void write(std::ofstream& stream) const;
   /** @}
     */
 

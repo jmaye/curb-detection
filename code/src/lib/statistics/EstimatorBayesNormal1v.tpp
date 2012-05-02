@@ -33,8 +33,8 @@ EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
     mMean(mean) {
 }
 
-EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution>::
-    EstimatorBayes(const NormalScaledInvChiSquareDistribution& prior) :
+EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution<> >::
+    EstimatorBayes(const NormalScaledInvChiSquareDistribution<>& prior) :
     mMeanVarianceDist(prior) {
 }
 
@@ -51,7 +51,7 @@ EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
     mMean(other.mMean) {
 }
 
-EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution>::
+EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution<> >::
     EstimatorBayes(const EstimatorBayes& other) :
     mMeanVarianceDist(other.mMeanVarianceDist) {
 }
@@ -77,8 +77,9 @@ EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>&
   return *this;
 }
 
-EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution>&
-    EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution>
+EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution<> >&
+    EstimatorBayes<NormalDistribution<1>,
+    NormalScaledInvChiSquareDistribution<> >
     ::operator = (const EstimatorBayes& other) {
   if (this != &other) {
     mMeanVarianceDist = other.mMeanVarianceDist;
@@ -94,7 +95,7 @@ EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
     ~EstimatorBayes() {
 }
 
-EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution>::
+EstimatorBayes<NormalDistribution<1>, NormalScaledInvChiSquareDistribution<> >::
     ~EstimatorBayes() {
 }
 
@@ -111,7 +112,7 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::read(std::istream& stream) {
+    NormalScaledInvChiSquareDistribution<> >::read(std::istream& stream) {
 }
 
 void EstimatorBayes<NormalDistribution<1>, NormalDistribution<1> >::
@@ -132,7 +133,8 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::write(std::ostream& stream) const {
+    NormalScaledInvChiSquareDistribution<> >::write(std::ostream& stream)
+    const {
   stream << "Mean and variance distribution: " << std::endl << mMeanVarianceDist
     << std::endl << "Mean and variance mode: " << std::endl <<
       std::get<0>(mMeanVarianceDist.getMode()) << std::endl
@@ -151,7 +153,7 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::read(std::ifstream& stream) {
+    NormalScaledInvChiSquareDistribution<> >::read(std::ifstream& stream) {
 }
 
 void EstimatorBayes<NormalDistribution<1>, NormalDistribution<1> >::
@@ -163,7 +165,8 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::write(std::ofstream& stream) const {
+    NormalScaledInvChiSquareDistribution<> >::write(std::ofstream& stream)
+    const {
 }
 
 /******************************************************************************/
@@ -182,9 +185,9 @@ const ScaledInvChiSquareDistribution&
   return mVarianceDist;
 }
 
-const NormalScaledInvChiSquareDistribution&
+const NormalScaledInvChiSquareDistribution<>&
     EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::getDist() const {
+    NormalScaledInvChiSquareDistribution<> >::getDist() const {
   return mMeanVarianceDist;
 }
 
@@ -197,7 +200,7 @@ NormalDistribution<1>
 
 StudentDistribution<1>
     EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::getPredDist() const {
+    NormalScaledInvChiSquareDistribution<> >::getPredDist() const {
   return StudentDistribution<1>(mMeanVarianceDist.getNu(),
     mMeanVarianceDist.getMu(), mMeanVarianceDist.getSigma() *
     (mMeanVarianceDist.getKappa() + 1) / mMeanVarianceDist.getKappa());
@@ -223,7 +226,7 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::addPoint(const Point& point) {
+    NormalScaledInvChiSquareDistribution<> >::addPoint(const Point& point) {
   const double mu = mMeanVarianceDist.getMu();
   const double kappa = mMeanVarianceDist.getKappa();
   const double nu = mMeanVarianceDist.getNu();
@@ -250,7 +253,7 @@ void EstimatorBayes<NormalDistribution<1>, ScaledInvChiSquareDistribution>::
 }
 
 void EstimatorBayes<NormalDistribution<1>,
-    NormalScaledInvChiSquareDistribution>::
+    NormalScaledInvChiSquareDistribution<> >::
     addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd) {
   for (auto it = itStart; it != itEnd; ++it)

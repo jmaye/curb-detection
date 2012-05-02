@@ -174,6 +174,20 @@ Eigen::Matrix<double, 2, 1> LinearRegression<M>::Traits<2, D>::getSample(const
 }
 
 template <size_t M>
+template <size_t N, size_t D>
+double LinearRegression<M>::Traits<N, D>::getMean(const
+    LinearRegression<N>& linearRegression) {
+  return linearRegression.mLinearBasisFunction(linearRegression.mBasis);
+}
+
+template <size_t M>
+template <size_t D>
+double LinearRegression<M>::Traits<2, D>::getMean(const
+    LinearRegression<2>& linearRegression) {
+  return linearRegression.mLinearBasisFunction(linearRegression.mBasis(0));
+}
+
+template <size_t M>
 double LinearRegression<M>::pdf(const RandomVariable& value) const {
   return Traits<M>::pdf(*this, value);
 }
@@ -187,4 +201,9 @@ template <size_t M>
 typename  LinearRegression<M>::RandomVariable
     LinearRegression<M>::getSample() const {
   return Traits<M>::getSample(*this);
+}
+
+template <size_t M>
+double LinearRegression<M>::getMean() const {
+  return Traits<M>::getMean(*this);
 }

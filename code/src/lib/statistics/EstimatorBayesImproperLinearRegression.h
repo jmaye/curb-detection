@@ -16,33 +16,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file EstimatorBayesImproperNormal1v.h
-    \brief This file implements a Bayesian estimator for univariate normal
-           distributions with improper prior.
+/** \file EstimatorBayesImproperLinearRegression.h
+    \brief This file implements a Bayesian estimator for ordinary linear
+           regression models with improper prior.
   */
 
 #include <vector>
 
-#include "statistics/NormalDistribution.h"
-#include "statistics/StudentDistribution.h"
+#include "statistics/LinearRegression.h"
+#include "statistics/LinearRegressionPred.h"
 #include "statistics/NormalScaledInvChiSquareDistribution.h"
 
-/** The class EstimatorBayesImproper is implemented for univariate normal
-    distributions.
-    \brief Univariate normal distribution Bayesian estimator with improper prior
+/** The class EstimatorBayesImproper is implemented for ordinary linear
+    regression models.
+    \brief Ordinary linear regression Bayesian estimator with improper prior
   */
-template <> class EstimatorBayesImproper<NormalDistribution<1> > :
+template <size_t M> class EstimatorBayesImproper<LinearRegression<M> > :
   public virtual Serializable {
 public:
   /** \name Types definitions
     @{
     */
   /// Point type
-  typedef NormalDistribution<1>::RandomVariable Point;
+  typedef Eigen::Matrix<double, M, 1> Point;
   /// Points container
   typedef std::vector<Point> Container;
   /// Constant point iterator
-  typedef Container::const_iterator ConstPointIterator;
+  typedef typename Container::const_iterator ConstPointIterator;
   /** @}
     */
 
@@ -63,16 +63,14 @@ public:
   /** \name Accessors
     @{
     */
-  /// Returns the mean and variance distribution
-  const NormalScaledInvChiSquareDistribution<>& getDist() const;
+  /// Returns the coefficients and variance distribution
+  const NormalScaledInvChiSquareDistribution<M>& getDist() const;
   /// Returns the predictive distribution
-  StudentDistribution<1> getPredDist() const;
+  LinearRegressionPred<M> getPredDist() const;
   /// Returns the number of points
   size_t getNumPoints() const;
   /// Returns the validity state of the estimator
   bool getValid() const;
-  /// Add a point to the estimator
-  void addPoint(const Point& point);
   /// Add points to the estimator
   void addPoints(const ConstPointIterator& itStart, const ConstPointIterator&
     itEnd);
@@ -101,19 +99,15 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Mean and variance distribution
-  NormalScaledInvChiSquareDistribution<> mMeanVarianceDist;
+  /// Coefficients and variance distribution
+  NormalScaledInvChiSquareDistribution<M> mCoeffVarianceDist;
   /// Number of points in the estimator
   size_t mNumPoints;
   /// Valid flag
   bool mValid;
-  /// Sum of the values
-  double mValuesSum;
-  /// Squared sum of the values
-  double mSquaredValuesSum;
   /** @}
     */
 
 };
 
-#include "statistics/EstimatorBayesImproperNormal1v.tpp"
+#include "statistics/EstimatorBayesImproperLinearRegression.tpp"
