@@ -29,6 +29,6 @@
 template <size_t M = 1> class NormalScaledInvChiSquareDistribution;
 
 #include "statistics/Normal1vScaledInvChiSquareDistribution.h"
-#include "statistics/NormalMvScaledInvChiSquareDistribution.h"
+//#include "statistics/NormalMvScaledInvChiSquareDistribution.h"
 
 #endif // NORMALSCALEDINVCHISQUAREDISTRIBUTION_H

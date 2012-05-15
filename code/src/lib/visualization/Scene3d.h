@@ -16,23 +16,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file Scene.h
-    \brief This file contains a scene implementation for OpenGL
+/** \file Scene3d.h
+    \brief This file contains a 3d scene implementation
   */
 
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef SCENE3D_H
+#define SCENE3D_H
 
 #include <vector>
 
 #include <QtCore/QObject>
 
-class GLView;
+class View3d;
 
-/** The Scene class represents a scene in OpenGL.
-    \brief Scene for OpenGL
+/** The Scene3d class represents a 3d scene.
+    \brief 3d scene
   */
-class Scene :
+class Scene3d :
   public QObject {
 
 Q_OBJECT
@@ -41,9 +41,9 @@ Q_OBJECT
     @{
     */
   /// Copy constructor
-  Scene(const Scene& other);
+  Scene3d(const Scene3d& other);
   /// Assignment operator
-  Scene& operator = (const Scene& other);
+  Scene3d& operator = (const Scene3d& other);
   /** @}
     */
 
@@ -52,9 +52,9 @@ public:
     @{
     */
   /// Default constructor
-  Scene();
+  Scene3d();
   /// Destructor
-  ~Scene();
+  virtual ~Scene3d();
   /** @}
     */
 
@@ -79,10 +79,10 @@ public:
   /** \name Methods
     @{
     */
-  /// Setup OpenGL
-  void setup(GLView& view);
+  /// Setup view
+  void setup(View3d& view);
   /// Render the scene
-  void render(GLView& view);
+  void render(View3d& view);
   /** @}
     */
 
@@ -118,10 +118,10 @@ signals:
   /// Scale has changed
   void scaleChanged(double scale);
   /// Render the scene
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /** @}
     */
 
 };
 
-#endif // SCENE_H
+#endif // SCENE3D_H

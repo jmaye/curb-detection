@@ -28,8 +28,6 @@
 
 #include <Eigen/Core>
 
-#include "exceptions/BadArgumentException.h"
-
 /** This class implements a K-means clustering algorithm based on
     Expectation-Maximization.
     \brief K-Means clustering algorithm
@@ -52,7 +50,7 @@ public:
     std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
     std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
     dataToCluster, size_t k, size_t maxIterations = 10000, double tol = 1e-6,
-    bool debug = false) throw (BadArgumentException<size_t>);
+    bool debug = false);
   /** @}
     */
 

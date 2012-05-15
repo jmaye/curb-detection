@@ -20,6 +20,8 @@
 #include "functions/LogGammaFunction.h"
 #include "functions/DigammaFunction.h"
 #include "functions/IncompleteGammaPFunction.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -80,8 +82,7 @@ void GammaDistribution<T>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename T>
-void GammaDistribution<T>::setShape(const T& shape)
-    throw (BadArgumentException<T>) {
+void GammaDistribution<T>::setShape(const T& shape) {
   if (shape <= 0)
     throw BadArgumentException<T>(shape,
       "GammaDistribution::setShape(): shape must be strictly positive",
@@ -96,8 +97,7 @@ const T& GammaDistribution<T>::getShape() const {
 }
 
 template <typename T>
-void GammaDistribution<T>::setInvScale(double invScale)
-    throw (BadArgumentException<double>) {
+void GammaDistribution<T>::setInvScale(double invScale) {
   if (invScale <= 0)
     throw BadArgumentException<double>(invScale,
       "GammaDistribution::setScale(): inverse scale must be strictly positive",
@@ -160,8 +160,7 @@ typename GammaDistribution<T>::Mean GammaDistribution<T>::getMean() const {
 }
 
 template <typename T>
-typename GammaDistribution<T>::Mode GammaDistribution<T>::getMode() const
-    throw (InvalidOperationException) {
+typename GammaDistribution<T>::Mode GammaDistribution<T>::getMode() const {
   if (mShape >= 1)
     return (mShape - 1) / mInvScale;
   else

@@ -17,24 +17,27 @@
  ******************************************************************************/
 
 /** \file MainWindow.h
-    \brief This file defines the main Qt window.
+    \brief This file defines a main Qt window.
   */
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QWidget>
 
 #include "visualization/Control.h"
 
 class Ui_MainWindow;
 
-/** The MainWindow class represents the Qt main window.
+/** The MainWindow class represents a Qt main window.
     \brief Qt main window
   */
 class MainWindow :
   public QMainWindow {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
@@ -49,16 +52,18 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs control with parameter
+  /// Default constructor
   MainWindow();
   /// Destructor
-  ~MainWindow();
+  virtual ~MainWindow();
   /** @}
     */
 
   /** \name Accessors
     @{
     */
+  /// Adds a view to the main window
+  void addView(const QString& title, QWidget& view);
   /// Adds a control to the main window
   void addControl(const QString& title, Control& control);
   /** @}

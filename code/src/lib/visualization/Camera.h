@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file Camera.h
-    \brief This file contains a camera implementation for OpenGL
+    \brief This file contains a camera implementation
   */
 
 #ifndef CAMERA_H
@@ -27,10 +27,10 @@
 
 #include <QtCore/QObject>
 
-class GLView;
+class View3d;
 
-/** The Camera class represents a camera in OpenGL.
-    \brief Camera for OpenGL
+/** The Camera class represents a camera.
+    \brief Camera
   */
 class Camera :
   public QObject {
@@ -55,7 +55,7 @@ public:
   Camera(double x = -20.0, double y = 0.0, double z = 0.0, double near = 0.1,
     double far = 1000.0);
   /// Destructor
-  ~Camera();
+  virtual ~Camera();
   /** @}
     */
 
@@ -85,7 +85,7 @@ public:
     @{
     */
   /// Setup the camera
-  void setup(GLView& view, double width, double height);
+  void setup(View3d& view, double width, double height);
   /** @}
     */
 

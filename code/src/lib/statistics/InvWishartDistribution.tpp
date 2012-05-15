@@ -21,6 +21,8 @@
 #include "functions/LogGammaFunction.h"
 #include "statistics/NormalDistribution.h"
 #include "statistics/WishartDistribution.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -89,8 +91,7 @@ void InvWishartDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void InvWishartDistribution<M>::setDegrees(double degrees)
-    throw (BadArgumentException<double>) {
+void InvWishartDistribution<M>::setDegrees(double degrees) {
   if (degrees < (size_t)mScale.rows())
     throw BadArgumentException<double>(degrees,
       "InvWishartDistribution<M>::setDegrees(): degrees must be strictly "
@@ -106,8 +107,7 @@ double InvWishartDistribution<M>::getDegrees() const {
 }
 
 template <size_t M>
-void InvWishartDistribution<M>::setScale(const Scale& scale)
-    throw (BadArgumentException<Scale>) {
+void InvWishartDistribution<M>::setScale(const Scale& scale) {
   mTransformation = scale.llt();
   if (!mTransformation.isPositiveDefinite())
     throw BadArgumentException<Scale>(scale,
@@ -150,7 +150,7 @@ const Eigen::LLT<typename InvWishartDistribution<M>::Scale>&
 
 template <size_t M>
 typename InvWishartDistribution<M>::Mean InvWishartDistribution<M>::getMean()
-  const throw (InvalidOperationException) {
+  const {
   if (mDegrees > mScale.rows() + 1)
     return mScale / (mDegrees - mScale.rows() - 1);
   else
@@ -166,8 +166,7 @@ typename InvWishartDistribution<M>::Mode
 
 template <size_t M>
 typename InvWishartDistribution<M>::Covariance
-    InvWishartDistribution<M>::getCovariance() const
-    throw (InvalidOperationException) {
+    InvWishartDistribution<M>::getCovariance() const {
   const double denominator = (mDegrees - mScale.rows()) *
     (mDegrees - mScale.rows() - 1) * (mDegrees - mScale.rows() - 1) *
     (mDegrees - mScale.rows() - 3);
@@ -191,8 +190,7 @@ double InvWishartDistribution<M>::pdf(const RandomVariable& value) const {
 }
 
 template <size_t M>
-double InvWishartDistribution<M>::logpdf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double InvWishartDistribution<M>::logpdf(const RandomVariable& value) const {
   if (!value.llt().isPositiveDefinite())
     throw BadArgumentException<RandomVariable>(value,
       "InvWishartDistribution<M>::pdf(): value must be positive definite",

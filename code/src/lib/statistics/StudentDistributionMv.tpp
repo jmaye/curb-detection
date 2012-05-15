@@ -21,6 +21,8 @@
 #include "functions/LogGammaFunction.h"
 #include "statistics/ChiSquareDistribution.h"
 #include "statistics/NormalDistribution.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -103,8 +105,7 @@ const typename StudentDistribution<M>::Location&
 }
 
 template <size_t M>
-void StudentDistribution<M>::setScale(const Scale& scale)
-    throw (BadArgumentException<Scale>) {
+void StudentDistribution<M>::setScale(const Scale& scale) {
   if (scale.transpose() != scale)
     throw BadArgumentException<Scale>(scale,
       "StudentDistribution<M>::setScale(): scale must be symmetric",
@@ -132,8 +133,7 @@ const typename StudentDistribution<M>::Scale& StudentDistribution<M>::getScale()
 }
 
 template <size_t M>
-void StudentDistribution<M>::setDegrees(double degrees)
-    throw (BadArgumentException<double>) {
+void StudentDistribution<M>::setDegrees(double degrees) {
   if (degrees <= 0)
     throw BadArgumentException<double>(degrees,
       "StudentDistribution<M>::setDegrees(): degrees must be strictly positive",
@@ -207,8 +207,7 @@ double StudentDistribution<M>::mahalanobisDistance(const RandomVariable& value)
 }
 
 template <size_t M>
-typename StudentDistribution<M>::Mean StudentDistribution<M>::getMean() const
-    throw (InvalidOperationException) {
+typename StudentDistribution<M>::Mean StudentDistribution<M>::getMean() const {
   if (mDegrees > 1)
     return mLocation;
   else
@@ -223,8 +222,7 @@ typename StudentDistribution<M>::Mode StudentDistribution<M>::getMode() const {
 
 template <size_t M>
 typename StudentDistribution<M>::Covariance
-    StudentDistribution<M>::getCovariance() const
-    throw (InvalidOperationException) {
+    StudentDistribution<M>::getCovariance() const {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
   else

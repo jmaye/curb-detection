@@ -27,9 +27,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/OutOfBoundException.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The MultinomialDistribution class represents a multinomial distribution,
     i.e., the discrete distribution of N independent categorical distribution
@@ -104,22 +101,19 @@ public:
     @{
     */
   /// Sets the success probabilities
-  void setProbabilities(const Eigen::Matrix<double, M, 1>& probabilities)
-    throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+  void setProbabilities(const Eigen::Matrix<double, M, 1>& probabilities);
   /// Returns the success probabilities
   const Eigen::Matrix<double, M, 1>& getProbabilities() const;
   /// Returns a success probability by index
-  double getProbability(size_t idx) const
-    throw (OutOfBoundException<size_t>);
+  double getProbability(size_t idx) const;
   /// Sets the number of trials
-  virtual void setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>);
+  virtual void setNumTrials(size_t numTrials);
   /// Returns the number of trials
   size_t getNumTrials() const;
   /// Returns the mean of the distribution
   Mean getMean() const;
   /// Returns the mode of the distribution
-  Mode getMode() const throw (InvalidOperationException);
+  Mode getMode() const;
   /// Returns the covariance of the distribution
   Covariance getCovariance() const;
   /// Returns the probability mass function at a point
@@ -128,8 +122,7 @@ public:
   virtual double pmf(const typename
     DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
   double logpmf(const typename DiscreteDistribution<int, M - 1>::Domain&
     value) const;

@@ -25,7 +25,6 @@
 #define BINOMIALFUNCTION_H
 
 #include "functions/DiscreteFunction.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The BinomialFunction class represents the binomial function.
     \brief Binomial function
@@ -65,8 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual size_t getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>);
+  virtual size_t getValue(const VariableType& argument) const;
   /** @}
     */
 

@@ -25,8 +25,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/InvalidOperationException.h"
 #include "utils/IfThenElse.h"
 #include "utils/IsReal.h"
 #include "utils/IsInteger.h"
@@ -109,7 +107,7 @@ public:
     */
   /// Sets the support of the distribution
   void setSupport(const RandomVariable& minSupport, const RandomVariable&
-    maxSupport) throw (BadArgumentException<RandomVariable>);
+    maxSupport);
   /// Sets the minimum support
   void setMinSupport(const RandomVariable& minSupport);
   /// Returns the minimum support
@@ -125,7 +123,7 @@ public:
   /// Returns the median of the distribution
   Median getMedian() const;
   /// Returns the mode of the distribution
-  Mode getMode() const throw (InvalidOperationException);
+  Mode getMode() const;
   /// Returns the variance of the distribution
   Covariance getCovariance() const;
   /// Access the probablity density function at the given value

@@ -39,7 +39,7 @@ namespace MetropolisHastingsSampler {
     */
   /// Access samples
   template <typename Y, typename X, size_t M>
-  static void getSamples(const ContinuousFunction<Y, X, M>& target,
+  void getSamples(const ContinuousFunction<Y, X, M>& target,
     NormalDistribution<M>& proposal,
     std::vector<typename NormalDistribution<M>::RandomVariable>& samples, size_t
     numSamples);

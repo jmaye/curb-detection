@@ -25,8 +25,8 @@
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 #include "segmenter/GraphSegmenter.h"
 #include "data-structures/DEMGraph.h"
 
@@ -118,7 +118,7 @@ protected slots:
     @{
     */
   /// Renders the segmentation
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /// Maximum number of iterations changed
   void maxIterChanged(int maxIter);
   /// Tolerance changed

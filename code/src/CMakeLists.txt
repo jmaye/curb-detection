@@ -1,4 +1,8 @@
 remake_qt4_include()
+remake_find_package(Threads)
+if(NOT ${CMAKE_USE_PTHREADS_INIT})
+  message(FATAL_ERROR "Missing POSIX thread support!")
+endif(NOT ${CMAKE_USE_PTHREADS_INIT})
 remake_find_library(qwt-qt4 qwt-qt4/qwt.h PACKAGE libqwt5-qt4-dev)
 remake_find_library(qwtplot3d-qt4 qwtplot3d-qt4/qwt3d_plot.h PACKAGE
   libqwtplot3d-qt4-dev)

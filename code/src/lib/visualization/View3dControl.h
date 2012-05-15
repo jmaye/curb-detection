@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file ViewControl.h
-    \brief This file defines a Qt control for viewing a scene
+/** \file View3dControl.h
+    \brief This file defines a Qt control for viewing a 3d scene
   */
 
-#ifndef VIEWCONTROL_H
-#define VIEWCONTROL_H
+#ifndef VIEW3DCONTROL_H
+#define VIEW3DCONTROL_H
 
 #include <vector>
 
@@ -30,25 +30,27 @@
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 
-class Ui_ViewControl;
+class Ui_View3dControl;
 
-/** The ViewControl class represents a Qt control for viewing a scene.
-    \brief Qt control for viewing a scene
+/** The View3dControl class represents a Qt control for viewing a 3d scene.
+    \brief Qt control for viewing a 3d scene
   */
-class ViewControl :
+class View3dControl :
   public Control,
-  public Singleton<ViewControl> {
+  public Singleton<View3dControl> {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  ViewControl(const ViewControl& other);
+  View3dControl(const View3dControl& other);
   /// Assignment operator
-  ViewControl& operator = (const ViewControl& other);
+  View3dControl& operator = (const View3dControl& other);
   /** @}
     */
 
@@ -57,10 +59,10 @@ public:
     @{
     */
   /// Constructs control from parameters
-  ViewControl(bool showFog = true, bool showGround = true,
+  View3dControl(bool showFog = true, bool showGround = true,
     bool showAxes = true);
   /// Destructor
-  ~ViewControl();
+  virtual ~View3dControl();
   /** @}
     */
 
@@ -110,7 +112,7 @@ protected:
   void renderGround(double radius, double elevation, double angleStep, double
     rangeStep);
   /// Render the axes
-  void renderAxes(double f64Length);
+  void renderAxes(double length);
   /// Dump the frame
   void dumpFrame(const QString& format, int frame, size_t width, size_t height);
   /** @}
@@ -120,7 +122,7 @@ protected:
     @{
     */
   /// Qt user interface
-  Ui_ViewControl* mUi;
+  Ui_View3dControl* mUi;
   /// Color palette
   Palette mPalette;
   /** @}
@@ -175,10 +177,12 @@ protected slots:
   /// Scene scale changed
   void sceneScaleChanged(double scale);
   /// Render the scene
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
+  /// View resized
+  void resized();
   /** @}
     */
 
 };
 
-#endif
+#endif // VIEW3DCONTROL_H

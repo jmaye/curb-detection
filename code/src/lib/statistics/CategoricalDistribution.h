@@ -25,7 +25,6 @@
 #define CATEGORICALDISTRIBUTION_H
 
 #include "statistics/MultinomialDistribution.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The CategoricalDistribution class represents a categorical distribution,
     i.e., the discrete distribution of a random event that can take one out of K
@@ -54,8 +53,7 @@ public:
     @{
     */
   /// Sets the number of trials
-  virtual void setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>);
+  virtual void setNumTrials(size_t numTrials);
   /** @}
     */
 

@@ -27,7 +27,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The GeometricDistribution class represents a geometric distribution, i.e.,
     a discrete distribution which models the number of Bernoulli trial before
@@ -58,7 +57,7 @@ public:
     @{
     */
   /// Sets the success probability
-  void setProbability(double probability) throw (BadArgumentException<double>);
+  void setProbability(double probability);
   /// Returns the success probability
   double getProbability() const;
   /// Returns the mean of the distribution
@@ -70,8 +69,7 @@ public:
   /// Returns the probability mass function at a point
   virtual double pmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpmf(const RandomVariable& value) const;
   /// Returns the cumulative mass function at a point
   double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution

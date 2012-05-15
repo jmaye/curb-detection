@@ -28,8 +28,8 @@
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 #include "data-structures/PointCloud.h"
 
 class Ui_DEMControl;
@@ -118,7 +118,7 @@ protected slots:
   /// DEM changed
   void demChanged();
   /// Render DEM
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /** @}
     */
 

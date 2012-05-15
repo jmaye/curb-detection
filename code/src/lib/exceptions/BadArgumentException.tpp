@@ -59,6 +59,7 @@ BadArgumentException<X>::~BadArgumentException() throw() {
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
+
 template <typename X>
 const char* BadArgumentException<X>::what() const throw() {
   std::stringstream stream;

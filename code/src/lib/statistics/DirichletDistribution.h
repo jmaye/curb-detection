@@ -26,9 +26,6 @@
 
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/OutOfBoundException.h"
-#include "exceptions/InvalidOperationException.h"
 #include "base/Serializable.h"
 
 /** The DirichletDistribution class represents a Dirichlet distribution,
@@ -103,18 +100,17 @@ public:
     @{
     */
   /// Sets the alpha parameter
-  void setAlpha(const Eigen::Matrix<double, M, 1>& alpha)
-    throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+  void setAlpha(const Eigen::Matrix<double, M, 1>& alpha);
   /// Returns the alpha parameter
   const Eigen::Matrix<double, M, 1>& getAlpha() const;
   /// Returns an alpha by index
-  double getAlpha(size_t idx) const throw (OutOfBoundException<size_t>);
+  double getAlpha(size_t idx) const;
   /// Returns the normalizer
   double getNormalizer() const;
   /// Returns the mean of the distribution
   Mean getMean() const;
   /// Returns the mode of the distribution
-  Mode getMode() const throw (InvalidOperationException);
+  Mode getMode() const;
   /// Returns the covariance of the distribution
   Covariance getCovariance() const;
   /// Access the probability density function at the given value
@@ -123,8 +119,7 @@ public:
   virtual double pdf(const typename
     ContinuousDistribution<double, M - 1>::Domain& value) const;
   /// Access the log-probablity density function at the given value
-  double logpdf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpdf(const RandomVariable& value) const;
   /// Access the log-probablity density function at the given value
   double logpdf(const typename
     ContinuousDistribution<double, M - 1>::Domain& value) const;

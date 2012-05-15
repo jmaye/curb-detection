@@ -31,7 +31,9 @@
   */
 class Control :
   public QWidget {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
@@ -49,7 +51,7 @@ public:
   /// Default constructor
   Control();
   /// Destructor
-  ~Control();
+  virtual ~Control();
   /** @}
     */
 

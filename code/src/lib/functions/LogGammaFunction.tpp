@@ -18,6 +18,8 @@
 
 #include <cmath>
 
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -85,8 +87,7 @@ double LogGammaFunction<X>::getValue(const VariableType& argument) const {
   return sum + mDim * (mDim - 1) * 0.25 * log(M_PI);
 }
 
-double LogGammaFunction<size_t>::getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>) {
+double LogGammaFunction<size_t>::getValue(const VariableType& argument) const {
   if (argument)
     return LogFactorialFunction::getValue(argument - 1);
   else throw BadArgumentException<size_t>(argument,

@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -64,8 +65,7 @@ void GeometricDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void GeometricDistribution::setProbability(double probability)
-    throw (BadArgumentException<double>) {
+void GeometricDistribution::setProbability(double probability) {
   if (probability <= 0.0 || probability > 1.0)
     throw BadArgumentException<double>(probability,
       "GeometricDistribution::setProbability(): success probability "
@@ -85,8 +85,7 @@ double GeometricDistribution::pmf(const RandomVariable& value) const {
     return exp(logpmf(value));
 }
 
-double GeometricDistribution::logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double GeometricDistribution::logpmf(const RandomVariable& value) const {
   if (value < 0)
     throw BadArgumentException<RandomVariable>(value,
       "GeometricDistribution::logpmf(): value must be bigger than 0",

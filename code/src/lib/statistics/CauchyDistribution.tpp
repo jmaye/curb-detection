@@ -17,6 +17,8 @@
  ******************************************************************************/
 
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -73,8 +75,7 @@ double CauchyDistribution::getLocation() const {
   return mLocation;
 }
 
-void CauchyDistribution::setScale(double scale)
-    throw (BadArgumentException<double>) {
+void CauchyDistribution::setScale(double scale) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "CauchyDistribution::setScale(): scale must be strictly positive",
@@ -104,8 +105,7 @@ CauchyDistribution::RandomVariable CauchyDistribution::getSample() const {
   return mLocation + mScale * tan(M_PI * (randomizer.sampleUniform() - 0.5));
 }
 
-CauchyDistribution::Mean CauchyDistribution::getMean() const
-    throw (InvalidOperationException) {
+CauchyDistribution::Mean CauchyDistribution::getMean() const {
   throw InvalidOperationException("CauchyDistribution::getMean(): "
     "mean undefined");
 }
@@ -118,8 +118,7 @@ CauchyDistribution::Mode CauchyDistribution::getMode() const {
   return mLocation;
 }
 
-CauchyDistribution::Variance CauchyDistribution::getVariance() const
-    throw (InvalidOperationException) {
+CauchyDistribution::Variance CauchyDistribution::getVariance() const {
   throw InvalidOperationException("CauchyDistribution::getVariance(): "
     "variance undefined");
 }

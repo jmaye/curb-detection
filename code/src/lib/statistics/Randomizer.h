@@ -25,7 +25,6 @@
 #define RANDOMIZER_H
 
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 #include "utils/SizeTSupport.h"
 #include "utils/IsReal.h"
 #include "utils/IsInteger.h"
@@ -80,27 +79,20 @@ public:
     @{
     */
   /// Returns a sample from a uniform distribution within the specified support
-  T sampleUniform(const T& minSupport = T(0), const T& maxSupport = T(1)) const
-    throw (BadArgumentException<T>);
+  T sampleUniform(const T& minSupport = T(0), const T& maxSupport = T(1)) const;
   /// Returns a sample from a normal distribution
-  T sampleNormal(const T& mean = T(0), const T& variance = T(1)) const
-    throw (BadArgumentException<T>);
+  T sampleNormal(const T& mean = T(0), const T& variance = T(1)) const;
   /// Returns a sample from a categorical distribution
   size_t sampleCategorical(const Eigen::Matrix<double, M, 1>& probabilities =
-    Eigen::Matrix<double, M, 1>::Constant(1.0 / M))
-    const throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+    Eigen::Matrix<double, M, 1>::Constant(1.0 / M)) const;
   /// Returns a sample from a Poisson distribution
-  size_t samplePoisson(double mean = 1.0) const
-    throw (BadArgumentException<double>);
+  size_t samplePoisson(double mean = 1.0) const;
   /// Returns a sample from a exponential distribution
-  double sampleExponential(double rate = 1.0) const
-    throw (BadArgumentException<double>);
+  double sampleExponential(double rate = 1.0) const;
   /// Returns a sample from a geometric distribution
-  size_t sampleGeometric(double successProbability = 0.5) const
-    throw (BadArgumentException<double>);
+  size_t sampleGeometric(double successProbability = 0.5) const;
   /// Returns a sample from a gamma distribution
-  double sampleGamma(double shape = 1.0, double invScale = 1.0) const
-    throw (BadArgumentException<double>);
+  double sampleGamma(double shape = 1.0, double invScale = 1.0) const;
   /** @}
     */
 

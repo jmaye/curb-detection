@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include "functions/FactorialFunction.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -32,8 +33,7 @@ BinomialFunction::~BinomialFunction() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-size_t BinomialFunction::getValue(const VariableType& argument)
-    const throw (BadArgumentException<VariableType>) {
+size_t BinomialFunction::getValue(const VariableType& argument) const {
   const FactorialFunction factorial;
   if (argument(0) >= argument(1))
     return factorial(argument(0)) / (factorial(argument(1)) *

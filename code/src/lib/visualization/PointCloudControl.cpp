@@ -34,8 +34,8 @@ PointCloudControl::PointCloudControl(bool showPoints) :
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   setPointColor(Qt::gray);
   setPointSize(1.0);
   setShowPoints(showPoints);
@@ -57,17 +57,17 @@ void PointCloudControl::setPointColor(const QColor& color) {
 
 void PointCloudControl::setPointSize(double pointSize) {
   mUi->pointSizeSpinBox->setValue(pointSize);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void PointCloudControl::setShowPoints(bool showPoints) {
   mUi->showPointsCheckBox->setChecked(showPoints);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void PointCloudControl::setSmoothPoints(bool smoothPoints) {
   mUi->smoothPointsCheckBox->setChecked(smoothPoints);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void PointCloudControl::setLogFilename(const QString& filename) {
@@ -77,7 +77,7 @@ void PointCloudControl::setLogFilename(const QString& filename) {
     std::ifstream pointCloudFile(filename.toAscii().constData());
     pointCloudFile >> mPointCloud;
     mUi->showPointsCheckBox->setEnabled(true);
-    GLView::getInstance().update();
+    View3d::getInstance().update();
     emit pointCloudRead(mPointCloud);
     emit pointCloudRead(filename.toStdString());
   }
@@ -98,9 +98,9 @@ void PointCloudControl::renderPoints(double size, bool smooth) {
   else
     glDisable(GL_POINT_SMOOTH);
   glBegin(GL_POINTS);
-  GLView::getInstance().setColor(mPalette, "Point");
-  for (PointCloud<double, 3>::ConstPointIterator it =
-    mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd(); ++it)
+  View3d::getInstance().setColor(mPalette, "Point");
+  for (auto it = mPointCloud.getPointBegin(); it != mPointCloud.getPointEnd();
+      ++it)
     glVertex3f((*it)(0), (*it)(1), (*it)(2));
   glEnd();
   glPointSize(1.0);
@@ -117,7 +117,7 @@ void PointCloudControl::logBrowseClicked() {
 }
 
 void PointCloudControl::colorChanged(const QString& role, const QColor& color) {
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void PointCloudControl::pointSizeChanged(double pointSize) {
@@ -132,7 +132,7 @@ void PointCloudControl::smoothPointsToggled(bool checked) {
   setSmoothPoints(checked);
 }
 
-void PointCloudControl::render(GLView& view, Scene& scene) {
+void PointCloudControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showPointsCheckBox->isChecked())
     renderPoints(mUi->pointSizeSpinBox->value(),
       mUi->smoothPointsCheckBox->isChecked());

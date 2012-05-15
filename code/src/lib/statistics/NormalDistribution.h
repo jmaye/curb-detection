@@ -28,6 +28,6 @@
 template <size_t M = 1> class NormalDistribution;
 
 #include "statistics/NormalDistribution1v.h"
-#include "statistics/NormalDistributionMv.h"
+//#include "statistics/NormalDistributionMv.h"
 
 #endif // NORMALDISTRIBUTION_H

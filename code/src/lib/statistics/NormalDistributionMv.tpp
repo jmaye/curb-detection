@@ -19,6 +19,7 @@
 #include <Eigen/LU>
 
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -103,8 +104,7 @@ typename NormalDistribution<M>::Mean NormalDistribution<M>::getMean() const {
 }
 
 template <size_t M>
-void NormalDistribution<M>::setCovariance(const Covariance& covariance)
-    throw (BadArgumentException<Covariance>) {
+void NormalDistribution<M>::setCovariance(const Covariance& covariance) {
   if (covariance.transpose() != covariance)
     throw BadArgumentException<Covariance>(covariance,
       "NormalDistribution<M>::setCovariance(): covariance must be symmetric",

@@ -27,8 +27,6 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The GammaDistribution class represents a gamma distribution,
     i.e., a continuous distribution that models waiting times, e.g., the
@@ -59,11 +57,11 @@ public:
     @{
     */
   /// Sets the shape parameter
-  void setShape(const T& shape) throw (BadArgumentException<T>);
+  void setShape(const T& shape);
   /// Returns the shape parameter
   const T& getShape() const;
   /// Sets the inverse scale parameter
-  void setInvScale(double invScale) throw (BadArgumentException<double>);
+  void setInvScale(double invScale);
   /// Returns the inverse scale parameter
   double getInvScale() const;
   /// Returns the normalizer
@@ -71,7 +69,7 @@ public:
   /// Returns the mean of the distribution
   Mean getMean() const;
   /// Returns the mode of the distribution
-  Mode getMode() const throw (InvalidOperationException);
+  Mode getMode() const;
   /// Returns the variance of the distribution
   Variance getVariance() const;
   /// Access the probablity density function at the given value

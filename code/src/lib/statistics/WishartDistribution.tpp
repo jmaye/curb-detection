@@ -20,6 +20,8 @@
 
 #include "statistics/NormalDistribution.h"
 #include "functions/LogGammaFunction.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -87,8 +89,7 @@ void WishartDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void WishartDistribution<M>::setDegrees(double degrees)
-    throw (BadArgumentException<double>) {
+void WishartDistribution<M>::setDegrees(double degrees) {
   if (degrees < (size_t)mScale.rows())
     throw BadArgumentException<double>(degrees,
       "WishartDistribution<M>::setDegrees(): degrees must be strictly bigger "
@@ -104,8 +105,7 @@ double WishartDistribution<M>::getDegrees() const {
 }
 
 template <size_t M>
-void WishartDistribution<M>::setScale(const Scale& scale)
-    throw (BadArgumentException<Scale>) {
+void WishartDistribution<M>::setScale(const Scale& scale) {
   mTransformation = scale.llt();
   if (!mTransformation.isPositiveDefinite())
     throw BadArgumentException<Scale>(scale,
@@ -158,8 +158,7 @@ typename WishartDistribution<M>::Mean WishartDistribution<M>::getMean() const {
 }
 
 template <size_t M>
-typename WishartDistribution<M>::Mode WishartDistribution<M>::getMode() const
-    throw (InvalidOperationException) {
+typename WishartDistribution<M>::Mode WishartDistribution<M>::getMode() const {
   if (mDegrees >= mScale.rows() + 1)
     return (mDegrees - mScale.rows() - 1) * mScale;
   else
@@ -184,8 +183,7 @@ double WishartDistribution<M>::pdf(const RandomVariable& value) const {
 }
 
 template <size_t M>
-double WishartDistribution<M>::logpdf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double WishartDistribution<M>::logpdf(const RandomVariable& value) const {
   if (!value.llt().isPositiveDefinite())
     throw BadArgumentException<RandomVariable>(value,
       "WishartDistribution<M>::pdf(): value must be positive definite",

@@ -38,7 +38,7 @@ namespace ImportanceSampler {
     */
   /// Access samples drawn from the proposal distribution and their weights
   template <typename Y, typename X>
-  static void getSamples(const Function<Y, X>& target, const
+  void getSamples(const Function<Y, X>& target, const
     SampleDistribution<X>& proposal, std::vector<X>& weights,
     std::vector<X>& samples, size_t numSamples);
   /** @}

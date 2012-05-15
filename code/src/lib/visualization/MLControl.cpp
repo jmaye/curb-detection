@@ -41,8 +41,8 @@ MLControl::MLControl(bool showML) :
     mGraph(0),
     mMixtureDist(0) {
   mUi->setupUi(this);
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   connect(&SegmentationControl::getInstance(),
     SIGNAL(segmentUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const GraphSegmenter<DEMGraph>::Components&)),
@@ -81,7 +81,7 @@ void MLControl::setTolerance(double tol) {
 
 void MLControl::setShowML(bool showML) {
   mUi->showMLCheckBox->setChecked(showML);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void MLControl::setWeighted(bool checked) {
@@ -125,7 +125,7 @@ void MLControl::renderML() {
   glPopAttrib();
 }
 
-void MLControl::render(GLView& view, Scene& scene) {
+void MLControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showMLCheckBox->isChecked() && mDEM)
     renderML();
 }
@@ -199,7 +199,7 @@ void MLControl::runML() {
         mMixtureDist =
           new MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>(
           estMixtPlane.getMixtureDist());
-        GLView::getInstance().update();
+        View3d::getInstance().update();
         emit mlUpdated(*mDEM, *mGraph, *mMixtureDist);
       }
     }

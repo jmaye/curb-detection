@@ -20,7 +20,7 @@
 
 #include <cmath>
 
-#include "visualization/GLView.h"
+#include "visualization/View3d.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -97,7 +97,7 @@ const std::vector<double>& Camera::getProjection() const {
 /* Methods                                                                    */
 /******************************************************************************/
 
-void Camera::setup(GLView& view, double width, double height) {
+void Camera::setup(View3d& view, double width, double height) {
   double aspect = width / height;
   double near = mRange[0];
   double far = mRange[1];

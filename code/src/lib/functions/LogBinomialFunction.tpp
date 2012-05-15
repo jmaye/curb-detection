@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include "functions/LogFactorialFunction.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -33,7 +34,7 @@ LogBinomialFunction::~LogBinomialFunction() {
 /******************************************************************************/
 
 double LogBinomialFunction::getValue(const VariableType&
-    argument) const throw (BadArgumentException<VariableType>) {
+    argument) const {
   LogFactorialFunction logFactorial;
   if (argument(0) >= argument(1))
     return logFactorial(argument(0)) - (logFactorial(argument(1)) +

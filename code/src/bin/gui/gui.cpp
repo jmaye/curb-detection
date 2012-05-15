@@ -20,8 +20,11 @@
     \brief This file is a GUI for curb detection qualitative analysis.
   */
 
+#include <QtGui/QApplication>
+
 #include "visualization/MainWindow.h"
-#include "visualization/ViewControl.h"
+#include "visualization/View3d.h"
+#include "visualization/View3dControl.h"
 #include "visualization/PointCloudControl.h"
 #include "visualization/DEMControl.h"
 #include "visualization/SegmentationControl.h"
@@ -30,28 +33,24 @@
 #include "visualization/CurbsControl.h"
 #include "visualization/EvaluatorControl.h"
 
-#include <QtGui/QApplication>
-
 int main (int argc, char** argv) {
   QApplication application(argc, argv);
   MainWindow mainWindow;
-  ViewControl viewControl;
+  mainWindow.addView(QString("3d"), View3d::getInstance());
+  mainWindow.addControl("View", View3dControl::getInstance());
   PointCloudControl pointCloudControl(true);
-  DEMControl demControl(true);
-  SegmentationControl segControl(false);
-  MLControl mlControl(false);
-  BPControl bpControl(true);
-  CurbsControl curbsControl(true);
-  EvaluatorControl evaluatorControl(false);
-  if (argc > 1)
-    pointCloudControl.setLogFilename(argv[1]);
-  mainWindow.addControl("View", viewControl);
   mainWindow.addControl("PointCloud", pointCloudControl);
+  DEMControl demControl(true);
   mainWindow.addControl("DEM", demControl);
+  SegmentationControl segControl(false);
   mainWindow.addControl("Segmentation", segControl);
+  MLControl mlControl(false);
   mainWindow.addControl("ML", mlControl);
+  BPControl bpControl(true);
   mainWindow.addControl("BP", bpControl);
+  CurbsControl curbsControl(true);
   mainWindow.addControl("Curbs", curbsControl);
+  EvaluatorControl evaluatorControl(false);
   mainWindow.addControl("Evaluation", evaluatorControl);
   mainWindow.show();
   return application.exec();

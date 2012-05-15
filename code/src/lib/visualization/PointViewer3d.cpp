@@ -34,8 +34,8 @@ PointViewer3d::PointViewer3d(const PointCloud<>::Container& data) {
   color.mBlue = 1;
   mPointClouds.push_back(std::tuple<PointCloud<>, Colors::Color>(pointCloud,
     color));
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   setBackgroundColor(Qt::white);
   setFogColor(Qt::white);
   setGroundColor(Qt::lightGray);
@@ -53,8 +53,8 @@ PointViewer3d::PointViewer3d(const
     mPointClouds.push_back(std::tuple<PointCloud<>, Colors::Color>(pointCloud,
       Colors::genColor(it->first)));
   }
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene&)),
+    this, SLOT(render(View3d&, Scene&)));
   setBackgroundColor(Qt::white);
   setFogColor(Qt::white);
   setGroundColor(Qt::lightGray);
@@ -97,39 +97,14 @@ void PointViewer3d::renderFog(double start, double end, double density) {
   QColor color = mPalette.getColor("Fog");
   float colorfv[] = {(float)color.redF(), (float)color.greenF(),
     (float)color.blueF(), 1.0};
-  double scale = GLView::getInstance().getScene().getScale();
-  double distance = GLView::getInstance().getCamera().getViewpointDistance();
+  double scale = View3d::getInstance().getScene().getScale();
+  double distance = View3d::getInstance().getCamera().getViewpointDistance();
   glFogi(GL_FOG_MODE, GL_LINEAR);
   glFogfv(GL_FOG_COLOR, colorfv);
   glFogf(GL_FOG_DENSITY, density);
   glHint(GL_FOG_HINT, GL_DONT_CARE);
   glFogf(GL_FOG_START, distance + start * scale);
   glFogf(GL_FOG_END, distance + end * scale);
-  glPopAttrib();
-}
-
-void PointViewer3d::renderGround(double radius, double elevation, double
-    angleStep, double rangeStep) {
-  glPushAttrib(GL_CURRENT_BIT);
-  glBegin(GL_LINES);
-  GLView::getInstance().setColor(mPalette, "Ground");
-  for (double angle = -M_PI; angle < M_PI; angle += angleStep) {
-    glVertex3f(rangeStep * sin(angle), rangeStep * cos(angle), elevation);
-    glVertex3f(radius * sin(angle), radius * cos(angle), elevation);
-  }
-  glEnd();
-  for (double range = rangeStep; ; range += rangeStep) {
-    if (range > radius)
-      range = radius;
-    glBegin(GL_LINE_STRIP);
-    for (double angle = -M_PI; angle <= M_PI; angle += angleStep)
-      for (double theta = angle; theta <= angle + angleStep;
-        theta += angleStep / range)
-        glVertex3f(range * sin(theta), range * cos(theta), elevation);
-    glEnd();
-    if (range == radius)
-      break;
-  }
   glPopAttrib();
 }
 
@@ -140,21 +115,21 @@ void PointViewer3d::renderAxes(double length) {
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(length, 0.0, 0.0);
   glEnd();
-  GLView::getInstance().render(length, 0.0, 0.0, "X", 0.2 * length, true, true,
+  View3d::getInstance().render(length, 0.0, 0.0, "X", 0.2 * length, true, true,
     true);
   glBegin(GL_LINES);
   glColor3f(0.0, 1.0, 0.0);
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, length, 0.0);
   glEnd();
-  GLView::getInstance().render(0.0, length, 0.0, "Y", 0.2 * length, true, true,
+  View3d::getInstance().render(0.0, length, 0.0, "Y", 0.2 * length, true, true,
     true);
   glBegin(GL_LINES);
   glColor3f(0.0, 0.0, 1.0);
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, length);
   glEnd();
-  GLView::getInstance().render(0, 0, length, "Z", 0.2 * length, true, true,
+  View3d::getInstance().render(0, 0, length, "Z", 0.2 * length, true, true,
     true);
   glPopAttrib();
 }
@@ -185,14 +160,13 @@ void PointViewer3d::renderPoints(double size, bool smooth) {
 }
 
 void PointViewer3d::show() {
-  mGLView.show();
+  mView.show();
 }
 
-void PointViewer3d::render(GLView& view, Scene& scene) {
+void PointViewer3d::render(View3d& view, Scene3d& scene) {
   renderBackground();
   glEnable(GL_FOG);
   renderFog(10, 2.0 * 10, 1.0);
-  //renderGround(10, 0, 30.0 * M_PI / 180.0, 5.0);
   renderAxes(2.5);
   renderPoints(1.0, true);
 }

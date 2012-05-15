@@ -19,6 +19,8 @@
 #include <Eigen/Array>
 
 #include <statistics/Randomizer.h>
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -83,8 +85,7 @@ void UniformDistribution<X, M>::write(std::ofstream& stream) const {
 
 template <typename X, size_t M>
 void UniformDistribution<X, M>::setSupport(const RandomVariable& minSupport,
-    const RandomVariable& maxSupport)
-    throw (BadArgumentException<RandomVariable>) {
+    const RandomVariable& maxSupport) {
   if ((minSupport.cwise() >= maxSupport).any())
     throw BadArgumentException<RandomVariable>(minSupport,
       "UniformDistribution<X, M>::setSupport(): minimum support must be "
@@ -157,8 +158,7 @@ typename UniformDistribution<X, M>::Mean
 
 template <typename X, size_t M>
 typename UniformDistribution<X, M>::Mode
-    UniformDistribution<X, M>::getMode() const
-    throw (InvalidOperationException) {
+    UniformDistribution<X, M>::getMode() const {
   throw InvalidOperationException("UniformDistribution<X, M>::getMode(): "
     "undefined mode");
 }

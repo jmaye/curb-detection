@@ -25,10 +25,12 @@
 /******************************************************************************/
 
 MainWindow::MainWindow() :
-  mUi(new Ui_MainWindow()) {
+    mUi(new Ui_MainWindow()) {
   mUi->setupUi(this);
   while (mUi->toolBox->count())
     mUi->toolBox->removeItem(0);
+  while (mUi->viewTab->count())
+    mUi->viewTab->removeTab(0);
 }
 
 MainWindow::~MainWindow() {
@@ -43,4 +45,10 @@ void MainWindow::addControl(const QString& title, Control& control) {
   mUi->toolBox->addItem(&control, title);
   if (!control.getMenu().isEmpty())
     mUi->menuBar->addMenu(&control.getMenu())->setText(title);
+}
+
+void MainWindow::addView(const QString& title, QWidget& view) {
+  if (QString(view.metaObject()->className()) == QString("View3d") ||
+      QString(view.metaObject()->className()) == QString("View2d"))
+    mUi->viewTab->addTab(&view, title);
 }

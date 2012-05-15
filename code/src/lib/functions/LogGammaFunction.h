@@ -26,7 +26,6 @@
 
 #include "functions/ContinuousFunction.h"
 #include "functions/LogFactorialFunction.h"
-#include "exceptions/BadArgumentException.h"
 #include "base/Serializable.h"
 
 /** The LogGammaFunction class represents the log-gamma function for real
@@ -135,8 +134,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  inline virtual double getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>);
+  inline virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

@@ -28,7 +28,7 @@
 //#include "statistics/DirichletDistribution.h"
 //#include "statistics/GammaDistribution.h"
 //#include "statistics/BetaDistribution.h"
-//#include "statistics/NormalDistribution.h"
+#include "statistics/NormalDistribution.h"
 //#include "statistics/MultinomialDistribution.h"
 //#include "statistics/CategoricalDistribution.h"
 //#include "statistics/GeometricDistribution.h"

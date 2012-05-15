@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include "statistics/Randomizer.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Methods                                                                    */
@@ -38,7 +39,7 @@ template <typename Y, typename X>
 void AdaptiveRejectionSampler::getSamples(const Function<Y, X>& logpdf, const
     Function<Y, X>& logpdfprime, const std::vector<X>& initPoints,
     std::vector<X>& samples, size_t numSamples, const X&
-    minSupport, const X& maxSupport) throw (InvalidOperationException) {
+    minSupport, const X& maxSupport) {
   std::vector<std::tuple<X, Y, Y> > points;
   points.reserve(initPoints.size());
   double max = -std::numeric_limits<double>::infinity();

@@ -17,6 +17,7 @@
  ******************************************************************************/
 
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -86,8 +87,7 @@ NormalDistribution<1>::Mean NormalDistribution<1>::getMean() const {
   return mMean;
 }
 
-void NormalDistribution<1>::setVariance(Variance variance)
-    throw (BadArgumentException<Variance>) {
+void NormalDistribution<1>::setVariance(Variance variance) {
   if (variance <= 0.0)
     throw BadArgumentException<Variance>(variance,
       "NormalDistribution::setVariance(): variance must be strictly bigger "

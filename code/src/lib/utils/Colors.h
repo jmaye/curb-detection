@@ -50,16 +50,16 @@ namespace Colors {
   /** The revertBits function reverts the bits of the input
   */
   template <typename T>
-  static T revertBits(T value);
+  inline T revertBits(T value);
 
   /** The intToHue function generates a hue value from an index
   */
   template <typename T = size_t>
-  static double intToHue(T value);
+  inline double intToHue(T value);
 
   /** The genColor function generates a color from an index.
   */
-  static Color genColor(size_t idx);
+  inline Color genColor(size_t idx);
   /** @}
     */
 

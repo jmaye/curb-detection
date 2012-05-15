@@ -59,6 +59,7 @@ OutOfBoundException<X>::~OutOfBoundException() throw() {
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
+
 template <typename X>
 const char* OutOfBoundException<X>::what() const throw() {
   std::stringstream stream;

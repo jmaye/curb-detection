@@ -39,7 +39,7 @@ namespace SamplingImportanceResampler {
     */
   /// Access samples drawn from the prop. distribution and their weights,
   template <typename Y, typename X>
-  static void getSamples(const Function<Y, X>& target, const
+  void getSamples(const Function<Y, X>& target, const
     SampleDistribution<X>& proposal, std::vector<X>& weights,
     std::vector<X>& propSamples, std::vector<X>& targetSamples, size_t
     numSamples);

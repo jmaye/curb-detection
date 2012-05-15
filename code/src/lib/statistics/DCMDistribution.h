@@ -27,7 +27,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "statistics/DirichletDistribution.h"
-#include "exceptions/BadArgumentException.h"
 #include "base/Serializable.h"
 
 /** The DCMDistribution class represents a Dirichlet Compound Multinomial
@@ -102,12 +101,11 @@ public:
     @{
     */
   /// Sets the alpha parameter
-  void setAlpha(const Eigen::Matrix<double, M, 1>& alpha)
-    throw (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+  void setAlpha(const Eigen::Matrix<double, M, 1>& alpha);
   /// Returns the alpha parameter
   const Eigen::Matrix<double, M, 1>& getAlpha() const;
   /// Sets the number of trials
-  void setNumTrials(size_t numTrials) throw (BadArgumentException<size_t>);
+  void setNumTrials(size_t numTrials);
   /// Returns the number of trials
   size_t getNumTrials() const;
   /// Returns the mean of the distribution
@@ -122,8 +120,7 @@ public:
   virtual double pmf(const typename
     DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Access the log-probablity mass function at the given value
-  double logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpmf(const RandomVariable& value) const;
   /// Access the log-probablity mass function at the given value
   double logpmf(const typename
     DiscreteDistribution<int, M - 1>::Domain& value) const;

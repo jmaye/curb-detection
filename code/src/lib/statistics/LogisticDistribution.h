@@ -26,7 +26,6 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The LogisticDistribution class represents a logistic distribution.
     \brief Logistic distribution
@@ -58,7 +57,7 @@ public:
   /// Returns the location of the distribution
   double getLocation() const;
   /// Sets the scale of the distribution
-  void setScale(double scale) throw (BadArgumentException<double>);
+  void setScale(double scale);
   /// Returns the scale of the distribution
   double getScale() const;
   /// Returns the inverse scale of the distribution

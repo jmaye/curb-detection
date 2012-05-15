@@ -22,6 +22,9 @@
 
 #include "statistics/Randomizer.h"
 #include "functions/LogBetaFunction.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -81,7 +84,7 @@ void DirichletDistribution<M>::write(std::ofstream& stream) const {
 
 template <size_t M>
 void DirichletDistribution<M>::setAlpha(const Eigen::Matrix<double, M, 1>&
-    alpha) throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+    alpha) {
   if ((alpha.cwise() <= 0).any())
     throw BadArgumentException<Eigen::Matrix<double, M, 1> >(alpha,
       "DirichletDistribution<M>::setAlpha(): alpha must be strictly positive",
@@ -97,8 +100,7 @@ const Eigen::Matrix<double, M, 1>& DirichletDistribution<M>::getAlpha() const {
 }
 
 template <size_t M>
-double DirichletDistribution<M>::getAlpha(size_t idx) const
-    throw (OutOfBoundException<size_t>) {
+double DirichletDistribution<M>::getAlpha(size_t idx) const {
   if (idx >= (size_t)mAlpha.size())
     throw OutOfBoundException<size_t>(idx,
       "DirichletDistribution<M>::getAlpha(): index out of bound",
@@ -165,8 +167,7 @@ double DirichletDistribution<M>::pdf(const typename
 }
 
 template <size_t M>
-double DirichletDistribution<M>::logpdf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double DirichletDistribution<M>::logpdf(const RandomVariable& value) const {
   if (fabs(value.sum() - 1.0) > std::numeric_limits<double>::epsilon() ||
       (value.cwise() <= 0).any())
     throw BadArgumentException<RandomVariable>(value,
@@ -203,7 +204,7 @@ typename DirichletDistribution<M>::Mean DirichletDistribution<M>::getMean()
 
 template <size_t M>
 typename DirichletDistribution<M>::Mode DirichletDistribution<M>::getMode()
-    const throw (InvalidOperationException) {
+    const {
   if ((mAlpha.cwise() <= 1).any())
     throw InvalidOperationException("DirichletDistribution<M>::getMode(): "
       "alpha must be bigger than 1");

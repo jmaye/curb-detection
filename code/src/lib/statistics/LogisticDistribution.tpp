@@ -18,6 +18,7 @@
 
 #include "functions/LogisticFunction.h"
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -77,8 +78,7 @@ double LogisticDistribution::getLocation() const {
   return mLocation;
 }
 
-void LogisticDistribution::setScale(double scale)
-    throw (BadArgumentException<double>) {
+void LogisticDistribution::setScale(double scale) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "LogisticDistribution<1>::setScale(): scale must be strictly positive",

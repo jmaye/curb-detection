@@ -28,7 +28,6 @@
 #include "statistics/Distribution.h"
 #include "statistics/CategoricalDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The MixtureDistribution class represents an interface to any kind of mixture
     distributions.
@@ -69,11 +68,9 @@ public:
   /// Sets the components distributions
   void setCompDistributions(const std::vector<D>& distributions);
   /// Returns a particular component distribution
-  const D& getCompDistribution(size_t idx) const
-    throw (BadArgumentException<size_t>);
+  const D& getCompDistribution(size_t idx) const;
   /// Sets a particular component distribution
-  void setCompDistribution(const D& distribution, size_t idx)
-    throw (BadArgumentException<size_t>);
+  void setCompDistribution(const D& distribution, size_t idx);
   /// Returns the assignments distribution
   const CategoricalDistribution<M>& getAssignDistribution() const;
   /// Sets the assignments distribution

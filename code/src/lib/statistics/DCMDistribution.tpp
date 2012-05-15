@@ -21,6 +21,7 @@
 #include "functions/LogGammaFunction.h"
 #include "functions/LogFactorialFunction.h"
 #include "statistics/MultinomialDistribution.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -82,8 +83,7 @@ void DCMDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void DCMDistribution<M>::setAlpha(const Eigen::Matrix<double, M, 1>&
-    alpha) throw (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+void DCMDistribution<M>::setAlpha(const Eigen::Matrix<double, M, 1>& alpha) {
   if ((alpha.cwise() <= 0).any())
     throw BadArgumentException<Eigen::Matrix<double, M, 1> >(alpha,
       "DCMDistribution<M>::setAlpha(): alpha must be strictly positive",
@@ -98,8 +98,7 @@ const Eigen::Matrix<double, M, 1>& DCMDistribution<M>::getAlpha() const {
 }
 
 template <size_t M>
-void DCMDistribution<M>::setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>) {
+void DCMDistribution<M>::setNumTrials(size_t numTrials) {
   if (numTrials == 0)
     throw BadArgumentException<size_t>(numTrials,
       "DCMDistribution<M>::setNumTrials(): number of trials must be "
@@ -164,8 +163,7 @@ double DCMDistribution<M>::pmf(const typename
 }
 
 template <size_t M>
-double DCMDistribution<M>::logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double DCMDistribution<M>::logpmf(const RandomVariable& value) const {
   if (value.sum() != (int)mNumTrials || (value.cwise() < 0).any())
     throw BadArgumentException<RandomVariable>(value,
       "DCMDistribution<M>::logpmf(): sum of the input vector must be "

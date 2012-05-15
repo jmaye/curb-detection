@@ -27,7 +27,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The NegativeMultinomialDistribution class represents a negative multinomial
     distribution, i.e., the discrete distribution that models the number of
@@ -102,12 +101,11 @@ public:
     @{
     */
   /// Sets the success probabilities
-  void setProbabilities(const Eigen::Matrix<double, M, 1>& probabilities) throw
-    (BadArgumentException<Eigen::Matrix<double, M, 1> >);
+  void setProbabilities(const Eigen::Matrix<double, M, 1>& probabilities);
   /// Returns the success probabilities
   const Eigen::Matrix<double, M, 1>& getProbabilities() const;
   /// Sets the number of trials
-  void setNumTrials(size_t numTrials) throw (BadArgumentException<size_t>);
+  void setNumTrials(size_t numTrials);
   /// Returns the number of trials
   size_t getNumTrials() const;
   /// Returns the mean of the distribution
@@ -120,8 +118,7 @@ public:
   virtual double pmf(const typename
     DiscreteDistribution<int, M - 1>::Domain& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
   double logpmf(const typename DiscreteDistribution<int, M - 1>::Domain&
     value) const;

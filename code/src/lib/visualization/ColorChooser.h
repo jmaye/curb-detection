@@ -34,7 +34,9 @@
   */
 class ColorChooser :
   public QWidget {
+
 Q_OBJECT
+
   /** \name Private constructors
     @{
     */
@@ -52,7 +54,7 @@ public:
   /// Constructs color chooser from parent
   ColorChooser(QWidget* parent = 0);
   /// Destructor
-  ~ColorChooser();
+  virtual ~ColorChooser();
   /** @}
     */
 

@@ -27,8 +27,6 @@
 #include <vector>
 
 #include "base/Serializable.h"
-#include "exceptions/OutOfBoundException.h"
-#include "exceptions/BadArgumentException.h"
 #include "utils/SizeTSupport.h"
 #include "utils/IsReal.h"
 #include "utils/IsInteger.h"
@@ -76,7 +74,7 @@ public:
     */
   /// Constructs grid with parameters
   Grid(const Coordinate& minimum, const Coordinate& maximum, const Coordinate&
-    resolution) throw (BadArgumentException<Coordinate>);
+    resolution);
   /// Copy constructor
   Grid(const Grid& other);
   /// Assignment operator
@@ -100,23 +98,21 @@ public:
   /// Returns the container
   const Container& getCells() const;
   /// Returns the cell at index
-  const C& getCell(const Index& idx) const throw (OutOfBoundException<Index>);
+  const C& getCell(const Index& idx) const;
   /// Returns the cell at index
-  C& getCell(const Index& idx) throw (OutOfBoundException<Index>);
+  C& getCell(const Index& idx);
   /// Returns a cell using [index] operator
   const C& operator [] (const Index& idx) const;
   /// Returns a cell using [index] operator
   C& operator [] (const Index& idx);
   /// Returns the index of a cell using coordinates
-  virtual Index getIndex(const Coordinate& point) const throw
-    (OutOfBoundException<Coordinate>);
+  virtual Index getIndex(const Coordinate& point) const;
   /// Returns a cell using (coordinate) operator
   virtual const C& operator () (const Coordinate& point) const;
   /// Returns a cell using (coordinate) operator
   virtual C& operator () (const Coordinate& point);
   /// Returns the coordinates of a cell using index
-  virtual Coordinate getCoordinates(const Index& idx) const throw
-    (OutOfBoundException<Index>);
+  virtual Coordinate getCoordinates(const Index& idx) const;
   /// Check if the grid contains the point
   virtual bool isInRange(const Coordinate& point) const;
   /// Check if an index is valid

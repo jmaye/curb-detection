@@ -28,8 +28,8 @@
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 #include "data-structures/DEMGraph.h"
 #include "segmenter/GraphSegmenter.h"
 
@@ -117,7 +117,7 @@ protected slots:
   /// Smooth lines toggled
   void smoothLinesToggled(bool checked);
   /// Render the scene
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /// Receives a new segmentation
   void bpUpdated(const TransGrid<double, Cell, 2>& dem, const DEMGraph& graph,
     const DEMGraph::VertexContainer& vertices);

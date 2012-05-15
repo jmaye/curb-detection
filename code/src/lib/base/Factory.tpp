@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "exceptions/TypeCreationException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -39,8 +41,7 @@ void Factory<T, C>::read(std::istream& stream) {
 
 template <typename T, typename C>
 void Factory<T, C>::write(std::ostream& stream) const {
-  typename std::map<T, const C*>::const_iterator it;
-  for (it = mTypesMap.begin(); it != mTypesMap.end(); ++it)
+  for (auto it = mTypesMap.begin(); it != mTypesMap.end(); ++it)
     stream << it->first << std::endl;
 }
 
@@ -67,47 +68,39 @@ size_t Factory<T, C>::getNumTypes() const {
 
 template <typename T, typename C>
 void Factory<T, C>::clear() {
-  typename std::map<T, const C*>::iterator it;
-  for (it = mTypesMap.begin(); it != mTypesMap.end(); ++it)
+  for (auto it = mTypesMap.begin(); it != mTypesMap.end(); ++it)
     unregisterType(it->first);
 }
 
 template <typename T, typename C>
-C* Factory<T, C>::create(const T& typeID) const
-    throw (TypeCreationException<T>) {
-  typename std::map<T, const C*>::const_iterator it = mTypesMap.find(typeID);
+C* Factory<T, C>::create(const T& typeID) const {
+  auto it = mTypesMap.find(typeID);
   if (it != mTypesMap.end())
     return it->second->clone();
   else
     throw TypeCreationException<T>(typeID,
-      "Factory<T, C>::create(): unregistered type",
-      __FILE__, __LINE__);
+      "Factory<T, C>::create(): unregistered type");
 }
 
 template <typename T, typename C>
-void Factory<T, C>::registerType(const C* object, const T& typeID)
-    throw (TypeCreationException<T>) {
+void Factory<T, C>::registerType(const C* object, const T& typeID) {
   if (mTypesMap.find(typeID) == mTypesMap.end())
     mTypesMap[typeID] = object;
   else
     throw TypeCreationException<T>(typeID,
-      "Factory<T, C>::registerType(): already registered type",
-      __FILE__, __LINE__);
+      "Factory<T, C>::registerType(): already registered type");
 }
 
 template <typename T, typename C>
-void Factory<T, C>::unregisterType(const T& typeID)
-    throw (TypeCreationException<T>) {
+void Factory<T, C>::unregisterType(const T& typeID) {
   if (mTypesMap.find(typeID) == mTypesMap.end())
     throw TypeCreationException<T>(typeID,
-      "Factory<T, C>::unregisterType(): unregistered type",
-      __FILE__, __LINE__);
+      "Factory<T, C>::unregisterType(): unregistered type");
   else
     mTypesMap.erase(typeID);
 }
 
 template <typename T, typename C>
 bool Factory<T, C>::isRegistered(const T& typeID) const {
-  typename std::map<T, const C*>::const_iterator it = mTypesMap.find(typeID);
-  return (it != mTypesMap.end());
+  return (mTypesMap.find(typeID) != mTypesMap.end());
 }

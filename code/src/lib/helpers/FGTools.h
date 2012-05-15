@@ -32,21 +32,21 @@ namespace Helpers {
 
 /** The buildFactorGraph function generates a factor graph from a DEMGraph.
 */
-static void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
   mixture, FactorGraph& factorGraph,
   DEMGraph::VertexContainer& fgMapping, double strength = 10.0);
 
 /** The updateNodeFactors function updates factor graph nodes factors.
 */
-static void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph&
+void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph&
   graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
   mixture, FactorGraph& factorGraph,
   DEMGraph::VertexContainer& fgMapping);
 
 /** The computeFactor function computes a node factor from the graph.
 */
-static void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
+void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
   MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>& mixture, const
   Grid<double, Cell, 2>::Index& index, dai::Factor& factor);
 

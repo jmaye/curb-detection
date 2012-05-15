@@ -30,8 +30,8 @@
 
 #include "visualization/Control.h"
 #include "base/Singleton.h"
-#include "visualization/GLView.h"
-#include "visualization/Scene.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 #include "data-structures/PointCloud.h"
 
 class Ui_PointCloudControl;
@@ -116,7 +116,7 @@ protected slots:
   /// Smooth points toggled
   void smoothPointsToggled(bool checked);
   /// Render the scene
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /** @}
     */
 

@@ -16,6 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/IOException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -57,7 +60,7 @@ void PointCloud<X, M>::write(std::ostream& stream) const {
 }
 
 template <typename X, size_t M>
-void PointCloud<X, M>::read(std::ifstream& stream) throw (IOException) {
+void PointCloud<X, M>::read(std::ifstream& stream) {
   mPoints.clear();
   if (!stream.is_open())
     throw IOException("PointCloud<X, M>::read(): could not open file");
@@ -86,7 +89,7 @@ void PointCloud<X, M>::write(std::ofstream& stream) const {
 
 template <typename X, size_t M>
 const typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t
-  idx) const throw (OutOfBoundException<size_t>) {
+  idx) const {
   if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);
@@ -94,8 +97,7 @@ const typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t
 }
 
 template <typename X, size_t M>
-typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t idx)
-  throw (OutOfBoundException<size_t>) {
+typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t idx) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);

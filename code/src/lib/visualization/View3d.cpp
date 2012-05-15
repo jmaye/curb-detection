@@ -16,13 +16,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/GLView.h"
+#include "visualization/View3d.h"
 
 #include <cmath>
 
 #include <QtCore/QFileInfo>
-#include <QtGui/QWheelEvent>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
 
 #include <FTGL/ftgl.h>
 
@@ -30,7 +30,7 @@
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-GLView::GLView(QWidget* parent) :
+View3d::View3d(QWidget* parent) :
     QGLWidget(parent),
     mFont(0),
     mMouse(2, 0),
@@ -38,14 +38,12 @@ GLView::GLView(QWidget* parent) :
     mProjection(16, 0.0),
     mModelview(16, 0.0) {
   setFont("/usr/share/fonts/truetype/msttcorefonts/Arial.ttf");
-
   connect(&mCamera, SIGNAL(positionChanged(const std::vector<double>&)), this,
     SLOT(cameraPositionChanged(const std::vector<double>&)));
   connect(&mCamera, SIGNAL(viewpointChanged(const std::vector<double>&)), this,
     SLOT(cameraViewpointChanged(const std::vector<double>&)));
   connect(&mCamera, SIGNAL(rangeChanged(const std::vector<double>&)), this,
     SLOT(cameraRangeChanged(const std::vector<double>&)));
-
   connect(&mScene, SIGNAL(translationChanged(const std::vector<double>&)), this,
     SLOT(sceneTranslationChanged(const std::vector<double>&)));
   connect(&mScene, SIGNAL(rotationChanged(const std::vector<double>&)), this,
@@ -54,7 +52,7 @@ GLView::GLView(QWidget* parent) :
     SLOT(sceneScaleChanged(double)));
 }
 
-GLView::~GLView() {
+View3d::~View3d() {
   if (mFont)
     delete mFont;
 }
@@ -63,32 +61,31 @@ GLView::~GLView() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-Camera& GLView::getCamera() {
+Camera& View3d::getCamera() {
   return mCamera;
 }
 
-const Camera& GLView::getCamera() const {
+const Camera& View3d::getCamera() const {
   return mCamera;
 }
 
-Scene& GLView::getScene() {
+Scene3d& View3d::getScene() {
   return mScene;
 }
 
-const Scene& GLView::getScene() const {
+const Scene3d& View3d::getScene() const {
   return mScene;
 }
 
-
-void GLView::setColor(const QColor& color) {
+void View3d::setColor(const QColor& color) {
   glColor4f(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 }
 
-void GLView::setColor(const Palette& palette, const QString& role) {
+void View3d::setColor(const Palette& palette, const QString& role) {
   setColor(palette.getColor(role));
 }
 
-void GLView::setFont(const QString& filename) {
+void View3d::setFont(const QString& filename) {
   if (mFontFilename != filename) {
     if (mFont) {
       delete mFont;
@@ -100,7 +97,7 @@ void GLView::setFont(const QString& filename) {
   }
 }
 
-const QString& GLView::getFont() const {
+const QString& View3d::getFont() const {
   return mFontFilename;
 }
 
@@ -108,7 +105,7 @@ const QString& GLView::getFont() const {
 /* Methods                                                                    */
 /******************************************************************************/
 
-std::vector<double> GLView::unproject(const QPoint& point, double distance) {
+std::vector<double> View3d::unproject(const QPoint& point, double distance) {
   std::vector<double> result(3, 0.0);
   double near = mCamera.getRange()[0];
   double far = mCamera.getRange()[1];
@@ -118,14 +115,14 @@ std::vector<double> GLView::unproject(const QPoint& point, double distance) {
   return result;
 }
 
-void GLView::render(double x, double y, double z, const QString& text,
-    double scale, bool faceX, bool faceY, bool faceZ) {
+void View3d::render(double x, double y, double z, const QString& text,
+    double minScale, double maxScale, bool faceX, bool faceY, bool faceZ) {
   if (!mFont) {
     QFileInfo fileInfo(mFontFilename);
     if (fileInfo.isFile() && fileInfo.isReadable()) {
       mFont = new FTPolygonFont(mFontFilename.toAscii().constData());
       mFont->UseDisplayList(false);
-      mFont->FaceSize(100);
+      mFont->FaceSize(1);
     }
   }
   if (mFont) {
@@ -139,19 +136,21 @@ void GLView::render(double x, double y, double z, const QString& text,
       glRotatef(-mScene.getRotation()[2] * 180.0 / M_PI, 1, 0, 0);
     glRotatef(90.0, 1, 0, 0);
     glRotatef(-90.0, 0, 1, 0);
-    glScalef(mScene.getScale() * 1e-2, mScene.getScale() * 1e-2,
-      mScene.getScale() * 1e-2);
+    const double scale = std::max(minScale, std::min(maxScale,
+      mScene.getScale()));
+    glScalef(scale / mScene.getScale(), scale / mScene.getScale(),
+      scale / mScene.getScale());
     mFont->Render(text.toAscii().constData());
     glPopMatrix();
   }
 }
 
-void GLView::mousePressEvent(QMouseEvent* event) {
+void View3d::mousePressEvent(QMouseEvent* event) {
   mMouse[0] = event->globalX();
   mMouse[1] = event->globalY();
 }
 
-void GLView::mouseMoveEvent(QMouseEvent* event) {
+void View3d::mouseMoveEvent(QMouseEvent* event) {
   int deltaX = event->globalX() - mMouse[0];
   int deltaY = event->globalY() - mMouse[1];
   if (event->buttons() == Qt::LeftButton) {
@@ -178,24 +177,25 @@ void GLView::mouseMoveEvent(QMouseEvent* event) {
   mMouse[1] = event->globalY();
 }
 
-void GLView::wheelEvent(QWheelEvent* event) {
+void View3d::wheelEvent(QWheelEvent* event) {
   double deltaScale = 1e-2;
   mScene.setScale(mScene.getScale() * (1.0 + deltaScale * event->delta() /
     8.0));
 }
 
-void GLView::initializeGL() {
+void View3d::initializeGL() {
   glEnable(GL_DEPTH_TEST);
   glEnable (GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  emit createDisplayLists();
 }
 
-void GLView::resizeGL(int width, int height) {
+void View3d::resizeGL(int width, int height) {
   glViewport(0, 0, width, height);
   mCamera.setup(*this, width, height);
 }
 
-void GLView::paintGL() {
+void View3d::paintGL() {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
@@ -208,31 +208,36 @@ void GLView::paintGL() {
   mScene.render(*this);
 }
 
-void GLView::paintEvent(QPaintEvent* event) {
+void View3d::paintEvent(QPaintEvent* event) {
   QGLWidget::paintEvent(event);
   emit updated();
 }
 
-void GLView::cameraPositionChanged(const std::vector<double>& position) {
+void View3d::cameraPositionChanged(const std::vector<double>& position) {
   update();
 }
 
-void GLView::cameraViewpointChanged(const std::vector<double>& viewpoint) {
+void View3d::cameraViewpointChanged(const std::vector<double>& viewpoint) {
   update();
 }
 
-void GLView::cameraRangeChanged(const std::vector<double>& range) {
+void View3d::cameraRangeChanged(const std::vector<double>& range) {
   update();
 }
 
-void GLView::sceneTranslationChanged(const std::vector<double>& translation) {
+void View3d::sceneTranslationChanged(const std::vector<double>& translation) {
   update();
 }
 
-void GLView::sceneRotationChanged(const std::vector<double>& rotation) {
+void View3d::sceneRotationChanged(const std::vector<double>& rotation) {
   update();
 }
 
-void GLView::sceneScaleChanged(double scale) {
+void View3d::sceneScaleChanged(double scale) {
   update();
+}
+
+void View3d::resizeEvent(QResizeEvent* event) {
+  QGLWidget::resizeEvent(event);
+  emit resized();
 }

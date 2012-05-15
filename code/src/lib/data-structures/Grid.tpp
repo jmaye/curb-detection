@@ -18,14 +18,16 @@
 
 #include <Eigen/Array>
 
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
 template <typename T, typename C, size_t M>
 Grid<T, C, M>::Grid(const Coordinate& minimum, const Coordinate& maximum, const
-    Coordinate& resolution) throw
-    (BadArgumentException<Grid<T, C, M>::Coordinate>) :
+    Coordinate& resolution) :
     mMinimum(minimum),
     mMaximum(maximum),
     mResolution(resolution) {
@@ -150,8 +152,7 @@ const typename Grid<T, C, M>::Container& Grid<T, C, M>::getCells() const {
 }
 
 template <typename T, typename C, size_t M>
-const C& Grid<T, C, M>::getCell(const Index& idx) const throw
-    (OutOfBoundException<Index>) {
+const C& Grid<T, C, M>::getCell(const Index& idx) const {
   if (!isValidIndex(idx))
     throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
@@ -159,7 +160,7 @@ const C& Grid<T, C, M>::getCell(const Index& idx) const throw
 }
 
 template <typename T, typename C, size_t M>
-C& Grid<T, C, M>::getCell(const Index& idx) throw (OutOfBoundException<Index>) {
+C& Grid<T, C, M>::getCell(const Index& idx) {
   if (!isValidIndex(idx))
     throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCell(): index out of range", __FILE__, __LINE__);
@@ -178,7 +179,7 @@ C& Grid<T, C, M>::operator [] (const Index& idx) {
 
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::Index Grid<T, C, M>::getIndex(const Coordinate& point)
-      const throw (OutOfBoundException<Coordinate>) {
+      const {
   if (!isInRange(point))
     throw OutOfBoundException<Coordinate>(point,
       "Grid<T, C, M>::getIndex(): point out of range", __FILE__, __LINE__);
@@ -203,7 +204,7 @@ C& Grid<T, C, M>::operator () (const Coordinate& point) {
 
 template <typename T, typename C, size_t M>
 typename Grid<T, C, M>::Coordinate Grid<T, C, M>::getCoordinates(const Index&
-    idx) const throw (OutOfBoundException<Index>) {
+    idx) const {
   if (!isValidIndex(idx))
     throw OutOfBoundException<Index>(idx,
       "Grid<T, C, M>::getCoordinates(): index out of range",

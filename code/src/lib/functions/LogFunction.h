@@ -24,7 +24,6 @@
 #ifndef LOGFUNCTION_H
 #define LOGFUNCTION_H
 
-#include "exceptions/BadArgumentException.h"
 #include "functions/ContinuousFunction.h"
 
 /** The LogFunction class represents the log function.
@@ -65,8 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>);
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

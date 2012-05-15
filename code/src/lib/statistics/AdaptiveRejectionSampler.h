@@ -30,7 +30,6 @@
 
 #include "functions/Function.h"
 #include "statistics/SampleDistribution.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The AdaptiveRejectionSampler namespace implements adaptive rejection
     sampling.
@@ -56,17 +55,17 @@ namespace AdaptiveRejectionSampler {
     */
   /// Access a sample drawn from the distribution
   template <typename Y, typename X>
-  static X getSample(const Function<Y, X>& logpdf, const Function<Y, X>&
+  X getSample(const Function<Y, X>& logpdf, const Function<Y, X>&
     logpdfprime, const std::vector<X>& initPoints, const X& minSupport =
     -std::numeric_limits<X>::infinity, const X& maxSupport =
     std::numeric_limits<X>::infinity);
   /// Access samples drawn from the distribution
   template <typename Y, typename X>
-  static void getSamples(const Function<Y, X>& logpdf, const Function<Y, X>&
+  void getSamples(const Function<Y, X>& logpdf, const Function<Y, X>&
     logpdfprime, const std::vector<X>& initPoints, std::vector<X>& samples,
     size_t numSamples, const X& minSupport =
     -std::numeric_limits<X>::infinity(), const X& maxSupport =
-    std::numeric_limits<X>::infinity()) throw (InvalidOperationException);
+    std::numeric_limits<X>::infinity());
   /** @}
     */
 

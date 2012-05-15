@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -89,8 +91,7 @@ void MixtureDistribution<D, M>::setCompDistributions(const std::vector<D>&
 }
 
 template <typename D, size_t M>
-const D& MixtureDistribution<D, M>::getCompDistribution(size_t idx) const
-    throw (BadArgumentException<size_t>) {
+const D& MixtureDistribution<D, M>::getCompDistribution(size_t idx) const {
   if (idx >= mCompDistributions.size())
     throw BadArgumentException<size_t>(idx,
       "MixtureDistribution<D, M>::getCompDistribution(): invalid index",
@@ -100,7 +101,7 @@ const D& MixtureDistribution<D, M>::getCompDistribution(size_t idx) const
 
 template <typename D, size_t M>
 void MixtureDistribution<D, M>::setCompDistribution(const D& distribution,
-    size_t idx) throw (BadArgumentException<size_t>) {
+    size_t idx) {
   if (idx >= mCompDistributions.size())
     throw BadArgumentException<size_t>(idx,
       "MixtureDistribution<D, M>::setCompDistribution(): invalid index",

@@ -96,8 +96,7 @@ void TransGrid<T, C, 2>::readBinary(std::istream& stream) {
 
 template <typename T, typename C>
 typename Grid<T, C, 2>::Index TransGrid<T, C, 2>::getIndex(const typename
-    Grid<T, C, 2>::Coordinate& point) const throw (OutOfBoundException<typename
-    Grid<T, C, 2>::Coordinate>) {
+    Grid<T, C, 2>::Coordinate& point) const {
   typename Grid<T, C, 2>::Coordinate pointTrans(mInvTransformation(point));
   if (!Grid<T, C, 2>::isInRange(pointTrans))
     throw OutOfBoundException<typename Grid<T, C, 2>::Coordinate>(pointTrans,
@@ -114,8 +113,7 @@ typename Grid<T, C, 2>::Index TransGrid<T, C, 2>::getIndex(const typename
 
 template <typename T, typename C>
 typename Grid<T, C, 2>::Coordinate TransGrid<T, C, 2>::getCoordinates(const
-    typename Grid<T, C, 2>::Index& idx) const throw
-    (OutOfBoundException<typename Grid<T, C, 2>::Index>) {
+    typename Grid<T, C, 2>::Index& idx) const {
   return mTransformation(Grid<T, C, 2>::getCoordinates(idx));
 }
 

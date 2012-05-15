@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file Palette.h
-    \brief This file contains a palette implementation for OpenGL
+    \brief This file contains a color palette implementation
   */
 
 #ifndef PALETTE_H
@@ -29,10 +29,8 @@
 #include <QtCore/QString>
 #include <QtGui/QColor>
 
-#include "exceptions/OutOfBoundException.h"
-
-/** The Palette class represents a palette in OpenGL.
-    \brief Palette for OpenGL
+/** The Palette class represents a color palette.
+    \brief Color palette
   */
 class Palette :
   public QObject {
@@ -64,7 +62,7 @@ public:
   /// Default constructor
   Palette();
   /// Destructor
-  ~Palette();
+  virtual ~Palette();
   /** @}
     */
 
@@ -82,8 +80,7 @@ public:
   /// Returns a color
   const QColor& getColor(const Iterator& it) const;
   /// Returns a color
-  const QColor& getColor(const QString& role) const
-    throw (OutOfBoundException<std::string>);
+  const QColor& getColor(const QString& role) const;
   /** @}
     */
 

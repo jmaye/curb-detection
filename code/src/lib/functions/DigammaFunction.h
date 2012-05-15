@@ -55,9 +55,9 @@ public:
     @{
     */
   /// Default constructor
-  inline DigammaFunction();
+  DigammaFunction();
   /// Destructor
-  inline virtual ~DigammaFunction();
+  virtual ~DigammaFunction();
   /** @}
     */
 

@@ -38,7 +38,7 @@ namespace Helpers {
 /** The initML function generates initial values for the Maximum-Likelihood
     estimation of a mixtures of linear regression models.
 */
-static bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
   const GraphSegmenter<DEMGraph>::Components& components,
   EstimatorML<LinearRegression<3> >::Container& points,
   std::vector<DEMGraph::VertexDescriptor>& pointsMapping,

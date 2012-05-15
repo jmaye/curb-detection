@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file GLView.h
-    \brief This file contains the base OpenGL viewer
+/** \file View3d.h
+    \brief This file contains a 3d view implementation
   */
 
-#ifndef GLVIEW_H
-#define GLVIEW_H
+#ifndef VIEW3D_H
+#define VIEW3D_H
 
 #include <vector>
 
@@ -33,16 +33,16 @@
 #include "base/Singleton.h"
 #include "visualization/Palette.h"
 #include "visualization/Camera.h"
-#include "visualization/Scene.h"
+#include "visualization/Scene3d.h"
 
 class FTPolygonFont;
 
-/** The GLView class represents the base OpenGL viewer.
-    \brief Base OpenGL viewer
+/** The View3d class represents a 3d view.
+    \brief 3d view
   */
-class GLView :
+class View3d :
   public QGLWidget,
-  public Singleton<GLView> {
+  public Singleton<View3d> {
 
 Q_OBJECT
 
@@ -50,9 +50,9 @@ Q_OBJECT
     @{
     */
   /// Copy constructor
-  GLView(const GLView& other);
+  View3d(const View3d& other);
   /// Assignment operator
-  GLView& operator = (const GLView& other);
+  View3d& operator = (const View3d& other);
   /** @}
     */
 
@@ -60,10 +60,10 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Constructs the viewer
-  GLView(QWidget* parent = 0);
+  /// Constructs the view
+  View3d(QWidget* parent = 0);
   /// Destructor
-  ~GLView();
+  virtual ~View3d();
   /** @}
     */
 
@@ -75,9 +75,9 @@ public:
   /// Returns the camera
   const Camera& getCamera() const;
   /// Returns the scene
-  Scene& getScene();
+  Scene3d& getScene();
   /// Returns the scene
-  const Scene& getScene() const;
+  const Scene3d& getScene() const;
   /// Sets a color
   void setColor(const QColor& color);
   /// Sets a color
@@ -94,10 +94,10 @@ public:
     */
   /// Unproject a point
   std::vector<double> unproject(const QPoint& point, double distance);
-  /// Render the scene
+  /// Render text in the scene
   void render(double x, double y, double z, const QString& text,
-    double scale = 1.0, bool faceX = false, bool faceY = false,
-    bool faceZ = false);
+    double minScale = 0.0, double maxScale = 1.0, bool faceX = false,
+    bool faceY = false, bool faceZ = false);
   /** @}
     */
 
@@ -115,10 +115,12 @@ protected:
   virtual void initializeGL();
   /// Resize the OpenGL engine
   virtual void resizeGL(int width, int height);
-  /// Paint the OpenGL engine
+  /// Paint in the OpenGL engine
   virtual void paintGL();
   /// Paint event
   virtual void paintEvent(QPaintEvent* event);
+  /// Resize event
+  virtual void resizeEvent(QResizeEvent* event);
   /** @}
     */
 
@@ -132,7 +134,7 @@ protected:
   /// Camera
   Camera mCamera;
   /// Scene
-  Scene mScene;
+  Scene3d mScene;
   /// Mouse
   std::vector<int> mMouse;
   /// Viewport
@@ -171,9 +173,13 @@ signals:
   void fontChanged(const QString& filename);
   /// Updated signal
   void updated();
+  /// Clients should create display lists
+  void createDisplayLists();
+ /// Resized signal
+  void resized();
   /** @}
     */
 
 };
 
-#endif // GLVIEW_H
+#endif // VIEW3D_H

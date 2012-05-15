@@ -18,6 +18,8 @@
 
 #include <cmath>
 
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -35,8 +37,7 @@ LogFunction<X>::~LogFunction() {
 /******************************************************************************/
 
 template <typename X>
-double LogFunction<X>::getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>) {
+double LogFunction<X>::getValue(const VariableType& argument) const {
   if (argument > X(0))
     return log(argument);
   else

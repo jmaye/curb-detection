@@ -44,8 +44,8 @@ BPControl::BPControl(bool showBP) :
     mGraph(0),
     mMixtureDist(0) {
   mUi->setupUi(this);
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   connect(&MLControl::getInstance(),
     SIGNAL(mlUpdated(const TransGrid<double, Cell, 2>&, const DEMGraph&,
     const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&)), this,
@@ -104,7 +104,7 @@ void BPControl::setTolerance(double tol) {
 
 void BPControl::setShowBP(bool showBP) {
   mUi->showBPCheckBox->setChecked(showBP);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void BPControl::setLogDomain(bool checked) {
@@ -184,7 +184,7 @@ void BPControl::renderBP() {
   glPopAttrib();
 }
 
-void BPControl::render(GLView& view, Scene& scene) {
+void BPControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showBPCheckBox->isChecked() && mDEM)
     renderBP();
 }
@@ -272,7 +272,7 @@ void BPControl::runBP() {
   for (auto it = mGraph->getVertexBegin(); it != mGraph->getVertexEnd(); ++it)
     mVertices[it->first] = mapState[mFgMapping[it->first]];
   mUi->showBPCheckBox->setEnabled(true);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
   emit bpUpdated(*mDEM, *mGraph, mVertices);
 }
 

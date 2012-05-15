@@ -23,6 +23,7 @@
 #include "utils/OuterProduct.h"
 #include "functions/LogGammaFunction.h"
 #include "functions/LogFactorialFunction.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -86,8 +87,7 @@ void NegativeMultinomialDistribution<M>::write(std::ofstream& stream) const {
 
 template <size_t M>
 void NegativeMultinomialDistribution<M>::setProbabilities(const
-    Eigen::Matrix<double, M, 1>& probabilities) throw
-    (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+    Eigen::Matrix<double, M, 1>& probabilities) {
   if (fabs(probabilities.sum() - 1.0) >
     std::numeric_limits<double>::epsilon() ||
     (probabilities.cwise() < 0).any())
@@ -106,8 +106,7 @@ const Eigen::Matrix<double, M, 1>&
 }
 
 template <size_t M>
-void NegativeMultinomialDistribution<M>::setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>) {
+void NegativeMultinomialDistribution<M>::setNumTrials(size_t numTrials) {
   if (numTrials == 0)
     throw BadArgumentException<size_t>(numTrials,
       "NegativeMultinomialDistribution<M>::setNumTrials(): number of trials "
@@ -177,7 +176,7 @@ double NegativeMultinomialDistribution<M>::pmf(const typename
 
 template <size_t M>
 double NegativeMultinomialDistribution<M>::logpmf(const RandomVariable& value)
-    const throw (BadArgumentException<RandomVariable>) {
+    const {
   if (value(value.size() - 1) != (int)mNumTrials ||
       (value.cwise() < 0).any())
     throw BadArgumentException<Eigen::Matrix<int, M, 1> >(value,

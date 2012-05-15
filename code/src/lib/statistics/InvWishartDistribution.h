@@ -29,8 +29,6 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The InvWishartDistribution class represents an inverse Wishart distribution.
     \brief Inverse Wishart distribution
@@ -77,11 +75,11 @@ public:
     @{
     */
   /// Sets the degrees of freedom of the distribution
-  void setDegrees(double degrees) throw (BadArgumentException<double>);
+  void setDegrees(double degrees);
   /// Returns the degrees of freedom of the distribution
   double getDegrees() const;
   /// Sets the scale matrix of the distribution
-  void setScale(const Scale& scale) throw (BadArgumentException<Scale>);
+  void setScale(const Scale& scale);
   /// Returns the scale matrix of the distribution
   const Scale& getScale() const;
   /// Returns the determinant of the scale matrix
@@ -91,16 +89,15 @@ public:
   /// Returns the cholesky decomposition of the scale matrix
   const Eigen::LLT<Scale>& getTransformation() const;
   /// Returns the mean of the distribution
-  Mean getMean() const throw (InvalidOperationException);
+  Mean getMean() const;
   /// Returns the mode of the distribution
   Mode getMode() const;
   /// Returns the covariance of the distribution
-  Covariance getCovariance() const throw (InvalidOperationException);
+  Covariance getCovariance() const;
   /// Access the probability density function at the given value
   virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probability density function at the given value
-  double logpdf(const RandomVariable& value) const 
-    throw (BadArgumentException<RandomVariable>);
+  double logpdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution
   virtual RandomVariable getSample() const;
   /** @}

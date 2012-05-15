@@ -21,6 +21,8 @@
 #include "functions/LogGammaFunction.h"
 #include "functions/GammaFunction.h"
 #include "functions/IncompleteBetaFunction.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -87,8 +89,7 @@ double StudentDistribution<1>::getLocation() const {
   return mLocation;
 }
 
-void StudentDistribution<1>::setScale(double scale)
-    throw (BadArgumentException<double>) {
+void StudentDistribution<1>::setScale(double scale) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "StudentDistribution<1>::setScale(): scale must be strictly positive",
@@ -102,8 +103,7 @@ double StudentDistribution<1>::getScale() const {
   return mScale;
 }
 
-void StudentDistribution<1>::setDegrees(double degrees)
-    throw (BadArgumentException<double>) {
+void StudentDistribution<1>::setDegrees(double degrees) {
   if (degrees <= 0)
     throw BadArgumentException<double>(degrees,
       "StudentDistribution<1>::setDegrees(): degrees must be strictly positive",
@@ -160,8 +160,7 @@ double StudentDistribution<1>::mahalanobisDistance(const RandomVariable& value)
   return (value - mLocation) * mInverseScale * (value - mLocation);
 }
 
-StudentDistribution<1>::Mean StudentDistribution<1>::getMean() const
-    throw (InvalidOperationException) {
+StudentDistribution<1>::Mean StudentDistribution<1>::getMean() const {
   if (mDegrees > 1)
     return mLocation;
   else
@@ -177,8 +176,7 @@ StudentDistribution<1>::Mode StudentDistribution<1>::getMode() const {
   return mLocation;
 }
 
-StudentDistribution<1>::Variance StudentDistribution<1>::getVariance() const
-    throw (InvalidOperationException) {
+StudentDistribution<1>::Variance StudentDistribution<1>::getVariance() const {
   if (mDegrees > 2)
     return mDegrees / (mDegrees - 2) * mScale;
   else

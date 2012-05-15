@@ -18,6 +18,8 @@
 
 #include "visualization/Palette.h"
 
+#include "exceptions/OutOfBoundException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -55,9 +57,8 @@ const QColor& Palette::getColor(const Iterator& it) const {
   return it->second;
 }
 
-const QColor& Palette::getColor(const QString& role) const
-    throw (OutOfBoundException<std::string>) {
-  std::map<QString, QColor>::const_iterator it = mColors.find(role);
+const QColor& Palette::getColor(const QString& role) const {
+  auto it = mColors.find(role);
   if (it != mColors.end())
     return it->second;
   else

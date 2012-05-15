@@ -28,7 +28,6 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The NormalDistributionMv class represents a multivariate normal
     distribution.
@@ -82,8 +81,7 @@ public:
   /// Returns the mean of the distribution
   Mean getMean() const;
   /// Sets the covariance matrix of the distribution
-  void setCovariance(const Covariance& covariance)
-    throw (BadArgumentException<Covariance>);
+  void setCovariance(const Covariance& covariance);
   /// Returns the covariance matrix of the distribution
   Covariance getCovariance() const;
   /// Returns the precision matrix of the distribution

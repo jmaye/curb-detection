@@ -28,7 +28,6 @@
 
 #include "base/Singleton.h"
 #include "base/Serializable.h"
-#include "exceptions/TypeCreationException.h"
 
 /** The class Factory implements the object factory design pattern.
     \brief Object factory design pattern
@@ -64,12 +63,11 @@ public:
   /// Clear factory
   void clear();
   /// Create prototyped instance of the specified type
-  C* create(const T& typeID) const throw (TypeCreationException<T>);
+  C* create(const T& typeID) const;
   /// Register a type to the factory
-  void registerType(const C* object, const T& typeID)
-    throw (TypeCreationException<T>);
+  void registerType(const C* object, const T& typeID);
   /// Unregister a type from the factory
-  void unregisterType(const T& typeID) throw (TypeCreationException<T>);
+  void unregisterType(const T& typeID);
   /// Check if type is registered
   bool isRegistered(const T& typeID) const;
   /** @}

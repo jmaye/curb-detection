@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/ViewControl.h"
+#include "visualization/View3dControl.h"
 
 #include <cmath>
 
@@ -24,44 +24,45 @@
 #include <QtCore/QDir>
 #include <QtGui/QPixmap>
 
-#include "ui_ViewControl.h"
+#include "ui_View3dControl.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-ViewControl::ViewControl(bool showFog, bool showGround, bool showAxes) :
-  mUi(new Ui_ViewControl()) {
+View3dControl::View3dControl(bool showFog, bool showGround, bool showAxes) :
+    mUi(new Ui_View3dControl()) {
   mUi->setupUi(this);
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
-  connect(&GLView::getInstance(),
+  connect(&View3d::getInstance(),
     SIGNAL(fontChanged(const QString&)), this,
     SLOT(fontChanged(const QString&)));
-  fontChanged(GLView::getInstance().getFont());
-  connect(&GLView::getInstance().getCamera(),
+  fontChanged(View3d::getInstance().getFont());
+  connect(&View3d::getInstance().getCamera(),
     SIGNAL(positionChanged(const std::vector<double>&)), this,
     SLOT(cameraPositionChanged(const std::vector<double>&)));
-  cameraPositionChanged(GLView::getInstance().getCamera().getPosition());
-  connect(&GLView::getInstance().getCamera(),
+  cameraPositionChanged(View3d::getInstance().getCamera().getPosition());
+  connect(&View3d::getInstance().getCamera(),
     SIGNAL(viewpointChanged(const std::vector<double>&)), this,
     SLOT(cameraViewpointChanged(const std::vector<double>&)));
-  cameraViewpointChanged(GLView::getInstance().getCamera().getViewpoint());
-  connect(&GLView::getInstance().getScene(),
+  cameraViewpointChanged(View3d::getInstance().getCamera().getViewpoint());
+  connect(&View3d::getInstance().getScene(),
     SIGNAL(translationChanged(const std::vector<double>&)), this,
     SLOT(sceneTranslationChanged(const std::vector<double>&)));
-  sceneTranslationChanged(GLView::getInstance().getScene().getTranslation());
-  connect(&GLView::getInstance().getScene(),
+  sceneTranslationChanged(View3d::getInstance().getScene().getTranslation());
+  connect(&View3d::getInstance().getScene(),
     SIGNAL(rotationChanged(const std::vector<double>&)), this,
     SLOT(sceneRotationChanged(const std::vector<double>&)));
-  sceneRotationChanged(GLView::getInstance().getScene().getRotation());
-  connect(&GLView::getInstance().getScene(), SIGNAL(scaleChanged(double)),
+  sceneRotationChanged(View3d::getInstance().getScene().getRotation());
+  connect(&View3d::getInstance().getScene(), SIGNAL(scaleChanged(double)),
     this, SLOT(sceneScaleChanged(double)));
-  sceneScaleChanged(GLView::getInstance().getScene().getScale());
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
-  connect(&GLView::getInstance(), SIGNAL(updated()), this, SLOT(dumpFrame()));
+  sceneScaleChanged(View3d::getInstance().getScene().getScale());
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
+  connect(&View3d::getInstance(), SIGNAL(updated()), this, SLOT(dumpFrame()));
+  connect(&View3d::getInstance(), SIGNAL(resized()), this, SLOT(resized()));
   setBackgroundColor(Qt::white);
   setFogColor(Qt::white);
   setGroundColor(Qt::lightGray);
@@ -76,7 +77,7 @@ ViewControl::ViewControl(bool showFog, bool showGround, bool showAxes) :
   setFrameRotation(1.0 * M_PI / 180.0);
 }
 
-ViewControl::~ViewControl() {
+View3dControl::~View3dControl() {
   delete mUi;
 }
 
@@ -84,72 +85,71 @@ ViewControl::~ViewControl() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void ViewControl::setBackgroundColor(const QColor& color) {
+void View3dControl::setBackgroundColor(const QColor& color) {
   mPalette.setColor("Background", color);
 }
 
-void ViewControl::setFogColor(const QColor& color) {
+void View3dControl::setFogColor(const QColor& color) {
   mPalette.setColor("Fog", color);
 }
 
-void ViewControl::setGroundColor(const QColor& color) {
+void View3dControl::setGroundColor(const QColor& color) {
   mPalette.setColor("Ground", color);
 }
 
-void ViewControl::setGroundRadius(double radius) {
+void View3dControl::setGroundRadius(double radius) {
   mUi->groundXSpinBox->setValue(radius);
   mUi->groundYSpinBox->setValue(radius);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
-void ViewControl::setGroundElevation(double elevation) {
+void View3dControl::setGroundElevation(double elevation) {
   mUi->groundZSpinBox->setValue(elevation);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
-void ViewControl::setShowFog(bool showFog) {
+void View3dControl::setShowFog(bool showFog) {
   mUi->showFogCheckBox->setChecked(showFog);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
-void ViewControl::setShowGround(bool showGround) {
+void View3dControl::setShowGround(bool showGround) {
   mUi->showGroundCheckBox->setChecked(showGround);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
-void ViewControl::setShowAxes(bool showAxes) {
+void View3dControl::setShowAxes(bool showAxes) {
   mUi->showAxesCheckBox->setChecked(showAxes);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
-void ViewControl::setDumpDirectory(const QString& dirname) {
+void View3dControl::setDumpDirectory(const QString& dirname) {
   QDir dir(dirname);
   mUi->dumpDirEdit->setText(dir.absolutePath());
 }
 
-void ViewControl::setDumpFrameSize(size_t width, size_t height) {
+void View3dControl::setDumpFrameSize(size_t width, size_t height) {
   mUi->frameWidthSpinBox->setValue(width);
   mUi->frameHeightSpinBox->setValue(height);
 }
 
-void ViewControl::setDumpFormat(const QString& format) {
+void View3dControl::setDumpFormat(const QString& format) {
   mUi->dumpFormatEdit->setText(format);
 }
 
-void ViewControl::setDumpAll(bool dumpAll) {
+void View3dControl::setDumpAll(bool dumpAll) {
   if (dumpAll)
-    connect(&GLView::getInstance(), SIGNAL(updated()), this, SLOT(dumpFrame()));
+    connect(&View3d::getInstance(), SIGNAL(updated()), this, SLOT(dumpFrame()));
   else
-    GLView::getInstance().disconnect(SIGNAL(updated()));
+    View3d::getInstance().disconnect(SIGNAL(updated()));
   mUi->dumpAllCheckBox->setChecked(dumpAll);
 }
 
-
-void ViewControl::setRotateFrames(bool rotateFrames) {
+void View3dControl::setRotateFrames(bool rotateFrames) {
   mUi->rotateFramesCheckBox->setChecked(rotateFrames);
 }
 
-void ViewControl::setFrameRotation(double yaw) {
+void View3dControl::setFrameRotation(double yaw) {
   mUi->frameRotationSpinBox->setValue(yaw * 180.0 / M_PI);
 }
 
@@ -157,7 +157,7 @@ void ViewControl::setFrameRotation(double yaw) {
 /* Methods                                                                    */
 /******************************************************************************/
 
-void ViewControl::dumpFrame() {
+void View3dControl::dumpFrame() {
   static bool dumping = false;
   if (dumping)
     return;
@@ -167,7 +167,7 @@ void ViewControl::dumpFrame() {
     mUi->frameWidthSpinBox->value(), mUi->frameHeightSpinBox->value());
   if (mUi->dumpAllCheckBox->isChecked() &&
       mUi->rotateFramesCheckBox->isChecked())
-    GLView::getInstance().getScene().setRotation(
+    View3d::getInstance().getScene().setRotation(
       (mUi->sceneYawSpinBox->value() + mUi->frameRotationSpinBox->value())
         * M_PI / 180.0,
       mUi->scenePitchSpinBox->value() * M_PI / 180.0,
@@ -175,7 +175,7 @@ void ViewControl::dumpFrame() {
   dumping = false;
 }
 
-void ViewControl::renderBackground() {
+void View3dControl::renderBackground() {
   glPushAttrib(GL_CURRENT_BIT);
   QColor backgroundColor = mPalette.getColor("Background");
   glClearColor(backgroundColor.redF(), backgroundColor.greenF(),
@@ -184,13 +184,13 @@ void ViewControl::renderBackground() {
   glPopAttrib();
 }
 
-void ViewControl::renderFog(double start, double end, double density) {
+void View3dControl::renderFog(double start, double end, double density) {
   glPushAttrib(GL_CURRENT_BIT);
   QColor color = mPalette.getColor("Fog");
   float colorfv[] = {(float)color.redF(), (float)color.greenF(),
     (float)color.blueF(), 1.0};
-  double scale = GLView::getInstance().getScene().getScale();
-  double distance = GLView::getInstance().getCamera().getViewpointDistance();
+  double scale = View3d::getInstance().getScene().getScale();
+  double distance = View3d::getInstance().getCamera().getViewpointDistance();
   glFogi(GL_FOG_MODE, GL_LINEAR);
   glFogfv(GL_FOG_COLOR, colorfv);
   glFogf(GL_FOG_DENSITY, density);
@@ -200,11 +200,11 @@ void ViewControl::renderFog(double start, double end, double density) {
   glPopAttrib();
 }
 
-void ViewControl::renderGround(double radius, double elevation, double
-  angleStep, double rangeStep) {
+void View3dControl::renderGround(double radius, double elevation, double
+    angleStep, double rangeStep) {
   glPushAttrib(GL_CURRENT_BIT);
   glBegin(GL_LINES);
-  GLView::getInstance().setColor(mPalette, "Ground");
+  View3d::getInstance().setColor(mPalette, "Ground");
   for (double angle = -M_PI; angle < M_PI; angle += angleStep) {
     glVertex3f(rangeStep * sin(angle), rangeStep * cos(angle), elevation);
     glVertex3f(radius * sin(angle), radius * cos(angle), elevation);
@@ -225,7 +225,7 @@ void ViewControl::renderGround(double radius, double elevation, double
   glPopAttrib();
 }
 
-void ViewControl::renderAxes(double length) {
+void View3dControl::renderAxes(double length) {
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glBegin(GL_LINES);
@@ -233,125 +233,125 @@ void ViewControl::renderAxes(double length) {
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(length, 0.0, 0.0);
   glEnd();
-  GLView::getInstance().render(length, 0.0, 0.0, "X", 0.2 * length, true, true,
-    true);
+  View3d::getInstance().render(length, 0.0, 0.0, "X", 0.0, 0.2 * length, true,
+    true, true);
   glBegin(GL_LINES);
   glColor3f(0.0, 1.0, 0.0);
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, length, 0.0);
   glEnd();
-  GLView::getInstance().render(0.0, length, 0.0, "Y", 0.2 * length, true, true,
-    true);
+  View3d::getInstance().render(0.0, length, 0.0, "Y", 0.0, 0.2 * length, true,
+    true, true);
   glBegin(GL_LINES);
   glColor3f(0.0, 0.0, 1.0);
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, length);
   glEnd();
-  GLView::getInstance().render(0, 0, length, "Z", 0.2 * length, true, true,
-    true);
+  View3d::getInstance().render(0.0, 0.0, length, "Z", 0.0, 0.2 * length, true,
+    true, true);
   glPopAttrib();
 }
 
-void ViewControl::dumpFrame(const QString& format, int frame, size_t width,
-  size_t height) {
+void View3dControl::dumpFrame(const QString& format, int frame, size_t width,
+    size_t height) {
   QDir dir(mUi->dumpDirEdit->text());
   if (dir.isReadable()) {
     QString filename;
     QPixmap pixmap;
     filename.sprintf(format.toAscii().constData(), frame);
-    pixmap = GLView::getInstance().renderPixmap(width, height, true);
+    pixmap = View3d::getInstance().renderPixmap(width, height);
     QFileInfo fileInfo(dir, filename);
     if (pixmap.save(fileInfo.absoluteFilePath()))
       mUi->frameSpinBox->setValue(frame + 1);
   }
 }
 
-void ViewControl::fontBrowseClicked() {
+void View3dControl::fontBrowseClicked() {
   QString filename = QFileDialog::getOpenFileName(this,
     "Open Font File", mUi->fontEdit->text(),
     "TrueType font files (*.ttf)");
   if (!filename.isNull())
-    GLView::getInstance().setFont(filename);
+    View3d::getInstance().setFont(filename);
 }
 
-void ViewControl::groundRadiusChanged(double radius) {
+void View3dControl::groundRadiusChanged(double radius) {
   setGroundRadius(radius);
 }
 
-void ViewControl::groundElevationChanged(double elevation) {
+void View3dControl::groundElevationChanged(double elevation) {
   setGroundElevation(elevation);
 }
 
-void ViewControl::cameraPositionChanged() {
-  GLView::getInstance().getCamera().setPosition(
+void View3dControl::cameraPositionChanged() {
+  View3d::getInstance().getCamera().setPosition(
     mUi->cameraXSpinBox->value(),
     mUi->cameraYSpinBox->value(),
     mUi->cameraZSpinBox->value());
 }
 
-void ViewControl::cameraViewpointChanged() {
-  GLView::getInstance().getCamera().setViewpoint(
+void View3dControl::cameraViewpointChanged() {
+  View3d::getInstance().getCamera().setViewpoint(
     mUi->cameraViewXSpinBox->value(),
     mUi->cameraViewYSpinBox->value(),
     mUi->cameraViewZSpinBox->value());
 }
 
-void ViewControl::sceneTranslationChanged() {
-  GLView::getInstance().getScene().setTranslation(
+void View3dControl::sceneTranslationChanged() {
+  View3d::getInstance().getScene().setTranslation(
     mUi->sceneXSpinBox->value(),
     mUi->sceneYSpinBox->value(),
     mUi->sceneZSpinBox->value());
 }
 
-void ViewControl::sceneRotationChanged() {
-  GLView::getInstance().getScene().setRotation(
+void View3dControl::sceneRotationChanged() {
+  View3d::getInstance().getScene().setRotation(
     mUi->sceneYawSpinBox->value() * M_PI / 180.0,
     mUi->scenePitchSpinBox->value() * M_PI / 180.0,
     mUi->sceneRollSpinBox->value() * M_PI / 180.0);
 }
 
-void ViewControl::sceneScaleChanged() {
-  GLView::getInstance().getScene().setScale(mUi->sceneScaleSpinBox->value());
+void View3dControl::sceneScaleChanged() {
+  View3d::getInstance().getScene().setScale(mUi->sceneScaleSpinBox->value());
 }
 
-void ViewControl::showFogToggled(bool checked) {
+void View3dControl::showFogToggled(bool checked) {
   setShowFog(checked);
 }
 
-void ViewControl::showGroundToggled(bool checked) {
+void View3dControl::showGroundToggled(bool checked) {
   setShowGround(checked);
 }
 
-void ViewControl::showAxesToggled(bool checked) {
+void View3dControl::showAxesToggled(bool checked) {
   setShowAxes(checked);
 }
 
-void ViewControl::dumpDirBrowseClicked() {
+void View3dControl::dumpDirBrowseClicked() {
   QString dirname = QFileDialog::getExistingDirectory(this,
     "Select Dump Directory", mUi->dumpDirEdit->text());
   if (!dirname.isNull())
     mUi->dumpDirEdit->setText(dirname);
 }
 
-void ViewControl::dumpClicked() {
+void View3dControl::dumpClicked() {
   dumpFrame();
 }
 
-void ViewControl::dumpAllToggled(bool checked) {
+void View3dControl::dumpAllToggled(bool checked) {
   setDumpAll(checked);
 }
 
-void ViewControl::colorChanged(const QString& role, const QColor& color) {
-  GLView::getInstance().update();
+void View3dControl::colorChanged(const QString& role, const QColor& color) {
+  View3d::getInstance().update();
 }
 
-void ViewControl::fontChanged(const QString& filename) {
+void View3dControl::fontChanged(const QString& filename) {
   mUi->fontEdit->blockSignals(true);
   mUi->fontEdit->setText(filename);
   mUi->fontEdit->blockSignals(false);
 }
 
-void ViewControl::cameraPositionChanged(const std::vector<double>& position) {
+void View3dControl::cameraPositionChanged(const std::vector<double>& position) {
   mUi->cameraXSpinBox->blockSignals(true);
   mUi->cameraYSpinBox->blockSignals(true);
   mUi->cameraZSpinBox->blockSignals(true);
@@ -363,7 +363,8 @@ void ViewControl::cameraPositionChanged(const std::vector<double>& position) {
   mUi->cameraZSpinBox->blockSignals(false);
 }
 
-void ViewControl::cameraViewpointChanged(const std::vector<double>& viewpoint) {
+void View3dControl::cameraViewpointChanged(const std::vector<double>&
+    viewpoint) {
   mUi->cameraViewXSpinBox->blockSignals(true);
   mUi->cameraViewYSpinBox->blockSignals(true);
   mUi->cameraViewZSpinBox->blockSignals(true);
@@ -375,8 +376,8 @@ void ViewControl::cameraViewpointChanged(const std::vector<double>& viewpoint) {
   mUi->cameraViewZSpinBox->blockSignals(false);
 }
 
-void ViewControl::sceneTranslationChanged(const std::vector<double>&
-  translation) {
+void View3dControl::sceneTranslationChanged(const std::vector<double>&
+    translation) {
   mUi->sceneXSpinBox->blockSignals(true);
   mUi->sceneYSpinBox->blockSignals(true);
   mUi->sceneZSpinBox->blockSignals(true);
@@ -388,7 +389,7 @@ void ViewControl::sceneTranslationChanged(const std::vector<double>&
   mUi->sceneZSpinBox->blockSignals(false);
 }
 
-void ViewControl::sceneRotationChanged(const std::vector<double>& rotation) {
+void View3dControl::sceneRotationChanged(const std::vector<double>& rotation) {
   mUi->sceneYawSpinBox->blockSignals(true);
   mUi->scenePitchSpinBox->blockSignals(true);
   mUi->sceneRollSpinBox->blockSignals(true);
@@ -400,13 +401,13 @@ void ViewControl::sceneRotationChanged(const std::vector<double>& rotation) {
   mUi->sceneRollSpinBox->blockSignals(false);
 }
 
-void ViewControl::sceneScaleChanged(double scale) {
+void View3dControl::sceneScaleChanged(double scale) {
   mUi->sceneScaleSpinBox->blockSignals(true);
   mUi->sceneScaleSpinBox->setValue(scale);
   mUi->sceneScaleSpinBox->blockSignals(false);
 }
 
-void ViewControl::render(GLView& view, Scene& scene) {
+void View3dControl::render(View3d& view, Scene3d& scene) {
   double radius = mUi->groundXSpinBox->value();
   renderBackground();
   if (mUi->showFogCheckBox->isChecked()) {
@@ -420,4 +421,9 @@ void ViewControl::render(GLView& view, Scene& scene) {
       5.0);
   if (mUi->showAxesCheckBox->isChecked())
     renderAxes(2.5);
+}
+
+void View3dControl::resized() {
+  setDumpFrameSize(View3d::getInstance().rect().width(),
+    View3d::getInstance().rect().height());
 }

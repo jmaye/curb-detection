@@ -36,8 +36,8 @@ DEMControl::DEMControl(bool showDEM) :
   mUi->colorChooser->setPalette(&mPalette);
   connect(&mPalette, SIGNAL(colorChanged(const QString&, const QColor&)),
     this, SLOT(colorChanged(const QString&, const QColor&)));
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   connect(&PointCloudControl::getInstance(),
     SIGNAL(pointCloudRead(const PointCloud<double, 3>&)), this,
     SLOT(pointCloudRead(const PointCloud<double, 3>&)));
@@ -65,17 +65,17 @@ void DEMControl::setLineColor(const QColor& color) {
 
 void DEMControl::setLineSize(double lineSize) {
   mUi->lineSizeSpinBox->setValue(lineSize);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void DEMControl::setShowDEM(bool showDEM) {
   mUi->showDEMCheckBox->setChecked(showDEM);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void DEMControl::setSmoothLines(bool smoothLines) {
   mUi->smoothLinesCheckBox->setChecked(smoothLines);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 /******************************************************************************/
@@ -94,7 +94,7 @@ void DEMControl::renderDEM(double size, bool smooth) {
     glDisable(GL_LINE_SMOOTH);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glBegin(GL_QUADS);
-  GLView::getInstance().setColor(mPalette, "DEM");
+  View3d::getInstance().setColor(mPalette, "DEM");
   const Grid<double, Cell, 2>::Index& numCells = mDEM->getNumCells();
   for (size_t i = 0; i < numCells(0); ++i)
     for (size_t j = 0; j < numCells(1); ++j) {
@@ -125,7 +125,7 @@ void DEMControl::renderDEM(double size, bool smooth) {
 }
 
 void DEMControl::colorChanged(const QString& role, const QColor& color) {
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void DEMControl::lineSizeChanged(double lineSize) {
@@ -168,7 +168,7 @@ void DEMControl::demChanged() {
   }
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
   emit demUpdated(*mDEM);
 }
 
@@ -178,7 +178,7 @@ void DEMControl::pointCloudRead(const PointCloud<double, 3>& pointCloud) {
   demChanged();
 }
 
-void DEMControl::render(GLView& view, Scene& scene) {
+void DEMControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showDEMCheckBox->isChecked() && mDEM)
     renderDEM(mUi->lineSizeSpinBox->value(),
       mUi->smoothLinesCheckBox->isChecked());

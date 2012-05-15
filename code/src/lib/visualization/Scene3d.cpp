@@ -16,17 +16,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/Scene.h"
+#include "visualization/Scene3d.h"
 
 #include <cmath>
 
-#include "visualization/GLView.h"
+#include "visualization/View3d.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-Scene::Scene() :
+Scene3d::Scene3d() :
     mTranslation(3, 0.0),
     mRotation(3, 0.0),
     mScale(1.0) {
@@ -35,16 +35,16 @@ Scene::Scene() :
   setScale(1.0);
 }
 
-Scene::~Scene() {
+Scene3d::~Scene3d() {
 }
 
 /******************************************************************************/
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void Scene::setTranslation(double x, double y, double z) {
+void Scene3d::setTranslation(double x, double y, double z) {
   if ((x != mTranslation[0]) || (y != mTranslation[1]) ||
-    (z != mTranslation[2])) {
+      (z != mTranslation[2])) {
     mTranslation[0] = x;
     mTranslation[1] = y;
     mTranslation[2] = z;
@@ -52,13 +52,13 @@ void Scene::setTranslation(double x, double y, double z) {
   }
 }
 
-const std::vector<double>& Scene::getTranslation() const {
+const std::vector<double>& Scene3d::getTranslation() const {
   return mTranslation;
 }
 
-void Scene::setRotation(double yaw, double pitch, double roll) {
+void Scene3d::setRotation(double yaw, double pitch, double roll) {
   if ((yaw != mRotation[0]) || (pitch != mRotation[1]) ||
-    (roll != mRotation[2])) {
+      (roll != mRotation[2])) {
     mRotation[0] = correctAngle(yaw);
     mRotation[1] = correctAngle(pitch);
     mRotation[2] = correctAngle(roll);
@@ -66,18 +66,18 @@ void Scene::setRotation(double yaw, double pitch, double roll) {
   }
 }
 
-const std::vector<double>& Scene::getRotation() const {
+const std::vector<double>& Scene3d::getRotation() const {
   return mRotation;
 }
 
-void Scene::setScale(double scale) {
+void Scene3d::setScale(double scale) {
   if (mScale != scale) {
     mScale = scale;
     emit scaleChanged(mScale);
   }
 }
 
-double Scene::getScale() const {
+double Scene3d::getScale() const {
   return mScale;
 }
 
@@ -85,7 +85,7 @@ double Scene::getScale() const {
 /*  Methods                                                                   */
 /******************************************************************************/
 
-void Scene::setup(GLView& view) {
+void Scene3d::setup(View3d& view) {
   glMatrixMode(GL_MODELVIEW);
   glScalef(mScale, mScale, mScale);
   glRotatef(mRotation[2] * 180.0 / M_PI, 1, 0, 0);
@@ -94,11 +94,11 @@ void Scene::setup(GLView& view) {
   glTranslatef(mTranslation[0], mTranslation[1], mTranslation[2]);
 }
 
-void Scene::render(GLView& view) {
+void Scene3d::render(View3d& view) {
   emit render(view, *this);
 }
 
-double Scene::correctAngle(double angle) const {
+double Scene3d::correctAngle(double angle) const {
   if (angle >= 0.0)
     while (angle >= M_PI) angle -= 2.0 * M_PI;
   else

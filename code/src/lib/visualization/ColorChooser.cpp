@@ -30,9 +30,9 @@
 /******************************************************************************/
 
 ColorChooser::ColorChooser(QWidget* parent) :
-  QWidget(parent),
-  mLayout(this),
-  mPalette(0) {
+    QWidget(parent),
+    mLayout(this),
+    mPalette(0) {
   mLayout.setContentsMargins(0, 0, 0, 0);
   connect(&mSignalMapper, SIGNAL(mapped(const QString&)), this,
     SLOT(buttonClicked(const QString&)));

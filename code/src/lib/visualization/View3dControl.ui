@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ViewControl</class>
- <widget class="QWidget" name="ViewControl">
+ <class>View3dControl</class>
+ <widget class="QWidget" name="View3dControl">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -190,6 +190,9 @@
        <property name="minimum">
         <double>0.000100000000000</double>
        </property>
+       <property name="maximum">
+        <double>1000000.000000000000000</double>
+       </property>
        <property name="singleStep">
         <double>0.010000000000000</double>
        </property>
@@ -296,29 +299,6 @@
     </layout>
    </item>
    <item>
-    <widget class="Line" name="line_5">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Expanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -326,7 +306,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="fontLayout">
      <item>
       <widget class="QLabel" name="fontTextLabel">
        <property name="text">
@@ -405,7 +385,7 @@
         <string/>
        </property>
        <property name="text">
-        <string>dump%06d.png</string>
+        <string>dump3d%06d.png</string>
        </property>
       </widget>
      </item>
@@ -537,7 +517,7 @@
   <connection>
    <sender>showAxesCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>showAxesToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -553,7 +533,7 @@
   <connection>
    <sender>dumpDirBrowseButton</sender>
    <signal>clicked()</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>dumpDirBrowseClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -569,7 +549,7 @@
   <connection>
    <sender>dumpButton</sender>
    <signal>clicked()</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>dumpClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -585,7 +565,7 @@
   <connection>
    <sender>dumpAllCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>dumpAllToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -601,7 +581,7 @@
   <connection>
    <sender>sceneXSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneTranslationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -617,7 +597,7 @@
   <connection>
    <sender>sceneYSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneTranslationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -633,7 +613,7 @@
   <connection>
    <sender>sceneZSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneTranslationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -649,7 +629,7 @@
   <connection>
    <sender>sceneYawSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneRotationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -665,7 +645,7 @@
   <connection>
    <sender>scenePitchSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneRotationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -681,7 +661,7 @@
   <connection>
    <sender>sceneRollSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneRotationChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -697,7 +677,7 @@
   <connection>
    <sender>sceneScaleSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>sceneScaleChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -713,7 +693,7 @@
   <connection>
    <sender>showFogCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>showFogToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -729,7 +709,7 @@
   <connection>
    <sender>groundXSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>groundRadiusChanged(double)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -745,7 +725,7 @@
   <connection>
    <sender>showGroundCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>showGroundToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -761,7 +741,7 @@
   <connection>
    <sender>fontBrowseButton</sender>
    <signal>clicked()</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>fontBrowseClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -777,7 +757,7 @@
   <connection>
    <sender>groundYSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>groundRadiusChanged(double)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -793,7 +773,7 @@
   <connection>
    <sender>groundZSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>groundElevationChanged(double)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -809,7 +789,7 @@
   <connection>
    <sender>cameraXSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraPositionChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -825,7 +805,7 @@
   <connection>
    <sender>cameraYSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraPositionChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -841,7 +821,7 @@
   <connection>
    <sender>cameraZSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraPositionChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -857,7 +837,7 @@
   <connection>
    <sender>cameraViewXSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraViewpointChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -873,7 +853,7 @@
   <connection>
    <sender>cameraViewYSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraViewpointChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -889,7 +869,7 @@
   <connection>
    <sender>cameraViewZSpinBox</sender>
    <signal>valueChanged(double)</signal>
-   <receiver>ViewControl</receiver>
+   <receiver>View3dControl</receiver>
    <slot>cameraViewpointChanged()</slot>
    <hints>
     <hint type="sourcelabel">

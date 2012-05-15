@@ -24,8 +24,6 @@
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
-#include "exceptions/InvalidOperationException.h"
-
 /** The class Singleton implements the singleton design pattern.
     \brief Singleton design pattern
   */
@@ -62,7 +60,7 @@ protected:
     @{
     */
   /// Default constructor
-  Singleton() throw (InvalidOperationException);
+  Singleton();
   /// Destructor
   virtual ~Singleton();
   /** @}

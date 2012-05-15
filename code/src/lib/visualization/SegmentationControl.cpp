@@ -34,8 +34,8 @@ SegmentationControl::SegmentationControl(bool showSegmentation) :
     mUi(new Ui_SegmentationControl()),
     mDEM(0) {
   mUi->setupUi(this);
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   connect(&DEMControl::getInstance(),
     SIGNAL(demUpdated(const TransGrid<double, Cell, 2>&)), this,
     SLOT(demUpdated(const TransGrid<double, Cell, 2>&)));
@@ -60,7 +60,7 @@ void SegmentationControl::setK(double value) {
 
 void SegmentationControl::setShowSegmentation(bool showSegmentation) {
   mUi->showSegmentationCheckBox->setChecked(showSegmentation);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 /******************************************************************************/
@@ -97,7 +97,7 @@ void SegmentationControl::renderSegmentation() {
   glPopAttrib();
 }
 
-void SegmentationControl::render(GLView& view, Scene& scene) {
+void SegmentationControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showSegmentationCheckBox->isChecked() && mDEM)
     renderSegmentation();
 }
@@ -110,7 +110,7 @@ void SegmentationControl::segment() {
   const double after = Timestamp::now();
   mUi->timeSpinBox->setValue(after - before);
   mUi->showSegmentationCheckBox->setEnabled(true);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
   emit segmentUpdated(*mDEM, *graph, mComponents);
 }
 

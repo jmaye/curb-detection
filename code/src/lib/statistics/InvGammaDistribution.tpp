@@ -19,6 +19,8 @@
 #include "statistics/Randomizer.h"
 #include "functions/LogGammaFunction.h"
 #include "functions/IncompleteGammaQFunction.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -80,8 +82,7 @@ void InvGammaDistribution<T>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <typename T>
-void InvGammaDistribution<T>::setShape(const T& shape)
-    throw (BadArgumentException<T>) {
+void InvGammaDistribution<T>::setShape(const T& shape) {
   if (shape <= 0)
     throw BadArgumentException<T>(shape,
       "InvGammaDistribution::setShape(): shape must be strictly positive",
@@ -96,8 +97,7 @@ const T& InvGammaDistribution<T>::getShape() const {
 }
 
 template <typename T>
-void InvGammaDistribution<T>::setScale(double scale)
-    throw (BadArgumentException<double>) {
+void InvGammaDistribution<T>::setScale(double scale) {
   if (scale <= 0)
     throw BadArgumentException<double>(scale,
       "InvGammaDistribution::setScale(): scale must be strictly positive",
@@ -153,7 +153,7 @@ typename InvGammaDistribution<T>::RandomVariable
 
 template <typename T>
 typename InvGammaDistribution<T>::Mean InvGammaDistribution<T>::getMean() const
-    throw (InvalidOperationException) {
+    {
   if (mShape > 1)
     return mScale / (mShape - 1);
   else
@@ -169,8 +169,7 @@ typename InvGammaDistribution<T>::Mode InvGammaDistribution<T>::getMode()
 
 template <typename T>
 typename InvGammaDistribution<T>::Variance
-    InvGammaDistribution<T>::getVariance() const
-    throw (InvalidOperationException) {
+    InvGammaDistribution<T>::getVariance() const {
   if (mShape > 2)
     return (mScale * mScale) / ((mShape - 1) * (mShape - 1) * (mShape - 2));
   else

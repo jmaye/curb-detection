@@ -27,7 +27,6 @@
 #include "statistics/DiscreteDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The PoissonDistribution class represents a Poisson distribution, i.e., a
     discrete distribution that models the probability of a given number of
@@ -58,7 +57,7 @@ public:
     @{
     */
   /// Sets the event mean
-  void setMean(Mean mean) throw (BadArgumentException<Mean>);
+  void setMean(Mean mean);
   /// Returns the event mean
   Mean getMean() const;
   /// Returns the median of the distribution
@@ -70,8 +69,7 @@ public:
   /// Returns the probability mass function at a point
   virtual double pmf(const RandomVariable& value) const;
   /// Returns the log-probability mass function at a point
-  double logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>);
+  double logpmf(const RandomVariable& value) const;
   /// Returns the cumulative mass function at a point
   double cdf(const RandomVariable& value) const;
   /// Access a sample drawn from the distribution

@@ -18,6 +18,8 @@
 
 #include <cmath>
 
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -84,8 +86,7 @@ double GammaFunction<X>::getValue(const VariableType& argument) const {
   return prod * pow(M_PI, mDim * (mDim - 1) * 0.25);
 }
 
-size_t GammaFunction<size_t>::getValue(const VariableType& argument) const
-    throw (BadArgumentException<size_t>) {
+size_t GammaFunction<size_t>::getValue(const VariableType& argument) const {
   if (argument)
     return FactorialFunction::getValue(argument - 1);
   else throw BadArgumentException<size_t>(argument,

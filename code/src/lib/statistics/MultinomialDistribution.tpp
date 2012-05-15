@@ -20,6 +20,9 @@
 
 #include "functions/LogFactorialFunction.h"
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
+#include "exceptions/OutOfBoundException.h"
+#include "exceptions/InvalidOperationException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -82,8 +85,7 @@ void MultinomialDistribution<M>::write(std::ofstream& stream) const {
 
 template <size_t M>
 void MultinomialDistribution<M>::setProbabilities(const
-    Eigen::Matrix<double, M, 1>& probabilities) throw
-    (BadArgumentException<Eigen::Matrix<double, M, 1> >) {
+    Eigen::Matrix<double, M, 1>& probabilities) {
   if (fabs(probabilities.sum() - 1.0) > 1e-12 ||
     (probabilities.cwise() < 0).any())
     throw BadArgumentException<Eigen::Matrix<double, M, 1> >(
@@ -95,8 +97,7 @@ void MultinomialDistribution<M>::setProbabilities(const
 }
 
 template <size_t M>
-double MultinomialDistribution<M>::getProbability(size_t idx) const
-    throw (OutOfBoundException<size_t>) {
+double MultinomialDistribution<M>::getProbability(size_t idx) const {
   if (idx >= (size_t)mProbabilities.size())
     throw OutOfBoundException<size_t>(idx,
       "MultinomialDistribution<M>::getProbability(): index out of bound",
@@ -111,8 +112,7 @@ const Eigen::Matrix<double, M, 1>&
 }
 
 template <size_t M>
-void MultinomialDistribution<M>::setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>) {
+void MultinomialDistribution<M>::setNumTrials(size_t numTrials) {
   if (numTrials == 0)
     throw BadArgumentException<size_t>(numTrials,
       "MultinomialDistribution<M>::setNumTrials(): number of trials must be "
@@ -179,8 +179,7 @@ double MultinomialDistribution<M>::pmf(const typename
 }
 
 template <size_t M>
-double MultinomialDistribution<M>::logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double MultinomialDistribution<M>::logpmf(const RandomVariable& value) const {
   if (value.sum() != (int)mNumTrials || (value.cwise() < 0).any())
     throw BadArgumentException<RandomVariable>(value,
       "MultinomialDistribution<M>::logpmf(): sum of the input vector must be "
@@ -219,7 +218,7 @@ typename MultinomialDistribution<M>::Mean MultinomialDistribution<M>::getMean()
 
 template <size_t M>
 typename MultinomialDistribution<M>::Mode MultinomialDistribution<M>::getMode()
-    const throw (InvalidOperationException) {
+    const {
   Mode mode = (mProbabilities * (mNumTrials + 1)).template cast<int>();
   if (mode.sum() == (int)mNumTrials)
     return mode;

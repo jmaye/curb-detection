@@ -56,12 +56,10 @@ public:
     */
   /// Returns the index of a cell using coordinates
   virtual typename Grid<T, C, 2>::Index getIndex(const typename
-    Grid<T, C, 2>::Coordinate& point) const throw (OutOfBoundException<typename
-    Grid<T, C, 2>::Coordinate>);
+    Grid<T, C, 2>::Coordinate& point) const;
   /// Returns the coordinates of the center of a cell using index
   virtual typename Grid<T, C, 2>::Coordinate getCoordinates(const typename
-    Grid<T, C, 2>::Index& idx) const throw
-    (OutOfBoundException<typename Grid<T, C, 2>::Index>);
+    Grid<T, C, 2>::Index& idx) const;
   /// Returns the coordinates of the upper left corner of a cell using index
   typename Grid<T, C, 2>::Coordinate getULCoordinates(const typename
     Grid<T, C, 2>::Index& idx) const;

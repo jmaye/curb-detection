@@ -28,6 +28,6 @@
 template <size_t M = 1> class StudentDistribution;
 
 #include "statistics/StudentDistribution1v.h"
-#include "statistics/StudentDistributionMv.h"
+//#include "statistics/StudentDistributionMv.h"
 
 #endif // STUDENTDISTRIBUTION_H

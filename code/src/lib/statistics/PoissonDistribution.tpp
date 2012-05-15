@@ -19,6 +19,7 @@
 #include "functions/LogFactorialFunction.h"
 #include "functions/FactorialFunction.h"
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -64,8 +65,7 @@ void PoissonDistribution::write(std::ofstream& stream) const {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void PoissonDistribution::setMean(Mean mean)
-    throw (BadArgumentException<Mean>) {
+void PoissonDistribution::setMean(Mean mean) {
   if (mean <= 0)
     throw BadArgumentException<Mean>(mean,
       "PoissonDistribution::setMean(): mean must be strictly positive",
@@ -84,8 +84,7 @@ double PoissonDistribution::pmf(const RandomVariable& value) const {
     return exp(logpmf(value));
 }
 
-double PoissonDistribution::logpmf(const RandomVariable& value) const
-    throw (BadArgumentException<RandomVariable>) {
+double PoissonDistribution::logpmf(const RandomVariable& value) const {
   if (value < 0)
     throw BadArgumentException<RandomVariable>(value,
       "PoissonDistribution::logpmf(): value must be strictly positive",

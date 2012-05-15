@@ -19,6 +19,7 @@
 #include <ANN/ANN.h>
 
 #include "statistics/Randomizer.h"
+#include "exceptions/BadArgumentException.h"
 
 /******************************************************************************/
 /* Methods                                                                    */
@@ -29,8 +30,7 @@ size_t KMeansClustering<T, M>::cluster(const
     std::vector<Eigen::Matrix<T, M, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
     std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
-    dataToCluster, size_t k, size_t maxIterations, double tol, bool debug)
-    throw (BadArgumentException<size_t>) {
+    dataToCluster, size_t k, size_t maxIterations, double tol, bool debug) {
 
   if (k == 0)
     throw BadArgumentException<size_t>(k,

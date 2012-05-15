@@ -16,6 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+#include "exceptions/BadArgumentException.h"
+
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
@@ -71,8 +73,7 @@ void CategoricalDistribution<M>::write(std::ofstream& stream) const {
 /******************************************************************************/
 
 template <size_t M>
-void CategoricalDistribution<M>::setNumTrials(size_t numTrials)
-    throw (BadArgumentException<size_t>) {
+void CategoricalDistribution<M>::setNumTrials(size_t numTrials) {
   if (numTrials != 1)
     throw BadArgumentException<size_t>(numTrials,
       "CategoricalDistribution<M>::setNumTrials(): number of trials must be "

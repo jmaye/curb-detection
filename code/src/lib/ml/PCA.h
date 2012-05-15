@@ -27,8 +27,6 @@
 
 #include <Eigen/Core>
 
-#include "exceptions/BadArgumentException.h"
-
 /** This class implements a Principal Component Analysis (PCA) algorithm.
     \brief Principal Component Analysis (PCA)
   */
@@ -48,8 +46,7 @@ public:
   /// Analyze the input data points
   static void analyze(const std::vector<Eigen::Matrix<T, D, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& transformedData,
-    Eigen::Matrix<T, D, 1>& eigenValues, Eigen::Matrix<T, D, D>& eigenVectors)
-    throw (BadArgumentException<size_t>);
+    Eigen::Matrix<T, D, 1>& eigenValues, Eigen::Matrix<T, D, D>& eigenVectors);
   /** @}
     */
 

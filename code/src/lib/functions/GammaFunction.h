@@ -26,7 +26,6 @@
 
 #include "functions/ContinuousFunction.h"
 #include "functions/FactorialFunction.h"
-#include "exceptions/BadArgumentException.h"
 #include "base/Serializable.h"
 
 /** The GammaFunction class represents the gamma function for real numbers.
@@ -133,8 +132,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  inline virtual size_t getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>);
+  inline virtual size_t getValue(const VariableType& argument) const;
   /** @}
     */
 

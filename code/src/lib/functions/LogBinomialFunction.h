@@ -25,7 +25,6 @@
 #define LOGBINOMIALFUNCTION_H
 
 #include "functions/DiscreteFunction.h"
-#include "exceptions/BadArgumentException.h"
 
 /** The LogBinomialFunction class represents the binomial function.
     \brief Binomial function
@@ -65,8 +64,7 @@ public:
     @{
     */
   /// Access the function value for the given argument
-  virtual double getValue(const VariableType& argument) const
-    throw (BadArgumentException<VariableType>);
+  virtual double getValue(const VariableType& argument) const;
   /** @}
     */
 

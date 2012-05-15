@@ -38,11 +38,11 @@ namespace RejectionSampler {
     */
   /// Access a sample drawn from the distribution
   template <typename Y, typename X>
-  static X getSample(const Function<Y, X>& target, const SampleDistribution<X>&
+  X getSample(const Function<Y, X>& target, const SampleDistribution<X>&
     proposal, double k);
   /// Access samples drawn from the distribution
   template <typename Y, typename X>
-  static void getSamples(const Function<Y, X>& target, const
+  void getSamples(const Function<Y, X>& target, const
     SampleDistribution<X>& proposal, double k, std::vector<X>& samples, size_t
     numSamples);
   /** @}

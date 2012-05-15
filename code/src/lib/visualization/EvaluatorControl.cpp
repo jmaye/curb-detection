@@ -36,8 +36,8 @@ EvaluatorControl::EvaluatorControl(bool showGroundTruth) :
     mUi(new Ui_EvaluatorControl()),
     mDEM(0) {
   mUi->setupUi(this);
-  connect(&GLView::getInstance().getScene(), SIGNAL(render(GLView&, Scene&)),
-    this, SLOT(render(GLView&, Scene&)));
+  connect(&View3d::getInstance().getScene(), SIGNAL(render(View3d&, Scene3d&)),
+    this, SLOT(render(View3d&, Scene3d&)));
   connect(&DEMControl::getInstance(),
     SIGNAL(demUpdated(const TransGrid<double, Cell, 2>&)), this,
     SLOT(demUpdated(const TransGrid<double, Cell, 2>&)));
@@ -64,7 +64,7 @@ EvaluatorControl::~EvaluatorControl() {
 
 void EvaluatorControl::setShowGroundTruth(bool showGroundTruth) {
   mUi->showGroundTruthCheckBox->setChecked(showGroundTruth);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 /******************************************************************************/
@@ -103,7 +103,7 @@ void EvaluatorControl::showGroundTruthToggled(bool checked) {
   setShowGroundTruth(checked);
 }
 
-void EvaluatorControl::render(GLView& view, Scene& scene) {
+void EvaluatorControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showGroundTruthCheckBox->isChecked())
     renderGroundTruth();
 }
@@ -131,7 +131,7 @@ void EvaluatorControl::labelDEM() {
         mEvaluator.getLabel(point);
     }
   mUi->showGroundTruthCheckBox->setEnabled(true);
-  GLView::getInstance().update();
+  View3d::getInstance().update();
 }
 
 void EvaluatorControl::pointCloudRead(const std::string& filename) {

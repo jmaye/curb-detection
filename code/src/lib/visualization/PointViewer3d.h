@@ -27,7 +27,8 @@
 #include <tuple>
 
 #include "data-structures/PointCloud.h"
-#include "visualization/GLView.h"
+#include "visualization/View3d.h"
+#include "visualization/Scene3d.h"
 #include "utils/Colors.h"
 
 /** The PointViewer3d class is a plotting tool 3d points.
@@ -90,9 +91,6 @@ protected:
   void renderBackground();
   /// Render fog
   void renderFog(double start, double end, double density);
-  /// Render ground
-  void renderGround(double radius, double elevation, double angleStep,
-    double rangeStep);
   /// Render axes
   void renderAxes(double length);
   /// Render the points
@@ -103,8 +101,8 @@ protected:
   /** \name Protected members
     @{
     */
-  /// GL viewer
-  GLView mGLView;
+  /// 3d view
+  View3d mView;
   /// Point cloud to be displayed
   std::vector<std::tuple<PointCloud<>, Colors::Color> > mPointClouds;
   /// Palette
@@ -117,7 +115,7 @@ protected slots:
     @{
     */
   /// Rendering loop
-  void render(GLView& view, Scene& scene);
+  void render(View3d& view, Scene3d& scene);
   /** @}
     */
 

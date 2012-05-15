@@ -25,7 +25,6 @@
 #define BETADISTRIBUTION_H
 
 #include "statistics/DirichletDistribution.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The BetaDistribution class represents a beta distribution,
     i.e., a continuous distribution that is a conjugate prior to the binomial or

@@ -27,8 +27,6 @@
 #include "statistics/ContinuousDistribution.h"
 #include "statistics/SampleDistribution.h"
 #include "base/Serializable.h"
-#include "exceptions/BadArgumentException.h"
-#include "exceptions/InvalidOperationException.h"
 
 /** The CauchyDistribution class represents a Cauchy distribution.
     \brief Cauchy distribution
@@ -60,17 +58,17 @@ public:
   /// Returns the location parameter
   double getLocation() const;
   /// Sets the scale parameter
-  void setScale(double scale) throw (BadArgumentException<double>);
+  void setScale(double scale);
   /// Returns the inverse scale parameter
   double getScale() const;
   /// Returns the mean of the distribution
-  Mean getMean() const throw (InvalidOperationException);
+  Mean getMean() const;
   /// Returns the median of the distribution
   Median getMedian() const;
   /// Returns the mode of the distribution
   Mode getMode() const;
   /// Returns the variance of the distribution
-  Variance getVariance() const throw (InvalidOperationException);
+  Variance getVariance() const;
   /// Access the probablity density function at the given value
   virtual double pdf(const RandomVariable& value) const;
   /// Access the log-probablity density function at the given value
