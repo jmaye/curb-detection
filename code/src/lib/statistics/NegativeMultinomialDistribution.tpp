@@ -219,6 +219,6 @@ typename NegativeMultinomialDistribution<M>::Covariance
   // TODO: COVARIANCE NOT IMPLEMENTED
   const double fail = mProbabilities(mProbabilities.size() - 1);
   return mNumTrials / fail / fail *
-    outerProduct<double, M>(mProbabilities) + mNumTrials /
+    OuterProduct::compute<double, M>(mProbabilities) + mNumTrials /
     fail * mProbabilities.asDiagonal();
 }

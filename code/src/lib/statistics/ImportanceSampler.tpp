@@ -16,14 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
+namespace ImportanceSampler {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 template <typename Y, typename X>
-void ImportanceSampler::getSamples(const Function<Y, X>& target, const
-    SampleDistribution<X>& proposal, std::vector<X>& weights,
-    std::vector<X>& samples, size_t numSamples) {
+void getSamples(const Function<Y, X>& target, const SampleDistribution<X>&
+    proposal, std::vector<X>& weights, std::vector<X>& samples, size_t
+    numSamples) {
   samples.clear();
   samples.reserve(numSamples);
   weights.clear();
@@ -38,4 +40,6 @@ void ImportanceSampler::getSamples(const Function<Y, X>& target, const
   }
   for (size_t i = 0; i < numSamples; ++i)
     weights[i] /= normalizer;
+}
+
 }

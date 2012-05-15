@@ -114,14 +114,14 @@ void EstimatorML<NormalDistribution<M> >::addPoint(const Point& point) {
   }
   mNumPoints++;
   mValuesSum += point;
-  mSquaredValuesSum += outerProduct<double, M>(point);
+  mSquaredValuesSum += OuterProduct::compute<double, M>(point);
   try {
     mValid = true;
     const Eigen::Matrix<double, M, 1> mean = mValuesSum / mNumPoints;
     mDistribution.setMean(mean);
     mDistribution.setCovariance(mSquaredValuesSum / mNumPoints -
-      outerProduct<double, M>(mValuesSum) * 2 / (mNumPoints * mNumPoints) +
-      outerProduct<double, M>(mean));
+      OuterProduct::compute<double, M>(mValuesSum) * 2 /
+      (mNumPoints * mNumPoints) + OuterProduct::compute<double, M>(mean));
   }
   catch (...) {
     mValid = false;
@@ -156,7 +156,7 @@ void EstimatorML<NormalDistribution<M> >::addPoints(const ConstPointIterator&
     Eigen::Matrix<double, M, M>::Zero(itStart->size(), itStart->size());
   for (auto it = itStart; it != itEnd; ++it)
     covariance += responsibilities(it - itStart) *
-      outerProduct<double, M>(*it - mean);
+      OuterProduct::compute<double, M>(*it - mean);
   covariance /= numPoints;
   try {
     mValid = true;

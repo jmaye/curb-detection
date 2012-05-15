@@ -30,6 +30,7 @@
 #include "visualization/SegmentationControl.h"
 #include "visualization/MLControl.h"
 #include "visualization/BPControl.h"
+#include "visualization/MLBPControl.h"
 #include "visualization/CurbsControl.h"
 #include "visualization/EvaluatorControl.h"
 
@@ -48,6 +49,8 @@ int main (int argc, char** argv) {
   mainWindow.addControl("ML", mlControl);
   BPControl bpControl(true);
   mainWindow.addControl("BP", bpControl);
+  MLBPControl mlbpControl(true);
+  mainWindow.addControl("ML-BP", mlbpControl);
   CurbsControl curbsControl(true);
   mainWindow.addControl("Curbs", curbsControl);
   EvaluatorControl evaluatorControl(false);

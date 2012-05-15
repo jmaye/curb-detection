@@ -17,8 +17,7 @@
  ******************************************************************************/
 
 /** \file KMeansClustering.h
-    \brief This file defines the KMeansClustering class, which implements a
-           K-Means clustering algorithm
+    \brief This file implements a K-Means clustering algorithm
   */
 
 #ifndef KMEANSCLUSTERING_H
@@ -28,33 +27,23 @@
 
 #include <Eigen/Core>
 
-/** This class implements a K-means clustering algorithm based on
+/** This file implements a K-means clustering algorithm based on
     Expectation-Maximization.
     \brief K-Means clustering algorithm
   */
-template <typename T, size_t M> class KMeansClustering {
-  /** \name Private constructors
-    @{
-    */
-  /// Default constructor
-  KMeansClustering();
-  /** @}
-    */
-
-public:
+namespace KMeansClustering {
   /** \name Methods
     @{
     */
   /// Clusters the input data points
-  static size_t cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
+  template <typename T, size_t M>
+  size_t cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
     std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
     dataToCluster, size_t k, size_t maxIterations = 10000, double tol = 1e-6,
     bool debug = false);
   /** @}
     */
-
-protected:
 
 };
 

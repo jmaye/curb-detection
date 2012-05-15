@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file OuterProduct.h
-    \brief This file defines the outer product
+    \brief This file defines the outer product functions
   */
 
 #ifndef OUTERPRODUCT_H
@@ -27,26 +27,25 @@
 
 #include <Eigen/Core>
 
-/** The outerProduct function generates the outer product of 2 vectors
-*/
-template <typename X, size_t M, size_t N>
-static Eigen::Matrix<X, M, N> outerProduct(const Eigen::Matrix<X, M, 1>& v1,
-    const Eigen::Matrix<X, N, 1>& v2) {
-  return v1 * v2.transpose();
-};
+/** The OuterProduct namespace contains outer product functions.
+    \brief Outer product functions
+  */
+namespace OuterProduct {
+  /** \name Methods
+    @{
+    */
+  /// The compute function generates the outer product of 2 vectors
+  template <typename X, size_t M, size_t N>
+  Eigen::Matrix<X, M, N> compute(const Eigen::Matrix<X, M, 1>& v1,
+      const Eigen::Matrix<X, N, 1>& v2);
+  /// The compute function generates the self outer product of a vector
+  template <typename X, size_t M>
+  Eigen::Matrix<X, M, M> compute(const Eigen::Matrix<X, M, 1>& v);
+  /** @}
+    */
 
-/** The outerProduct function generates the self outer product of a vector
-*/
-template <typename X, size_t M>
-static Eigen::Matrix<X, M, M> outerProduct(const Eigen::Matrix<X, M, 1>& v) {
-  Eigen::Matrix<X, M, M> result = Eigen::Matrix<X, M, M>::Zero(v.size(),
-    v.size());
-  for (size_t i = 0; i < (size_t)v.size(); ++i)
-    for (size_t j = i; j < (size_t)v.size(); ++j) {
-      result(i, j) = v(i) * v(j);
-      result(j, i) = result(i, j);
-    }
-  return result;
-};
+}
+
+#include "utils/OuterProduct.tpp"
 
 #endif // OUTERPRODUCT_H

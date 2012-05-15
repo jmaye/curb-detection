@@ -21,6 +21,8 @@
 #include "statistics/NormalDistribution.h"
 #include "utils/IndexHash.h"
 
+namespace Helpers {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -82,4 +84,6 @@ void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
     factor.set(i, mixture.getAssignDistribution().getProbability(i) *
       mixture.getCompDistribution(i).pdf(
       (Eigen::Matrix<double, 3, 1>() << point, target).finished()));
+}
+
 }

@@ -20,12 +20,14 @@
 #include <vector>
 #include <limits>
 
+namespace Colors {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 template <typename T>
-T Colors::revertBits(T value) {
+T revertBits(T value) {
   T reverse = value;
   T shift = sizeof(T) * 8 - 1;
   for (value >>= 1; value; value >>= 1) {
@@ -38,11 +40,11 @@ T Colors::revertBits(T value) {
 }
 
 template <typename T>
-double Colors::intToHue(T value) {
+double intToHue(T value) {
   return (double)revertBits<T>(value) / std::numeric_limits<T>::max() * 360;
 }
 
-Colors::Color Colors::genColor(size_t idx) {
+Color genColor(size_t idx) {
   double h = intToHue<size_t>(idx);
   const double s = 1.0;
   const double v = 1.0;
@@ -86,4 +88,6 @@ Colors::Color Colors::genColor(size_t idx) {
       break;
   }
   return color;
+}
+
 }

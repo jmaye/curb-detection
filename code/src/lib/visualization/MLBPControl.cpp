@@ -16,12 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "visualization/MLControl.h"
+#include "visualization/MLBPControl.h"
 
 #include <limits>
 
 #include "visualization/SegmentationControl.h"
-#include "statistics/EstimatorML.h"
+#include "statistics/EstimatorMLBPMixtureLinearRegression.h"
 #include "helpers/InitML.h"
 #include "base/Timestamp.h"
 #include "utils/IndexHash.h"
@@ -29,14 +29,14 @@
 #include "data-structures/Cell.h"
 #include "utils/Colors.h"
 
-#include "ui_MLControl.h"
+#include "ui_MLBPControl.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-MLControl::MLControl(bool showML) :
-    mUi(new Ui_MLControl()),
+MLBPControl::MLBPControl(bool showML) :
+    mUi(new Ui_MLBPControl()),
     mDEM(0),
     mGraph(0),
     mMixtureDist(0) {
@@ -55,7 +55,7 @@ MLControl::MLControl(bool showML) :
   setShowML(showML);
 }
 
-MLControl::~MLControl() {
+MLBPControl::~MLBPControl() {
   if (mDEM)
     delete mDEM;
   if (mGraph)
@@ -69,22 +69,22 @@ MLControl::~MLControl() {
 /* Accessors                                                                  */
 /******************************************************************************/
 
-void MLControl::setMaxIter(size_t maxIter) {
+void MLBPControl::setMaxIter(size_t maxIter) {
   mMaxIter = maxIter;
   mUi->maxIterSpinBox->setValue(maxIter);
 }
 
-void MLControl::setTolerance(double tol) {
+void MLBPControl::setTolerance(double tol) {
   mTol = tol;
   mUi->tolSpinBox->setValue(tol);
 }
 
-void MLControl::setShowML(bool showML) {
+void MLBPControl::setShowML(bool showML) {
   mUi->showMLCheckBox->setChecked(showML);
   View3d::getInstance().update();
 }
 
-void MLControl::setWeighted(bool checked) {
+void MLBPControl::setWeighted(bool checked) {
   mUi->weightedCheckBox->setChecked(checked);
   mWeighted = checked;
 }
@@ -93,7 +93,7 @@ void MLControl::setWeighted(bool checked) {
 /* Methods                                                                    */
 /******************************************************************************/
 
-void MLControl::renderML() {
+void MLBPControl::renderML() {
   glPushAttrib(GL_CURRENT_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   for (auto it = mVertices.begin(); it != mVertices.end(); ++it) {
@@ -125,20 +125,20 @@ void MLControl::renderML() {
   glPopAttrib();
 }
 
-void MLControl::render(View3d& view, Scene3d& scene) {
+void MLBPControl::render(View3d& view, Scene3d& scene) {
   if (mUi->showMLCheckBox->isChecked() && mDEM)
     renderML();
 }
 
-void MLControl::maxIterChanged(int maxIter) {
+void MLBPControl::maxIterChanged(int maxIter) {
   setMaxIter(maxIter);
 }
 
-void MLControl::tolChanged(double tol) {
+void MLBPControl::tolChanged(double tol) {
   setTolerance(tol);
 }
 
-void MLControl::segmentUpdated(const TransGrid<double, Cell, 2>& dem, const
+void MLBPControl::segmentUpdated(const TransGrid<double, Cell, 2>& dem, const
     DEMGraph& graph, const GraphSegmenter<DEMGraph>::Components& components) {
   if (mDEM)
     delete mDEM;
@@ -149,10 +149,9 @@ void MLControl::segmentUpdated(const TransGrid<double, Cell, 2>& dem, const
   mComponents = components;
   mVertices = DEMGraph::VertexContainer(10, IndexHash(dem.getNumCells()(1)));
   mUi->runButton->setEnabled(true);
-  runML();
 }
 
-void MLControl::runML() {
+void MLBPControl::runML() {
   const double before = Timestamp::now();
   EstimatorML<LinearRegression<3> >::Container points;
   std::vector<DEMGraph::VertexDescriptor> pointsMapping;
@@ -161,8 +160,9 @@ void MLControl::runML() {
   if (Helpers::initML(*mDEM, *mGraph, mComponents, points, pointsMapping,
       initMixture, mWeighted)) {
     if (initMixture->getCompDistributions().size() > 1) {
-      EstimatorML<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic> >
-        estMixtPlane(*initMixture, mMaxIter, mTol);
+      EstimatorMLBP<MixtureDistribution<LinearRegression<3>, Eigen::Dynamic> >
+        estMixtPlane(*initMixture, *mDEM, *mGraph, pointsMapping, mMaxIter,
+        mTol);
       const size_t numIter = estMixtPlane.addPointsEM(points.begin(),
         points.end());
       if (estMixtPlane.getValid()) {
@@ -170,51 +170,53 @@ void MLControl::runML() {
         mUi->iterSpinBox->setValue(numIter);
         mUi->timeSpinBox->setValue(after - before);
         mUi->llSpinBox->setValue(estMixtPlane.getLogLikelihood());
-        const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>&
-          responsibilities = estMixtPlane.getResponsibilities();
-        double residual = 0.0;
-        for (size_t i = 0; i < (size_t)responsibilities.rows(); ++i) {
-          double max = -std::numeric_limits<double>::infinity();
-          size_t argmax = 0;
-          for (size_t j = 0; j < (size_t)responsibilities.cols(); ++j)
-            if (responsibilities(i, j) > max) {
-              max = responsibilities(i, j);
-              argmax = j;
-            }
-          mVertices[pointsMapping[i]] = argmax;
-          const double prediction = estMixtPlane.getMixtureDist().
-            getCompDistribution(argmax).getLinearBasisFunction()
-            (mDEM->getCoordinates(pointsMapping[i]));
-          residual += fabs(prediction - std::get<0>(
-            (*mDEM)[pointsMapping[i]].getHeightEstimator().
-            getDist().getMode()));
-        }
-        residual /= (size_t)responsibilities.rows();
-        mUi->residualSpinBox->setValue(residual);
-        mUi->showMLCheckBox->setEnabled(true);
+        mVertices = estMixtPlane.getVerticesLabels();
         if (mMixtureDist)
           delete mMixtureDist;
         mMixtureDist =
           new MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>(
           estMixtPlane.getMixtureDist());
-        View3d::getInstance().update();
-        emit mlUpdated(*mDEM, *mGraph, *mMixtureDist);
       }
+      else
+        return;
     }
+    else {
+      for (auto it = mGraph->getVertexBegin(); it != mGraph->getVertexEnd();
+          ++it)
+        mVertices[it->first] = 0;
+      if (mMixtureDist)
+        delete mMixtureDist;
+      mMixtureDist =
+        new MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>(
+        *initMixture);
+    }
+    double residual = 0.0;
+    for (auto it = mVertices.begin(); it != mVertices.end(); ++it) {
+      double prediction = mMixtureDist->
+        getCompDistribution(it->second).getLinearBasisFunction()
+            (mDEM->getCoordinates(it->first));
+        residual += fabs(prediction - std::get<0>(
+          (*mDEM)[it->first].getHeightEstimator().
+          getDist().getMode()));
+    }
+    residual /= mVertices.size();
+    mUi->residualSpinBox->setValue(residual);
+    mUi->showMLCheckBox->setEnabled(true);
+    View3d::getInstance().update();
   }
   if (initMixture)
     delete initMixture;
 }
 
-void MLControl::showMLToggled(bool checked) {
+void MLBPControl::showMLToggled(bool checked) {
   setShowML(checked);
 }
 
-void MLControl::weightedToggled(bool checked) {
+void MLBPControl::weightedToggled(bool checked) {
   setWeighted(checked);
 }
 
-void MLControl::runPressed() {
+void MLBPControl::runPressed() {
   if (mDEM)
     runML();
 }

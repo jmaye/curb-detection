@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /** \file PCA.h
-    \brief This file defines the PCA class, which implements a PCA algorithm
+    \brief This file implements a PCA algorithm
   */
 
 #ifndef PCA_H
@@ -27,30 +27,20 @@
 
 #include <Eigen/Core>
 
-/** This class implements a Principal Component Analysis (PCA) algorithm.
+/** This file implements a Principal Component Analysis (PCA) algorithm.
     \brief Principal Component Analysis (PCA)
   */
-template <typename T, size_t D, size_t M> class PCA {
-  /** \name Private constructors
-    @{
-    */
-  /// Default constructor
-  PCA();
-  /** @}
-    */
-
-public:
+namespace PCA {
   /** \name Methods
     @{
     */
   /// Analyze the input data points
-  static void analyze(const std::vector<Eigen::Matrix<T, D, 1> >& data,
+  template <typename T, size_t D, size_t M>
+  void analyze(const std::vector<Eigen::Matrix<T, D, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& transformedData,
     Eigen::Matrix<T, D, 1>& eigenValues, Eigen::Matrix<T, D, D>& eigenVectors);
   /** @}
     */
-
-protected:
 
 };
 

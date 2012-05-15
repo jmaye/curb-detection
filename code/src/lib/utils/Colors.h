@@ -47,18 +47,13 @@ namespace Colors {
   /** \name Methods
     @{
     */
-  /** The revertBits function reverts the bits of the input
-  */
+  /// The revertBits function reverts the bits of the input
   template <typename T>
   inline T revertBits(T value);
-
-  /** The intToHue function generates a hue value from an index
-  */
+  /// The intToHue function generates a hue value from an index
   template <typename T = size_t>
   inline double intToHue(T value);
-
-  /** The genColor function generates a color from an index.
-  */
+  /// The genColor function generates a color from an index.
   inline Color genColor(size_t idx);
   /** @}
     */

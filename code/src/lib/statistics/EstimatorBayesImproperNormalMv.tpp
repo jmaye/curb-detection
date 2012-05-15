@@ -139,15 +139,15 @@ void EstimatorBayesImproper<NormalDistribution<M> >::addPoint(const Point&
   }
   mNumPoints++;
   mValuesSum += point;
-  mSquaredValuesSum += outerProduct<double, M>(point);
+  mSquaredValuesSum += OuterProduct::compute<double, M>(point);
   try {
     mValid = true;
     const Eigen::Matrix<double, M, 1> mean = mValuesSum / mNumPoints;
     const Eigen::Matrix<double, M, M> covariance =
       mSquaredValuesSum / (mNumPoints - point.size()) -
-      outerProduct<double, M>(mValuesSum) * 2 /
+      OuterProduct::compute<double, M>(mValuesSum) * 2 /
       ((mNumPoints - point.size()) * mNumPoints) +
-      outerProduct<double, M>(mean) * ((double)mNumPoints /
+      OuterProduct::compute<double, M>(mean) * ((double)mNumPoints /
       (mNumPoints - point.size()));
     mMeanCovarianceDist.setMu(mean);
     mMeanCovarianceDist.setKappa(mNumPoints);

@@ -113,13 +113,13 @@ void EstimatorBayes<LinearRegression<M>,
   auto x = (Eigen::Matrix<double, M, 1>() << 1.0,
     point.segment(0, mu.size() - 1)).finished();
   auto y = point.template end<1>();
-  mCoeffVarianceDist.setKappa((outerProduct<double, M>(x) + kappa.inverse()).
-    inverse());
+  mCoeffVarianceDist.setKappa((OuterProduct::compute<double, M>(x) +
+    kappa.inverse()).inverse());
   mCoeffVarianceDist.setMu(mCoeffVarianceDist.getKappa() *
     (kappa.inverse() * mu + x * y));
   mCoeffVarianceDist.setNu(nu + 1);
   mCoeffVarianceDist.setSigma(nu / (nu + 1) * sigma +
-    (outerProduct<double, 1>(y)(0) +
+    (OuterProduct::compute<double, 1>(y)(0) +
     (mu.transpose() * kappa.inverse() * mu)(0) -
     (mCoeffVarianceDist.getMu().transpose() *
     mCoeffVarianceDist.getKappa().inverse() * mCoeffVarianceDist.getMu())(0)) /

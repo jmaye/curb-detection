@@ -18,13 +18,15 @@
 
 #include "statistics/Randomizer.h"
 
+namespace MetropolisHastingsSampler {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 template <typename Y, typename X, size_t M>
-void MetropolisHastingsSampler::getSamples(const ContinuousFunction<Y, X, M>&
-    target, NormalDistribution<M>& proposal,
+void getSamples(const ContinuousFunction<Y, X, M>& target,
+    NormalDistribution<M>& proposal,
     std::vector<typename NormalDistribution<M>::RandomVariable>& samples, size_t
     numSamples) {
   samples.clear();
@@ -47,4 +49,6 @@ void MetropolisHastingsSampler::getSamples(const ContinuousFunction<Y, X, M>&
     else
       samples.push_back(samples.back());
   }
+}
+
 }

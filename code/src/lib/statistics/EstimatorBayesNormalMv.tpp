@@ -262,7 +262,7 @@ void EstimatorBayes<NormalDistribution<M>, InvWishartDistribution<M> >::
     addPoint(const Point& point) {
   const double degrees = mCovarianceDist.getDegrees() + 1;
   const Eigen::Matrix<double, M, M> scale = mCovarianceDist.getScale() +
-    outerProduct<double, M>(point - mMean);
+    OuterProduct::compute<double, M>(point - mMean);
   mCovarianceDist.setDegrees(degrees);
   mCovarianceDist.setScale(scale);
 }
@@ -278,7 +278,7 @@ void EstimatorBayes<NormalDistribution<M>, NormalInvWishartDistribution<M> >::
   mMeanCovarianceDist.setKappa(kappa + 1);
   mMeanCovarianceDist.setNu(nu + 1);
   mMeanCovarianceDist.setSigma(sigma + kappa / (kappa + 1) *
-    outerProduct<double, M>(point - mu));
+    OuterProduct::compute<double, M>(point - mu));
 }
 
 template <size_t M>

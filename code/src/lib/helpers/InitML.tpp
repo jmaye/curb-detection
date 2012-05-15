@@ -18,6 +18,8 @@
 
 #include "data-structures/PointCloud.h"
 
+namespace Helpers {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
@@ -77,4 +79,6 @@ bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph, const
   }
   else
     return false;
+}
+
 }

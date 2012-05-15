@@ -29,29 +29,28 @@
 #include "data-structures/FactorGraph.h"
 
 namespace Helpers {
-
-/** The buildFactorGraph function generates a factor graph from a DEMGraph.
-*/
-void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
-  mixture, FactorGraph& factorGraph,
-  DEMGraph::VertexContainer& fgMapping, double strength = 10.0);
-
-/** The updateNodeFactors function updates factor graph nodes factors.
-*/
-void updateNodeFactors(const Grid<double, Cell, 2>& dem, const DEMGraph&
-  graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
-  mixture, FactorGraph& factorGraph,
-  DEMGraph::VertexContainer& fgMapping);
-
-/** The computeFactor function computes a node factor from the graph.
-*/
-void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
-  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>& mixture, const
-  Grid<double, Cell, 2>::Index& index, dai::Factor& factor);
-
-#include "helpers/FGTools.tpp"
+  /** \name Methods
+    @{
+    */
+  /// The buildFactorGraph function generates a factor graph from a DEMGraph.
+  inline void buildFactorGraph(const Grid<double, Cell, 2>& dem, const DEMGraph&
+    graph, const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>&
+    mixture, FactorGraph& factorGraph,
+    DEMGraph::VertexContainer& fgMapping, double strength = 10.0);
+  /// The updateNodeFactors function updates factor graph nodes factors.
+  inline void updateNodeFactors(const Grid<double, Cell, 2>& dem,
+    const DEMGraph& graph,
+    const MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>& mixture,
+    FactorGraph& factorGraph, DEMGraph::VertexContainer& fgMapping);
+  /// The computeFactor function computes a node factor from the graph.
+  inline void computeNodeFactor(const Grid<double, Cell, 2>& dem, const
+    MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>& mixture, const
+    Grid<double, Cell, 2>::Index& index, dai::Factor& factor);
+  /** @}
+    */
 
 };
+
+#include "helpers/FGTools.tpp"
 
 #endif // FGTOOLS_H

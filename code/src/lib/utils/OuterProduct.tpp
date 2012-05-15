@@ -16,54 +16,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include <Eigen/QR>
-
-#include "exceptions/BadArgumentException.h"
-
-namespace PCA {
+namespace OuterProduct {
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-template <typename T, size_t D, size_t M>
-void analyze(const std::vector<Eigen::Matrix<T, D, 1> >& data,
-    std::vector<Eigen::Matrix<T, M, 1> >& transformedData,
-    Eigen::Matrix<T, D, 1>& eigenValues, Eigen::Matrix<T, D, D>& eigenVectors) {
+template <typename X, size_t M, size_t N>
+Eigen::Matrix<X, M, N> compute(const Eigen::Matrix<X, M, 1>& v1,
+    const Eigen::Matrix<X, N, 1>& v2) {
+  return v1 * v2.transpose();
+};
 
-  if (data.size() == 0)
-    throw BadArgumentException<size_t>(data.size(),
-      "PCA::cluster(): input points vector is empty",
-      __FILE__, __LINE__);
-
-  if (M > D)
-    throw BadArgumentException<size_t>(M,
-      "PCA::cluster(): dimension must be smaller than the original data",
-      __FILE__, __LINE__);
-
-  Eigen::Matrix<T, D, 1> mean = Eigen::Matrix<T, D, 1>::Zero();
-  for (size_t i = 0; i < data.size(); ++i)
-    mean += data[i];
-  mean /= data.size();
-
-  Eigen::Matrix<T, D, D> covariance = Eigen::Matrix<T, D, D>::Zero();
-  for (size_t i = 0; i < data.size(); ++i)
-    covariance += (data[i] - mean) * (data[i] - mean).transpose();
-  covariance /= data.size();
-
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<T, D, D> > solver(covariance);
-  eigenValues = solver.eigenvalues();
-  eigenVectors = solver.eigenvectors();
-
-  transformedData.clear();
-  transformedData.resize(data.size());
-  for (size_t i = 0; i < data.size(); ++i) {
-    Eigen::Matrix<T, M, 1> point;
-    for (size_t j = 0; j < M; ++j)
-      point(j) = (data[i].transpose() * eigenVectors.col(D - 1 - j))(0) -
-        (mean.transpose() * eigenVectors.col(D - 1 - j))(0);
-    transformedData[i] = point;
-  }
-}
+template <typename X, size_t M>
+Eigen::Matrix<X, M, M> compute(const Eigen::Matrix<X, M, 1>& v) {
+  Eigen::Matrix<X, M, M> result = Eigen::Matrix<X, M, M>::Zero(v.size(),
+    v.size());
+  for (size_t i = 0; i < (size_t)v.size(); ++i)
+    for (size_t j = i; j < (size_t)v.size(); ++j) {
+      result(i, j) = v(i) * v(j);
+      result(j, i) = result(i, j);
+    }
+  return result;
+};
 
 }

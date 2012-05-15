@@ -17,8 +17,7 @@
  ******************************************************************************/
 
 /** \file MeanShiftClustering.h
-    \brief This file defines the MeanShiftClustering class, which implements a
-           mean-shift clustering algorithm
+    \brief This file mplements a mean-shift clustering algorithm
   */
 
 #ifndef MEANSHIFTCLUSTERING_H
@@ -28,31 +27,21 @@
 
 #include <Eigen/Core>
 
-/** This class implements a mean-shift clustering algorithm.
+/** This file implements a mean-shift clustering algorithm.
     \brief Mean-shift clustering algorithm
   */
-template <typename T, size_t M> class MeanShiftClustering {
-  /** \name Private constructors
-    @{
-    */
-  /// Default constructor
-  MeanShiftClustering();
-  /** @}
-    */
-
-public:
+namespace MeanShiftClustering {
   /** \name Methods
     @{
     */
   /// Clusters the input data points
-  static void cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
+  template <typename T, size_t M> 
+  void cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
     std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
     dataToCluster, double bandwidth, double tol = 1e-6, bool debug = false);
   /** @}
     */
-
-protected:
 
 };
 

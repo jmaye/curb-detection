@@ -34,19 +34,23 @@
 #include "statistics/MixtureDistribution.h"
 
 namespace Helpers {
-
-/** The initML function generates initial values for the Maximum-Likelihood
-    estimation of a mixtures of linear regression models.
-*/
-bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
-  const GraphSegmenter<DEMGraph>::Components& components,
-  EstimatorML<LinearRegression<3> >::Container& points,
-  std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
-  MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>*& initMixture,
-  bool weighted = true);
-
-#include "helpers/InitML.tpp"
+  /** \name Methods
+    @{
+    */
+  /** The initML function generates initial values for the Maximum-Likelihood
+      estimation of a mixtures of linear regression models.
+  */
+  inline bool initML(const Grid<double, Cell, 2>& dem, const DEMGraph& graph,
+    const GraphSegmenter<DEMGraph>::Components& components,
+    EstimatorML<LinearRegression<3> >::Container& points,
+    std::vector<DEMGraph::VertexDescriptor>& pointsMapping,
+    MixtureDistribution<LinearRegression<3>, Eigen::Dynamic>*& initMixture,
+    bool weighted = true);
+  /** @}
+    */
 
 };
+
+#include "helpers/InitML.tpp"
 
 #endif // INITML_H

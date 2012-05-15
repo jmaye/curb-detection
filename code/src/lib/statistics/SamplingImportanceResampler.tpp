@@ -18,15 +18,16 @@
 
 #include "statistics/Randomizer.h"
 
+namespace SamplingImportanceResampler {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 template <typename Y, typename X>
-void SamplingImportanceResampler::getSamples(const Function<Y, X>& target, const
-    SampleDistribution<X>& proposal, std::vector<X>& weights,
-    std::vector<X>& propSamples, std::vector<X>& targetSamples, size_t
-    numSamples) {
+void getSamples(const Function<Y, X>& target, const SampleDistribution<X>&
+    proposal, std::vector<X>& weights, std::vector<X>& propSamples,
+    std::vector<X>& targetSamples, size_t numSamples) {
   propSamples.clear();
   propSamples.reserve(numSamples);
   targetSamples.clear();
@@ -50,4 +51,6 @@ void SamplingImportanceResampler::getSamples(const Function<Y, X>& target, const
   for (size_t i = 0; i < numSamples; ++i)
     targetSamples.push_back(
       propSamples[randomizer.sampleCategorical(probabilities)]);
+}
+
 }

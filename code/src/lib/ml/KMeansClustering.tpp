@@ -21,13 +21,14 @@
 #include "statistics/Randomizer.h"
 #include "exceptions/BadArgumentException.h"
 
+namespace KMeansClustering {
+
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
 template <typename T, size_t M>
-size_t KMeansClustering<T, M>::cluster(const
-    std::vector<Eigen::Matrix<T, M, 1> >& data,
+size_t cluster(const std::vector<Eigen::Matrix<T, M, 1> >& data,
     std::vector<Eigen::Matrix<T, M, 1> >& clusterCenters,
     std::vector<std::vector<size_t> >& clusterToData, std::vector<size_t>&
     dataToCluster, size_t k, size_t maxIterations, double tol, bool debug) {
@@ -117,4 +118,6 @@ size_t KMeansClustering<T, M>::cluster(const
   delete [] dist;
   annClose();
   return iteration;
+}
+
 }
