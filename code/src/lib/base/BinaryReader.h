@@ -90,4 +90,4 @@ protected:
 
 };
 
-#endif // BINARYREADER
+#endif // BINARYREADER_H

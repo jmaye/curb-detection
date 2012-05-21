@@ -90,4 +90,4 @@ protected:
 
 };
 
-#endif // BINARYWRITER
+#endif // BINARYWRITER_H
