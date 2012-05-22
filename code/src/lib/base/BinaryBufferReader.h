@@ -16,31 +16,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file BinaryWriter.h
-    \brief This file defines the BinaryWriter class which is an interface
-           for writing basic types to a binary stream
+/** \file BinaryBufferReader.h
+    \brief This file defines the BinaryBufferReader class which allows reading
+           binary data from a byte buffer.
   */
 
-#ifndef BINARYWRITER_H
-#define BINARYWRITER_H
+#ifndef BINARYBUFFERREADER_H
+#define BINARYBUFFERREADER_H
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <vector>
 
-#include <string>
+#include "base/BinaryReader.h"
 
-/** The BinaryWriter class is an interface for writing basic types to a binary
-    stream.
-    \brief Binary writer
+/** The BinaryBufferReader class allows for reading binary data from a byte
+    buffer.
+    \brief Binary buffer reader
   */
-class BinaryWriter {
+class BinaryBufferReader :
+  public BinaryReader {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  BinaryWriter(const BinaryWriter& other);
+  BinaryBufferReader(const BinaryBufferReader& other);
   /// Assignment operator
-  BinaryWriter& operator = (const BinaryWriter& other);
+  BinaryBufferReader& operator = (const BinaryBufferReader& other);
   /** @}
     */
 
@@ -48,49 +48,46 @@ public:
   /** \name Constructors/destructor
     @{
     */
-  /// Default constructor
-  BinaryWriter();
+  /// Constructs object
+  BinaryBufferReader(const char* buffer, size_t size);
   /// Destructor
-  virtual ~BinaryWriter();
+  virtual ~BinaryBufferReader();
   /** @}
     */
 
-  /** \name Operators
+  /** \name Accessors
     @{
     */
-  /// Writes 8-bit signed integer
-  BinaryWriter& operator << (int8_t value);
-  /// Writes 8-bit unsigned integer
-  BinaryWriter& operator << (uint8_t value);
-  /// Writes 16-bit signed integer
-  BinaryWriter& operator << (int16_t value);
-  /// Writes 16-bit unsigned integer
-  BinaryWriter& operator << (uint16_t value);
-  /// Writes 32-bit signed integer
-  BinaryWriter& operator << (int32_t value);
-  /// Writes 32-bit unsigned integer
-  BinaryWriter& operator << (uint32_t value);
-  /// Writes 64-bit signed integer
-  BinaryWriter& operator << (int64_t value);
-  /// Writes 64-bit unsigned integer
-  BinaryWriter& operator << (uint64_t value);
-  /// Writes 32-bit floating point
-  BinaryWriter& operator << (float value);
-  /// Writes 64-bit floating point
-  BinaryWriter& operator << (double value);
-  /// Writes a string
-  BinaryWriter& operator << (const std::string& value);
+  /// Get the position in the buffer
+  size_t getPos() const;
+  /// Set the position in the buffer
+  void setPos(size_t pos);
+  /// Returns the buffer size
+  size_t getBufferSize() const;
+  /// Returns the remaining size to read
+  size_t getReadLeft() const;
   /** @}
     */
 
   /** \name Methods
     @{
     */
-  /// Performs write on the stream
-  virtual void write(const char* buffer, size_t numBytes) = 0;
+  /// Perform read on the stream
+  virtual void read(char* buffer, size_t numBytes);
+  /** @}
+    */
+
+protected:
+  /** \name Protected members
+    @{
+    */
+  /// Associated byte array
+  std::vector<char> mBuffer;
+  /// Position of the reader
+  size_t mPos;
   /** @}
     */
 
 };
 
-#endif // BINARYWRITER_H
+#endif // BINARYBUFFERREADER_H

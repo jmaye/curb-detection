@@ -33,51 +33,56 @@ BinaryWriter::~BinaryWriter() {
 /******************************************************************************/
 
 BinaryWriter& BinaryWriter::operator << (int8_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (uint8_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (int16_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (uint16_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (int32_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (uint32_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (int64_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (uint64_t value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (float value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
   return *this;
 }
 
 BinaryWriter& BinaryWriter::operator << (double value) {
-  writeBuffer(reinterpret_cast<const char*>(&value), sizeof(value));
+  write(reinterpret_cast<const char*>(&value), sizeof(value));
+  return *this;
+}
+
+BinaryWriter& BinaryWriter::operator << (const std::string& value) {
+  write(reinterpret_cast<const char*>(value.c_str()), value.size());
   return *this;
 }

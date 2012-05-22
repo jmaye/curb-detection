@@ -79,12 +79,11 @@ public:
   /** @}
     */
 
-protected:
-  /** \name Protected methods
+  /** \name Methods
     @{
     */
-  /// Reads a buffer of byte
-  virtual void readBuffer(char* buffer, ssize_t numBytes) = 0;
+  /// Perform read on the stream
+  virtual void read(char* buffer, size_t numBytes) = 0;
   /** @}
     */
 

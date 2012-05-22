@@ -16,68 +16,56 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "base/BinaryReader.h"
+#include "base/BinaryBufferReader.h"
+
+#include <cstring>
+
+#include "exceptions/OutOfBoundException.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-BinaryReader::BinaryReader() {
+BinaryBufferReader::BinaryBufferReader(const char* buffer, size_t size) :
+    mPos(0) {
+  mBuffer.reserve(size);
+  mBuffer.assign(buffer, buffer + size);
 }
 
-BinaryReader::~BinaryReader() {
+BinaryBufferReader::~BinaryBufferReader() {
+}
+
+/******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+size_t BinaryBufferReader::getPos() const {
+  return mPos;
+}
+
+void BinaryBufferReader::setPos(size_t pos) {
+  if (pos >= mBuffer.size())
+    throw OutOfBoundException<size_t>(mPos,
+      "BinaryBufferReader::setPos(): invalid position");
+  mPos = pos;
+}
+
+size_t BinaryBufferReader::getBufferSize() const {
+  return mBuffer.size();
+}
+
+size_t BinaryBufferReader::getReadLeft() const {
+  return mBuffer.size() - mPos;
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-BinaryReader& BinaryReader::operator >> (int8_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (uint8_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (int16_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (uint16_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (int32_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (uint32_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (int64_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (uint64_t& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (float& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
-}
-
-BinaryReader& BinaryReader::operator >> (double& value) {
-  read(reinterpret_cast<char*>(&value), sizeof(value));
-  return *this;
+void BinaryBufferReader::read(char* buffer, size_t numBytes) {
+  if (mPos + numBytes >= mBuffer.size())
+    throw OutOfBoundException<size_t>(mPos,
+      "BinaryBufferReader::readBuffer(): no more bytes available");
+  memcpy(buffer, &mBuffer[mPos], numBytes);
+  mPos += numBytes;
 }
