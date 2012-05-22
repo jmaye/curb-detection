@@ -16,31 +16,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file BinaryBufferWriter.h
-    \brief This file defines the BinaryBufferWriter class which allows writing
-           binary data to a byte buffer.
+/** \file BinaryStreamWriter.h
+    \brief This file defines the BinaryStreamWriter class which allows writing
+           binary data to a standard stream.
   */
 
-#ifndef BINARYBUFFERWRITER_H
-#define BINARYBUFFERWRITER_H
+#ifndef BINARYSTREAMWRITER_H
+#define BINARYSTREAMWRITER_H
 
-#include <vector>
+#include <iosfwd>
 
 #include "base/BinaryWriter.h"
 
-/** The BinaryBufferWriter class allows for writing binary data to a byte
-    buffer.
-    \brief Binary buffer writer
+/** The BinaryStreamWriter class allows for writing binary data to a standard
+    stream.
+    \brief Stream buffer writer
   */
-class BinaryBufferWriter :
+class BinaryStreamWriter :
   public BinaryWriter {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  BinaryBufferWriter(const BinaryBufferWriter& other);
+  BinaryStreamWriter(const BinaryStreamWriter& other);
   /// Assignment operator
-  BinaryBufferWriter& operator = (const BinaryBufferWriter& other);
+  BinaryStreamWriter& operator = (const BinaryStreamWriter& other);
   /** @}
     */
 
@@ -49,23 +49,9 @@ public:
     @{
     */
   /// Constructs object
-  BinaryBufferWriter(size_t reservedSize = 1000);
+  BinaryStreamWriter(std::ostream& stream);
   /// Destructor
-  virtual ~BinaryBufferWriter();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Get the position in the buffer
-  size_t getPos() const;
-  /// Set the position in the buffer
-  void setPos(size_t pos);
-  /// Returns the buffer size
-  size_t getBufferSize() const;
-  /// Returns the buffer
-  const char* getBuffer() const;
+  virtual ~BinaryStreamWriter();
   /** @}
     */
 
@@ -81,13 +67,10 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Associated byte array
-  std::vector<char> mBuffer;
-  /// Position of the reader
-  size_t mPos;
+  std::ostream& mStream;
   /** @}
     */
 
 };
 
-#endif // BINARYBUFFERWRITER_H
+#endif // BINARYSTREAMWRITER_H

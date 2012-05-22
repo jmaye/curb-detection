@@ -16,31 +16,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-/** \file BinaryBufferWriter.h
-    \brief This file defines the BinaryBufferWriter class which allows writing
-           binary data to a byte buffer.
+/** \file BinaryStreamReader.h
+    \brief This file defines the BinaryStreamReader class which allows reading
+           binary data from a standard stream
   */
 
-#ifndef BINARYBUFFERWRITER_H
-#define BINARYBUFFERWRITER_H
+#ifndef BINARYSTREAMREADER_H
+#define BINARYSTREAMREADER_H
 
-#include <vector>
+#include <iosfwd>
 
-#include "base/BinaryWriter.h"
+#include "base/BinaryReader.h"
 
-/** The BinaryBufferWriter class allows for writing binary data to a byte
-    buffer.
-    \brief Binary buffer writer
+/** The BinaryStreamReader class allows for reading binary data from a standard
+    stream
+    \brief Binary stream reader
   */
-class BinaryBufferWriter :
-  public BinaryWriter {
+class BinaryStreamReader :
+  public BinaryReader {
   /** \name Private constructors
     @{
     */
   /// Copy constructor
-  BinaryBufferWriter(const BinaryBufferWriter& other);
+  BinaryStreamReader(const BinaryStreamReader& other);
   /// Assignment operator
-  BinaryBufferWriter& operator = (const BinaryBufferWriter& other);
+  BinaryStreamReader& operator = (const BinaryStreamReader& other);
   /** @}
     */
 
@@ -49,31 +49,17 @@ public:
     @{
     */
   /// Constructs object
-  BinaryBufferWriter(size_t reservedSize = 1000);
+  BinaryStreamReader(std::istream& stream);
   /// Destructor
-  virtual ~BinaryBufferWriter();
-  /** @}
-    */
-
-  /** \name Accessors
-    @{
-    */
-  /// Get the position in the buffer
-  size_t getPos() const;
-  /// Set the position in the buffer
-  void setPos(size_t pos);
-  /// Returns the buffer size
-  size_t getBufferSize() const;
-  /// Returns the buffer
-  const char* getBuffer() const;
+  virtual ~BinaryStreamReader();
   /** @}
     */
 
   /** \name Methods
     @{
     */
-  /// Performs write on the stream
-  virtual void write(const char* buffer, size_t numBytes);
+  /// Perform read on the stream
+  virtual void read(char* buffer, size_t numBytes);
   /** @}
     */
 
@@ -81,13 +67,11 @@ protected:
   /** \name Protected members
     @{
     */
-  /// Associated byte array
-  std::vector<char> mBuffer;
-  /// Position of the reader
-  size_t mPos;
+  /// Stream object
+  std::istream& mStream;
   /** @}
     */
 
 };
 
-#endif // BINARYBUFFERWRITER_H
+#endif // BINARYSTREAMREADER_H
