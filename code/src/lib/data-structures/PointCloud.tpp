@@ -18,6 +18,8 @@
 
 #include "exceptions/OutOfBoundException.h"
 #include "exceptions/IOException.h"
+#include "base/BinaryStreamWriter.h"
+#include "base/BinaryStreamReader.h"
 
 /******************************************************************************/
 /* Constructors and Destructor                                                */
@@ -89,7 +91,7 @@ void PointCloud<X, M>::write(std::ofstream& stream) const {
 
 template <typename X, size_t M>
 const typename PointCloud<X, M>::Point& PointCloud<X, M>::operator [] (size_t
-  idx) const {
+    idx) const {
   if (!isValidIndex(idx))
     throw OutOfBoundException<size_t>(idx,
       "PointCloud<X, M>::operator []: invalid index", __FILE__, __LINE__);
@@ -132,7 +134,7 @@ void PointCloud<X, M>::merge(const PointCloud& other) {
 
 template <typename X, size_t M>
 typename PointCloud<X, M>::ConstPointIterator PointCloud<X, M>::getPointBegin()
-  const {
+    const {
   return mPoints.begin();
 }
 
@@ -143,7 +145,7 @@ typename PointCloud<X, M>::PointIterator PointCloud<X, M>::getPointBegin() {
 
 template <typename X, size_t M>
 typename PointCloud<X, M>::ConstPointIterator PointCloud<X, M>::getPointEnd()
-  const {
+    const {
   return mPoints.end();
 }
 
@@ -154,7 +156,7 @@ typename PointCloud<X, M>::PointIterator PointCloud<X, M>::getPointEnd() {
 
 template <typename X, size_t M>
 const typename PointCloud<X, M>::Container& PointCloud<X, M>::getPoints()
-  const {
+    const {
   return mPoints;
 }
 
@@ -169,25 +171,24 @@ void PointCloud<X, M>::reserve(size_t numPoints) {
 
 template <typename X, size_t M>
 void PointCloud<X, M>::writeBinary(std::ostream& stream) const {
+  BinaryStreamWriter binaryStream(stream);
   const size_t numPoints = mPoints.size();
-  stream.write(reinterpret_cast<const char*>(&numPoints), sizeof(numPoints));
-  for (auto it = getPointBegin(); it != getPointEnd(); ++it) {
-    for (size_t i = 0; i < M; ++i) {
-      X value = (*it)(i);
-      stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
-    }
-  }
+  binaryStream << numPoints;
+  for (auto it = getPointBegin(); it != getPointEnd(); ++it)
+    for (size_t i = 0; i < M; ++i)
+      binaryStream << (*it)(i);
 }
 
 template <typename X, size_t M>
 void PointCloud<X, M>::readBinary(std::istream& stream) {
+  BinaryStreamReader binaryStream(stream);
   size_t numPoints;
-  stream.read(reinterpret_cast<char*>(&numPoints), sizeof(numPoints));
+  binaryStream >> numPoints;
   for (size_t i = 0; i < numPoints; ++i) {
     Point point;
     for (size_t j = 0; j < M; ++j) {
       X value;
-      stream.read(reinterpret_cast<char*>(&value), sizeof(value));
+      binaryStream >> value;
       point(j) = value;
     }
     mPoints.push_back(point);
