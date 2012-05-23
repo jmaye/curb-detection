@@ -32,7 +32,7 @@
     stream.
     \brief Stream buffer writer
   */
-class BinaryStreamWriter :
+template <typename T> class BinaryStreamWriter :
   public BinaryWriter {
   /** \name Private constructors
     @{
@@ -49,7 +49,7 @@ public:
     @{
     */
   /// Constructs object
-  BinaryStreamWriter(std::ostream& stream);
+  BinaryStreamWriter(T& stream);
   /// Destructor
   virtual ~BinaryStreamWriter();
   /** @}
@@ -67,10 +67,12 @@ protected:
   /** \name Protected members
     @{
     */
-  std::ostream& mStream;
+  T& mStream;
   /** @}
     */
 
 };
+
+#include "base/BinaryStreamWriter.tpp"
 
 #endif // BINARYSTREAMWRITER_H

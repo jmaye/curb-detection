@@ -32,7 +32,7 @@
     stream
     \brief Binary stream reader
   */
-class BinaryStreamReader :
+template <typename T> class BinaryStreamReader :
   public BinaryReader {
   /** \name Private constructors
     @{
@@ -49,7 +49,7 @@ public:
     @{
     */
   /// Constructs object
-  BinaryStreamReader(std::istream& stream);
+  BinaryStreamReader(T& stream);
   /// Destructor
   virtual ~BinaryStreamReader();
   /** @}
@@ -68,10 +68,12 @@ protected:
     @{
     */
   /// Stream object
-  std::istream& mStream;
+  T& mStream;
   /** @}
     */
 
 };
+
+#include "base/BinaryStreamReader.tpp"
 
 #endif // BINARYSTREAMREADER_H

@@ -171,7 +171,7 @@ void PointCloud<X, M>::reserve(size_t numPoints) {
 
 template <typename X, size_t M>
 void PointCloud<X, M>::writeBinary(std::ostream& stream) const {
-  BinaryStreamWriter binaryStream(stream);
+  BinaryStreamWriter<std::ostream> binaryStream(stream);
   const size_t numPoints = mPoints.size();
   binaryStream << numPoints;
   for (auto it = getPointBegin(); it != getPointEnd(); ++it)
@@ -181,7 +181,7 @@ void PointCloud<X, M>::writeBinary(std::ostream& stream) const {
 
 template <typename X, size_t M>
 void PointCloud<X, M>::readBinary(std::istream& stream) {
-  BinaryStreamReader binaryStream(stream);
+  BinaryStreamReader<std::istream> binaryStream(stream);
   size_t numPoints;
   binaryStream >> numPoints;
   for (size_t i = 0; i < numPoints; ++i) {

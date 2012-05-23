@@ -16,25 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.       *
  ******************************************************************************/
 
-#include "base/BinaryStreamWriter.h"
-
-#include <iostream>
-
 /******************************************************************************/
 /* Constructors and Destructor                                                */
 /******************************************************************************/
 
-BinaryStreamWriter::BinaryStreamWriter(std::ostream& stream) :
+template <typename T>
+BinaryStreamReader<T>::BinaryStreamReader(T& stream) :
     mStream(stream) {
 }
 
-BinaryStreamWriter::~BinaryStreamWriter() {
+template <typename T>
+BinaryStreamReader<T>::~BinaryStreamReader() {
 }
 
 /******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
-void BinaryStreamWriter::write(const char* buffer, size_t numBytes) {
-  mStream.write(buffer, numBytes);
+template <typename T>
+void BinaryStreamReader<T>::read(char* buffer, size_t numBytes) {
+  mStream.read(buffer, numBytes);
 }
