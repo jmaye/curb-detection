@@ -30,6 +30,20 @@ BinaryStreamReader<T>::~BinaryStreamReader() {
 }
 
 /******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+template <typename T>
+const T& BinaryStreamReader<T>::getStream() const {
+  return mStream;
+}
+
+template <typename T>
+T& BinaryStreamReader<T>::getStream() {
+  return mStream;
+}
+
+/******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 

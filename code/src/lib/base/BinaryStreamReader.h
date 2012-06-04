@@ -55,6 +55,16 @@ public:
   /** @}
     */
 
+  /** \name Accessors
+    @{
+    */
+  /// Returns the stream object
+  const T& getStream() const;
+  /// Returns the stream object
+  T& getStream();
+  /** @}
+    */
+
   /** \name Methods
     @{
     */

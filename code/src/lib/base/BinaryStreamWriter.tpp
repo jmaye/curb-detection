@@ -30,6 +30,20 @@ BinaryStreamWriter<T>::~BinaryStreamWriter() {
 }
 
 /******************************************************************************/
+/* Accessors                                                                  */
+/******************************************************************************/
+
+template <typename T>
+const T& BinaryStreamWriter<T>::getStream() const {
+  return mStream;
+}
+
+template <typename T>
+T& BinaryStreamWriter<T>::getStream() {
+  return mStream;
+}
+
+/******************************************************************************/
 /* Methods                                                                    */
 /******************************************************************************/
 
