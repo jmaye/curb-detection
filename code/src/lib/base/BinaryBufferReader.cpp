@@ -63,7 +63,7 @@ size_t BinaryBufferReader::getReadLeft() const {
 /******************************************************************************/
 
 void BinaryBufferReader::read(char* buffer, size_t numBytes) {
-  if (mPos + numBytes >= mBuffer.size())
+  if (mPos + numBytes > mBuffer.size())
     throw OutOfBoundException<size_t>(mPos,
       "BinaryBufferReader::readBuffer(): no more bytes available");
   memcpy(buffer, &mBuffer[mPos], numBytes);
