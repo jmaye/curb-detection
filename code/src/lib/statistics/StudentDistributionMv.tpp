@@ -121,7 +121,7 @@ void StudentDistribution<M>::setScale(const Scale& scale) {
       "StudentDistribution<M>::setScale(): elements must be positive",
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
-  mInverseScale = scale.inverse();
+  scale.computeInverse(&mInverseScale);
   mScale = scale;
   computeNormalizer();
 }

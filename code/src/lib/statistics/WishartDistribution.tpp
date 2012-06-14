@@ -112,7 +112,7 @@ void WishartDistribution<M>::setScale(const Scale& scale) {
       "WishartDistribution<M>::setScale(): scale must be positive definite",
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
-  mInverseScale = scale.inverse();
+  scale.computeInverse(&mInverseScale);
   mScale = scale;
   computeNormalizer();
 }

@@ -120,7 +120,7 @@ void NormalDistribution<M>::setCovariance(const Covariance& covariance) {
       "NormalDistribution<M>::setCovariance(): variances must be positive",
       __FILE__, __LINE__);
   mDeterminant = covariance.determinant();
-  mPrecision = covariance.inverse();
+  covariance.computeInverse(&mPrecision);
   mNormalizer = 0.5 * mMean.size() * log(2.0 * M_PI) + 0.5 *
     log(mDeterminant);
   mCovariance = covariance;

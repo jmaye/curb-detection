@@ -115,7 +115,7 @@ void InvWishartDistribution<M>::setScale(const Scale& scale) {
       __FILE__, __LINE__);
   mDeterminant = scale.determinant();
   mScale = scale;
-  mInverseScale = scale.inverse();
+  scale.computeInverse(&mInverseScale);
   computeNormalizer();
 }
 

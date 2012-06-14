@@ -131,9 +131,11 @@ void EstimatorML<LinearRegression<M> >::addPoints(const ConstPointIterator&
     designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
   try {
+    const Eigen::Matrix<double, M, Eigen::Dynamic> designMatrixTransposed =
+      designMatrix.transpose();
     const Eigen::Matrix<double, M, 1> coeffs =
-      (designMatrix.transpose() * responsibilities.asDiagonal() * designMatrix).
-      inverse() * designMatrix.transpose() * responsibilities.asDiagonal() *
+      (designMatrixTransposed * responsibilities.asDiagonal() * designMatrix).
+      inverse() * designMatrixTransposed * responsibilities.asDiagonal() *
       targets;
     for (size_t i = 0; i < dim; ++i)
       if (std::isnan(coeffs(i)))
@@ -141,10 +143,10 @@ void EstimatorML<LinearRegression<M> >::addPoints(const ConstPointIterator&
     mValid = true;
     mLinearRegression.setLinearBasisFunction(
       LinearBasisFunction<double, M>(coeffs));
-    mLinearRegression.setVariance(
-      ((targets - designMatrix * coeffs).transpose() *
-      responsibilities.asDiagonal() * (targets - designMatrix * coeffs))(0) /
-      responsibilities.sum());
+    const Eigen::Matrix<double, Eigen::Dynamic, 1> tempResult =
+      targets - designMatrix * coeffs;
+    mLinearRegression.setVariance((tempResult.transpose() *
+      responsibilities.asDiagonal() * tempResult)(0) / responsibilities.sum());
   }
   catch (...) {
     mValid = false;
