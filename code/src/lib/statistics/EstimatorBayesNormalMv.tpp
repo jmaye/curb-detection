@@ -27,8 +27,8 @@ EstimatorBayes<NormalDistribution<M>, NormalDistribution<M> >::
     EstimatorBayes(const Eigen::Matrix<double, M, M>& covariance, const
     NormalDistribution<M>& prior) :
     mMeanDist(prior),
-    mCovariance(covariance),
-    mPrecision(covariance.inverse()) {
+    mCovariance(covariance) {
+    covariance.computeInverse(&mPrecision);
 }
 
 template <size_t M>
@@ -248,11 +248,10 @@ StudentDistribution<M>
 template <size_t M>
 void EstimatorBayes<NormalDistribution<M>, NormalDistribution<M> >::
     addPoint(const Point& point) {
-  const Eigen::Matrix<double, M, 1> mean =
-    (mMeanDist.getPrecision() + mPrecision).inverse() *
+  Eigen::Matrix<double, M, M> covariance;
+  (mMeanDist.getPrecision() + mPrecision).computeInverse(&covariance);
+  const Eigen::Matrix<double, M, 1> mean = covariance *
     (mMeanDist.getPrecision() * mMeanDist.getMean() + mPrecision * point);
-  const Eigen::Matrix<double, M, M> covariance =
-    (mMeanDist.getPrecision() + mPrecision).inverse();
   mMeanDist.setMean(mean);
   mMeanDist.setCovariance(covariance);
 }

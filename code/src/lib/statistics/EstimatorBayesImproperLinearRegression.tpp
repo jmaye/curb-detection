@@ -135,15 +135,19 @@ void EstimatorBayesImproper<LinearRegression<M> >::addPoints(const
     designMatrix.row(row).segment(1, dim - 1) = (*it).segment(0, dim - 1);
   }
   try {
+    const Eigen::Matrix<double, M, Eigen::Dynamic> designMatrixTransposed =
+      designMatrix.transpose();
     const Eigen::Matrix<double, M, M> covariance =
-      (designMatrix.transpose() * designMatrix).inverse();
+      (designMatrixTransposed * designMatrix).inverse();
     const Eigen::Matrix<double, M, 1> sampleCoeffs =
-      covariance * designMatrix.transpose() * targets;
+      covariance * designMatrixTransposed * targets;
     for (size_t i = 0; i < dim; ++i)
       if (std::isnan(sampleCoeffs(i)))
         return;
-    const double variance = ((targets - designMatrix * sampleCoeffs).transpose()
-      * (targets - designMatrix * sampleCoeffs))(0) / (mNumPoints - dim);
+    const Eigen::Matrix<double, Eigen::Dynamic, 1> tempResult =
+      targets - designMatrix * sampleCoeffs;
+    const double variance = (tempResult.transpose() * tempResult)(0) /
+      (mNumPoints - dim);
     mValid = true;
     mCoeffVarianceDist.setMu(sampleCoeffs);
     mCoeffVarianceDist.setKappa(covariance);
