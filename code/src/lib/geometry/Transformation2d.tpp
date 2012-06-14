@@ -134,14 +134,14 @@ template <typename T>
 void Transformation<T, 2>::transform(const Eigen::Matrix<T, 2, 1>& src,
     Eigen::Matrix<T, 2, 1>& dest) const {
   Eigen::Matrix<T, 3, 1> point(src(0), src(1), T(1));
-  dest = (mTransformationMatrix * point).start(2);
+  dest = (mTransformationMatrix * point).template start<2>();
 }
 
 template <typename T>
 Eigen::Matrix<T, 2, 1> Transformation<T, 2>::operator () (const
     Eigen::Matrix<T, 2, 1>& src) const {
   Eigen::Matrix<T, 3, 1> point(src(0), src(1), T(1));
-  return (mTransformationMatrix * point).start(2);
+  return (mTransformationMatrix * point).template start<2>();
 }
 
 template <typename T>
