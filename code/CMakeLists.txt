@@ -11,7 +11,7 @@ remake_project(
   SUMMARY "A C++ based library for curb detection"
   AUTHOR "Jerome Maye"
   CONTACT "jerome.maye@mavt.ethz.ch"
-  HOME "http://aslforge.ethz.ch/projects/curb-detection"
+  HOME "https://github.com/jmaye/curb-detection"
   LICENSE "GNU Lesser General Public License (LGPL)"
   INSTALL /usr
 )
